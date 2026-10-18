@@ -1,0 +1,63 @@
+name: CI
+
+# Type-checks and tests Ciel on every push to main and every pull request.
+# Nothing is packed and nothing is published.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # The tests run the TypeScript sources directly, which needs Node 22.18
+      # or newer.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Cache cargo
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ciel-cargo-${{ hashFiles('Cargo.lock') }}
+          restore-keys: ciel-cargo-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Front-end tests
+        run: npm test
+
+      # The sounds are generated in code: the committed files must match.
+      - name: Generate the sounds
+        run: npm run sounds
+
+      - name: Sounds are up to date
+        run: git diff --exit-code -- sounds
+
+      # The app bundles target/release/ciel-hook.exe as a resource, and its
+      # build script refuses to run until that file exists. One command per
+      # step: PowerShell carries on after a failed command in the same step.
+      - name: Build the relay
+        run: cargo build --release -p ciel-hook
+
+      - name: Rust tests
+        run: cargo test --workspace --locked

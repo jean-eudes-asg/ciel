@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel — character preview</title>
+    <style>
+      body { margin: 0; background: #1b1b1f; font: 12px system-ui; color: #ddd; }
+      h1 { font: 600 14px system-ui; text-align: center; margin: 18px 0 4px; }
+      .grid { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; padding: 14px; }
+      .cell { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+      .cell canvas { background: #000; border-radius: 18px; }
+      .light .cell canvas { background: #f2f4f7; }
+    </style>
+  </head>
+  <body>
+    <h1>Launch greeting (loops every 6 s)</h1>
+    <div class="grid"><canvas id="greeting" width="640" height="150" style="background:#000;border-radius:22px"></canvas></div>
+    <h1>States (the pointer is followed by every Ciel)</h1>
+    <div class="grid" id="states"></div>
+    <h1>Emotes</h1>
+    <div class="grid" id="emotes"></div>
+    <h1>Mini clouds (one per pill) and the drop box</h1>
+    <div class="grid" id="minis"></div>
+    <script type="module" src="./cloud-preview.ts"></script>
+  </body>
+</html>

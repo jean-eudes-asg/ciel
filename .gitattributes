@@ -1,0 +1,4 @@
+# Generated in code, but binary.
+*.wav binary
+*.png binary
+*.ico binary
