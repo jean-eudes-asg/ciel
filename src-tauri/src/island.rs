@@ -364,6 +364,10 @@ pub fn apply_geometry(app: &AppHandle, pref: &str, collapsed: bool) {
     let ph = (lh * scale).round().max(1.0) as u32;
     let x = mp.x + (ms.width as i32 - pw as i32) / 2;
     let y = mp.y;
+    // A layer surface sits over the top panel. A regular window (GNOME, X11)
+    // sits under it, hidden: start below the panel instead.
+    #[cfg(target_os = "linux")]
+    let y = if platform::is_layer_surface() { y } else { m.work_area().position.y.max(y) };
 
     // GTK never sizes a non-resizable window below its natural size (200 px
     // here), so on Linux the 6 px wake strip would stay a 200 px block. tao

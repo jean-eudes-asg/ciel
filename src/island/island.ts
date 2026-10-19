@@ -768,7 +768,11 @@ export class Island {
    * reported as a cursor far away, which is what the poll would have said.
    */
   followPageCursor() {
-    window.addEventListener("mousemove", (e) => this.onCursor(e.clientX, e.clientY));
+    // WebKitGTK can deliver a mousemove after the pointer has left the layer
+    // surface; trusting it re-enters the island and the auto-close never runs.
+    window.addEventListener("mousemove", (e) => {
+      if (this.pointerInside !== false) this.onCursor(e.clientX, e.clientY);
+    });
     window.addEventListener("mouseout", (e) => {
       if (e.relatedTarget == null) this.onCursor(-10_000, -10_000);
     });
@@ -786,12 +790,6 @@ export class Island {
 
   /** Cursor in window-logical coordinates. */
   onCursor(x: number, y: number) {
-    // WebKitGTK can deliver a mousemove after the pointer has left the layer
-    // surface; trusting it re-enters the island and the auto-close never runs.
-    if (this.pointerInside === false) {
-      x = -10_000;
-      y = -10_000;
-    }
     State.mouse = { x, y };
     const rect = this.islandRect();
     State.mouseInIsland = { x: x - rect.x, y: y - rect.y };

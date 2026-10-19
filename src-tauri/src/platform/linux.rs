@@ -8,7 +8,8 @@
 //   * click-through is the window's input region, set to the island shape, so
 //     the compositor itself sends every other click to whatever is underneath;
 //   * the cursor comes from the page's own mouse events, which only fire over
-//     the island — Ciel's eyes follow the pointer there, not across the screen.
+//     the island, so on Wayland Ciel's eyes follow the pointer there only. On
+//     X11 the pointer watch adds its position everywhere else.
 
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
@@ -346,6 +347,10 @@ fn layer_shell_wanted() -> bool {
 /// True once the island window is a layer-shell surface.
 static LAYER_SURFACE: AtomicBool = AtomicBool::new(false);
 
+pub fn is_layer_surface() -> bool {
+    LAYER_SURFACE.load(Ordering::Relaxed)
+}
+
 /// The input region last asked for, re-applied whenever the window is mapped:
 /// GTK resets it to the whole window on map. Until the page reports the island
 /// shape it is empty, so nothing takes the mouse.
@@ -449,7 +454,7 @@ thread_local! {
 /// for good, and GTK's leave-notify fires spuriously while the pointer is still
 /// over the island (each followed by a re-enter), so neither tells "really
 /// gone". GDK's pointer focus does: it follows the compositor's wl_pointer
-/// enter/leave. It is read every 100 ms while the island is shown; both edges go
+/// enter/leave. It is read every 100 ms (33 on X11) while the island is shown; both edges go
 /// to the page as `pointer-inside`, and leaving also emits the far-away cursor
 /// the page uses. While the island is hidden the timer is removed altogether
 /// (set_pointer_watch), so a hidden island costs nothing.
@@ -482,7 +487,12 @@ fn start_pointer_watch() {
         return;
     };
     let inside = std::cell::Cell::new(false);
-    gtk::glib::timeout_add_local(std::time::Duration::from_millis(100), move || {
+    // X11 tells any client where the pointer is, so there Ciel's eyes follow it
+    // across the screen, as on Windows. Wayland only tells us over the island.
+    let x11 = gtk::gdk::Display::default().is_some_and(|d| d.type_().name() == "GdkX11Display");
+    let last_outside = std::cell::Cell::new(None);
+    let period = if x11 { 33 } else { 100 };
+    gtk::glib::timeout_add_local(std::time::Duration::from_millis(period), move || {
         if !WATCH_WANTED.load(Ordering::Relaxed) {
             WATCH_RUNNING.store(false, Ordering::Relaxed);
             return gtk::glib::ControlFlow::Break;
@@ -505,8 +515,24 @@ fn start_pointer_watch() {
                 let _ = win.emit("cursor", crate::island::CursorPayload { x: -10_000.0, y: -10_000.0 });
             }
         }
+        if !x11 || now_inside {
+            last_outside.set(None);
+        } else if let Some(pos) = pointer_from_island() {
+            if last_outside.replace(Some(pos)) != Some(pos) {
+                let _ = win.emit("cursor", crate::island::CursorPayload { x: pos.0, y: pos.1 });
+            }
+        }
         gtk::glib::ControlFlow::Continue
     });
+}
+
+/// The pointer relative to the island window, in logical pixels (X11 only:
+/// Wayland reports nothing outside our own surfaces). Main thread only.
+fn pointer_from_island() -> Option<(f64, f64)> {
+    let ours = ISLAND_GTK.with(|cell| cell.borrow().clone())?.window()?;
+    let (_, ox, oy) = ours.origin();
+    let (_, px, py) = gtk::gdk::Display::default()?.default_seat()?.pointer()?.position();
+    Some(((px - ox) as f64, (py - oy) as f64))
 }
 
 /// Puts the layer surface on the display whose logical origin is (`x`, `y`).

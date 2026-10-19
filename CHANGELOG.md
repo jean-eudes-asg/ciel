@@ -15,6 +15,10 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 
 ### Fixed
 - The hub's little Clouds look at the pointer, not away from it vertically.
+- Linux: on GNOME and other desktops without layer-shell, the island sits below
+  the top bar instead of under it.
+- Linux on X11: Ciel's eyes follow the pointer across the screen, not only over
+  the island.
 
 ## [0.1.0] - 2026-10-19
 
