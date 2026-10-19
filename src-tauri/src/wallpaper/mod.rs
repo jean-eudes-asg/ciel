@@ -44,6 +44,7 @@ use crate::settings::WallpaperPrefs;
 /// Rust → live windows: `{paused, reason}`.
 pub const PAUSE_EVENT: &str = "wallpaper-live-pause";
 /// Rust → island: `{locked}`.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub const SESSION_EVENT: &str = "wallpaper-session";
 
 /// Largest picture the island may hand over (a 3440×1440 PNG is a few MB).

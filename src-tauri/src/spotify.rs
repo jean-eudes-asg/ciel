@@ -341,6 +341,7 @@ pub fn short_title(raw: &str) -> String {
 
 /// Another player's title: "Artist - Song (Official Video) [4K]" → "Artist -
 /// Song". What follows " - " is often the song itself there, so it stays.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn media_title(raw: &str) -> String {
     let result = without_trailing_groups(raw);
     if result.is_empty() { raw.trim().to_string() } else { result.to_string() }
@@ -1395,6 +1396,7 @@ mod linux {
 
 /// The media session ids Spotify registers: "Spotify.exe" (the installer from
 /// spotify.com) or "SpotifyAB.SpotifyMusic_…!Spotify" (the Microsoft Store).
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn is_spotify_app(app_id: &str) -> bool {
     app_id.to_ascii_lowercase().contains("spotify")
 }
@@ -1402,6 +1404,7 @@ pub fn is_spotify_app(app_id: &str) -> bool {
 /// A media session's app, as the card and the pill name it: the usual players
 /// by name, else the app id's own ("foobar2000.exe" → "foobar2000",
 /// "Publisher.SomePlayer_8wek…!App" → "SomePlayer").
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn player_name(app_id: &str) -> String {
     let lower = app_id.to_ascii_lowercase();
     const KNOWN: &[(&str, &str)] = &[
@@ -1440,6 +1443,7 @@ pub fn player_name(app_id: &str) -> String {
 }
 
 /// One media session, as far as choosing one goes.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub struct Candidate {
     pub app_id: String,
     pub playing: bool,
@@ -1449,6 +1453,7 @@ pub struct Candidate {
 
 /// The session to show: what is playing (the current one first, then
 /// Spotify, then any), else the current one, else Spotify's, else the first.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn pick_session(candidates: &[Candidate]) -> Option<usize> {
     let spotify = |c: &Candidate| is_spotify_app(&c.app_id);
     let ranks: [&dyn Fn(&Candidate) -> bool; 5] = [
@@ -1465,12 +1470,14 @@ pub fn pick_session(candidates: &[Candidate]) -> Option<usize> {
 }
 
 /// Windows durations and timeline positions: 100 ns ticks → seconds.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn ticks_to_secs(ticks: i64) -> f64 {
     ticks.max(0) as f64 / 10_000_000.0
 }
 
 /// A Windows DateTime (100 ns ticks since 1601) → Unix milliseconds. Zero is
 /// "never updated".
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn windows_time_to_unix_ms(universal: i64) -> Option<f64> {
     const UNIX_EPOCH_TICKS: i64 = 116_444_736_000_000_000;
     (universal > 0).then(|| (universal - UNIX_EPOCH_TICKS) as f64 / 10_000.0)
@@ -1480,6 +1487,7 @@ pub fn windows_time_to_unix_ms(universal: i64) -> Option<f64> {
 /// nothing is loaded. Windows gives no Spotify URI, so the id is made from the
 /// tags; Spotify's ads come with a title and nothing else, and get an ad id so
 /// the page treats them as the Mac does. Other players are never ads.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn windows_track(title: &str, artist: &str, album: &str, duration: f64, spotify: bool) -> Option<Track> {
     let title = title.trim();
     if title.is_empty() {

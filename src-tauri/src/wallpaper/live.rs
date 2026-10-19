@@ -317,6 +317,7 @@ pub fn heal(app: &AppHandle) {
 }
 
 /// Monitors came, went or moved: lay the windows out again, once things settle.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn relayout_soon(app: &AppHandle) {
     if !is_live() {
         return;
@@ -337,6 +338,7 @@ pub fn relayout_soon(app: &AppHandle) {
 }
 
 /// Explorer came back: put the windows back once it has made its desktop.
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn heal_soon(app: &AppHandle) {
     if !is_live() {
         return;
