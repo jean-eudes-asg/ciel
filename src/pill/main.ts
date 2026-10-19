@@ -7,7 +7,7 @@
 
 import "./pill.css";
 import { Bridge, onEvent } from "../core/bridge";
-import { FlowBridge, clock, dotGoal as goalOf, pillLook, pillMessage, type PillLook, type PillState } from "../core/flow";
+import { FlowBridge, clock, dotGoal as goalOf, pillLook, pillMessage, pillShown, type PillLook, type PillState } from "../core/flow";
 import type { Settings } from "../core/state";
 import { BotEngine, hexToRGB } from "../cloud/engine";
 import { resolveLanguage, setLanguage, systemLanguages, t } from "../i18n/i18n";
@@ -452,7 +452,8 @@ async function main() {
   const status = await FlowBridge.status();
   if (status) platform = status.platform;
   state = (await FlowBridge.pillState()) ?? state;
-  visible = state.enabled || state.noteStartedAt !== null || state.announcement !== null || state.voice !== null;
+  // Rust only says when this changes, and in the island it never shows.
+  visible = pillShown(state);
   render();
   void onEvent<PillState>("pill-state", (s) => {
     state = s;

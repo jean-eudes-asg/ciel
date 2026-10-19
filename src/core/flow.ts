@@ -246,6 +246,13 @@ export function dotGoal(s: PillState, voice: readonly number[], now: number, i: 
   }
 }
 
+/** The pill's own window shows (pill.rs `update`): dictation is on or busy,
+ *  and it doesn't show in the island. */
+export function pillShown(s: PillState): boolean {
+  if (s.edge === "island") return false;
+  return s.enabled || s.noteStartedAt !== null || s.announcement !== null || s.voice !== null || s.phase !== "idle";
+}
+
 /** Dictation shows in the island and has something to show: a look, or a message. */
 export function islandFlowActive(s: PillState): boolean {
   return s.edge === "island" && (s.announcement != null || pillLook(s) !== "resting");

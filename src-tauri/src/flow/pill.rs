@@ -117,6 +117,14 @@ pub fn setup(app: &AppHandle) {
         }
         match builder.build() {
             Ok(win) => {
+                if park {
+                    // Windows doesn't keep the builder's spot: the window came up
+                    // at its default place on the main display, where a pill in
+                    // the island is never moved from. Off-screen it goes, and it
+                    // lets the mouse through until it shows.
+                    let _ = win.set_position(PhysicalPosition::new(PARKED.0, PARKED.1));
+                    let _ = win.set_ignore_cursor_events(true);
+                }
                 if !platform::prepare_pill_window(&win, mode) {
                     let _ = win.destroy();
                     mode = DesktopMode::Off;
@@ -208,6 +216,7 @@ fn show(app: &AppHandle, pill: &Pill, visible: bool) {
         DesktopMode::Poll => {
             if !visible {
                 let _ = win.set_position(PhysicalPosition::new(PARKED.0, PARKED.1));
+                let _ = win.set_ignore_cursor_events(true);
             }
             let (lock, cv) = &pill.poll;
             *lock.lock().unwrap() = visible;

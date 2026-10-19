@@ -4,7 +4,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { dotGoal, islandFlowActive, pillLook, pillMessage } from "../src/core/flow.ts";
+import { dotGoal, islandFlowActive, pillLook, pillMessage, pillShown } from "../src/core/flow.ts";
 import { setLanguage } from "../src/i18n/i18n.ts";
 
 setLanguage("en");
@@ -34,6 +34,14 @@ test("the island shows dictation only when it shows there and has something to s
   const announcement = { id: 1, icon: "download", tint: "#fff", text: "Downloading", action: null, actionId: null };
   assert.equal(islandFlowActive(state({ announcement })), true);
   assert.equal(islandFlowActive(state({ noteStartedAt: Date.now() })), true);
+});
+
+test("the pill's own window: never while dictation shows in the island", () => {
+  assert.equal(pillShown(state()), false, "dictation on, in the island");
+  assert.equal(pillShown(state({ phase: "listening" })), false);
+  assert.equal(pillShown(state({ edge: "bottom" })), true, "the resting pill");
+  assert.equal(pillShown(state({ edge: "left", enabled: false })), false, "dictation off");
+  assert.equal(pillShown(state({ edge: "bottom", enabled: false, phase: "thinking" })), true);
 });
 
 test("the dots: the voice while you speak, a wave while thinking, still at rest", () => {

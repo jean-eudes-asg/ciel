@@ -657,7 +657,7 @@ dependencies = [
 
 [[package]]
 name = "ciel"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "arboard",
  "async-imap",
@@ -691,7 +691,7 @@ dependencies = [
 
 [[package]]
 name = "ciel-hook"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "libc",
  "serde_json",

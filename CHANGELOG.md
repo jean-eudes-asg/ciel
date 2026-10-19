@@ -2,6 +2,14 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [0.2.3] - 2026-10-19
+
+### Fixed
+- Windows: with dictation in the island, the pill no longer shows near the top
+  left of the main display, where it also caught clicks.
+- Windows: a hover at the top of the screen brings the hidden island back
+  again. It came back only with an agent's message.
+
 ## [0.2.2] - 2026-10-19
 
 ### Added
@@ -102,6 +110,7 @@ an eye on your AI coding agents. Windows 10/11; Linux builds from source.
 Ciel is a fork of [Coucou](https://github.com/Louis-CFM/coucou) by Louis
 Raillé (MIT). Thank you.
 
+[0.2.3]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.3
 [0.2.2]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.2
 [0.2.1]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.1
 [0.2.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.0

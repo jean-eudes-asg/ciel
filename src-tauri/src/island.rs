@@ -502,6 +502,17 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
 
                 let _ = win.emit("cursor", CursorPayload { x, y });
             }
+            // Folded to the wake strip while a tick was under way: that tick saw
+            // the cursor off the island and made the window click-through after
+            // set_collapsed had made the strip take the mouse, and a strip the
+            // pointer goes through never wakes the island. This thread's calls
+            // land in order, so this one has the last word.
+            if platform::CURSOR_POLL && gate.collapsed.load(Ordering::Relaxed) {
+                if let Some(win) = window(&app) {
+                    gate.ignoring.store(false, Ordering::Relaxed);
+                    let _ = win.set_ignore_cursor_events(false);
+                }
+            }
         }
     });
 }
