@@ -1783,6 +1783,398 @@
    "ru": "Отправить сообщение",
    "id": "Kirim pesan"
   },
+  "Spending": {
+   "zh-Hans": "支出",
+   "hi": "खर्च",
+   "es": "Gastos",
+   "ar": "الإنفاق",
+   "fr": "Dépenses",
+   "bn": "খরচ",
+   "pt-BR": "Gastos",
+   "ru": "Расходы",
+   "id": "Pengeluaran"
+  },
+  "{percent}% of budget": {
+   "zh-Hans": "已用预算 {percent}%",
+   "hi": "बजट का {percent}%",
+   "es": "{percent}% del presupuesto",
+   "ar": "{percent}% من الميزانية",
+   "fr": "{percent} % du budget",
+   "bn": "বাজেটের {percent}%",
+   "pt-BR": "{percent}% do orçamento",
+   "ru": "{percent}% бюджета",
+   "id": "{percent}% dari anggaran"
+  },
+  "{amount} this month": {
+   "zh-Hans": "本月 {amount}",
+   "hi": "इस महीने {amount}",
+   "es": "{amount} este mes",
+   "ar": "{amount} هذا الشهر",
+   "fr": "{amount} ce mois-ci",
+   "bn": "এই মাসে {amount}",
+   "pt-BR": "{amount} este mês",
+   "ru": "{amount} в этом месяце",
+   "id": "{amount} bulan ini"
+  },
+  "No budget set": {
+   "zh-Hans": "未设置预算",
+   "hi": "कोई बजट तय नहीं",
+   "es": "Sin presupuesto",
+   "ar": "لا توجد ميزانية",
+   "fr": "Aucun budget",
+   "bn": "কোনো বাজেট নেই",
+   "pt-BR": "Sem orçamento",
+   "ru": "Бюджет не задан",
+   "id": "Belum ada anggaran"
+  },
+  "{amount} left": {
+   "zh-Hans": "剩余 {amount}",
+   "hi": "{amount} बाकी",
+   "es": "Quedan {amount}",
+   "ar": "متبقٍ {amount}",
+   "fr": "Reste {amount}",
+   "bn": "{amount} বাকি",
+   "pt-BR": "Restam {amount}",
+   "ru": "Осталось {amount}",
+   "id": "Sisa {amount}"
+  },
+  "{amount} over": {
+   "zh-Hans": "超出 {amount}",
+   "hi": "{amount} ज़्यादा",
+   "es": "{amount} por encima",
+   "ar": "تجاوز بمقدار {amount}",
+   "fr": "{amount} de dépassement",
+   "bn": "{amount} বেশি",
+   "pt-BR": "{amount} acima",
+   "ru": "Перерасход {amount}",
+   "id": "Lebih {amount}"
+  },
+  "{amount} today": {
+   "zh-Hans": "今天 {amount}",
+   "hi": "आज {amount}",
+   "es": "Hoy {amount}",
+   "ar": "اليوم {amount}",
+   "fr": "Aujourd'hui {amount}",
+   "bn": "আজ {amount}",
+   "pt-BR": "Hoje {amount}",
+   "ru": "Сегодня {amount}",
+   "id": "Hari ini {amount}"
+  },
+  "No rate for {currencies}: not counted": {
+   "zh-Hans": "{currencies} 没有汇率：未计入",
+   "hi": "{currencies} की कोई दर नहीं: गिना नहीं गया",
+   "es": "Sin tipo de cambio para {currencies}: no se cuenta",
+   "ar": "لا يوجد سعر صرف لـ {currencies}: لم يُحتسب",
+   "fr": "Pas de taux pour {currencies} : non compté",
+   "bn": "{currencies}-এর কোনো হার নেই: গণনা করা হয়নি",
+   "pt-BR": "Sem cotação para {currencies}: não contado",
+   "ru": "Нет курса для {currencies}: не учтено",
+   "id": "Tidak ada kurs untuk {currencies}: tidak dihitung"
+  },
+  "{count} rows skipped": {
+   "zh-Hans": {
+    "other": "已跳过 {count} 行"
+   },
+   "hi": {
+    "one": "{count} पंक्ति छोड़ी गई",
+    "other": "{count} पंक्तियाँ छोड़ी गईं"
+   },
+   "es": {
+    "one": "{count} fila omitida",
+    "other": "{count} filas omitidas"
+   },
+   "ar": {
+    "zero": "لم يُتخطَّ أي صف",
+    "one": "صف واحد متخطّى",
+    "two": "صفّان متخطّيان",
+    "few": "{count} صفوف متخطّاة",
+    "many": "{count} صفًا متخطّى",
+    "other": "{count} صف متخطّى"
+   },
+   "fr": {
+    "one": "{count} ligne ignorée",
+    "other": "{count} lignes ignorées"
+   },
+   "bn": {
+    "one": "{count}টি সারি বাদ দেওয়া হয়েছে",
+    "other": "{count}টি সারি বাদ দেওয়া হয়েছে"
+   },
+   "pt-BR": {
+    "one": "{count} linha ignorada",
+    "other": "{count} linhas ignoradas"
+   },
+   "ru": {
+    "one": "Пропущена {count} строка",
+    "few": "Пропущено {count} строки",
+    "many": "Пропущено {count} строк",
+    "other": "Пропущено {count} строки"
+   },
+   "id": {
+    "other": "{count} baris dilewati"
+   }
+  },
+  "{count} entries this month": {
+   "zh-Hans": {
+    "other": "本月 {count} 笔"
+   },
+   "hi": {
+    "one": "इस महीने {count} प्रविष्टि",
+    "other": "इस महीने {count} प्रविष्टियाँ"
+   },
+   "es": {
+    "one": "{count} gasto este mes",
+    "other": "{count} gastos este mes"
+   },
+   "ar": {
+    "zero": "لا قيود هذا الشهر",
+    "one": "قيد واحد هذا الشهر",
+    "two": "قيدان هذا الشهر",
+    "few": "{count} قيود هذا الشهر",
+    "many": "{count} قيدًا هذا الشهر",
+    "other": "{count} قيد هذا الشهر"
+   },
+   "fr": {
+    "one": "{count} dépense ce mois-ci",
+    "other": "{count} dépenses ce mois-ci"
+   },
+   "bn": {
+    "one": "এই মাসে {count}টি এন্ট্রি",
+    "other": "এই মাসে {count}টি এন্ট্রি"
+   },
+   "pt-BR": {
+    "one": "{count} gasto este mês",
+    "other": "{count} gastos este mês"
+   },
+   "ru": {
+    "one": "{count} запись за месяц",
+    "few": "{count} записи за месяц",
+    "many": "{count} записей за месяц",
+    "other": "{count} записи за месяц"
+   },
+   "id": {
+    "other": "{count} catatan bulan ini"
+   }
+  },
+  "Add expense": {
+   "zh-Hans": "添加支出",
+   "hi": "खर्च जोड़ें",
+   "es": "Añadir gasto",
+   "ar": "إضافة مصروف",
+   "fr": "Ajouter une dépense",
+   "bn": "খরচ যোগ করুন",
+   "pt-BR": "Adicionar gasto",
+   "ru": "Добавить расход",
+   "id": "Tambah pengeluaran"
+  },
+  "Amount": {
+   "zh-Hans": "金额",
+   "hi": "राशि",
+   "es": "Importe",
+   "ar": "المبلغ",
+   "fr": "Montant",
+   "bn": "পরিমাণ",
+   "pt-BR": "Valor",
+   "ru": "Сумма",
+   "id": "Jumlah"
+  },
+  "Category": {
+   "zh-Hans": "类别",
+   "hi": "श्रेणी",
+   "es": "Categoría",
+   "ar": "الفئة",
+   "fr": "Catégorie",
+   "bn": "বিভাগ",
+   "pt-BR": "Categoria",
+   "ru": "Категория",
+   "id": "Kategori"
+  },
+  "Note": {
+   "zh-Hans": "备注",
+   "hi": "नोट",
+   "es": "Nota",
+   "ar": "ملاحظة",
+   "fr": "Note",
+   "bn": "নোট",
+   "pt-BR": "Nota",
+   "ru": "Заметка",
+   "id": "Catatan"
+  },
+  "No expenses this month": {
+   "zh-Hans": "本月还没有支出",
+   "hi": "इस महीने कोई खर्च नहीं",
+   "es": "Sin gastos este mes",
+   "ar": "لا مصروفات هذا الشهر",
+   "fr": "Aucune dépense ce mois-ci",
+   "bn": "এই মাসে কোনো খরচ নেই",
+   "pt-BR": "Nenhum gasto este mês",
+   "ru": "В этом месяце расходов нет",
+   "id": "Belum ada pengeluaran bulan ini"
+  },
+  "No expenses yet": {
+   "zh-Hans": "还没有支出",
+   "hi": "अभी तक कोई खर्च नहीं",
+   "es": "Aún no hay gastos",
+   "ar": "لا مصروفات بعد",
+   "fr": "Aucune dépense pour l'instant",
+   "bn": "এখনো কোনো খরচ নেই",
+   "pt-BR": "Nenhum gasto ainda",
+   "ru": "Пока нет расходов",
+   "id": "Belum ada pengeluaran"
+  },
+  "Enter an amount above 0 with at most 2 decimals.": {
+   "zh-Hans": "请输入大于 0 的金额，最多两位小数。",
+   "hi": "0 से ज़्यादा राशि डालें, ज़्यादा से ज़्यादा 2 दशमलव अंकों के साथ।",
+   "es": "Escribe un importe mayor que 0 con 2 decimales como máximo.",
+   "ar": "أدخل مبلغًا أكبر من 0 بخانتين عشريتين على الأكثر.",
+   "fr": "Saisissez un montant supérieur à 0, avec 2 décimales au plus.",
+   "bn": "0-এর বেশি একটি পরিমাণ লিখুন, সর্বোচ্চ 2 দশমিক ঘর।",
+   "pt-BR": "Digite um valor maior que 0 com no máximo 2 casas decimais.",
+   "ru": "Введите сумму больше 0, не более 2 знаков после запятой.",
+   "id": "Masukkan jumlah di atas 0 dengan paling banyak 2 desimal."
+  },
+  "Enter the date as YYYY-MM-DD.": {
+   "zh-Hans": "请按 YYYY-MM-DD 格式输入日期。",
+   "hi": "तारीख YYYY-MM-DD के रूप में डालें।",
+   "es": "Escribe la fecha como YYYY-MM-DD.",
+   "ar": "أدخل التاريخ بالصيغة YYYY-MM-DD.",
+   "fr": "Saisissez la date au format YYYY-MM-DD.",
+   "bn": "তারিখ YYYY-MM-DD আকারে লিখুন।",
+   "pt-BR": "Digite a data como YYYY-MM-DD.",
+   "ru": "Введите дату в формате YYYY-MM-DD.",
+   "id": "Masukkan tanggal dengan format YYYY-MM-DD."
+  },
+  "No exchange rate for {currency} in settings.json.": {
+   "zh-Hans": "settings.json 中没有 {currency} 的汇率。",
+   "hi": "settings.json में {currency} की कोई विनिमय दर नहीं है।",
+   "es": "No hay tipo de cambio para {currency} en settings.json.",
+   "ar": "لا يوجد سعر صرف لـ {currency} في settings.json.",
+   "fr": "Aucun taux de change pour {currency} dans settings.json.",
+   "bn": "settings.json-এ {currency}-এর কোনো বিনিময় হার নেই।",
+   "pt-BR": "Não há cotação para {currency} em settings.json.",
+   "ru": "В settings.json нет курса для {currency}.",
+   "id": "Tidak ada kurs untuk {currency} di settings.json."
+  },
+  "Pick a category (60 characters at most).": {
+   "zh-Hans": "请选择一个类别（最多 60 个字符）。",
+   "hi": "एक श्रेणी चुनें (ज़्यादा से ज़्यादा 60 अक्षर)।",
+   "es": "Elige una categoría (60 caracteres como máximo).",
+   "ar": "اختر فئة (60 حرفًا على الأكثر).",
+   "fr": "Choisissez une catégorie (60 caractères au plus).",
+   "bn": "একটি বিভাগ বেছে নিন (সর্বোচ্চ 60 অক্ষর)।",
+   "pt-BR": "Escolha uma categoria (no máximo 60 caracteres).",
+   "ru": "Выберите категорию (не более 60 символов).",
+   "id": "Pilih kategori (paling banyak 60 karakter)."
+  },
+  "Keep the note to 200 characters.": {
+   "zh-Hans": "备注最多 200 个字符。",
+   "hi": "नोट 200 अक्षरों तक रखें।",
+   "es": "La nota debe tener 200 caracteres como máximo.",
+   "ar": "اجعل الملاحظة في حدود 200 حرف.",
+   "fr": "La note ne doit pas dépasser 200 caractères.",
+   "bn": "নোট 200 অক্ষরের মধ্যে রাখুন।",
+   "pt-BR": "A nota deve ter no máximo 200 caracteres.",
+   "ru": "Заметка — не более 200 символов.",
+   "id": "Batasi catatan hingga 200 karakter."
+  },
+  "expenses.csv doesn't have the expected columns, so Ciel leaves it alone.": {
+   "zh-Hans": "expenses.csv 的列与预期不符，Ciel 不会改动它。",
+   "hi": "expenses.csv में अपेक्षित कॉलम नहीं हैं, इसलिए Ciel इसे नहीं छेड़ता।",
+   "es": "expenses.csv no tiene las columnas esperadas, así que Ciel no lo toca.",
+   "ar": "لا يحتوي expenses.csv على الأعمدة المتوقعة، لذا لا يمسّه Ciel.",
+   "fr": "expenses.csv n'a pas les colonnes attendues : Ciel n'y touche pas.",
+   "bn": "expenses.csv-এ প্রত্যাশিত কলামগুলো নেই, তাই Ciel এটি ছোঁয় না।",
+   "pt-BR": "expenses.csv não tem as colunas esperadas, então o Ciel não mexe nele.",
+   "ru": "В expenses.csv нет нужных столбцов, поэтому Ciel его не трогает.",
+   "id": "expenses.csv tidak memiliki kolom yang diharapkan, jadi Ciel tidak mengubahnya."
+  },
+  "Could not use the finance folder: {error}": {
+   "zh-Hans": "无法使用财务文件夹：{error}",
+   "hi": "फ़ाइनेंस फ़ोल्डर इस्तेमाल नहीं हो सका: {error}",
+   "es": "No se pudo usar la carpeta de finanzas: {error}",
+   "ar": "تعذّر استخدام مجلد المالية: {error}",
+   "fr": "Impossible d'utiliser le dossier Finance : {error}",
+   "bn": "ফাইন্যান্স ফোল্ডার ব্যবহার করা যায়নি: {error}",
+   "pt-BR": "Não foi possível usar a pasta de finanças: {error}",
+   "ru": "Не удалось использовать папку финансов: {error}",
+   "id": "Tidak dapat memakai folder keuangan: {error}"
+  },
+  "Data folder": {
+   "zh-Hans": "数据文件夹",
+   "hi": "डेटा फ़ोल्डर",
+   "es": "Carpeta de datos",
+   "ar": "مجلد البيانات",
+   "fr": "Dossier de données",
+   "bn": "ডেটা ফোল্ডার",
+   "pt-BR": "Pasta de dados",
+   "ru": "Папка данных",
+   "id": "Folder data"
+  },
+  "Open folder": {
+   "zh-Hans": "打开文件夹",
+   "hi": "फ़ोल्डर खोलें",
+   "es": "Abrir carpeta",
+   "ar": "فتح المجلد",
+   "fr": "Ouvrir le dossier",
+   "bn": "ফোল্ডার খুলুন",
+   "pt-BR": "Abrir pasta",
+   "ru": "Открыть папку",
+   "id": "Buka folder"
+  },
+  "This folder doesn't exist yet: Ciel creates it the first time it's used.": {
+   "zh-Hans": "此文件夹尚不存在：Ciel 会在首次使用时创建它。",
+   "hi": "यह फ़ोल्डर अभी मौजूद नहीं है: पहली बार इस्तेमाल होने पर Ciel इसे बना देगा।",
+   "es": "Esta carpeta aún no existe: Ciel la crea la primera vez que se usa.",
+   "ar": "هذا المجلد غير موجود بعد: ينشئه Ciel عند أول استخدام.",
+   "fr": "Ce dossier n'existe pas encore : Ciel le crée à la première utilisation.",
+   "bn": "এই ফোল্ডারটি এখনো নেই: প্রথমবার ব্যবহারের সময় Ciel এটি তৈরি করবে।",
+   "pt-BR": "Esta pasta ainda não existe: o Ciel a cria na primeira vez que for usada.",
+   "ru": "Этой папки пока нет: Ciel создаст её при первом использовании.",
+   "id": "Folder ini belum ada: Ciel membuatnya saat pertama kali dipakai."
+  },
+  "Not found here: {files}. The defaults are used until they exist.": {
+   "zh-Hans": "此处未找到：{files}。在它们出现之前使用默认值。",
+   "hi": "यहाँ नहीं मिला: {files}। जब तक ये न हों, डिफ़ॉल्ट इस्तेमाल होते हैं।",
+   "es": "No se encontró aquí: {files}. Se usan los valores predeterminados hasta que existan.",
+   "ar": "غير موجود هنا: {files}. تُستخدم القيم الافتراضية إلى أن توجد.",
+   "fr": "Introuvable ici : {files}. Les valeurs par défaut s'appliquent en attendant.",
+   "bn": "এখানে পাওয়া যায়নি: {files}। এগুলো না থাকা পর্যন্ত ডিফল্ট ব্যবহার হবে।",
+   "pt-BR": "Não encontrado aqui: {files}. Os padrões são usados até que existam.",
+   "ru": "Здесь нет: {files}. Пока их нет, используются значения по умолчанию.",
+   "id": "Tidak ditemukan di sini: {files}. Nilai bawaan dipakai sampai file itu ada."
+  },
+  "Found expenses.csv and settings.json.": {
+   "zh-Hans": "已找到 expenses.csv 和 settings.json。",
+   "hi": "expenses.csv और settings.json मिल गए।",
+   "es": "Se encontraron expenses.csv y settings.json.",
+   "ar": "تم العثور على expenses.csv وsettings.json.",
+   "fr": "expenses.csv et settings.json trouvés.",
+   "bn": "expenses.csv ও settings.json পাওয়া গেছে।",
+   "pt-BR": "expenses.csv e settings.json encontrados.",
+   "ru": "Найдены expenses.csv и settings.json.",
+   "id": "expenses.csv dan settings.json ditemukan."
+  },
+  "Enter the full path of a folder.": {
+   "zh-Hans": "请输入文件夹的完整路径。",
+   "hi": "फ़ोल्डर का पूरा पाथ डालें।",
+   "es": "Escribe la ruta completa de una carpeta.",
+   "ar": "أدخل المسار الكامل لمجلد.",
+   "fr": "Saisissez le chemin complet d'un dossier.",
+   "bn": "একটি ফোল্ডারের সম্পূর্ণ পাথ লিখুন।",
+   "pt-BR": "Digite o caminho completo de uma pasta.",
+   "ru": "Введите полный путь к папке.",
+   "id": "Masukkan path lengkap sebuah folder."
+  },
+  "Leave it empty for Ciel's own folder, or enter a folder that already holds expenses.csv and settings.json, such as a dashboard's data folder. Ciel adds expenses there and never changes settings.json.": {
+   "zh-Hans": "留空则使用 Ciel 自己的文件夹，或填写已包含 expenses.csv 和 settings.json 的文件夹（例如某个仪表板的数据文件夹）。Ciel 只会在其中添加支出，从不修改 settings.json。",
+   "hi": "Ciel के अपने फ़ोल्डर के लिए इसे खाली छोड़ें, या ऐसा फ़ोल्डर डालें जिसमें पहले से expenses.csv और settings.json हों, जैसे किसी डैशबोर्ड का डेटा फ़ोल्डर। Ciel वहाँ खर्च जोड़ता है और settings.json को कभी नहीं बदलता।",
+   "es": "Déjalo vacío para usar la carpeta de Ciel, o escribe una carpeta que ya tenga expenses.csv y settings.json, como la carpeta de datos de un panel. Ciel añade gastos ahí y nunca cambia settings.json.",
+   "ar": "اتركه فارغًا لاستخدام مجلد Ciel الخاص، أو أدخل مجلدًا يحتوي بالفعل على expenses.csv وsettings.json، مثل مجلد بيانات لوحة معلومات. يضيف Ciel المصروفات هناك ولا يغيّر settings.json أبدًا.",
+   "fr": "Laissez vide pour le dossier de Ciel, ou indiquez un dossier qui contient déjà expenses.csv et settings.json, comme le dossier de données d'un tableau de bord. Ciel y ajoute des dépenses et ne modifie jamais settings.json.",
+   "bn": "Ciel-এর নিজস্ব ফোল্ডারের জন্য খালি রাখুন, অথবা এমন একটি ফোল্ডার লিখুন যেখানে আগে থেকেই expenses.csv ও settings.json আছে, যেমন কোনো ড্যাশবোর্ডের ডেটা ফোল্ডার। Ciel সেখানে খরচ যোগ করে এবং settings.json কখনো বদলায় না।",
+   "pt-BR": "Deixe vazio para usar a pasta do Ciel, ou informe uma pasta que já tenha expenses.csv e settings.json, como a pasta de dados de um painel. O Ciel adiciona gastos ali e nunca altera settings.json.",
+   "ru": "Оставьте пустым, чтобы использовать папку Ciel, или укажите папку, где уже есть expenses.csv и settings.json, например папку данных дашборда. Ciel добавляет туда расходы и никогда не меняет settings.json.",
+   "id": "Kosongkan untuk folder milik Ciel, atau isi folder yang sudah berisi expenses.csv dan settings.json, misalnya folder data sebuah dasbor. Ciel menambahkan pengeluaran di sana dan tidak pernah mengubah settings.json."
+  },
   "Sending by email isn't in this version.": {
    "zh-Hans": "此版本暂不支持通过邮件发送。",
    "hi": "ईमेल से भेजना इस संस्करण में नहीं है।",

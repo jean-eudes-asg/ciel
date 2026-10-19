@@ -45,6 +45,8 @@ test("the catalog holds the Mac's pills with the Claude Code label for Windows a
     ["integration_stripe", "Stripe", "#0570DE", "service", "Integration"],
     ["integration_music", "Apple Music", "#FA2D48", "service", "Integration"],
     ["integration_spotify", "Spotify", "#1DB954", "service", "Integration"],
+    // Not the Mac's: Windows and Linux only, after every pill of its.
+    ["integration_finance", "Finance", "#10B981", "service", "Spending"],
   ];
   assert.deepEqual(
     PILL_CATALOG.map((p) => [p.id, p.name, p.color, p.category, p.subtitle]),
@@ -108,6 +110,20 @@ test("Spotify: a service on both systems with nothing to set up", () => {
   assert.ok(!isHookPill("integration_spotify"));
   assert.ok(!mainPillChoices("linux").some((p) => p.id === "integration_spotify"));
   assert.ok(!mainPillChoices("windows").some((p) => p.id === "integration_spotify"));
+});
+
+test("Finance: a service on both systems with nothing to set up, declarable like any other", () => {
+  const def = pillDefinition("integration_finance");
+  assert.equal(def.support, "yes");
+  assert.deepEqual(def.connect, { kind: "none" });
+  assert.equal(def.category, "service");
+  assert.ok(!isHookPill("integration_finance"));
+  for (const os of ["windows", "linux"]) {
+    assert.ok(availablePills(os).some((p) => p.id === "integration_finance"), os);
+    assert.ok(!mainPillChoices(os).some((p) => p.id === "integration_finance"), os);
+    const empty = { mainPill: "integration_claude", activeIntegrations: [] };
+    assert.deepEqual(toggleDeclared(empty, "integration_finance", os), ["integration_finance"]);
+  }
 });
 
 test("Spotify can be declared on both systems; Claude Desktop only on Windows", () => {

@@ -65,6 +65,9 @@ pub struct Settings {
     /// Ciel on the desktop: whether he lives there, and his spot. Owned by
     /// the Rust side (desktop.rs) — what a webview sends back is ignored.
     pub desktop_cloud: DesktopCloudPref,
+    /// The Finance pill's folder (expenses.csv and settings.json). Empty means
+    /// `<config dir>/finance`; see finance.rs.
+    pub finance_folder: String,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -119,6 +122,7 @@ impl Default for Settings {
             pill_colors: BTreeMap::new(),
             language: String::new(),
             desktop_cloud: DesktopCloudPref::default(),
+            finance_folder: String::new(),
         }
     }
 }
@@ -394,7 +398,8 @@ mod tests {
   "shortcuts": { "openChat": { "keys": "Ctrl+Shift+K", "enabled": false } },
   "pillColors": { "integration_claude": "#2DD4BF" },
   "language": "pt-BR",
-  "desktopCloud": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } }
+  "desktopCloud": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } },
+  "financeFolder": "/srv/dashboard/data"
 }"##;
 
     fn custom() -> Value {
@@ -785,6 +790,7 @@ mod tests {
                 "pillColors",
                 "language",
                 "desktopCloud",
+                "financeFolder",
             ]
         );
         let _ = std::fs::remove_dir_all(&dir);

@@ -11,6 +11,7 @@ import {
   recordPress, type Binding,
 } from "../core/shortcuts";
 import { DEFAULT_SETTINGS, type Settings } from "../core/state";
+import { isFullPath, type FinanceFolderInfo } from "../core/finance";
 import { SOUND_NAMES } from "../core/sound";
 import {
   MAX_DECLARED, PILL_CATEGORIES, availablePills, chooseMainPill, isComingSoon, mainPillChoices,
@@ -783,7 +784,63 @@ const INTEGRATIONS: IntegrationDef[] = [
     fields: [{ key: "calcom-api-key", label: N_("API key"), placeholder: "cal_…", secret: true }] },
   // Nothing to enter: Spotify is read from the OS (src-tauri/src/spotify.rs).
   { id: "integration_spotify", name: "Spotify", color: "#1DB954", fields: [] },
+  // No key either: a folder on this computer (src-tauri/src/finance.rs).
+  { id: "integration_finance", name: "Finance", color: "#10B981", fields: [] },
 ];
+
+/**
+ * The Finance pill's folder: where it is, what is in it, and Open folder.
+ * Saved as `financeFolder`; empty is Ciel's own folder.
+ */
+function financeFolderRows(): HTMLElement[] {
+  const input = h("input", {
+    type: "text", value: settings.financeFolder, autocomplete: "off", spellcheck: "false",
+    style: "flex:1 1 auto;min-width:0",
+  }) as HTMLInputElement;
+  const saveBtn = h("button", { text: t("Save") });
+  const openBtn = h("button", { text: t("Open folder") });
+  const dotEl = statusDot(false);
+  const status = h("div", { class: "hint", style: "padding-top:5px" });
+
+  const describe = (info: FinanceFolderInfo | null) => {
+    if (!info) return;
+    input.placeholder = info.defaultPath;
+    const missing = [info.hasExpenses ? "" : "expenses.csv", info.hasSettings ? "" : "settings.json"].filter(Boolean);
+    dotEl.style.background = !info.exists || missing.length > 0 ? "#f5a524" : "#22c55e";
+    status.textContent = !info.exists
+      ? t("This folder doesn't exist yet: Ciel creates it the first time it's used.")
+      : missing.length > 0
+        ? t("Not found here: {files}. The defaults are used until they exist.", { files: missing.join(", ") })
+        : t("Found expenses.csv and settings.json.");
+  };
+  void Bridge.financeFolderInfo().then(describe);
+
+  saveBtn.addEventListener("click", async () => {
+    const value = input.value.trim();
+    if (value && !isFullPath(value)) {
+      dotEl.style.background = "#f4505e";
+      status.textContent = t("Enter the full path of a folder.");
+      return;
+    }
+    settings.financeFolder = value;
+    await save();
+    describe(await Bridge.financeFolderInfo());
+  });
+  openBtn.addEventListener("click", async () => {
+    await Bridge.financeOpenFolder();
+    describe(await Bridge.financeFolderInfo());
+  });
+
+  return [
+    h("div", { class: "row" },
+      h("label", { style: "min-width:104px", text: t("Data folder") }),
+      input, saveBtn, dotEl,
+    ),
+    h("div", { class: "row" }, openBtn),
+    status,
+    h("div", { class: "hint", text: t("Leave it empty for Ciel's own folder, or enter a folder that already holds expenses.csv and settings.json, such as a dashboard's data folder. Ciel adds expenses there and never changes settings.json.") }),
+  ];
+}
 
 const MAX_ACTIVE = MAX_DECLARED;
 
@@ -853,6 +910,7 @@ function integrationsSection(present: Record<string, boolean>): HTMLElement {
     }
 
     if (def.hint) rows.append(h("div", { class: "hint", text: t(def.hint) }));
+    if (def.id === "integration_finance") rows.append(...financeFolderRows());
     if (def.id === "integration_spotify") {
       // As on the Mac's row: said only when there is no Spotify to launch.
       const hint = h("div", { class: "hint", style: "padding-top:5px" });

@@ -134,6 +134,10 @@ export const PILL_CATALOG: readonly PillDefinition[] = [
   // (src-tauri/src/spotify.rs).
   { id: "integration_spotify", name: "Spotify", color: "#1DB954", category: "service",
     subtitle: N_("Integration"), source: "n8n", support: "yes", connect: none },
+  // Personal spending in two local files, shared with the user's own
+  // dashboard if they have one (src-tauri/src/finance.rs). Not on the Mac.
+  { id: "integration_finance", name: "Finance", color: "#10B981", category: "service",
+    subtitle: N_("Spending"), source: "n8n", support: "yes", connect: none },
 ];
 
 /** The always-on pill unless the user picks another workspace tool. */

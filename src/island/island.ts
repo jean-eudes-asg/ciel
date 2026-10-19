@@ -13,6 +13,7 @@ import {
 import { Sound } from "../core/sound";
 import { State } from "../core/state";
 import { SPOTIFY_ID, islandDances } from "../core/spotify";
+import { FINANCE_ID } from "../core/finance";
 import { BotEngine, hexToRGB } from "../cloud/engine";
 import { Greeting } from "../cloud/greeting";
 import { createMiniBot, pruneMiniBots, syncMiniBotStates, tickMiniBots } from "../cloud/minibots";
@@ -189,6 +190,7 @@ export class Island {
           void Bridge.openSession(task.sessionId ?? null, task.sessionCwd ?? null);
         } else if (task.id === "integration_n8n") void Bridge.openN8n();
         else if (task.id === SPOTIFY_ID) void Bridge.spotifyOpen();
+        else if (task.id === FINANCE_ID) void Bridge.financeOpenFolder();
         else if (urls[task.id]) void Bridge.openUrl(urls[task.id]);
       },
       openUrl: (url) => {

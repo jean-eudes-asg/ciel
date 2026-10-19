@@ -22,6 +22,8 @@ import { Bridge } from "../core/bridge";
 import { buildRecap } from "./recap";
 import { buildSpotifyCard, buildSpotifyPill, type SpotifyPillHost } from "./spotify";
 import { SPOTIFY_ID } from "../core/spotify";
+import { buildFinanceCard } from "./finance";
+import { FINANCE_ID } from "../core/finance";
 import { language, t, tl, type Msg } from "../i18n/i18n";
 import type { ViewCommand } from "../island/shortcuts";
 
@@ -193,6 +195,8 @@ function buildOverview(actions: ViewActions): ViewHost {
   // runs on, and a slider being dragged must not be rebuilt under the pointer.
   const spotifyCard = buildSpotifyCard();
   let spotifyPill: SpotifyPillHost | null = null;
+  // Finance's card holds a form: kept too, so a poll never rebuilds it mid-typing.
+  const financeCard = buildFinanceCard();
 
   const el = h("div", { class: "view overview" },
     h("div", { class: "left" }, left),
@@ -202,7 +206,7 @@ function buildOverview(actions: ViewActions): ViewHost {
   let pillIds = "";
   let detailOpen = false;
   let lastFocus: string | null = null;
-  let mode: "ticker" | "card" | "plan" | "diff" | "spotify" | null = null;
+  let mode: "ticker" | "card" | "plan" | "diff" | "spotify" | "finance" | null = null;
   let cardKey = "";
   /** The list row highlighted at the last sync, to scroll only when it moves. */
   let shownSelection: number | null = null;
@@ -359,6 +363,15 @@ function buildOverview(actions: ViewActions): ViewHost {
           cardKey = "";
         }
         spotifyCard.sync();
+      } else if (task && task.id === FINANCE_ID) {
+        if (mode !== "finance") {
+          clear(leftBody);
+          leftBody.append(financeCard.el);
+          mode = "finance";
+          cardKey = "";
+          financeCard.reset();
+        }
+        financeCard.sync();
       } else if (task) {
         const info = State.integrations[task.id];
         const key = [
@@ -384,7 +397,10 @@ function buildOverview(actions: ViewActions): ViewHost {
       shownSelection = State.cardSelection;
 
       const others = State.otherTasks.slice(0, 4);
-      const pillKey = others.map((t) => `${t.id}:${t.color}:${t.pillBadge ?? ""}`).join("|");
+      // Finance's pill says how the month goes: its label is part of the key.
+      const pillKey = others
+        .map((t) => `${t.id}:${t.color}:${t.pillBadge ?? ""}${t.id === FINANCE_ID ? `:${t.name}` : ""}`)
+        .join("|");
       if (pillKey !== pillIds) {
         pillIds = pillKey;
         clear(pills);

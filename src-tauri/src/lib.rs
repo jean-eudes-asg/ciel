@@ -8,6 +8,7 @@ mod codex_plan;
 mod config_file;
 mod desktop;
 mod files;
+mod finance;
 mod flow;
 mod github;
 mod hooks;
@@ -790,6 +791,10 @@ pub fn run() {
             spotify::spotify_control,
             spotify::spotify_open,
             spotify::spotify_installed,
+            finance::finance_poll,
+            finance::finance_add_expense,
+            finance::finance_folder_info,
+            finance::finance_open_folder,
             flow::flow_status,
             flow::flow_set_prefs,
             flow::flow_history,

@@ -2543,6 +2543,400 @@ input[type="range"]::-webkit-slider-thumb {
   width: 44px;
 }
 
+/* ── Finance (views/finance.ts) ─────────────────────────────────────────────
+   One pane at a time in the 108 px card: the month, the latest entries, the
+   Add expense form. Same type sizes and greys as the other service cards. */
+
+.fin-root {
+  height: 100%;
+}
+
+.int-card.fin-card {
+  height: 100%;
+  box-sizing: border-box;
+  padding-top: 7px;
+}
+
+.fin-head {
+  height: 15px;
+}
+
+/* The ↗ (open the folder) sits in the card's corner on every pane. */
+.fin-card .gh-detail-head {
+  height: 15px;
+  padding-right: 22px;
+}
+
+.fin-grow {
+  flex: 1 1 auto;
+}
+
+.fin-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.fin-icon:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--ink);
+}
+
+.fin-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.fin-total {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding-top: 1px;
+  line-height: 18px;
+  min-width: 0;
+}
+
+.fin-spent {
+  font: 700 16px/18px var(--mono);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.fin-total i {
+  font: 500 9.5px var(--font);
+  font-style: normal;
+  color: var(--dim-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.fin-pct {
+  margin-left: auto;
+  font: 600 10.5px var(--mono);
+  flex: 0 0 auto;
+}
+
+.fin-total .dot {
+  align-self: center;
+  flex: 0 0 auto;
+}
+
+.fin-bar {
+  position: relative;
+  height: 4px;
+  margin-top: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.fin-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 2px;
+}
+
+.fin-meta {
+  padding-top: 2px;
+  font: 400 10px/12px var(--font);
+  color: var(--dim-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fin-top {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-top: 2px;
+}
+
+.fin-cat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 12px;
+  padding: 0 4px;
+  min-width: 0;
+}
+
+/* Behind each category: its share of the month. */
+.fin-share {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 3px;
+  background: rgba(16, 185, 129, 0.13);
+}
+
+.fin-cat-name {
+  position: relative;
+  font: 500 10px/12px var(--font);
+  color: #9398a1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.fin-cat-amount {
+  position: relative;
+  margin-left: auto;
+  font: 500 10px/12px var(--mono);
+  color: #c5c8cd;
+  flex: 0 0 auto;
+}
+
+.fin-none {
+  font: 400 10px/12px var(--font);
+  color: var(--dim-3);
+}
+
+.fin-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 76px; /* four 19 px rows; the fifth scrolls */
+  overflow-y: auto;
+  margin-top: 4px;
+  scrollbar-width: none;
+}
+
+.fin-list::-webkit-scrollbar {
+  display: none;
+}
+
+.fin-list.fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 80%, transparent 100%);
+}
+
+.fin-entry {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 19px;
+  flex: 0 0 19px;
+  padding: 0 4px;
+  border-radius: 4px;
+  min-width: 0;
+}
+
+.fin-entry:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.fin-entry-date {
+  font: 400 10px var(--mono);
+  color: var(--dim-3);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* The category before the note: the note only gets the room that is left. */
+.fin-entry-cat {
+  font: 500 10.5px var(--font);
+  color: #c5c8cd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.fin-entry-note {
+  font: 400 10px var(--font);
+  color: var(--dim-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.fin-entry-amount {
+  margin-left: auto;
+  font: 500 10px var(--mono);
+  color: #c5c8cd;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* A refusal takes the title's place, on two lines at most. */
+.fin-error {
+  font: 400 9.5px/11px var(--font);
+  color: var(--red-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.fin-card.has-error .gh-detail-head {
+  height: auto;
+  min-height: 15px;
+}
+
+.fin-card.has-error .gh-back span {
+  display: none;
+}
+
+.fin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 5px;
+}
+
+.fin-line {
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fin-input {
+  height: 20px;
+  box-sizing: border-box;
+  padding: 0 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink);
+  font: 400 10.5px var(--font);
+  outline: none;
+  min-width: 0;
+}
+
+input.fin-input {
+  cursor: text;
+}
+
+.fin-input:focus {
+  border-color: rgba(16, 185, 129, 0.55);
+}
+
+.fin-input::placeholder {
+  color: var(--dim-3);
+}
+
+.fin-pick {
+  cursor: default;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fin-pick:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fin-amount {
+  flex: 1 1 auto;
+  font-family: var(--mono);
+}
+
+.fin-currency {
+  flex: 0 0 48px;
+  text-align: center;
+  font-family: var(--mono);
+}
+
+.fin-category {
+  flex: 1 1 auto;
+}
+
+.fin-date {
+  flex: 0 0 80px;
+  font-family: var(--mono);
+}
+
+.fin-note {
+  flex: 1 1 auto;
+}
+
+.fin-add {
+  flex: 0 0 auto;
+  height: 20px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: #10b981;
+  color: #04130d;
+  font: 600 10.5px var(--font);
+  cursor: default;
+}
+
+.fin-add:hover {
+  filter: brightness(1.08);
+}
+
+.fin-add:disabled {
+  opacity: 0.5;
+}
+
+/* Picking a currency or a category: the list stands in for the form. */
+.fin-choices {
+  display: none;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 3px;
+  padding-top: 5px;
+  max-height: 70px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.fin-choices::-webkit-scrollbar {
+  display: none;
+}
+
+.fin-card.choosing .fin-form {
+  display: none;
+}
+
+.fin-card.choosing .fin-choices {
+  display: flex;
+}
+
+.fin-chip {
+  height: 18px;
+  max-width: 100%;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: transparent;
+  color: var(--dim);
+  font: 500 10px var(--font);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+.fin-chip:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+}
+
+.fin-chip.on {
+  border-color: rgba(16, 185, 129, 0.6);
+  color: #6ee7b7;
+}
+
+.fin-choices.currencies .fin-chip {
+  font-family: var(--mono);
+}
+
+/* Amounts and dates are typed left to right in every language. */
+html[data-dir="rtl"] #views :is(.fin-amount, .fin-date, .fin-spent, .fin-cat-amount, .fin-entry-amount) {
+  direction: ltr;
+}
+
 /* ── Arabic: right to left ─────────────────────────────────────────────────────
    i18n.ts sets <html data-dir="rtl">. The text of the cards reads and aligns
    right to left; Ciel, the pills, the header and the cards themselves keep

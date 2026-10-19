@@ -8,6 +8,7 @@ import { getCurrentWebview } from "@tauri-apps/api/webview";
 import type { Settings } from "./state";
 import type { RecapHistory, RecapPrefs } from "../recap/summary";
 import type { SpotifyState } from "./spotify";
+import type { FinanceFolderInfo, FinancePoll, NewExpense } from "./finance";
 
 export const IS_TAURI =
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -222,6 +223,16 @@ export const Bridge = {
   spotifyOpen: () => call<boolean>("spotify_open"),
   /** Whether there is a Spotify to launch (Settings). */
   spotifyInstalled: () => call<boolean>("spotify_installed"),
+
+  // ── Finance (src-tauri/src/finance.rs) ────────────────────────────────────
+  /** The folder's summary if anything changed since `stamp`, else null. Two file stats. */
+  financePoll: (stamp: string | null) => call<FinancePoll | null>("finance_poll", { stamp }),
+  /** Adds an expense and answers with the fresh summary; throws the reason it was refused. */
+  financeAddExpense: (expense: NewExpense) => callOrThrow<FinancePoll>("finance_add_expense", { expense }),
+  /** What a folder holds (the saved one without `path`). */
+  financeFolderInfo: (path?: string) => call<FinanceFolderInfo>("finance_folder_info", { path: path ?? null }),
+  /** Shows the folder, making it with its defaults first if it is new. */
+  financeOpenFolder: () => call<void>("finance_open_folder"),
 };
 
 export type SpotifyAction = "playPause" | "next" | "previous" | "seek" | "shuffle" | "repeat" | "volume";

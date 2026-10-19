@@ -145,6 +145,11 @@ export interface Settings {
     onDesktop: boolean;
     spot: { x: number; y: number; space: string } | null;
   };
+  /**
+   * The Finance pill's folder (expenses.csv + settings.json): a full path, or
+   * "" for `<Ciel's config dir>/finance` (src-tauri/src/finance.rs).
+   */
+  financeFolder: string;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -172,6 +177,7 @@ export const DEFAULT_SETTINGS: Settings = {
   shortcuts: {},
   pillColors: {},
   language: "",
+  financeFolder: "",
 };
 
 type Listener = () => void;
