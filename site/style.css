@@ -1108,6 +1108,11 @@ a {
   margin-top: 16px;
 }
 
+.steps .btn + .link {
+  display: block;
+  margin-top: 12px;
+}
+
 .smartscreen {
   display: grid;
   gap: 6px;
