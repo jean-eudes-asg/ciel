@@ -74,6 +74,9 @@ pub enum Edge {
     Right,
 }
 
+/// Whether the Notetaker writes a summary. "claude" is the stored value from
+/// before the local models: the summary is now written by Ciel's brain
+/// (ai.rs), Claude or the chat's local model.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum SummaryEngine {
@@ -94,14 +97,15 @@ pub struct Prefs {
     pub mic: String,
     /// Days the history is kept: 0 = not kept, -1 = forever.
     pub keep_days: i64,
-    /// Clean the words with Claude before pasting them (needs the Claude key).
+    /// Clean the words before pasting them, with Ciel's brain: Claude (its
+    /// key) or the chat's local model (ai.rs).
     pub cleanup: bool,
     /// The style of the apps that have none of their own.
     pub default_style: Style,
     pub summary_engine: SummaryEngine,
     /// Open the Ciel window when Ciel is opened (not when it starts with the computer).
     pub open_at_launch: bool,
-    /// « OK Ciel »: listen for it and answer with Claude (needs the Claude key).
+    /// « OK Ciel »: listen for it and answer with Ciel's brain (ai.rs).
     pub voice: bool,
     /// How Ciel answers out loud: "system", "elevenlabs" or "off".
     pub voice_output: String,

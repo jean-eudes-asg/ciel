@@ -21,6 +21,7 @@ import { h, clear } from "../views/dom";
 import { startHub, type PageId } from "../hub/shell";
 import { FLOW_PAGE_RENDERERS } from "../hub/pages";
 import { agentsSection } from "./agents";
+import { brainSection } from "./brain";
 import { colorDot } from "./colors";
 import { renderDiff, statusDot } from "./parts";
 import {
@@ -357,6 +358,7 @@ function apiSection(hasKey: boolean): HTMLElement {
       : t("No key yet — the chat needs one.");
     field.placeholder = present ? `••••••••••••  ${t("(stored)")}` : "sk-ant-...";
     clearBtn.style.display = present ? "" : "none";
+    brainRefresh?.();
   }
 
   saveBtn.addEventListener("click", async () => {
@@ -406,6 +408,20 @@ function apiSection(hasKey: boolean): HTMLElement {
     h("div", { class: "row" }, h("label", { text: t("Model") }), model),
     feedback,
   );
+}
+
+// ── Ciel's brain section (./brain.ts) ─────────────────────────────────────────
+
+/** Redraws Ciel's brain after the Claude key was saved or removed. */
+let brainRefresh: (() => void) | null = null;
+
+function brain(): HTMLElement {
+  const { section, refresh } = brainSection(settings.aiEngine, async (engine) => {
+    settings.aiEngine = engine;
+    await save();
+  });
+  brainRefresh = refresh;
+  return section;
 }
 
 // ── Active pills section ──────────────────────────────────────────────────────
@@ -1415,7 +1431,7 @@ async function render() {
     general: () => [generalSection()],
     pills: () => [activePillsSection(connected)],
     agents: () => [claudeSection(status), agentsSection(agents), planSection(status)],
-    chat: () => [apiSection(hasKey), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
+    chat: () => [apiSection(hasKey), brain(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
     integrations: () => [integrationsSection(present)],
     shortcuts: () => [shortcutsSection(shortcutReport)],
   };

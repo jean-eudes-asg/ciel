@@ -2,6 +2,7 @@
 
 mod agent_hooks;
 mod agents;
+mod ai;
 mod chat;
 mod claude;
 mod codex_plan;
@@ -123,6 +124,8 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     if i18n::set_picked(&settings.language) {
         language_changed(&app);
     }
+    // Ciel's brain may have changed (its setting, a local server): « OK Ciel » follows.
+    voice::sync(&app);
     // Keep the other window in step (island ⇄ settings window).
     let _ = app.emit("settings-changed", settings);
 }

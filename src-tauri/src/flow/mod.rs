@@ -5,8 +5,9 @@
 // (os_windows.rs / os_linux.rs) and the pill's buttons, KeyLogic turns them
 // into start / lock / finish / cancel, the microphone is opened on the first
 // press, and when you let go the words go to Parakeet on this computer, then
-// through the dictionary, the snippets and (if turned on) Claude's clean-up,
-// and are pasted. The thread sleeps on its channel while nothing happens.
+// through the dictionary, the snippets and (if turned on) the clean-up by
+// Claude or the local model (ai.rs), and are pasted. The thread sleeps on its
+// channel while nothing happens.
 
 pub mod cleanup;
 pub mod logic;
@@ -322,6 +323,10 @@ fn begin(app: &AppHandle, flow: &Arc<Flow>) -> Option<Listening> {
     });
     match capture {
         Ok(capture) => {
+            // A local model loads while you speak, not once you're done.
+            if flow.store.lock().unwrap().prefs.cleanup {
+                crate::ai::warm_up(app);
+            }
             let app_front = os::foreground_app().filter(|(id, _)| !is_shell(id));
             pill::update(app, |s| s.phase = "listening".into());
             Some(Listening { capture, take, started: Instant::now(), app: app_front })
@@ -386,9 +391,10 @@ fn process(app: &AppHandle, flow: &Arc<Flow>, samples: &[f32], front: Option<&(S
         (store.prepare(&raw), store.style_for(app_id), store.prefs.cleanup, store.words.words.clone(), store.prefs.key)
     };
     let mut written = prepared.text.clone();
-    if cleanup && style != store::Style::Verbatim && cleanup::has_key() {
+    let engine = if cleanup && style != store::Style::Verbatim { crate::ai::current(app) } else { None };
+    if let Some(engine) = engine {
         let app_name = front.map(|(_, n)| n.clone());
-        let cleaned = tauri::async_runtime::block_on(cleanup::clean(&prepared.text, style, app_name.as_deref(), &words));
+        let cleaned = tauri::async_runtime::block_on(cleanup::clean(&engine, &prepared.text, style, app_name.as_deref(), &words));
         if text::keeps_marks(&cleaned, &prepared.snippets) {
             written = cleaned;
         }
@@ -447,6 +453,8 @@ pub struct FlowStatus {
     /// "ok", or why the key can't be watched here ("wayland", "no-display").
     keys: String,
     has_claude_key: bool,
+    /// Ciel's brain for « OK Ciel », the clean-up and the summaries.
+    ai: crate::ai::Status,
     mics: Vec<audio::InputDevice>,
     platform: &'static str,
     /// Ciel started with the computer.
@@ -456,7 +464,8 @@ pub struct FlowStatus {
 }
 
 #[tauri::command]
-pub fn flow_status(flow: State<Arc<Flow>>) -> FlowStatus {
+pub fn flow_status(flow: State<Arc<Flow>>, shared: State<crate::Shared>) -> FlowStatus {
+    let settings = shared.settings.lock().unwrap().clone();
     FlowStatus {
         prefs: flow.store.lock().unwrap().prefs.clone(),
         models: speech::status(),
@@ -465,6 +474,7 @@ pub fn flow_status(flow: State<Arc<Flow>>) -> FlowStatus {
             Err(why) => why.into(),
         },
         has_claude_key: cleanup::has_key(),
+        ai: crate::ai::status(&settings),
         mics: audio::input_devices(),
         platform: if cfg!(windows) { "windows" } else { "linux" },
         autostarted: crate::launched_at_login(),

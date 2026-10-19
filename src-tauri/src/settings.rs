@@ -50,6 +50,10 @@ pub struct Settings {
     pub lmstudio_url: String,
     /// Any other OpenAI-compatible server; its key, if any, is in the keychain.
     pub custom_url: String,
+    /// Who thinks for « OK Ciel », the dictation clean-up and the call notes
+    /// (ai.rs): "auto" (Claude with a key, else the chat's local model),
+    /// "claude" or "local". Kept as it comes: an unknown value reads as "auto".
+    pub ai_engine: String,
     /// Global shortcuts the user changed, by action id; the others keep their
     /// default (see shortcuts.rs).
     pub shortcuts: crate::shortcuts::Bindings,
@@ -118,6 +122,7 @@ impl Default for Settings {
             ollama_url: String::new(),
             lmstudio_url: String::new(),
             custom_url: String::new(),
+            ai_engine: crate::ai::AUTO.into(),
             shortcuts: Default::default(),
             pill_colors: BTreeMap::new(),
             language: String::new(),
@@ -395,6 +400,7 @@ mod tests {
   "ollamaUrl": "http://127.0.0.1:11434",
   "lmstudioUrl": "http://127.0.0.1:1234",
   "customUrl": "https://llm.example.com",
+  "aiEngine": "local",
   "shortcuts": { "openChat": { "keys": "Ctrl+Shift+K", "enabled": false } },
   "pillColors": { "integration_claude": "#2DD4BF" },
   "language": "pt-BR",
@@ -786,6 +792,7 @@ mod tests {
                 "ollamaUrl",
                 "lmstudioUrl",
                 "customUrl",
+                "aiEngine",
                 "shortcuts",
                 "pillColors",
                 "language",

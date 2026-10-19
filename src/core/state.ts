@@ -10,6 +10,7 @@ import type { CodexPlanUsage, PlanUsage } from "./plan";
 import type { ProviderId } from "./providers";
 import type { FileDiff } from "./diff";
 import type { Bindings } from "./shortcuts";
+import type { AiEngine } from "./brain";
 import { pillColor } from "./pill-colors";
 import { Spotify, musicPlaying } from "./spotify";
 
@@ -127,6 +128,11 @@ export interface Settings {
   ollamaUrl: string;
   lmstudioUrl: string;
   customUrl: string;
+  /**
+   * Who thinks for « OK Ciel », the dictation clean-up and the call summaries
+   * (core/brain.ts): Claude with a key else the chat's local model, or one forced.
+   */
+  aiEngine: AiEngine;
   /** Global shortcuts the user changed, by action id (see core/shortcuts.ts). */
   shortcuts: Bindings;
   /**
@@ -174,6 +180,7 @@ export const DEFAULT_SETTINGS: Settings = {
   ollamaUrl: "",
   lmstudioUrl: "",
   customUrl: "",
+  aiEngine: "auto",
   shortcuts: {},
   pillColors: {},
   language: "",

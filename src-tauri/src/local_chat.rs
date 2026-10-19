@@ -117,11 +117,11 @@ fn usual_address(id: &str) -> Option<String> {
     }
 }
 
-fn bearer(key: Option<&str>) -> String {
+pub(crate) fn bearer(key: Option<&str>) -> String {
     format!("Bearer {}", key.filter(|k| !k.is_empty()).unwrap_or(NO_KEY))
 }
 
-fn unreachable(url: &Url) -> String {
+pub(crate) fn unreachable(url: &Url) -> String {
     tf("Cannot reach {url}. Is the server running?", &[("url", url.as_str().trim_end_matches('/'))])
 }
 
@@ -314,7 +314,7 @@ fn filter_thinking_blocks(text: &str) -> String {
 
 /// For the text shown while streaming: finished blocks go, and so does
 /// everything after a block that has not been closed yet.
-fn progressive_filter(text: &str) -> String {
+pub(crate) fn progressive_filter(text: &str) -> String {
     let cleaned = filter_thinking_blocks(text);
     match cleaned.find("<think>") {
         Some(at) => cleaned[..at].trim().to_string(),

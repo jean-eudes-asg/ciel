@@ -8,6 +8,7 @@ import { h, clear } from "../views/dom";
 import { t } from "../i18n/i18n";
 import { onEvent } from "../core/bridge";
 import { FlowBridge, type FlowPrefs, type FlowStatus, type ModelsStatus } from "../core/flow";
+import { NO_BRAIN } from "../core/brain";
 import { hero, liveCloud } from "./hero";
 import { icon, keyLabel } from "./ui";
 
@@ -76,6 +77,7 @@ const DEFAULT_STATUS: FlowStatus = {
   models: { parakeet: { state: "missing" }, downloadMb: 700 },
   keys: "ok",
   hasClaudeKey: false,
+  ai: NO_BRAIN,
   mics: [],
   platform: navigator.userAgent.includes("Windows") ? "windows" : "linux",
   autostarted: false,
