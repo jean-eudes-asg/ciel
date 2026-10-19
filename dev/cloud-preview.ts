@@ -80,7 +80,7 @@ function frame(now: number) {
   for (const { engine, ctx, canvas } of cells) {
     const r = canvas.getBoundingClientRect();
     engine.lookX = Math.max(-1, Math.min(1, (mouse.x - (r.left + r.width / 2)) / 400));
-    engine.lookY = Math.max(-1, Math.min(1, (mouse.y - (r.top + r.height / 2)) / 300));
+    engine.lookY = Math.max(-1, Math.min(1, ((r.top + r.height / 2) - mouse.y) / 300));
     engine.update(dt);
     const w = canvas.width / dpr;
     const h = canvas.height / dpr;

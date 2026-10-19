@@ -284,13 +284,14 @@ export function troupe(canvas: HTMLCanvasElement, cast: CloudSpec[], width: numb
             w.engine.squash();
           }
         }
-        // Eyes: the pointer when it is over the band, else where they walk.
+        // Eyes: the pointer when it is over the band, else a little down, where
+        // they walk. The band's y grows downwards; lookY points up.
         if (pointer) {
           w.engine.lookX = Math.max(-1, Math.min(1, (pointer.x - w.x) / 160));
-          w.engine.lookY = Math.max(-1, Math.min(1, (pointer.y - (ch - s * 0.6)) / 120));
+          w.engine.lookY = Math.max(-1, Math.min(1, ((ch - s * 0.6) - pointer.y) / 120));
         } else {
           w.engine.lookX = w.dir * 0.5;
-          w.engine.lookY = 0.1 + 0.1 * Math.sin(t + w.spec.start * 7);
+          w.engine.lookY = -0.1 - 0.1 * Math.sin(t + w.spec.start * 7);
         }
         w.engine.update(dt);
         // `size` is the drawing's square, as on the Mac; the body is about 0.68 of it.
@@ -327,8 +328,9 @@ export function liveCloud(canvas: HTMLCanvasElement, color = "#F5F6F8", state: B
       const { w, h, ctx } = fit(canvas);
       if (!ctx || w === 0) return;
       if (mouse) {
+        // The page's y grows downwards; lookY points up.
         engine.lookX = Math.max(-1, Math.min(1, mouse.x / 300));
-        engine.lookY = Math.max(-1, Math.min(1, mouse.y / 300));
+        engine.lookY = Math.max(-1, Math.min(1, -mouse.y / 300));
       }
       engine.update(dt);
       ctx.clearRect(0, 0, w, h);

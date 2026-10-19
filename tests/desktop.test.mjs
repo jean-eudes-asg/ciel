@@ -10,6 +10,7 @@ import {
   agentActive, alertActive, gaze, isOverBody, layerDragTopLeft, lookOrigin, pointerDistance,
   shouldRetractOnLanding, shouldSleep, windowDragTopLeft,
 } from "../src/cloud/desktop-logic.ts";
+import { BotEngine } from "../src/cloud/engine.ts";
 
 // ── shouldSleep ───────────────────────────────────────────────────────────────
 
@@ -89,6 +90,20 @@ test("gaze signs across a real arrangement of screens", () => {
     "desktop Ciel looks right and up at a cursor on another screen");
   const g = gaze(desktopOnLeft, mouseAbove);
   assert.ok(g.lookX > 0 && g.lookY > 0);
+});
+
+test("BotEngine: lookY above 0 raises his eyes, below 0 lowers them", () => {
+  const settled = (lookY, state = "idle") => {
+    const e = new BotEngine();
+    e.setState(state, true);
+    e.lookY = lookY;
+    for (let i = 0; i < 40; i++) e.update(0.05);
+    return e.pitch;
+  };
+  // The eyes are drawn at -sin(EYE_P + pitch) * ry: a larger pitch is higher on screen.
+  assert.ok(settled(1) > 0.3, "looks up");
+  assert.ok(settled(-1) < -0.3, "looks down");
+  assert.ok(settled(0, "sleeping") < 0, "asleep, his head down, the same way as lookY < 0");
 });
 
 // ── shouldRetractOnLanding / alerts ───────────────────────────────────────────
