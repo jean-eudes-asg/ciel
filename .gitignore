@@ -11,3 +11,6 @@ src-tauri/gen/schemas/
 .env
 .env.*
 !.env.example
+
+# Agent worktrees made during development
+.claude/worktrees/
