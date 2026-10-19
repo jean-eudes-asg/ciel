@@ -9,11 +9,11 @@
 [![Release](https://img.shields.io/github/v/release/jean-eudes-asg/ciel?color=7FB4EA&label=release)](https://github.com/jean-eudes-asg/ciel/releases/latest)
 [![CI](https://github.com/jean-eudes-asg/ciel/actions/workflows/ci.yml/badge.svg)](https://github.com/jean-eudes-asg/ciel/actions/workflows/ci.yml)
 ![Windows 10/11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-from%20source-FCC624?logo=linux&logoColor=black)
+![Linux](https://img.shields.io/badge/Linux-AppImage%20%7C%20deb%20%7C%20rpm-FCC624?logo=linux&logoColor=black)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 **[Website](https://jean-eudes-asg.github.io/ciel/)** ·
-**[Download for Windows](https://github.com/jean-eudes-asg/ciel/releases/latest)** ·
+**[Download for Windows and Linux](https://github.com/jean-eudes-asg/ciel/releases/latest)** ·
 **[Changelog](CHANGELOG.md)**
 
 <img src="docs/banner.png" width="760" alt="Ciel in five moods: waiting for your OK, thinking, at rest, done, and asking a question">
@@ -102,7 +102,14 @@ your own wallpaper and lock screen.
 > SmartScreen doesn't know the publisher. Click **More info**, then **Run anyway**.
 > You can check a download against `SHA256SUMS` on the release page.
 
-**Linux:** [build it from source](#build-it-yourself) (X11 and Wayland).
+**Linux** (X11 and Wayland): from the same release, the `.deb` for Debian and
+Ubuntu 22.04+, the `.rpm` for Fedora, or the AppImage for anything else.
+
+```sh
+sudo apt install ./Ciel-Linux-amd64.deb
+```
+
+Or [build it from source](#build-it-yourself).
 
 Then open **Settings → Claude Code → Install hooks…**. You see the exact change to
 `~/.claude/settings.json` and where its dated backup goes, and nothing is written

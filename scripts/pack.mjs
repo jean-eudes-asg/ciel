@@ -36,8 +36,16 @@ const PACKAGES = {
       suffix: ".AppImage",
       names: [`Ciel-Linux-${version}-${arch}.AppImage`, `Ciel-Linux-${arch}.AppImage`],
     },
-    { dir: "deb", suffix: ".deb", names: [`Ciel-Linux-${version}-${debArch}.deb`] },
-    { dir: "rpm", suffix: ".rpm", names: [`Ciel-Linux-${version}-${arch}.rpm`] },
+    {
+      dir: "deb",
+      suffix: ".deb",
+      names: [`Ciel-Linux-${version}-${debArch}.deb`, `Ciel-Linux-${debArch}.deb`],
+    },
+    {
+      dir: "rpm",
+      suffix: ".rpm",
+      names: [`Ciel-Linux-${version}-${arch}.rpm`, `Ciel-Linux-${arch}.rpm`],
+    },
   ],
 };
 

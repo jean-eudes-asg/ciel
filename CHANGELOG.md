@@ -2,9 +2,11 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.2.0] - 2026-10-19
 
 ### Added
+- **Linux packages**: the AppImage, the `.deb` (Debian, Ubuntu 22.04+) and the
+  `.rpm` (Fedora) come with every release, next to the Windows installers.
 - **Plan usage at a glance**: while the island is folded, a ring per plan
   (Claude, Codex) beside Ciel shows how much of the busier window is gone, in
   green, orange or red. Hover one for its 5-hour and weekly card. Same switches
@@ -66,4 +68,5 @@ an eye on your AI coding agents. Windows 10/11; Linux builds from source.
 Ciel is a fork of [Coucou](https://github.com/Louis-CFM/coucou) by Louis
 Raillé (MIT). Thank you.
 
+[0.2.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.1.0
