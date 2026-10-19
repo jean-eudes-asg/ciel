@@ -187,6 +187,9 @@ impl Dialect {
     }
 }
 
+/// Tokens a tool-choosing turn may spend thinking, on top of `max_tokens`.
+pub const THINKING_BUDGET: u32 = 1024;
+
 pub struct Request<'a> {
     pub system: &'a str,
     /// The conversation after the system prompt, in this dialect's format.
@@ -206,7 +209,17 @@ pub fn request_body(dialect: Dialect, model: &str, req: &Request) -> Value {
     messages.extend(req.messages.iter().cloned());
     let mut body = match dialect {
         Dialect::Ollama => {
-            let mut options = json!({ "num_predict": req.max_tokens });
+            // With tools to choose from, the model thinks first, at temperature 0:
+            // without thinking, a small model like qwen3.5:9b tends to say it did
+            // something instead of calling the tool (1 call in 12 tries, against 12
+            // in 12 thinking). Its thinking needs room on top of the answer. Plain
+            // answers (clean-up, summaries) stay quick, without thinking.
+            let reason = !req.tools.is_empty();
+            let budget = if reason { req.max_tokens.saturating_add(THINKING_BUDGET) } else { req.max_tokens };
+            let mut options = json!({ "num_predict": budget });
+            if reason {
+                options["temperature"] = json!(0);
+            }
             if let Some(n) = req.context {
                 options["num_ctx"] = json!(n);
             }
@@ -214,7 +227,7 @@ pub fn request_body(dialect: Dialect, model: &str, req: &Request) -> Value {
                 "model": model,
                 "messages": messages,
                 "stream": false,
-                "think": false,
+                "think": reason,
                 "keep_alive": KEEP_ALIVE,
                 "options": options,
             });
@@ -622,16 +635,16 @@ mod tests {
     }
 
     #[test]
-    fn ollama_is_asked_not_to_think_and_not_to_stream() {
+    fn ollama_thinks_only_when_it_has_tools_to_choose_from_and_never_streams() {
         let tools = function_tools(&claude_tools());
         let history = [json!({ "role": "user", "content": "add GitHub" })];
         let req = Request { system: "sys", messages: &history, tools: &tools, max_tokens: 1024, json: false, context: None };
         let body = request_body(Dialect::Ollama, "qwen3.5:9b", &req);
-        assert_eq!(body["think"], false);
+        assert_eq!(body["think"], true);
         assert_eq!(body["stream"], false);
         assert_eq!(body["model"], "qwen3.5:9b");
         assert_eq!(body["keep_alive"], KEEP_ALIVE);
-        assert_eq!(body["options"], json!({ "num_predict": 1024 }));
+        assert_eq!(body["options"], json!({ "num_predict": 1024 + THINKING_BUDGET, "temperature": 0 }));
         assert_eq!(body["messages"][0], json!({ "role": "system", "content": "sys" }));
         assert_eq!(body["messages"][1]["content"], "add GitHub");
         assert_eq!(body["tools"].as_array().unwrap().len(), 2);
@@ -641,7 +654,8 @@ mod tests {
         let req = Request { system: "sys", messages: &history, tools: &[], max_tokens: 2048, json: true, context: Some(8192) };
         let body = request_body(Dialect::Ollama, "m", &req);
         assert_eq!(body["format"], "json");
-        assert_eq!(body["options"]["num_ctx"], 8192);
+        assert_eq!(body["think"], false);
+        assert_eq!(body["options"], json!({ "num_predict": 2048, "num_ctx": 8192 }));
         assert!(body.get("tools").is_none());
     }
 

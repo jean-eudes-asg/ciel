@@ -38,6 +38,8 @@ function describe(): string {
     main: name(d.mainPill),
     shown: d.activeIntegrations.map(name),
     maxBesidesMain: MAX_DECLARED,
+    // Spelled out so a small local model never has to count.
+    freePlaces: Math.max(0, MAX_DECLARED - d.activeIntegrations.length),
     available: all,
   });
 }

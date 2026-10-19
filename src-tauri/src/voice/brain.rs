@@ -47,7 +47,7 @@ fn tools() -> Vec<Value> {
     vec![
         json!({
             "name": "pills",
-            "description": "Add, remove, set as main or list the pills shown in the island at the top of the screen. At most 4 pills besides the main one: remove one first if needed.",
+            "description": "Add, remove, set as main or list the pills shown in the island at the top of the screen. At most 4 pills besides the main one: only when freePlaces is 0, remove one first.",
             "input_schema": {
                 "type": "object",
                 "properties": {
@@ -108,7 +108,7 @@ prepare_email, and web_search for anything current (weather, news, scores, price
 Never invent the user's data."
     } else {
         "Act with the tools instead of describing: pills, music, service_info for the user's own data, open_app, \
-prepare_email. Never say something is done unless a tool said so. Web search isn't available: for anything current \
+prepare_email. Never say something is done unless a tool said so. When the user asks for something a tool can do, call that tool right away instead of asking first; defaults are fine (an added pill is not the main one). Web search isn't available: for anything current \
 (weather, news, scores, prices, facts you are not sure of), say you can't look it up from here. \
 Never invent the user's data."
     };
@@ -538,7 +538,7 @@ mod with_a_local_model {
     #[ignore]
     fn adds_github_to_the_pills_with_a_local_model() {
         let local = crate::ai::with_a_local_model::local();
-        let system = system_prompt("Main: VS Code. Active: Stripe, Vercel. Available: GitHub, Notion, Resend, n8n, Cal.com, Spotify.", false);
+        let system = system_prompt(r#"{"main":"VS Code","shown":["Stripe","Vercel"],"maxBesidesMain":4,"freePlaces":2,"available":["GitHub","Notion","Resend","n8n","Cal.com","Spotify"]}"#, false);
         let tools = ai::function_tools(&tools());
         let names: Vec<String> = tools.iter().filter_map(|t| t["function"]["name"].as_str().map(String::from)).collect();
         let mut messages = vec![json!({ "role": "user", "content": "add GitHub to my pills" })];
