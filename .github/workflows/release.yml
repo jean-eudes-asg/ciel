@@ -85,18 +85,26 @@ jobs:
       - name: Checksums and release notes
         shell: bash
         run: |
+          version="${GITHUB_REF_NAME#v}"
           cd release
-          sha256sum Ciel-Windows-*-setup.exe Ciel-Windows-*.msi > SHA256SUMS
+          sha256sum "Ciel-Windows-$version-setup.exe" "Ciel-Windows-$version.msi" > SHA256SUMS
           cat SHA256SUMS
           cd ..
-          version="${GITHUB_REF_NAME#v}"
-          # The lines between "## [<version>]" and the next "## [" (or the links).
+          # The lines between "## [<version>]" and the next "## [" (or the links),
+          # then one line per paragraph and list item: GitHub shows every line break.
           awk -v head="## [$version]" '
             index($0, head) == 1 { on = 1; next }
             on && (index($0, "## [") == 1 || index($0, "[") == 1 && index($0, "]: ") > 0) { exit }
             on { print }
-          ' CHANGELOG.md > release-notes.md
+          ' CHANGELOG.md | awk '
+            /^$/ || /^#/ { if (buf != "") print buf; buf = ""; print; next }
+            /^- / { if (buf != "") print buf; buf = $0; next }
+            { line = $0; sub(/^ +/, "", line); buf = (buf == "" ? line : buf " " line) }
+            END { if (buf != "") print buf }
+          ' > release-notes.md
           {
+            echo
+            echo "**Try it first in your browser:** https://jean-eudes-asg.github.io/ciel/#try"
             echo
             echo "**Windows will warn you the first time:** the installer isn't code-signed yet. Click **More info**, then **Run anyway**. Check a download with \`SHA256SUMS\`."
           } >> release-notes.md
