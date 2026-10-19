@@ -51,6 +51,7 @@ function arr(id: string, key: string): Record<string, unknown>[] {
 
 const OPEN_URLS: Record<string, string> = {
   integration_resend: "https://resend.com/emails",
+  integration_gmail: "https://mail.google.com",
   integration_vercel: "https://vercel.com/dashboard",
   integration_github: "https://github.com",
   integration_stripe: "https://dashboard.stripe.com/payments",
@@ -239,6 +240,26 @@ function resendCard(): HTMLElement {
     rows.append(listRow(accent, i === 0, ...cells));
   });
   return h("div", { class: "int-card" }, header("#22C55E", "Resend", t("Emails"), extra), rows);
+}
+
+// ── Gmail ─────────────────────────────────────────────────────────────────────
+
+/** The unread count, and the latest unread mails: a click opens one in Gmail. */
+function gmailCard(): HTMLElement {
+  const unread = get("integration_gmail").unread;
+  const extra = h("span", { class: "int-total" }, h("i", { class: "pulse" }), h("span", { text: String(unread ?? 0) }));
+  const rows = h("div", { class: "int-rows" });
+  arr("integration_gmail", "mails").slice(0, 3).forEach((m, i) => {
+    const row = listRow("#EA4335", i === 0,
+      h("span", { class: "int-name", text: String(m.from ?? "") }),
+      h("span", { class: "int-sub", text: String(m.subject ?? "") }),
+    );
+    row.style.cursor = "pointer";
+    const url = typeof m.url === "string" && m.url.startsWith("https://mail.google.com/") ? m.url : "https://mail.google.com";
+    row.addEventListener("click", () => void Bridge.openUrl(url));
+    rows.append(row);
+  });
+  return h("div", { class: "int-card" }, header("#EA4335", "Gmail", t("Inbox"), extra), rows);
 }
 
 // ── GitHub ────────────────────────────────────────────────────────────────────
@@ -432,6 +453,8 @@ export function hasIntegrationData(id: string): boolean {
       return arr(id, "deployments").length > 0;
     case "integration_resend":
       return arr(id, "emails").length > 0;
+    case "integration_gmail":
+      return typeof get(id).unread === "number";
     case "integration_github":
       return get(id).totalRepos != null || readPulse(get(id)) != null;
     case "integration_stripe":
@@ -471,6 +494,8 @@ export function renderIntegrationCard(task: AgentTask, hooks: IntegrationCardHoo
   switch (task.id) {
     case "integration_resend":
       return resendCard();
+    case "integration_gmail":
+      return gmailCard();
     case "integration_github":
       return githubCard();
     case "integration_stripe":

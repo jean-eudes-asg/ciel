@@ -797,6 +797,12 @@ const INTEGRATIONS: IntegrationDef[] = [
     ] },
   { id: "integration_resend", name: "Resend", color: "#22C55E",
     fields: [{ key: "resend-api-key", label: N_("API key"), placeholder: "re_…", secret: true }] },
+  { id: "integration_gmail", name: "Gmail", color: "#EA4335",
+    fields: [
+      { key: "gmail-address", label: N_("Gmail address"), placeholder: "you@gmail.com", secret: false },
+      { key: "gmail-app-password", label: N_("App password"), placeholder: "abcd efgh ijkl mnop", secret: true },
+    ],
+    hint: N_("An app password from your Google account, which needs 2-Step Verification: myaccount.google.com/apppasswords. Ciel reads only who new mail is from and its subject.") },
   { id: "integration_notion", name: "Notion", color: "#8C8C8C",
     fields: [{ key: "notion-api-key", label: N_("Integration token"), placeholder: "ntn_…", secret: true }] },
   { id: "integration_calcom", name: "Cal.com", color: "#C9956A",
@@ -1452,7 +1458,16 @@ async function render() {
     pills: () => [activePillsSection(connected)],
     agents: () => [claudeSection(status), agentsSection(agents), planSection(status)],
     chat: () => [apiSection(hasKey), brain(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
-    integrations: () => [notificationsSection(), integrationsSection(present)],
+    integrations: () => [
+      notificationsSection({
+        seconds: settings.notificationSeconds,
+        setSeconds: (s) => {
+          settings.notificationSeconds = s;
+          void save();
+        },
+      }),
+      integrationsSection(present),
+    ],
     shortcuts: () => [shortcutsSection(shortcutReport)],
     wallpaper: () => wallpaper,
   };

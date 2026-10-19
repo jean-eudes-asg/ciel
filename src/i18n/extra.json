@@ -5442,6 +5442,94 @@
    "pt-BR": "O Ciel remove isto:",
    "ru": "Ciel удалит это:",
    "id": "Ciel menghapus ini:"
+  },
+  "Gmail address": {
+   "zh-Hans": "Gmail 地址",
+   "hi": "Gmail पता",
+   "es": "Dirección de Gmail",
+   "ar": "عنوان Gmail",
+   "fr": "Adresse Gmail",
+   "bn": "Gmail ঠিকানা",
+   "pt-BR": "Endereço do Gmail",
+   "ru": "Адрес Gmail",
+   "id": "Alamat Gmail"
+  },
+  "App password": {
+   "zh-Hans": "应用专用密码",
+   "hi": "ऐप पासवर्ड",
+   "es": "Contraseña de aplicación",
+   "ar": "كلمة مرور التطبيق",
+   "fr": "Mot de passe d'application",
+   "bn": "অ্যাপ পাসওয়ার্ড",
+   "pt-BR": "Senha de app",
+   "ru": "Пароль приложения",
+   "id": "Sandi aplikasi"
+  },
+  "An app password from your Google account, which needs 2-Step Verification: myaccount.google.com/apppasswords. Ciel reads only who new mail is from and its subject.": {
+   "zh-Hans": "来自你 Google 账号的应用专用密码（需要开启两步验证）：myaccount.google.com/apppasswords。Ciel 只读取新邮件的发件人和主题。",
+   "hi": "आपके Google खाते का ऐप पासवर्ड, जिसके लिए 2-चरणीय सत्यापन ज़रूरी है: myaccount.google.com/apppasswords। Ciel केवल यह पढ़ता है कि नया मेल किसका है और उसका विषय क्या है।",
+   "es": "Una contraseña de aplicación de tu cuenta de Google, que requiere la verificación en dos pasos: myaccount.google.com/apppasswords. Ciel solo lee de quién es el correo nuevo y su asunto.",
+   "ar": "كلمة مرور تطبيق من حساب Google الخاص بك، وتتطلب التحقق بخطوتين: myaccount.google.com/apppasswords. لا يقرأ Ciel سوى مُرسِل البريد الجديد وموضوعه.",
+   "fr": "Un mot de passe d'application de ton compte Google, qui demande la validation en deux étapes : myaccount.google.com/apppasswords. Ciel ne lit que l'expéditeur des nouveaux mails et leur objet.",
+   "bn": "আপনার Google অ্যাকাউন্টের একটি অ্যাপ পাসওয়ার্ড, যার জন্য ২-ধাপ যাচাই দরকার: myaccount.google.com/apppasswords। Ciel শুধু নতুন মেল কার কাছ থেকে এবং তার বিষয় পড়ে।",
+   "pt-BR": "Uma senha de app da sua conta Google, que exige a verificação em duas etapas: myaccount.google.com/apppasswords. O Ciel lê só o remetente e o assunto dos e-mails novos.",
+   "ru": "Пароль приложения из вашего аккаунта Google (нужна двухэтапная аутентификация): myaccount.google.com/apppasswords. Ciel читает только отправителя и тему новых писем.",
+   "id": "Sandi aplikasi dari akun Google Anda, yang memerlukan Verifikasi 2 Langkah: myaccount.google.com/apppasswords. Ciel hanya membaca pengirim dan subjek email baru."
+  },
+  "Wrong address or app password": {
+   "zh-Hans": "地址或应用专用密码有误",
+   "hi": "पता या ऐप पासवर्ड गलत है",
+   "es": "Dirección o contraseña de aplicación incorrecta",
+   "ar": "العنوان أو كلمة مرور التطبيق غير صحيحة",
+   "fr": "Adresse ou mot de passe d'application incorrect",
+   "bn": "ঠিকানা বা অ্যাপ পাসওয়ার্ড ভুল",
+   "pt-BR": "Endereço ou senha de app incorretos",
+   "ru": "Неверный адрес или пароль приложения",
+   "id": "Alamat atau sandi aplikasi salah"
+  },
+  "New mail": {
+   "zh-Hans": "新邮件",
+   "hi": "नया मेल",
+   "es": "Correo nuevo",
+   "ar": "بريد جديد",
+   "fr": "Nouveau mail",
+   "bn": "নতুন মেল",
+   "pt-BR": "Novo e-mail",
+   "ru": "Новое письмо",
+   "id": "Email baru"
+  },
+  "Show for": {
+   "zh-Hans": "显示时长",
+   "hi": "कितनी देर दिखे",
+   "es": "Mostrar durante",
+   "ar": "مدة العرض",
+   "fr": "Afficher pendant",
+   "bn": "কতক্ষণ দেখাবে",
+   "pt-BR": "Mostrar por",
+   "ru": "Показывать",
+   "id": "Tampilkan selama"
+  },
+  "Until dismissed": {
+   "zh-Hans": "直到关闭",
+   "hi": "हटाए जाने तक",
+   "es": "Hasta descartarla",
+   "ar": "حتى التجاهل",
+   "fr": "Jusqu'à ce qu'on l'ignore",
+   "bn": "সরানো পর্যন্ত",
+   "pt-BR": "Até dispensar",
+   "ru": "Пока не скрыть",
+   "id": "Sampai diabaikan"
+  },
+  "{n} seconds": {
+   "zh-Hans": "{n} 秒",
+   "hi": "{n} सेकंड",
+   "es": "{n} segundos",
+   "ar": "{n} ثانية",
+   "fr": "{n} secondes",
+   "bn": "{n} সেকেন্ড",
+   "pt-BR": "{n} segundos",
+   "ru": "{n} с",
+   "id": "{n} detik"
   }
  }
 }

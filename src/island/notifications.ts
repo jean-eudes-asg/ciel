@@ -90,14 +90,17 @@ export function buildNotificationCard(
 
   function startTimer() {
     stopTimer();
-    if (!showing || hovered) return;
+    // 0 (Settings): it stays until opened or dismissed.
+    const seconds = State.settings.notificationSeconds;
+    const ms = typeof seconds === "number" && seconds >= 0 ? seconds * 1000 : SHOW_MS;
+    if (!showing || hovered || ms === 0) return;
     timer = window.setTimeout(() => {
       timer = null;
       // Shown long enough: it folds away, with the ones that came with it.
       queue = [];
       showing = null;
       next();
-    }, SHOW_MS);
+    }, ms);
   }
 
   function act(n: CielNotification, action: "open" | "dismiss") {

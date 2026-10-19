@@ -121,6 +121,8 @@ export interface Settings {
   planRelayInstalled: boolean;
   /** Show the Codex plan pill in the island's header. */
   showCodexPlanInNotch: boolean;
+  /** How long a notification shows in the island, in seconds; 0: until opened or dismissed. */
+  notificationSeconds: number;
   /** Who the chat talks to (see core/providers.ts); picked in the chat view. */
   chatProvider: ProviderId;
   /** The model picked for each provider other than Anthropic, by provider id. */
@@ -182,6 +184,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showPlanInNotch: false,
   planRelayInstalled: false,
   showCodexPlanInNotch: false,
+  notificationSeconds: 7,
   chatProvider: "anthropic",
   chatModels: {},
   ollamaUrl: "",

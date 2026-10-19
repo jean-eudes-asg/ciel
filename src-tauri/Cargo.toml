@@ -22,6 +22,14 @@ serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 tokio = { version = "1", features = ["net", "io-util", "sync", "time", "rt", "macros"] }
 reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+# Gmail (gmail.rs): IMAP over TLS, on the same rustls (ring) reqwest brings,
+# and the charsets mail headers and bodies come in.
+async-imap = { version = "0.12", default-features = false, features = ["runtime-tokio"] }
+tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12"] }
+webpki-roots = "1"
+encoding_rs = "0.8"
+base64 = "0.22"
+futures-util = "0.3"
 # SHA-256 of the speech models as they download (speech/mod.rs). Already in the
 # tree through reqwest's rustls.
 ring = "0.17"

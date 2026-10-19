@@ -116,6 +116,9 @@ export const PILL_CATALOG: readonly PillDefinition[] = [
   // ── Services ───────────────────────────────────────────────────────────────
   { id: "integration_resend", name: "Resend", color: "#22C55E", category: "service",
     subtitle: N_("Integration"), source: "n8n", support: "yes", connect: key("resend-api-key") },
+  // New mail over IMAP with an app password (src-tauri/src/gmail.rs).
+  { id: "integration_gmail", name: "Gmail", color: "#EA4335", category: "service",
+    subtitle: N_("Integration"), source: "n8n", support: "yes", connect: key("gmail-app-password") },
   { id: "integration_n8n", name: "n8n", color: "#F29B38", category: "service",
     subtitle: N_("Integration"), source: "n8n", support: "yes", connect: key("n8n-api-key") },
   { id: "integration_vercel", name: "Vercel", color: "#7C5CFF", category: "service",

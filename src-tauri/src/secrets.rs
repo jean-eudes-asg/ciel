@@ -22,6 +22,9 @@ pub const KNOWN_KEYS: &[&str] = &[
     "calcom-api-key",
     // « OK Ciel »'s answers in an ElevenLabs voice.
     "elevenlabs-api-key",
+    // The Gmail pill (gmail.rs): the address, and an app password.
+    "gmail-address",
+    "gmail-app-password",
 ];
 
 fn entry(key: &str) -> Option<Entry> {

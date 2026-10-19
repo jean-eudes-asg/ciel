@@ -4,6 +4,18 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 
 ## [Unreleased]
 
+### Added
+- **Notifications in the island**: the folded island slides out with the app's
+  icon and title, and a card with Open and Dismiss shows under it, for as long
+  as you choose (Settings → Integrations → Notifications), or until dismissed.
+- **Ciel for Chrome**: an extension for Chrome, Edge and Brave that shows what
+  websites notify — WhatsApp, Gmail, Calendar, Slack… — in the island instead
+  of the browser's popups; Open brings the tab forward. Connect it in Settings,
+  then load `Ciel-for-Chrome.zip` (in each release) unpacked.
+- **Gmail**: a pill with the unread count and the latest mails, and new mail
+  as a notification, over IMAP with an app password kept in your keychain.
+  Ciel reads only who new mail is from and its subject.
+
 ### Changed
 - **Dictation in the island**: while you dictate, the folded island shows
   it — the dots of your voice, hands-free's ✕ and ✓, a call's clock, short

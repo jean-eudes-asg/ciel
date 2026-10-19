@@ -22,8 +22,10 @@ export interface CielNotification {
   tag: string | null;
 }
 
-/** How long a notification shows in the island before it folds away (unless hovered). */
+/** How long a notification shows in the island before it folds away (unless hovered), without a setting. */
 export const SHOW_MS = 7000;
+/** The choices for how long, in seconds (Settings); 0 is until opened or dismissed. */
+export const SHOW_CHOICES = [5, 7, 10, 20, 0] as const;
 /** The most kept waiting. */
 export const MAX_QUEUED = 20;
 

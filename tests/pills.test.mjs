@@ -37,6 +37,8 @@ test("the catalog holds the Mac's pills with the Claude Code label for Windows a
     ["ai_ollama", "Ollama", "#FACC15", "ai", "Chat"],
     ["ai_lmstudio", "LM Studio", "#A3E635", "ai", "Chat"],
     ["integration_resend", "Resend", "#22C55E", "service", "Integration"],
+    // Not on the Mac: new mail over IMAP (src-tauri/src/gmail.rs).
+    ["integration_gmail", "Gmail", "#EA4335", "service", "Integration"],
     ["integration_n8n", "n8n", "#F29B38", "service", "Integration"],
     ["integration_vercel", "Vercel", "#7C5CFF", "service", "Integration"],
     ["integration_github", "GitHub", "#F4505E", "service", "Integration"],

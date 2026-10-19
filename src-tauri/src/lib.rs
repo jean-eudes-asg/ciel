@@ -13,6 +13,7 @@ mod files;
 mod finance;
 mod flow;
 mod github;
+mod gmail;
 mod hooks;
 mod i18n;
 mod identity;
@@ -121,6 +122,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     }
     integrations::settings_saved(&app, &settings.active_integrations);
     spotify::sync(&app, &settings.active_integrations);
+    gmail::sync(&app, &settings.active_integrations, false);
     if shortcuts_changed {
         shortcuts::apply(&app, &settings.shortcuts);
     }
@@ -330,8 +332,11 @@ fn quit_app(app: AppHandle) {
 /// Tray → Pause. Paused means paused: the pollers stop talking to the network,
 /// not just the island stopping showing things.
 #[tauri::command]
-fn set_paused(paused: bool) {
+fn set_paused(app: AppHandle, shared: State<Shared>, paused: bool) {
     integrations::set_paused(paused);
+    // Gmail holds a connection: paused, it lets it go.
+    let active = shared.settings.lock().unwrap().active_integrations.clone();
+    gmail::sync(&app, &active, false);
 }
 
 // ── Claude Code hooks ─────────────────────────────────────────────────────────
@@ -529,7 +534,7 @@ fn secret_present(key: String) -> bool {
 }
 
 #[tauri::command]
-fn secret_set(app: AppHandle, key: String, value: String) -> Result<(), String> {
+fn secret_set(app: AppHandle, shared: State<Shared>, key: String, value: String) -> Result<(), String> {
     // Bound to its server's address: only local_set_key may store it.
     if key == local_chat::CUSTOM_KEY {
         return Err("use local_set_key".into());
@@ -544,11 +549,20 @@ fn secret_set(app: AppHandle, key: String, value: String) -> Result<(), String> 
             integrations::github_token_changed(&app);
         }
     }
+    gmail_credentials(&app, &shared, &key);
     Ok(())
 }
 
+/// The Gmail address or app password changed: its watcher starts again with them.
+fn gmail_credentials(app: &AppHandle, shared: &Shared, key: &str) {
+    if key == gmail::ADDRESS_KEY || key == gmail::PASSWORD_KEY {
+        let active = shared.settings.lock().unwrap().active_integrations.clone();
+        gmail::sync(app, &active, true);
+    }
+}
+
 #[tauri::command]
-fn secret_clear(app: AppHandle, key: String) -> Result<(), String> {
+fn secret_clear(app: AppHandle, shared: State<Shared>, key: String) -> Result<(), String> {
     let had = key == "github-token" && secrets::present(&key);
     secrets::clear(&key)?;
     if key == claude::KEY {
@@ -557,6 +571,7 @@ fn secret_clear(app: AppHandle, key: String) -> Result<(), String> {
     if had {
         integrations::github_token_changed(&app);
     }
+    gmail_credentials(&app, &shared, &key);
     Ok(())
 }
 
@@ -887,6 +902,7 @@ pub fn run() {
             pipe::start(handle.clone());
             integrations::start(handle.clone());
             spotify::sync(&handle, &loaded.active_integrations);
+            gmail::sync(&handle, &loaded.active_integrations, false);
             shortcuts::apply(&handle, &loaded.shortcuts);
             wallpaper::sync(&handle, &loaded.wallpaper);
             if loaded.autostart {
