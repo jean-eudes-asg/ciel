@@ -1,12 +1,15 @@
 // SoundEngine — port of SoundEngine.swift.
 // The 29 WAVs are Ciel's own, synthesized from code by scripts/gen-sounds.mjs
 // into sounds/ (`npm run sounds`; see SOUNDS_DIR in vite.config.ts); they are
-// served at /sounds/<name>.wav. Default volume 0.12, slider range 0–0.2,
-// exactly like the Mac player, and several sounds may overlap.
+// served at sounds/<name>.wav, next to the page (the app's pages, and the
+// website's demo.html, which may live under a sub-path such as /ciel/).
+// Default volume 0.12, slider range 0–0.2, exactly like the Mac player, and
+// several sounds may overlap.
 // A file of the user's own in the sounds folder (src-tauri/src/sounds.rs)
 // replaces a sound; one that doesn't decode falls back to the built-in one.
-
-import { Bridge } from "./bridge";
+// Those come through Bridge, which the windows that play sounds hand to
+// preload(): this file stays free of Tauri, so Ciel's engine (which plays the
+// slap and the greeting) also runs on a plain web page, the website.
 
 export const SOUND_NAMES = [
   "peek", "open", "close", "hover", "blip", "slap", "annoyed", "dizzy", "greet",
@@ -17,10 +20,17 @@ export const SOUND_NAMES = [
 
 export type SoundName = (typeof SOUND_NAMES)[number];
 
+/** Where the user's own sounds come from: Bridge, in the app. */
+export interface CustomSounds {
+  customSounds(names: readonly string[]): Promise<string[] | null>;
+  customSound(name: string): Promise<ArrayBuffer | null>;
+}
+
 class SoundEngine {
   enabled = true;
   volume = 0.12;
 
+  private custom: CustomSounds | null = null;
   private ctx: AudioContext | null = null;
   private master: GainNode | null = null;
   private buffers = new Map<string, AudioBuffer>();
@@ -31,8 +41,12 @@ class SoundEngine {
   /** Sounds still playing, by name, so one can be faded out (the greeting). */
   private playing = new Map<string, Set<{ src: AudioBufferSourceNode; gain: GainNode }>>();
 
-  /** Creates the context and decodes every WAV. Safe to call more than once. */
-  preload(): Promise<void> {
+  /**
+   * Creates the context and decodes every WAV. Safe to call more than once.
+   * `custom` (Bridge) supplies the user's own sounds; without it, the built-in ones play.
+   */
+  preload(custom?: CustomSounds): Promise<void> {
+    if (custom) this.custom = custom;
     if (this.loading) return this.loading;
     this.loading = (async () => {
       const Ctor = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -55,13 +69,13 @@ class SoundEngine {
   }
 
   private async loadAll(ctx: AudioContext) {
-    const own = new Set((await Bridge.customSounds(SOUND_NAMES)) ?? []);
+    const own = new Set((await this.custom?.customSounds(SOUND_NAMES)) ?? []);
     const customized = new Set<string>();
     await Promise.all(
       SOUND_NAMES.map(async (name) => {
         if (own.has(name)) {
           try {
-            const bytes = await Bridge.customSound(name);
+            const bytes = await this.custom?.customSound(name);
             if (bytes && bytes.byteLength > 0) {
               this.buffers.set(name, await ctx.decodeAudioData(bytes));
               customized.add(name);
@@ -72,7 +86,7 @@ class SoundEngine {
           }
         }
         try {
-          const res = await fetch(`/sounds/${name}.wav`);
+          const res = await fetch(`sounds/${name}.wav`);
           if (!res.ok) return;
           const buf = await ctx.decodeAudioData(await res.arrayBuffer());
           this.buffers.set(name, buf);

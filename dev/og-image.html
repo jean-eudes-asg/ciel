@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel — social card (og.jpg)</title>
+    <style>
+      html, body { margin: 0; background: #111214; }
+      canvas { display: block; width: 1200px; height: 630px; }
+    </style>
+  </head>
+  <body>
+    <!-- The website's social card, drawn by the real sky renderer and Ciel.
+         Open with `npm run site:dev`, then /dev/og-image.html (?seed=N to try other
+         clouds), and save the 1200×630 canvas (a JPEG at about 92 %) as site/public/og.jpg. -->
+    <canvas id="og"></canvas>
+    <script type="module" src="./og-image.ts"></script>
+  </body>
+</html>

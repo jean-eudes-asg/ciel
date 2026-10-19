@@ -9,6 +9,9 @@
 //   ?loop=0          play once, then stay asleep
 //   ?lang=fr         one of the ten interface languages (else the browser's)
 //   ?bg=transparent  no backdrop
+//
+// Embedded in a page of the same origin, it posts the island's mood to it
+// ({ type: "ciel-demo-mood", mood }): Ciel's website paints its sky with it.
 
 import "../style.css";
 import "./demo.css";
@@ -43,6 +46,21 @@ function main() {
 
   // A frozen scene is for a picture: no sound button in it.
   if (!params.scene) document.body.append(soundToggle());
+  // On Ciel's website, the page around the iframe paints its sky from his mood.
+  if (window.parent !== window) tellMood();
+}
+
+/** The island's mood, for the page this demo is embedded in (same origin only). */
+function tellMood() {
+  let told: string | null = null;
+  const tell = () => {
+    const mood = State.effectiveState;
+    if (mood === told) return;
+    told = mood;
+    window.parent.postMessage({ type: "ciel-demo-mood", mood }, location.origin);
+  };
+  State.subscribe(tell);
+  tell();
 }
 
 /** The sounds, off by default. They are fetched the first time they are turned on. */

@@ -1,0 +1,67 @@
+name: Website
+
+# Builds the website (site/, with the island demo when demo.html exists) and
+# publishes it on GitHub Pages. Pages must be enabled once in the repository's
+# settings, with "GitHub Actions" as the source.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      # The demo (demo.html) runs the whole island: any of src/ can change it.
+      - "src/**"
+      - "sounds/**"
+      - "demo.html"
+      - "vite.site.config.ts"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push waits rather than cancelling one in flight.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build the website
+        run: npm run site:build
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site-dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

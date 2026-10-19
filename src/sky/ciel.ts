@@ -83,7 +83,12 @@ export class CielPainter {
   /** The colour of a photo behind him, for his shade side (photos only). */
   photoAmbient: RGB | null = null;
 
-  draw(c: Ctx, f: Frame, t: number, still: boolean) {
+  /**
+   * `live`: an engine animated elsewhere (the website's Ciel, who follows the
+   * pointer and can be poked), drawn as it is rather than posed from `t`,
+   * with room above him for his hearts, sparks and z's.
+   */
+  draw(c: Ctx, f: Frame, t: number, still: boolean, live: BotEngine | null = null) {
     const place = f.spec.ciel;
     if (!place) return;
     const { W, H, light: l } = f;
@@ -107,15 +112,24 @@ export class CielPainter {
       c.fillRect(cx - R * 2.6, cy - R * 2.6, R * 5.2, R * 5.2);
     }
 
+    // His body fills a box×box square; a live engine gets `over` pixels above it.
+    const over = live ? Math.round(box * 0.5) : 0;
     const sw = box;
-    const sh = Math.round(box * 1.0);
+    const sh = Math.round(box * 1.0) + over;
+    /** The centre of his body in the sprite. */
+    const by = over + box / 2;
     if (!this.sprite || this.sprite.width !== sw || this.sprite.height !== sh) this.sprite = makeCanvas(sw, sh);
     const s = context(this.sprite);
     s.setTransform(1, 0, 0, 1, 0, 0);
     s.globalCompositeOperation = "source-over";
     s.clearRect(0, 0, sw, sh);
-    poseCiel(this.engine, f.spec.mood, t, still, f.spec.seed);
-    this.engine.draw(s, sw, sh);
+    if (live) {
+      live.particleOverhang = over;
+      live.draw(s, sw, sh);
+    } else {
+      poseCiel(this.engine, f.spec.mood, t, still, f.spec.seed);
+      this.engine.draw(s, sw, sh);
+    }
 
     // The scene's light on him: its colour (warm at sunset), the sky's on his
     // shade side, the sun's on his rim.
@@ -130,7 +144,7 @@ export class CielPainter {
       }
     }
     const ambient = this.photoAmbient ?? l.ambient;
-    const amb = s.createLinearGradient(0, sh, 0, sh * 0.25);
+    const amb = s.createLinearGradient(0, by + box / 2, 0, by - box / 4);
     amb.addColorStop(0, css(ambient, Math.min(0.6, l.ambientAmt * 1.1)));
     amb.addColorStop(1, css(ambient, 0));
     s.fillStyle = amb;
@@ -146,15 +160,15 @@ export class CielPainter {
       dx /= d;
       dy /= d;
       const rx = sw / 2 + dx * R * 1.25;
-      const ry = sh / 2 + dy * R * 1.0;
+      const ry = by + dy * R * 1.0;
       const rim = s.createRadialGradient(rx, ry, 0, rx, ry, R * 1.2);
       rim.addColorStop(0, css(l.rim, l.rimAmt * f.lightAmt));
       rim.addColorStop(1, css(l.rim, 0));
       s.fillStyle = rim;
       s.fillRect(0, 0, sw, sh);
     }
-    c.drawImage(this.sprite as unknown as CanvasImageSource, cx - sw / 2, cy - sh / 2);
-    if (f.spec.mood === "sleeping") this.zzz(c, cx, cy, R, t, still);
+    c.drawImage(this.sprite as unknown as CanvasImageSource, cx - sw / 2, cy - by);
+    if (f.spec.mood === "sleeping" && !live) this.zzz(c, cx, cy, R, t, still);
   }
 
   /** A soft shadow: on the sea of clouds below him, else a halo of shade behind him. */

@@ -47,8 +47,9 @@ real sun. It's free, open source, and it can run entirely on your own computer.
 </tr>
 </table>
 
-The [website](https://jean-eudes-asg.github.io/ciel/) runs the real island in your
-browser, in demo mode. In the app: **Settings → General → Try demo mode**.
+**[Try it in your browser](https://jean-eudes-asg.github.io/ciel/#try):** the website
+runs the real island in demo mode, under a sky that follows his mood. In the app:
+**Settings → General → Try demo mode**.
 
 ## What it does
 
@@ -163,6 +164,7 @@ npm run pack                         # installers into release/
 npm test && npx tsc --noEmit && cargo test --workspace   # all the tests
 npm run icons    # redraws the icons from scripts/gen-icons.mjs
 npm run sounds   # re-synthesizes the 29 sounds from scripts/gen-sounds.mjs
+npm run site:dev # the website (site/), with the real sky and Ciel; site:build → site-dist/
 ```
 
 Ciel, his icon, his skies and his sounds are all made in code: the outline in

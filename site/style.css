@@ -1,0 +1,1251 @@
+/* Ciel's website. The page sits on a living sky (the stage, drawn by the
+   app's own renderer); everything that carries text either reads straight
+   off the sky with a tone picked from it (the hero, "Try it") or sits on
+   glass cards, then on solid ground once the sky is behind us. */
+
+@import "@fontsource-variable/nunito/wght.css";
+
+:root {
+  --font: "Nunito Variable", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+
+  --navy: #13213f;
+  --navy-soft: #3f4c69;
+  --amber: #ffcf6e;
+
+  /* Text straight on the sky (hero, "Try it"): set from the visitor's sky by main.ts. */
+  --sky-ink: var(--navy);
+  --sky-ink-soft: #2c3a5a;
+  --sky-halo: rgba(255, 255, 255, 0.62);
+  --sky-chip: rgba(255, 255, 255, 0.5);
+  --sky-chip-border: rgba(255, 255, 255, 0.7);
+
+  /* Glass cards over the sky. */
+  --card-bg: rgba(255, 255, 255, 0.76);
+  --card-border: rgba(255, 255, 255, 0.75);
+  --card-ink: var(--navy);
+  --card-soft: #45526f;
+  --card-chip: rgba(19, 33, 63, 0.07);
+  --card-shadow: 0 30px 70px -30px rgba(15, 30, 70, 0.45), 0 2px 6px rgba(15, 30, 70, 0.06);
+
+  /* The ground the page lands on. */
+  --ground: #f3f6fc;
+  --ground-ink: #13213f;
+  --ground-soft: #4a5673;
+  --panel: #ffffff;
+  --panel-border: rgba(19, 33, 63, 0.08);
+  --panel-shadow: 0 18px 40px -28px rgba(19, 33, 63, 0.35);
+  --link: #2459c8;
+  --code-bg: rgba(19, 33, 63, 0.06);
+
+  --radius: 28px;
+  --gutter: clamp(16px, 4.5vw, 56px);
+  color-scheme: light;
+}
+
+:root[data-tone="dark"] {
+  --sky-ink: #ffffff;
+  --sky-ink-soft: #e2e8f8;
+  --sky-halo: rgba(6, 10, 30, 0.55);
+  --sky-chip: rgba(10, 16, 42, 0.42);
+  --sky-chip-border: rgba(255, 255, 255, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #0c1330;
+    --ground-ink: #eef2ff;
+    --ground-soft: #b7c1de;
+    --panel: #141d42;
+    --panel-border: rgba(255, 255, 255, 0.08);
+    --panel-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.7);
+    --link: #8fb8ff;
+    --code-bg: rgba(255, 255, 255, 0.08);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ground-ink);
+  background: var(--ground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+p {
+  margin: 0;
+}
+
+code,
+pre {
+  font-family: var(--mono);
+  font-size: 0.86em;
+}
+
+code {
+  padding: 0.1em 0.38em;
+  border-radius: 6px;
+  background: var(--code-bg);
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -60px;
+  z-index: 30;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+/* ── Top bar ──────────────────────────────────────────────────────────────── */
+
+.top,
+.hero,
+.try {
+  transition: color 0.5s ease;
+}
+
+.top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px var(--gutter);
+  color: var(--sky-ink);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 21px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.brand img {
+  filter: drop-shadow(0 2px 6px rgba(10, 20, 50, 0.25));
+}
+
+.top nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-link,
+.nav-gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15.5px;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-gh:hover {
+  background: var(--sky-chip);
+}
+
+.nav-gh {
+  background: var(--sky-chip);
+  border: 1px solid var(--sky-chip-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@media (max-width: 640px) {
+  .nav-link {
+    display: none;
+  }
+}
+
+/* ── The stage: sky and Ciel ─────────────────────────────────────────────── */
+
+.journey {
+  position: relative;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  height: 100lvh;
+  margin-bottom: -100vh;
+  margin-bottom: -100lvh;
+  overflow: hidden;
+  /* Until the first frame: a sky of the right mood, set by main.ts. */
+  background: var(--stage-bg, linear-gradient(180deg, #2a5797 0%, #6d9fd6 52%, #d6e4f0 80%, #eef3f8 100%));
+}
+
+.stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.stage .sky {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.stage .sky.on {
+  opacity: 1;
+}
+
+.ciel-layer {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.ciel-layer.on {
+  opacity: 1;
+}
+
+.poke {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.poke:focus-visible {
+  outline-offset: 10px;
+  border-radius: 50%;
+}
+
+.poke[hidden] {
+  display: none;
+}
+
+/* The sections scroll over the stage; only what they hold takes the pointer,
+   so Ciel can be poked between them. */
+.step {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.step a,
+.step button,
+.step .card,
+.step .hero-copy,
+.step .sky-note,
+.step .demo,
+.step .demo-caption,
+.step h2 {
+  pointer-events: auto;
+}
+
+/* ── Hero ─────────────────────────────────────────────────────────────────── */
+
+.hero {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* The top third at least is Ciel's, however tall the words get. */
+  padding: calc(64px + 30vh) 16px 104px;
+  padding-top: calc(64px + 30svh);
+  color: var(--sky-ink);
+  text-align: center;
+  /* The halo behind the words is wider than a phone: it mustn't scroll the page sideways. */
+  overflow-x: clip;
+}
+
+.hero-copy {
+  position: relative;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 760px;
+}
+
+/* A soft halo of the sky's own light behind the words. */
+.hero-copy::before {
+  content: "";
+  position: absolute;
+  inset: -12% -16% -18%;
+  z-index: -1;
+  background: radial-gradient(50% 50% at 50% 50%, var(--sky-halo), transparent 72%);
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.wordmark {
+  font-size: clamp(60px, min(10vw, 12svh), 112px);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+}
+
+.tagline {
+  margin-top: clamp(8px, 1.6svh, 16px);
+  max-width: 21em;
+  font-size: clamp(19px, 2.3vw, 26px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--sky-ink-soft);
+  text-wrap: balance;
+}
+
+.cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: clamp(18px, 3svh, 30px);
+}
+
+.fine {
+  margin-top: 12px;
+  font-size: 14.5px;
+  font-weight: 650;
+  color: var(--sky-ink-soft);
+}
+
+.fine a {
+  text-underline-offset: 3px;
+}
+
+.sky-note {
+  position: absolute;
+  left: var(--gutter);
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(440px, calc(100% - 2 * var(--gutter)));
+  padding: 9px 16px 9px 11px;
+  border-radius: 18px;
+  background: var(--sky-chip);
+  border: 1px solid var(--sky-chip-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--sky-ink);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s;
+}
+
+.sky-note.on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.sky-glyph {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, var(--glyph, #ffd27a) 0 46%, transparent 50%),
+    radial-gradient(circle, color-mix(in srgb, var(--glyph, #ffd27a) 45%, transparent) 0, transparent 70%);
+}
+
+.sky-line {
+  display: block;
+  font-weight: 650;
+}
+
+.sky-line b {
+  font-weight: 850;
+}
+
+.sky-detail {
+  display: block;
+  font-size: 12.5px;
+  color: var(--sky-ink-soft);
+  opacity: 0.9;
+}
+
+.scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  border-radius: 50%;
+  color: var(--sky-ink);
+  background: var(--sky-chip);
+  border: 1px solid var(--sky-chip-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: bob 2.6s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding-bottom: 76px;
+  }
+  .sky-note {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    margin-top: 22px;
+    max-width: 100%;
+  }
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font: 800 16.5px/1 var(--font);
+  letter-spacing: 0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-primary {
+  background: var(--navy);
+  color: #fff;
+  box-shadow: 0 14px 30px -14px rgba(10, 22, 52, 0.75);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 18px 36px -14px rgba(10, 22, 52, 0.85);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.55);
+  border-color: rgba(255, 255, 255, 0.75);
+  color: var(--navy);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+:root[data-tone="dark"] .hero .btn-primary,
+:root[data-tone="dark"] .try .btn-primary {
+  background: #fff;
+  color: var(--navy);
+}
+
+:root[data-tone="dark"] .hero .btn-ghost {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #fff;
+}
+
+@media (max-width: 400px) {
+  .btn {
+    gap: 7px;
+    min-height: 46px;
+    padding: 0 16px;
+    font-size: 15px;
+  }
+  .cta {
+    gap: 8px;
+  }
+  .sky-detail {
+    display: none;
+  }
+}
+
+.btn-small {
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 15px;
+}
+
+/* ── Features ─────────────────────────────────────────────────────────────── */
+
+.feature {
+  min-height: 125vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 18vh var(--gutter);
+}
+
+.feature .card {
+  margin-right: max(0px, calc((100vw - 1320px) / 2));
+}
+
+.card {
+  width: min(540px, 100%);
+  padding: clamp(22px, 3vw, 34px);
+  border-radius: var(--radius);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(18px) saturate(1.25);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
+  color: var(--card-ink);
+}
+
+.dark .card {
+  --card-bg: rgba(12, 18, 46, 0.6);
+  --card-border: rgba(255, 255, 255, 0.13);
+  --card-ink: #f3f6ff;
+  --card-soft: #c3cbe6;
+  --card-chip: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.7);
+  --code-bg: rgba(255, 255, 255, 0.1);
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--card-soft);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 22%, transparent);
+}
+
+.card h2 {
+  margin-top: 12px;
+  font-size: clamp(27px, 3.1vw, 38px);
+  font-weight: 900;
+  text-wrap: balance;
+}
+
+.card > p:not(.kicker) {
+  margin-top: 12px;
+  color: var(--card-soft);
+  font-weight: 550;
+}
+
+.card b {
+  color: var(--card-ink);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--card-chip);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.chips.pills li::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+/* A screenshot's frame. Until the picture exists it shows a little island in
+   a sky of its own, so the page looks finished either way. */
+.shot {
+  position: relative;
+  margin: 22px 0 0;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(19, 33, 63, 0.1);
+  background: linear-gradient(180deg, #3a7fcf 0%, #86b6e3 55%, #dfeaf3 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+[data-scene="golden"] .shot {
+  background: linear-gradient(180deg, #2c5b9c 0%, #a2b4cf 55%, #ffd29a 100%);
+}
+
+[data-scene="cloudy"] .shot {
+  background: linear-gradient(180deg, #7f8b9a 0%, #b4bdc8 55%, #e1e5eb 100%);
+}
+
+[data-scene="sunset"] .shot {
+  background: linear-gradient(180deg, #30528c 0%, #c49a9e 55%, #ffb267 100%);
+}
+
+.dark .shot {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, #050a22 0%, #131d45 60%, #25305f 100%);
+}
+
+.shot img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.shot img.loaded {
+  opacity: 1;
+}
+
+.shot.empty img {
+  display: none;
+}
+
+.shot::before {
+  /* The island. */
+  content: "";
+  position: absolute;
+  left: 24%;
+  top: 7%;
+  width: 52%;
+  height: 17%;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle closest-side, #fff 90%, transparent 100%) 5% 50% / 13% 60% no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.42)) 30% 36% / 44% 12% no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 27% 66% / 28% 12% no-repeat,
+    #0b0f1c;
+  box-shadow: 0 14px 30px -12px rgba(5, 10, 30, 0.6);
+}
+
+.shot::after {
+  /* A sea of clouds along the bottom. */
+  content: "";
+  position: absolute;
+  inset: auto -5% -18% -5%;
+  height: 42%;
+  background:
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) ) 0% 30% / 30% 90% no-repeat,
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) 30% 10% / 34% 100% no-repeat,
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0)) 62% 25% / 32% 90% no-repeat,
+    radial-gradient(closest-side, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) 100% 15% / 34% 100% no-repeat;
+  opacity: 0.85;
+}
+
+.dark .shot::after {
+  opacity: 0.18;
+}
+
+.shot:not(.empty)::before,
+.shot:not(.empty)::after {
+  display: none;
+}
+
+.beat {
+  min-height: 110vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10vh var(--gutter);
+}
+
+.beat .card {
+  margin-right: max(0px, calc((100vw - 1320px) / 2));
+}
+
+.card-small {
+  width: min(400px, 100%);
+  font-size: clamp(19px, 2vw, 23px);
+  font-weight: 750;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+@media (max-width: 899px) {
+  /* Ciel floats above the cards; the sky changes in the wide gaps between them. */
+  .feature,
+  .beat {
+    min-height: 0;
+    justify-content: center;
+    padding: 45svh 16px;
+  }
+  .feature .card,
+  .beat .card {
+    margin-right: 0;
+  }
+}
+
+/* ── Try it ───────────────────────────────────────────────────────────────── */
+
+.try {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 16vh 16px 22vh;
+  color: var(--sky-ink);
+  text-align: center;
+}
+
+.try h2 {
+  font-size: clamp(32px, 4.4vw, 52px);
+  font-weight: 900;
+  text-shadow: 0 1px 24px var(--sky-halo);
+}
+
+.demo {
+  width: min(900px, 100%);
+}
+
+.demo-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 900 / 420;
+  overflow: hidden;
+  border-radius: 26px;
+  /* A screen with the page's sky as its wallpaper: the island lives at its top edge. */
+  background: linear-gradient(180deg, rgba(8, 12, 30, 0.34), rgba(8, 12, 30, 0.1) 40%, rgba(8, 12, 30, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 40px 90px -40px rgba(5, 10, 30, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(3px) saturate(1.15);
+  -webkit-backdrop-filter: blur(3px) saturate(1.15);
+}
+
+.demo-frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 900px;
+  height: 420px;
+  border: 0;
+  transform-origin: 0 0;
+  transform: scale(var(--demo-scale, 1));
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  background: transparent;
+  /* The island's own scheme: a mismatch would paint the frame opaque. */
+  color-scheme: dark;
+}
+
+.demo[data-state="ready"] .demo-frame {
+  opacity: 1;
+}
+
+.demo-fallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px;
+  color: #fff;
+  background:
+    radial-gradient(60% 80% at 50% 0%, rgba(120, 160, 255, 0.28), transparent 70%),
+    linear-gradient(180deg, rgba(14, 20, 50, 0.88), rgba(8, 12, 32, 0.92));
+}
+
+.demo[data-state="missing"] .demo-fallback {
+  display: flex;
+}
+
+.demo-fallback p {
+  max-width: 30em;
+  color: #d6def5;
+  font-weight: 600;
+}
+
+.demo-fallback b {
+  color: #fff;
+  font-size: 1.15em;
+}
+
+.demo-fallback .btn-primary {
+  background: #fff;
+  color: var(--navy);
+}
+
+.demo-caption {
+  max-width: 36em;
+  font-weight: 650;
+  color: var(--sky-ink-soft);
+  text-shadow: 0 1px 18px var(--sky-halo);
+}
+
+@media (max-width: 640px) {
+  .demo[data-state="missing"] .demo-box {
+    aspect-ratio: auto;
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 560px) {
+  .demo-fallback img {
+    width: 44px;
+    height: 44px;
+  }
+  .demo-fallback p {
+    font-size: 15px;
+  }
+}
+
+/* ── The ground ───────────────────────────────────────────────────────────── */
+
+.ground {
+  position: relative;
+  z-index: 2;
+  background: var(--ground);
+  padding: 0 var(--gutter);
+}
+
+/* The ground's edge: a bank of cloud tops, three rows of puffs. */
+.ground::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% - 1px);
+  height: 84px;
+  pointer-events: none;
+  /* Puffs of four sizes repeating at unrelated spacings, so the edge never looks regular. */
+  background:
+    radial-gradient(circle 76px at 50% 100%, var(--ground) 99%, transparent) 0 100% / 263px 84px repeat-x,
+    radial-gradient(circle 58px at 50% 100%, var(--ground) 99%, transparent) 101px 100% / 187px 66px repeat-x,
+    radial-gradient(circle 44px at 50% 100%, var(--ground) 98%, transparent) 37px 100% / 119px 50px repeat-x,
+    radial-gradient(circle 33px at 50% 100%, var(--ground) 98%, transparent) 60px 100% / 71px 38px repeat-x,
+    linear-gradient(var(--ground), var(--ground)) 0 100% / 100% 20px no-repeat;
+}
+
+.block {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(48px, 8vw, 96px) 0 0;
+}
+
+.block:first-child {
+  padding-top: clamp(24px, 4vw, 48px);
+}
+
+.block-head {
+  max-width: 720px;
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.block .eyebrow {
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--link);
+}
+
+.block h2 {
+  margin-top: 8px;
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 900;
+  text-wrap: balance;
+}
+
+.block h3 {
+  font-size: 19px;
+  font-weight: 850;
+}
+
+.block p {
+  color: var(--ground-soft);
+  font-weight: 550;
+}
+
+.block a:not(.btn) {
+  color: var(--link);
+  text-underline-offset: 3px;
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.panel,
+.steps > li,
+.tiles > li,
+.linux {
+  padding: 26px;
+  border-radius: 22px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
+}
+
+.panel p,
+.steps p,
+.tiles p {
+  margin-top: 8px;
+}
+
+.link {
+  display: inline-block;
+  margin-top: 14px;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps > li {
+  position: relative;
+  counter-increment: step;
+  padding-top: 64px;
+}
+
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 26px;
+  top: 22px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.steps .btn {
+  margin-top: 16px;
+}
+
+.smartscreen {
+  display: grid;
+  gap: 6px;
+  justify-items: start;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #0a5ea8;
+  color: #fff;
+  font: 600 13px/1.3 "Segoe UI", system-ui, sans-serif;
+}
+
+.ss-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ss-link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.ss-button {
+  justify-self: end;
+  padding: 5px 14px;
+  border: 1px solid #fff;
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.linux {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  align-items: center;
+  gap: 8px 28px;
+  margin-top: 18px;
+}
+
+.linux pre {
+  margin: 0;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #0d1430;
+  color: #e7ecff;
+  overflow-x: auto;
+}
+
+.linux pre code {
+  padding: 0;
+  background: none;
+}
+
+.linux .link {
+  grid-column: 1 / -1;
+  margin-top: 0;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tile-icon {
+  display: block;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 14px;
+  padding: 8px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--link) 12%, transparent);
+  fill: none;
+  stroke: var(--link);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (max-width: 960px) {
+  .cols,
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .tiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .linux {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .tiles {
+    grid-template-columns: 1fr;
+  }
+  .panel,
+  .steps > li,
+  .tiles > li,
+  .linux {
+    padding: 22px;
+  }
+  .steps > li {
+    padding-top: 62px;
+  }
+  .steps > li::before {
+    left: 22px;
+  }
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+.foot {
+  max-width: 1120px;
+  margin: clamp(56px, 9vw, 110px) auto 0;
+  padding: 32px 0 40px;
+  border-top: 1px solid var(--panel-border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px 32px;
+  align-items: center;
+  font-size: 15px;
+  color: var(--ground-soft);
+}
+
+.foot-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.foot-ciel {
+  flex: none;
+  width: 100px;
+  height: 100px;
+  margin: -30px -10px -14px -16px;
+  cursor: pointer;
+}
+
+.foot-name {
+  color: var(--ground-ink);
+  font-weight: 900;
+  font-size: 19px;
+}
+
+.foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-weight: 750;
+}
+
+.foot-links a {
+  color: var(--ground-ink);
+  text-decoration: none;
+}
+
+.foot-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.foot-note {
+  grid-column: 1 / -1;
+  font-size: 13.5px;
+}
+
+.foot-note a {
+  color: var(--link);
+}
+
+@media (max-width: 700px) {
+  .foot {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Preferences ──────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .scroll-cue {
+    animation: none;
+  }
+  .stage .sky,
+  .sky-note,
+  .shot img,
+  .demo-frame,
+  .btn {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .card {
+    --card-bg: rgba(255, 255, 255, 0.96);
+    backdrop-filter: none;
+  }
+  .dark .card {
+    --card-bg: rgba(12, 18, 46, 0.95);
+  }
+}
+
+@media (forced-colors: active) {
+  .card,
+  .panel {
+    border: 1px solid CanvasText;
+  }
+}
