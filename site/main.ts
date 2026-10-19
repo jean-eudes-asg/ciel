@@ -657,32 +657,6 @@ for (const img of document.querySelectorAll<HTMLImageElement>("img[data-shot]"))
   }
 }
 
-// ── Downloads ─────────────────────────────────────────────────────────────────
-
-// The buttons hand out the visitor's own installer: Windows's in the page itself
-// (so it works without script), Linux's AppImage on Linux, which runs on any
-// distribution. Android says Linux too, and gets the page as it is.
-const LATEST = "https://github.com/jean-eudes-asg/ciel/releases/latest/download/";
-
-function visitorOs(): "windows" | "linux" | "other" {
-  const ua = navigator.userAgent;
-  const nav = navigator as Navigator & { userAgentData?: { platform?: string } };
-  const platform = nav.userAgentData?.platform || navigator.platform || "";
-  if (/android|cros/i.test(ua) || /android|chrome os/i.test(platform)) return "other";
-  if (/win/i.test(platform)) return "windows";
-  if (/linux/i.test(platform) || /linux|x11/i.test(ua)) return "linux";
-  return "other";
-}
-
-if (visitorOs() === "linux") {
-  for (const a of document.querySelectorAll<HTMLAnchorElement>("a[data-dl]")) {
-    a.href = `${LATEST}Ciel-Linux-x86_64.AppImage`;
-    const label = a.querySelector(".dl-label");
-    if (label) label.textContent = "Download for Linux";
-  }
-  for (const p of document.querySelectorAll<HTMLElement>("[data-for]")) p.hidden = p.dataset.for !== "linux";
-}
-
 // ── Try it ────────────────────────────────────────────────────────────────────
 
 const demo = $(".demo");
