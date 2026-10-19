@@ -50,6 +50,14 @@
         <a class="nav-link" href="#features">Features</a>
         <a class="nav-link" href="#try">Try it</a>
         <a class="nav-link" href="#install">Install</a>
+        <button type="button" class="nav-sound" aria-pressed="false" title="The sky's sound, and Ciel's">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" />
+            <g class="snd-off"><path d="m16 9.5 5 5m0-5-5 5" /></g>
+            <g class="snd-on"><path d="M15.5 9.2a4 4 0 0 1 0 5.6" /><path d="M18.3 6.6a7.6 7.6 0 0 1 0 10.8" /></g>
+          </svg>
+          <span>Sound</span>
+        </button>
         <a class="nav-gh" href="https://github.com/jean-eudes-asg/ciel" aria-label="Ciel on GitHub">
           <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><use href="#i-github" /></svg>
           <span>GitHub</span>
@@ -89,10 +97,7 @@
 
           <p class="sky-note">
             <span class="sky-glyph" aria-hidden="true"></span>
-            <span>
-              <span class="sky-line">This is your sky right now: <b class="sky-phase">golden hour</b></span>
-              <span class="sky-detail"></span>
-            </span>
+            <span class="sky-line">The sky is the limit.</span>
           </p>
 
           <a class="scroll-cue" href="#features" aria-label="Scroll to the features">
@@ -216,10 +221,18 @@
                 <a class="btn btn-primary" href="https://github.com/jean-eudes-asg/ciel/releases/latest">Download for Windows</a>
               </div>
             </div>
+            <div class="demo-actions" role="group" aria-label="Make something happen on the island">
+              <button type="button" class="play" data-play="approval" style="--dot: #ffc35c" disabled>Ask for permission</button>
+              <button type="button" class="play" data-play="question" style="--dot: #ffc35c" disabled>Ask a question</button>
+              <button type="button" class="play" data-play="diff" style="--dot: #58c98b" disabled>Show the diff</button>
+              <button type="button" class="play" data-play="finished" style="--dot: #ff8f73" disabled>Finish the task</button>
+              <button type="button" class="play" data-play="chat" style="--dot: #7fb4ea" disabled>Chat with Ciel</button>
+            </div>
           </div>
           <p class="demo-caption">
-            This is the real island, running in your browser in demo mode, and the sky follows his mood as his
-            wallpaper does on your desktop. Click around: no agent is connected and nothing is sent anywhere.
+            This is the real island, running in your browser in demo mode. Pick a moment, answer it, hover the
+            island: the sky follows his mood as his wallpaper does on your desktop. No agent is connected and nothing
+            is sent anywhere.
           </p>
         </section>
       </div>
@@ -332,6 +345,21 @@ npm run pack</code></pre>
               <p>Point « OK Ciel », the chat and the call summaries at Ollama or LM Studio, and nothing leaves your computer.</p>
             </li>
           </ul>
+        </section>
+
+        <section class="block star" id="star" aria-labelledby="star-title">
+          <div class="star-sky" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <h2 id="star-title">Give Ciel a star.</h2>
+          <p>
+            If he makes life with your agents a little lighter, a star on GitHub helps other people find him. It's
+            also the nicest way to say thank you, and it keeps the skies coming.
+          </p>
+          <div class="star-cta">
+            <a class="btn btn-primary" href="https://github.com/jean-eudes-asg/ciel"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z" fill="currentColor"/></svg> Star on GitHub</a>
+            <a class="btn btn-ghost" href="https://github.com/jean-eudes-asg/ciel/issues">Ideas? Tell us</a>
+          </div>
         </section>
 
         <footer class="foot">

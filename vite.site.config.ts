@@ -5,26 +5,39 @@
 //   npm run site:build   → site-dist/ (index.html at its root, relative links)
 //
 // demo.html (the island in demo mode) is built alongside when it exists, so the
-// page's "Try it" frame can load it, with Ciel's sounds next to it (sounds/,
-// for the demo's sound toggle). Nothing here touches the app's own build
-// (vite.config.ts), and no Tauri.
+// page's "Try it" frame can load it. Ciel's sounds go next to both (sounds/):
+// the page's Ciel and the demo's island play them once the visitor turns the
+// sound on. Nothing here touches the app's own build (vite.config.ts), and no Tauri.
 
 import { defineConfig, type Plugin } from "vite";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { copyFileSync, createReadStream, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { extname, join, resolve } from "node:path";
 
 const OUT = resolve(__dirname, "site-dist");
 const PAGE = resolve(__dirname, "site/index.html");
 const DEMO = resolve(__dirname, "demo.html");
 const SOUNDS = resolve(__dirname, "sounds");
 
-/** The demo's sound toggle fetches sounds/<name>.wav next to demo.html. */
-function demoSounds(): Plugin {
+/**
+ * Ciel's sounds, fetched as sounds/<name>.wav next to the page: served in dev
+ * (for the page at /site/ and demo.html at the root), copied on build.
+ */
+function siteSounds(): Plugin {
   return {
     name: "ciel-site-sounds",
-    apply: "build",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const m = /^\/(?:site\/)?sounds\/([^/?\\]+)/.exec(req.url ?? "");
+        if (!m) return next();
+        const name = decodeURIComponent(m[1]);
+        const file = join(SOUNDS, name);
+        if (extname(name) !== ".wav" || name.includes("/") || name.includes("\\") || !existsSync(file)) return next();
+        res.setHeader("Content-Type", "audio/wav");
+        createReadStream(file).pipe(res);
+      });
+    },
     closeBundle() {
-      if (!existsSync(DEMO) || !existsSync(SOUNDS)) return;
+      if (!existsSync(SOUNDS)) return;
       const out = resolve(OUT, "sounds");
       mkdirSync(out, { recursive: true });
       for (const f of readdirSync(SOUNDS)) if (f.endsWith(".wav")) copyFileSync(resolve(SOUNDS, f), resolve(out, f));
@@ -75,7 +88,7 @@ export default defineConfig({
   publicDir: resolve(__dirname, "site/public"),
   // A missing page is a 404 (the "Try it" frame checks for demo.html), not index.html.
   appType: "mpa",
-  plugins: [pageAtRoot(), devLanding(), demoSounds()],
+  plugins: [pageAtRoot(), devLanding(), siteSounds()],
   clearScreen: false,
   server: {
     port: 5180,

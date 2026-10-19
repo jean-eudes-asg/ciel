@@ -8,6 +8,7 @@
 // ?time=HH:MM shows the sky at that time of day (for checking the page).
 
 import { BotEngine } from "../src/cloud/engine";
+import { Sound } from "../src/core/sound";
 import type { BotEmoteName, BotStateName } from "../src/core/layout";
 import { CielPainter } from "../src/sky/ciel";
 import { frameFor, type Frame } from "../src/sky/draw";
@@ -18,6 +19,7 @@ import {
 } from "../src/sky/scenes";
 import { placeFor } from "../src/sky/sun";
 import type { StageEvent, StageMessage, StageView } from "./sky-stage";
+import { Ambient, type AmbientScene } from "./ambient";
 
 const $ = <T extends Element = HTMLElement>(sel: string) => document.querySelector(sel) as T;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -62,9 +64,6 @@ const JOURNEY: Record<Exclude<SceneName, "real">, [Theme, Phase]> = {
 interface Sky {
   specs: Record<SceneName, SceneSpec>;
   phase: Phase;
-  sunElevation: number;
-  moon: { up: boolean; phase: number };
-  zone: string;
 }
 
 function computeSky(now: Date): Sky {
@@ -83,9 +82,6 @@ function computeSky(now: Date): Sky {
   return {
     specs,
     phase: choice.phase,
-    sunElevation: sky.sun.elevation,
-    moon: { up: sky.moon.elevation > 2, phase: sky.moon.phase },
-    zone: place.zone,
   };
 }
 
@@ -94,23 +90,6 @@ const lightOf = (spec: SceneSpec): Light => lightFor(spec.theme, spec.sun.elevat
 let sky = computeSky(pageNow());
 
 // ── Words on the sky ──────────────────────────────────────────────────────────
-
-const PHASE_WORDS: Record<Phase, string> = {
-  night: "night",
-  dawn: "dawn",
-  day: "broad daylight",
-  golden: "golden hour",
-  sunset: "sunset",
-  dusk: "dusk",
-};
-
-function moonWords(phase: number): string {
-  const names = [
-    "a new moon", "a waxing crescent", "a first-quarter moon", "a waxing gibbous moon",
-    "a full moon", "a waning gibbous moon", "a last-quarter moon", "a waning crescent",
-  ];
-  return names[Math.round(phase * 8) % 8];
-}
 
 /** How bright the sky is behind the words (the lower half, where they sit). */
 const brightness = (l: Light) => luma(mix(mix(l.mid, l.horizon, 0.55), l.cmid, 0.25));
@@ -132,14 +111,11 @@ function applyTone() {
     `linear-gradient(180deg, ${css(l.zenith)} 0%, ${css(l.upper)} 30%, ${css(l.mid)} 60%, ${css(l.horizon)} 80%, ${css(l.cmid)} 100%)`,
   );
   $<HTMLMetaElement>('meta[name="theme-color"]').content = css(l.zenith);
+  // The ground is the sea of clouds the sky sinks into: always pale, in the sky's own light.
+  const cloud = mix(l.lit, [250, 248, 252], 0.72 + 0.16 * clamp(l.dark, 0, 1));
+  document.documentElement.style.setProperty("--ground", css(cloud));
 
-  let words = PHASE_WORDS[sky.phase];
-  if (sky.phase === "night" && sky.moon.up) words = `night, under ${moonWords(sky.moon.phase)}`;
-  $(".sky-phase").textContent = words;
-  const e = Math.round(sky.sunElevation);
-  const where = sky.zone ? ` (${sky.zone.replace(/_/g, " ")})` : "";
-  $(".sky-detail").textContent =
-    `The sun is ${Math.abs(e)}° ${e >= 0 ? "above" : "below"} the horizon, worked out in your browser from your time zone${where}.`;
+  // The little sun (or moon) beside "The sky is the limit.", in the sky's own light.
   const glyph: RGB = sky.phase === "night" || sky.phase === "dusk" ? [226, 232, 255] : mix(l.sunColor, [255, 196, 70], 0.7);
   $(".sky-glyph").style.setProperty("--glyph", css(glyph));
 }
@@ -513,11 +489,12 @@ let sentView: StageView = { a: "real", b: "real", k: 0 };
 let dizzySky = 0;
 let pokeShown = true;
 
+// The page's y grows downwards; Ciel's lookY points up (above 0, he looks up).
 function look(cx: number, cy: number, body: number, now: number) {
   const fresh = pointer && (!pointer.touch || now - pointer.at < 2500);
   if (fresh && pointer) {
     engine.lookX = clamp((pointer.x - cx) / (body * 1.4), -1, 1);
-    engine.lookY = clamp((pointer.y - cy) / (body * 1.1), -1, 1);
+    engine.lookY = clamp((cy - pointer.y) / (body * 1.1), -1, 1);
     return;
   }
   const s = now / 1000;
@@ -525,10 +502,10 @@ function look(cx: number, cy: number, body: number, now: number) {
   if (activeStep.kind === "feature") {
     // Watching the card.
     engine.lookX = (narrow ? 0 : 0.55) + Math.sin(s * 0.4) * 0.08 * drift;
-    engine.lookY = (narrow ? 0.6 : 0.12) + Math.sin(s * 0.31) * 0.06 * drift;
+    engine.lookY = (narrow ? -0.6 : -0.12) + Math.sin(s * 0.31) * 0.06 * drift;
   } else {
     engine.lookX = (Math.sin(s * 0.33) * 0.45 + Math.sin(s * 0.13 + 1) * 0.25) * drift;
-    engine.lookY = (Math.sin(s * 0.27 + 2) * 0.25 - 0.05) * drift;
+    engine.lookY = (0.05 - Math.sin(s * 0.27 + 2) * 0.25) * drift;
   }
 }
 
@@ -561,6 +538,7 @@ function frame(now: number) {
     send({ type: "view", view });
     setTone(lerp(brights[view.a as SceneName], brights[view.b as SceneName], view.a === view.b ? 0 : view.k));
   }
+  if (soundOn) ambient.setScene(ambientScene(view));
 
   const W = cielCanvas.width;
   const H = cielCanvas.height;
@@ -691,6 +669,14 @@ new ResizeObserver(() => {
   demoBox.style.setProperty("--demo-scale", String(demoBox.clientWidth / 900));
 }).observe(demoBox);
 
+/** The moments under the demo: each plays now, live, on the island. */
+const playButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-play]")];
+for (const b of playButtons) {
+  b.addEventListener("click", () => {
+    demoFrame.contentWindow?.postMessage({ type: "ciel-demo-play", scene: b.dataset.play }, location.origin);
+  });
+}
+
 const demoWatch = new IntersectionObserver(
   ([e]) => {
     if (!e.isIntersecting) return;
@@ -712,6 +698,8 @@ const demoWatch = new IntersectionObserver(
         () => {
           demo.dataset.state = "ready";
           demoFrame.removeAttribute("tabindex");
+          for (const b of playButtons) b.disabled = false;
+          tellDemoSound();
         },
         { once: true },
       );
@@ -734,6 +722,48 @@ window.addEventListener("message", (e) => {
   window.clearTimeout(demoPending);
   demoPending = window.setTimeout(() => setDemoScene(next), DEMO_SETTLE_MS);
 });
+
+// ── Sound ─────────────────────────────────────────────────────────────────────
+
+// One switch: a calm bed that follows the sky on screen (ambient.ts), with
+// Ciel's own sounds on top — his on this page (pokes, his greeting) and the
+// island's in the demo. Off until the visitor turns it on.
+
+const soundButton = $<HTMLButtonElement>(".nav-sound");
+const ambient = new Ambient();
+let soundOn = false;
+Sound.setEnabled(false);
+// The top of the app's slider: here his sounds sit on the bed, not on silence.
+Sound.setVolume(0.2);
+
+/** The scene's sound: the visitor's own sky's when the real one is on screen. */
+function ambientScene(view: StageView): AmbientScene {
+  const name = view.k < 0.5 ? view.a : view.b;
+  if (name !== "real") return name as AmbientScene;
+  return defaultTheme("idle", sky.phase, pageNow().getHours()) as AmbientScene;
+}
+
+function tellDemoSound() {
+  if (demo.dataset.state !== "ready") return;
+  demoFrame.contentWindow?.postMessage({ type: "ciel-demo-sound", on: soundOn }, location.origin);
+}
+
+function setSound(on: boolean) {
+  soundOn = on;
+  soundButton.setAttribute("aria-pressed", String(on));
+  if (on) {
+    ambient.setScene(ambientScene(sentView));
+    ambient.start();
+    void Sound.preload().then(() => Sound.resume());
+  } else {
+    ambient.stop();
+  }
+  Sound.setEnabled(on);
+  Sound.resume();
+  tellDemoSound();
+}
+
+soundButton.addEventListener("click", () => setSound(!soundOn));
 
 // ── A little Ciel napping in the footer ───────────────────────────────────────
 
@@ -786,7 +816,7 @@ function footerCiel(canvas: HTMLCanvasElement) {
     if (!dizzyTill && napper.state === "idle" && now > awakeUntil) napper.setState("sleeping");
     if (pointer) {
       napper.lookX = clamp((pointer.x - cx) / 220, -1, 1);
-      napper.lookY = clamp((pointer.y - cy) / 160, -1, 1);
+      napper.lookY = clamp((cy - pointer.y) / 160, -1, 1);
     }
     napper.update(dt);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
