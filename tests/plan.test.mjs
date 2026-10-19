@@ -1,6 +1,7 @@
 // Plan usage gauges (src/core/plan.ts, src/views/usage.ts): a port of the Mac's
 // tests/ClaudePlanGaugeTests.swift, the Codex parsing of CodexPlanGauge.swift,
-// and the pills' rules (where they show, what a click opens, what closes it).
+// the pills' rules (where they show, what a click opens, what closes it), and the
+// folded island's rings (src/views/plan-rings.ts).
 
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
@@ -14,6 +15,7 @@ import {
   claudePillVisible, codexPillVisible, openPlanColor, planCardOpen,
 } from "../src/views/usage.ts";
 import { DEFAULT_SETTINGS, State } from "../src/core/state.ts";
+import { ringPlans, ringReading } from "../src/views/plan-rings.ts";
 
 const NOW = Date.UTC(2026, 9, 7, 12, 0, 0);
 const future = NOW / 1000 + 7200; // 2 hours from now, epoch seconds
@@ -258,4 +260,33 @@ test("a status line call updates the numbers and nothing else, even when paused"
   // Without limits (API-key users) the last numbers stay.
   emit("hook", { hook_event_name: "StatusLine", session_id: "s1" });
   assert.equal(State.planUsage.fiveHour.usedPct, 42);
+});
+
+// ── Rings in the folded island ────────────────────────────────────────────────
+
+test("the rings follow the pills' switches: Claude needs its relay, Claude first", () => {
+  State.settings = { ...DEFAULT_SETTINGS };
+  assert.deepEqual(ringPlans(), []);
+  State.settings = { ...DEFAULT_SETTINGS, showPlanInNotch: true, planRelayInstalled: false, showCodexPlanInNotch: true };
+  assert.deepEqual(ringPlans(), ["codex"]);
+  State.settings = { ...DEFAULT_SETTINGS, showPlanInNotch: true, planRelayInstalled: true, showCodexPlanInNotch: true };
+  assert.deepEqual(ringPlans(), ["claude", "codex"]);
+});
+
+test("a ring shows the busier window, in the gauges' colours, and dims when old", () => {
+  State.planUsage = { fiveHour: win(30, future), sevenDay: win(84, future), updatedAt: NOW - 60_000 };
+  assert.deepEqual(ringReading("claude", NOW), { pct: 84, color: planColor(84), stale: false });
+  // Claude's numbers come while Claude Code works: two hours without one dims them.
+  assert.equal(ringReading("claude", NOW + 2 * 3_600_000).stale, true);
+  // A window that has reset counts for nothing.
+  State.planUsage = { fiveHour: win(95, past), updatedAt: NOW };
+  assert.equal(ringReading("claude", NOW).pct, 0);
+  // Codex is asked again whenever its ring shows: half an hour is already old.
+  State.codexPlanUsage = { sevenDay: win(12, future), updatedAt: NOW - 31 * 60_000 };
+  assert.deepEqual(ringReading("codex", NOW), { pct: 12, color: planColor(12), stale: true });
+});
+
+test("a ring without numbers says so: no percentage, grey, dimmed", () => {
+  State.planUsage = null;
+  assert.deepEqual(ringReading("claude", NOW), { pct: null, color: planColor(null), stale: true });
 });

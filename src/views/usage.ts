@@ -171,14 +171,20 @@ function head(color: string, title: string, subtitle: string): HTMLElement {
   );
 }
 
-/** The card that stands in for the overview's left card while a pill is open. */
+/**
+ * The card that stands in for the overview's left card while a pill is open
+ * (and, compact, under a ring of the folded island: views/plan-rings.ts).
+ */
 export class PlanCard {
-  readonly el = h("div", { class: "plan-card" });
+  readonly el: HTMLElement;
   private key = "";
 
-  /** Re-renders when the numbers change, or every 30 s for the countdowns. */
-  sync(now = Date.now()) {
-    const codex = State.planDetailIsCodex;
+  constructor(extraClass = "") {
+    this.el = h("div", { class: `plan-card ${extraClass}`.trim() });
+  }
+
+  /** Re-renders when the numbers change, or every 30 s for the countdowns. `codex`: which plan, else the open pill's. */
+  sync(now = Date.now(), codex = State.planDetailIsCodex) {
     const u = codex ? State.codexPlanUsage : State.planUsage;
     const key = `${language()}|${codex}|${JSON.stringify(u)}|${Math.floor(now / 30_000)}`;
     if (key === this.key) return;

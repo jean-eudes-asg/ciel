@@ -7,6 +7,7 @@
 import { DEFAULT_SETTINGS, type AskedQuestion, type IntegrationInfo, type Settings } from "../core/state";
 import { FINANCE_ID, localDate, type FinanceEntry, type FinancePoll, type FinanceSummary, type NewExpense } from "../core/finance";
 import type { ContributionDay, GitHubActivity, GitHubPR, GitHubRepoCI } from "../core/github";
+import type { CodexPlanUsage, PlanUsage } from "../core/plan";
 
 // ── Who and where ─────────────────────────────────────────────────────────────
 
@@ -44,8 +45,10 @@ export function demoSettings(real: Settings, overrides: Partial<Settings> = {}):
     autoCloseInterval: 30,
     hooksInstalled: true,
     model: DEFAULT_SETTINGS.model,
-    showPlanInNotch: false,
-    showCodexPlanInNotch: false,
+    // The plan pills and the folded island's rings, on the numbers below.
+    showPlanInNotch: true,
+    planRelayInstalled: true,
+    showCodexPlanInNotch: true,
     chatProvider: "anthropic",
     chatModels: {},
     ollamaUrl: "",
@@ -53,6 +56,28 @@ export function demoSettings(real: Settings, overrides: Partial<Settings> = {}):
     customUrl: "",
     pillColors: {},
     ...overrides,
+  };
+}
+
+// ── Plan usage ────────────────────────────────────────────────────────────────
+
+const HOUR_MS = 3_600_000;
+
+/** Made-up plan numbers: Claude well into its week, Codex barely started. */
+export function demoPlans(now: number): { claude: PlanUsage; codex: CodexPlanUsage } {
+  return {
+    claude: {
+      fiveHour: { usedPct: 34, resetsAt: now + 2 * HOUR_MS + 10 * 60_000 },
+      sevenDay: { usedPct: 61, resetsAt: now + 3 * 24 * HOUR_MS },
+      updatedAt: now,
+    },
+    codex: {
+      fiveHour: { usedPct: 9, resetsAt: now + 3 * HOUR_MS },
+      sevenDay: { usedPct: 22, resetsAt: now + 5 * 24 * HOUR_MS },
+      planType: "plus",
+      resetCredits: 0,
+      updatedAt: now,
+    },
   };
 }
 

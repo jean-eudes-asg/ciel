@@ -11,7 +11,7 @@ import { handleGitHubAlerts } from "../island/integrations";
 import { applyFinance } from "../island/finance";
 import type { Island } from "../island/island";
 import {
-  GITHUB_ID, WATCHED_PR, demoIntegrations, githubData, type DemoFinance,
+  GITHUB_ID, WATCHED_PR, demoIntegrations, demoPlans, githubData, type DemoFinance,
 } from "./data";
 import type { DemoHost } from "./player";
 
@@ -76,6 +76,9 @@ export function islandHost(island: DemoIsland, finance: DemoFinance, now: () => 
       State.loadIntegrationTasks();
       finance.reset();
       applyFinance(finance.poll(null)!);
+      const plans = demoPlans(now().getTime());
+      State.planUsage = plans.claude;
+      State.codexPlanUsage = plans.codex;
       if (State.mode === "expanded") island.collapse();
       island.reveal();
       State.notify();

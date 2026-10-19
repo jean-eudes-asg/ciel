@@ -20,6 +20,7 @@ import { createMiniBot, pruneMiniBots, syncMiniBotStates, tickMiniBots } from ".
 import { UploadCanvas } from "../upload/canvas";
 import { USC, UploadSeq } from "../upload/sequence";
 import { closePlanCard, openPlanColor, planCardOpen } from "../views/usage";
+import { buildPlanRings, type PlanRings } from "../views/plan-rings";
 import { buildHeader, buildViews, type ViewActions, type ViewHost } from "../views/views";
 import { h } from "../views/dom";
 import { IslandStateMachine } from "./fsm";
@@ -57,6 +58,7 @@ export class Island {
   private botGlow!: HTMLElement;
   private greetingCanvas!: HTMLCanvasElement;
   private miniGrid!: HTMLElement;
+  private planRings!: PlanRings;
   private countdown!: HTMLElement;
   private wakeStrip!: HTMLElement;
 
@@ -249,6 +251,7 @@ export class Island {
     this.botCanvas = h("canvas", { id: "bot-canvas" });
     this.greetingCanvas = h("canvas", { id: "greeting-canvas" });
     this.miniGrid = h("div", { id: "mini-grid" });
+    this.planRings = buildPlanRings();
     this.countdown = h("div", { id: "countdown" });
 
     this.header = buildHeader(actions);
@@ -283,6 +286,8 @@ export class Island {
       this.botGlow,
       this.botCanvas,
       this.miniGrid,
+      this.planRings.el,
+      this.planRings.pop,
       this.countdown,
     );
 
@@ -1132,6 +1137,10 @@ export class Island {
         pruneMiniBots();
       }
     }
+
+    // Plan usage rings: beside the mini grid, or at the end when it is empty.
+    this.planRings.sync();
+    this.planRings.el.style.right = `${showGrid && State.otherTasks.length ? 62 : 14}px`;
 
     syncMiniBotStates(State.tasks);
     this.engine.setState(State.effectiveState);
