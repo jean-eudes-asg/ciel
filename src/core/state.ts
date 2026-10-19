@@ -13,6 +13,7 @@ import type { Bindings } from "./shortcuts";
 import type { AiEngine } from "./brain";
 import { pillColor } from "./pill-colors";
 import { Spotify, musicPlaying } from "./spotify";
+import { DEFAULT_WALLPAPER, type WallpaperPrefs } from "../sky/prefs";
 
 export type AgentSource = "claudeCode" | "n8n" | "agent";
 export type PillBadge = "approval" | "finished" | "error";
@@ -156,6 +157,12 @@ export interface Settings {
    * "" for `<Ciel's config dir>/finance` (src-tauri/src/finance.rs).
    */
   financeFolder: string;
+  /**
+   * Ciel's wallpapers (src/sky, island/wallpaper.ts): off until the user turns
+   * them on. Rust (settings.rs) keeps the same defaults; read it through
+   * sky/prefs.ts wallpaperPrefs(), which fills in anything missing.
+   */
+  wallpaper: WallpaperPrefs;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -185,6 +192,7 @@ export const DEFAULT_SETTINGS: Settings = {
   pillColors: {},
   language: "",
   financeFolder: "",
+  wallpaper: { ...DEFAULT_WALLPAPER },
 };
 
 type Listener = () => void;

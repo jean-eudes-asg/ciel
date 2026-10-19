@@ -1,0 +1,183 @@
+{
+ "batchcomplete": true,
+ "continue": {
+  "gsroffset": 20,
+  "continue": "gsroffset||"
+ },
+ "query": {
+  "pages": [
+   {
+    "pageid": 132813830,
+    "ns": 6,
+    "title": "File:Milky way1.jpg",
+    "index": 5,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 16665812,
+      "width": 13530,
+      "height": 4909,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Milky_way1.jpg/3840px-Milky_way1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 1393,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Milky_way1.jpg/3840px-Milky_way1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 1393
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Milky_way1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Milky_way1.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=132813830",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Milky way1",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "NASA/JPL-Caltech/UCLA",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   },
+   {
+    "pageid": 21353793,
+    "ns": 6,
+    "title": "File:Night-sky-milky-way-stars-hills - West Virginia - ForestWander.jpg",
+    "index": 16,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 7877208,
+      "width": 5616,
+      "height": 3744,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Night-sky-milky-way-stars-hills_-_West_Virginia_-_ForestWander.jpg/3840px-Night-sky-milky-way-stars-hills_-_West_Virginia_-_ForestWander.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 2560,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Night-sky-milky-way-stars-hills_-_West_Virginia_-_ForestWander.jpg/3840px-Night-sky-milky-way-stars-hills_-_West_Virginia_-_ForestWander.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 2560
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/13/Night-sky-milky-way-stars-hills_-_West_Virginia_-_ForestWander.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Night-sky-milky-way-stars-hills_-_West_Virginia_-_ForestWander.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=21353793",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Night-sky-milky-way-stars-hills - West Virginia - ForestWander",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:ForestWander\" title=\"User:ForestWander\">ForestWander</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 3.0 us",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   },
+   {
+    "pageid": 85480431,
+    "ns": 6,
+    "title": "File:Stars and Milky Way over Åbyfjorden 2.jpg",
+    "index": 8,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 16684592,
+      "width": 5406,
+      "height": 3604,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Stars_and_Milky_Way_over_%C3%85byfjorden_2.jpg/3840px-Stars_and_Milky_Way_over_%C3%85byfjorden_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 2560,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Stars_and_Milky_Way_over_%C3%85byfjorden_2.jpg/3840px-Stars_and_Milky_Way_over_%C3%85byfjorden_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 2560
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Stars_and_Milky_Way_over_%C3%85byfjorden_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Stars_and_Milky_Way_over_%C3%85byfjorden_2.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=85480431",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Stars and Milky Way over Åbyfjorden 2",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:W.carter\" title=\"User:W.carter\">W.carter</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   },
+   {
+    "pageid": 82944202,
+    "ns": 6,
+    "title": "File:Stars and Milky Way at Holma Marina 1.jpg",
+    "index": 20,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 13746872,
+      "width": 3648,
+      "height": 5472,
+      "thumburl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Stars_and_Milky_Way_at_Holma_Marina_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+      "thumbwidth": 3840,
+      "thumbheight": 5760,
+      "thumbattribs": {
+       "src": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Stars_and_Milky_Way_at_Holma_Marina_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 5760
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Stars_and_Milky_Way_at_Holma_Marina_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Stars_and_Milky_Way_at_Holma_Marina_1.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=82944202",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Stars and Milky Way at Holma Marina 1",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:W.carter\" title=\"User:W.carter\">W.carter</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   }
+  ]
+ }
+}

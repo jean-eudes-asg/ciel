@@ -3,7 +3,7 @@
 // `npm run dev` alone.
 
 import { invoke } from "@tauri-apps/api/core";
-import { emitTo, listen } from "@tauri-apps/api/event";
+import { emit, emitTo, listen } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import type { Settings } from "./state";
 import type { RecapHistory, RecapPrefs } from "../recap/summary";
@@ -233,7 +233,84 @@ export const Bridge = {
   financeFolderInfo: (path?: string) => call<FinanceFolderInfo>("finance_folder_info", { path: path ?? null }),
   /** Shows the folder, making it with its defaults first if it is new. */
   financeOpenFolder: () => call<void>("finance_open_folder"),
+
+  // ── Wallpapers (the Rust side of src/sky; island/wallpaper.ts drives it) ──
+  /** The displays, in physical pixels; `id` is what wallpaperSetDesktop takes. */
+  wallpaperMonitors: () => call<WallpaperMonitor[]>("wallpaper_monitors"),
+  /**
+   * A PNG for one display (Fill). The first change saves the user's own
+   * wallpaper. The id travels percent-encoded in a header (a device path has
+   * characters a header can't carry). Throws why it failed.
+   */
+  wallpaperSetDesktop: (monitorId: string, png: Uint8Array) =>
+    sendBytes("wallpaper_set_desktop", png, { monitorId: encodeURIComponent(monitorId) }, { monitorId }),
+  /** A PNG for the lock screen (Windows). The first change saves the user's own picture. */
+  wallpaperSetLockScreen: (png: Uint8Array) => sendBytes("wallpaper_set_lock_screen", png, {}, {}),
+  /** Puts back the wallpapers and lock screen saved before Ciel's first change; stops live mode. */
+  wallpaperRestore: () => call<void>("wallpaper_restore"),
+  /** The photos already downloaded for a theme. */
+  wallpaperPhotos: (theme: string) => call<WallpaperPhoto[]>("wallpaper_photos", { theme }),
+  /** Downloads free photos for a theme (only ever from a click); how many are new. */
+  wallpaperPhotosFetch: (theme: string, count: number) => callOrThrow<number>("wallpaper_photos_fetch", { theme, count }),
+  /** A cached photo's bytes, to decode here (the page can't load file URLs). */
+  wallpaperPhotoBytes: async (path: string) => toBytes(await call<ArrayBuffer | number[]>("wallpaper_photo_bytes", { path })),
+  /** Creates (or destroys) the live window(s) behind the desktop icons. */
+  wallpaperLive: (enabled: boolean) => call<void>("wallpaper_live", { enabled }),
+  /** What this OS supports, and whether live mode runs, is paused, and a wallpaper is saved. */
+  wallpaperStatus: () => call<WallpaperStatus>("wallpaper_status"),
 };
+
+export interface WallpaperMonitor {
+  /** The monitor's device path (Windows) or output name (Linux). */
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  scale: number;
+  primary: boolean;
+}
+
+export interface WallpaperPhoto {
+  path: string;
+  title: string;
+  author: string;
+  license: string;
+  sourceUrl: string;
+  width: number;
+  height: number;
+}
+
+export interface WallpaperStatus {
+  supported: { desktop: boolean; lockScreen: boolean; live: boolean };
+  live: boolean;
+  paused: boolean;
+  saved: boolean;
+}
+
+/** Bytes from Rust: an ArrayBuffer (ipc::Response) or, from a plain Vec<u8>, numbers. */
+function toBytes(v: ArrayBuffer | ArrayLike<number> | null): Uint8Array | null {
+  if (!v) return null;
+  if (v instanceof ArrayBuffer) return new Uint8Array(v);
+  if (ArrayBuffer.isView(v)) return new Uint8Array(v.buffer, v.byteOffset, v.byteLength);
+  return Uint8Array.from(v);
+}
+
+/**
+ * A command that takes a PNG of several MB: the bytes go as the raw request
+ * body, the other arguments as `headers` (tauri::ipc::Request). Should a
+ * build of the command want its arguments the ordinary way, they are sent
+ * again as JSON (`args`, with `png` as a number array). Throws why it failed.
+ */
+async function sendBytes(cmd: string, png: Uint8Array, headers: Record<string, string>, args: Record<string, string>): Promise<void> {
+  if (!IS_TAURI) throw new Error("not running inside Ciel");
+  try {
+    await invoke(cmd, png, { headers });
+  } catch (err) {
+    if (!/invalid args|missing required key|expected a value/i.test(String(err))) throw err;
+    await invoke(cmd, { ...args, png: Array.from(png) });
+  }
+}
 
 export type SpotifyAction = "playPause" | "next" | "previous" | "seek" | "shuffle" | "repeat" | "volume";
 
@@ -268,6 +345,16 @@ export async function emitToWindow(label: string, event: string, payload?: unkno
   if (!IS_TAURI) return;
   try {
     await emitTo(label, event, payload);
+  } catch (err) {
+    console.error(`[ciel] emit ${event} failed`, err);
+  }
+}
+
+/** An event for every window (the live wallpaper windows, whatever their number). Never throws. */
+export async function broadcast(event: string, payload?: unknown) {
+  if (!IS_TAURI) return;
+  try {
+    await emit(event, payload);
   } catch (err) {
     console.error(`[ciel] emit ${event} failed`, err);
   }

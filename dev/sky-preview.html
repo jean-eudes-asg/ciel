@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel — sky preview</title>
+    <style>
+      body { margin: 0; background: #111214; font: 12px system-ui; color: #d8dbe0; }
+      h1 { font: 600 14px system-ui; margin: 18px 18px 6px; }
+      .bar { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; padding: 6px 18px; }
+      .bar label { display: flex; gap: 6px; align-items: center; }
+      select, input, button { font: 12px system-ui; background: #1d1f23; color: #e8eaee; border: 1px solid #33363c; border-radius: 6px; padding: 4px 8px; }
+      button { cursor: pointer; }
+      #live { display: block; margin: 8px 18px; border-radius: 12px; width: min(1280px, calc(100vw - 36px)); }
+      #stats { font: 12px ui-monospace, Consolas, monospace; color: #9aa0a8; padding: 0 18px; min-height: 16px; }
+      .grid { display: grid; grid-template-columns: 90px repeat(6, 1fr); gap: 8px; padding: 10px 18px 30px; }
+      .grid .head { font-weight: 600; color: #9aa0a8; align-self: end; }
+      .grid .theme { font-weight: 600; align-self: center; }
+      .grid canvas { width: 100%; border-radius: 8px; display: block; }
+    </style>
+  </head>
+  <body>
+    <h1>Live scene (24 fps)</h1>
+    <div class="bar">
+      <label>Theme <select id="theme"></select></label>
+      <label>Phase <select id="phase"></select></label>
+      <label>Mood <select id="mood"></select></label>
+      <label>Seed <input id="seed" type="number" value="7" style="width:80px" /></label>
+      <label><input id="lock" type="checkbox" /> Lock screen</label>
+      <label><input id="speed" type="checkbox" /> Fast time (×30)</label>
+      <label>Aspect <select id="aspect"><option value="2.389">21:9 (3440×1440)</option><option value="1.778">16:9</option><option value="1.6">16:10</option></select></label>
+      <button id="bench">Benchmark 3440×1440</button>
+    </div>
+    <canvas id="live"></canvas>
+    <div id="stats"></div>
+    <h1>Every theme × phase (stills, mood from the selector)</h1>
+    <div class="grid" id="grid"></div>
+    <script type="module" src="./sky-preview.ts"></script>
+  </body>
+</html>

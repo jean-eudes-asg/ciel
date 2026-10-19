@@ -2,19 +2,19 @@
 // Rust through it, so the tests see every command the island sends and can fire
 // the events Rust would emit — through the real bridge, with no source changes.
 
-/** Every command the island invoked, oldest first: [name, args]. */
+/** Every command the island invoked, oldest first: [name, args, options]. */
 export const calls = [];
 
 const listeners = new Map();
 
 export const internals = {
   transformCallback: (callback) => callback,
-  invoke: async (cmd, args) => {
+  invoke: async (cmd, args, options) => {
     if (cmd === "plugin:event|listen") {
       listeners.set(args.event, args.handler);
       return listeners.size;
     }
-    calls.push([cmd, args]);
+    calls.push([cmd, args, options]);
     return null;
   },
 };

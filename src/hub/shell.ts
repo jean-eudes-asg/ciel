@@ -14,7 +14,7 @@ import { icon, keyLabel } from "./ui";
 
 export type PageId =
   | "dictation" | "notes" | "insights" | "dictionary" | "snippets" | "styles" | "flowsettings"
-  | "general" | "pills" | "agents" | "chat" | "voice" | "integrations" | "shortcuts";
+  | "general" | "pills" | "agents" | "chat" | "voice" | "integrations" | "shortcuts" | "wallpaper";
 
 interface PageDef {
   id: PageId;
@@ -42,6 +42,7 @@ export const NOTCH_PAGES: PageDef[] = [
   { id: "voice", icon: "wave", title: () => "OK Ciel" },
   { id: "integrations", icon: "puzzle", title: () => t("Integrations"), subtitle: () => t("Stripe, GitHub, Vercel, n8n, Notion and the rest.") },
   { id: "shortcuts", icon: "keyboard", title: () => t("Shortcuts"), subtitle: () => t("The keys that open the island and its actions.") },
+  { id: "wallpaper", icon: "image", title: () => t("Wallpaper"), subtitle: () => t("Ciel's sky on your desktop and lock screen, in his mood.") },
 ];
 
 const ALL = [...FLOW_PAGES, ...NOTCH_PAGES];

@@ -1,0 +1,269 @@
+{
+ "batchcomplete": true,
+ "continue": {
+  "gsroffset": 20,
+  "continue": "gsroffset||"
+ },
+ "query": {
+  "pages": [
+   {
+    "pageid": 17567634,
+    "ns": 6,
+    "title": "File:Crepuscular rays at Sunset near Waterberg Plateau.jpg",
+    "index": 16,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 12573712,
+      "width": 5610,
+      "height": 3738,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg/3840px-Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 2559,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg/3840px-Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 2559
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Crepuscular_rays_at_Sunset_near_Waterberg_Plateau.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=17567634",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Crepuscular rays at Sunset near Waterberg Plateau",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Alchemist-hp\" title=\"User:Alchemist-hp\">Alchemist-hp</a> (<a rel=\"nofollow\" class=\"external text\" href=\"http://www.pse-mendelejew.de\">www.pse-mendelejew.de</a>)",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "FAL",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   },
+   {
+    "pageid": 89619356,
+    "ns": 6,
+    "title": "File:Sunset over Trommekilen from Norrkila 6.jpg",
+    "index": 19,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4791085,
+      "width": 4803,
+      "height": 3202,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Sunset_over_Trommekilen_from_Norrkila_6.jpg/3840px-Sunset_over_Trommekilen_from_Norrkila_6.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 2560,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Sunset_over_Trommekilen_from_Norrkila_6.jpg/3840px-Sunset_over_Trommekilen_from_Norrkila_6.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 2560
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Sunset_over_Trommekilen_from_Norrkila_6.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sunset_over_Trommekilen_from_Norrkila_6.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=89619356",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Sunset over Trommekilen from Norrkila 6",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:W.carter\" title=\"User:W.carter\">W.carter</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   },
+   {
+    "pageid": 156858817,
+    "ns": 6,
+    "title": "File:Sunset near Great Sand Dunes National Park.jpg",
+    "index": 13,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 19654868,
+      "width": 7360,
+      "height": 2534,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Sunset_near_Great_Sand_Dunes_National_Park.jpg/3840px-Sunset_near_Great_Sand_Dunes_National_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 1322,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Sunset_near_Great_Sand_Dunes_National_Park.jpg/3840px-Sunset_near_Great_Sand_Dunes_National_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 1322
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Sunset_near_Great_Sand_Dunes_National_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Sunset_near_Great_Sand_Dunes_National_Park.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=156858817",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Sunset near Great Sand Dunes National Park",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "Andrew Russell",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY 2.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   },
+   {
+    "pageid": 54469472,
+    "ns": 6,
+    "title": "File:Cumulonimbus sunset panorama, Albury NSW Australia.jpg",
+    "index": 1,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4725849,
+      "width": 6134,
+      "height": 3067,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Cumulonimbus_sunset_panorama%2C_Albury_NSW_Australia.jpg/3840px-Cumulonimbus_sunset_panorama%2C_Albury_NSW_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 1920,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a7/Cumulonimbus_sunset_panorama%2C_Albury_NSW_Australia.jpg/3840px-Cumulonimbus_sunset_panorama%2C_Albury_NSW_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 1920
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Cumulonimbus_sunset_panorama%2C_Albury_NSW_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Cumulonimbus_sunset_panorama,_Albury_NSW_Australia.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=54469472",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Cumulonimbus sunset panorama, Albury NSW Australia",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Thennicke\" title=\"User:Thennicke\">Thennicke</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   },
+   {
+    "pageid": 143038326,
+    "ns": 6,
+    "title": "File:Contre-jour photograph of a standing piglet at sunset with colorful sky in Don Det Laos.jpg",
+    "index": 8,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 4639974,
+      "width": 3863,
+      "height": 3639,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Contre-jour_photograph_of_a_standing_piglet_at_sunset_with_colorful_sky_in_Don_Det_Laos.jpg/3840px-Contre-jour_photograph_of_a_standing_piglet_at_sunset_with_colorful_sky_in_Don_Det_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 3617,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Contre-jour_photograph_of_a_standing_piglet_at_sunset_with_colorful_sky_in_Don_Det_Laos.jpg/3840px-Contre-jour_photograph_of_a_standing_piglet_at_sunset_with_colorful_sky_in_Don_Det_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 3617
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/Contre-jour_photograph_of_a_standing_piglet_at_sunset_with_colorful_sky_in_Don_Det_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Contre-jour_photograph_of_a_standing_piglet_at_sunset_with_colorful_sky_in_Don_Det_Laos.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=143038326",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Contre-jour photograph of a standing piglet at sunset with colorful sky in Don Det Laos",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "Basile Morin",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   },
+   {
+    "pageid": 92581386,
+    "ns": 6,
+    "title": "File:Colorful sky with orange clouds reflecting in the water of a paddy field, at sunset, Vang Vieng, Laos.jpg",
+    "index": 4,
+    "imagerepository": "local",
+    "imageinfo": [
+     {
+      "size": 14522326,
+      "width": 6619,
+      "height": 4413,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Colorful_sky_with_orange_clouds_reflecting_in_the_water_of_a_paddy_field%2C_at_sunset%2C_Vang_Vieng%2C_Laos.jpg/3840px-Colorful_sky_with_orange_clouds_reflecting_in_the_water_of_a_paddy_field%2C_at_sunset%2C_Vang_Vieng%2C_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "thumbwidth": 3840,
+      "thumbheight": 2560,
+      "thumbattribs": {
+       "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8f/Colorful_sky_with_orange_clouds_reflecting_in_the_water_of_a_paddy_field%2C_at_sunset%2C_Vang_Vieng%2C_Laos.jpg/3840px-Colorful_sky_with_orange_clouds_reflecting_in_the_water_of_a_paddy_field%2C_at_sunset%2C_Vang_Vieng%2C_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+       "decoding": "async",
+       "loading": "lazy",
+       "width": 3840,
+       "height": 2560
+      },
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Colorful_sky_with_orange_clouds_reflecting_in_the_water_of_a_paddy_field%2C_at_sunset%2C_Vang_Vieng%2C_Laos.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Colorful_sky_with_orange_clouds_reflecting_in_the_water_of_a_paddy_field,_at_sunset,_Vang_Vieng,_Laos.jpg",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=92581386",
+      "extmetadata": {
+       "ObjectName": {
+        "value": "Colorful sky with orange clouds reflecting in the water of a paddy field, at sunset, Vang Vieng, Laos",
+        "source": "mediawiki-metadata"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Basile_Morin\" title=\"User:Basile Morin\">Basile Morin</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 4.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       }
+      },
+      "mime": "image/jpeg"
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -370,6 +370,7 @@ export const THEMES: Record<string, Theme> = {
   integrations: { color: "#7C5CFF", cast: [m("#7C5CFF", 54, 0.15), m("#22D3EE", 46, 0.55), m("#F7B32B", 42, 0.95)] },
   voice: { color: "#F97316", cast: [m("#F97316", 60, 0.3), m("#F5F6F8", 48, 0.85)] },
   shortcuts: { color: "#6366F1", cast: [m("#6366F1", 56, 0.2), m("#F5F6F8", 46, 0.8)] },
+  wallpaper: { color: "#38BDF8", cast: [m("#F5F6F8", 60, 0.25), m("#38BDF8", 48, 0.65), m("#FB923C", 42, 0.95, { state: "sleeping", roams: false })] },
 };
 
 /** The band itself: title, line, actions, and the Clouds. */

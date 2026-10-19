@@ -51,6 +51,12 @@ Windows 10/11 · Linux (X11 and Wayland) · Tauri 2 · Rust + TypeScript · MIT
   Ciel's brain**, which also cleans up dictations and writes the call
   summaries). With a model running on your computer, nothing leaves it; web
   search needs Claude.
+- **Wallpapers and lock screen.** Skies drawn by Ciel (clear, cloudy, golden,
+  sunset, night, space, storm) lit by the real sun where you are, the weather
+  following Ciel's mood, and Ciel himself on top. Live on the desktop (it pauses
+  when a window or game covers it), a still picture on the lock screen, and
+  optional free photos from NASA and Wikimedia Commons, credited. Off until you
+  turn it on in **Settings → Wallpaper**, with one click to restore your own.
 - **Ciel on your desktop.** Drag him out of the island (or press `Ctrl+Alt+D`)
   and he floats on your desktop, follows your cursor, and flies back when an
   agent needs you.

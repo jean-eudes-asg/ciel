@@ -1167,6 +1167,182 @@
    "ru": "Ошибка сети: {error}",
    "id": "Galat jaringan: {error}"
   },
+  "That picture isn't a PNG image.": {
+   "zh-Hans": "这张图片不是 PNG 图像。",
+   "hi": "यह चित्र PNG छवि नहीं है।",
+   "es": "Esa imagen no es un PNG.",
+   "ar": "هذه الصورة ليست بصيغة PNG.",
+   "fr": "Cette image n'est pas au format PNG.",
+   "bn": "ছবিটি PNG ছবি নয়।",
+   "pt-BR": "Essa imagem não é um PNG.",
+   "ru": "Это изображение не в формате PNG.",
+   "id": "Gambar itu bukan gambar PNG."
+  },
+  "The system refused the new wallpaper: {error}": {
+   "zh-Hans": "系统拒绝了新壁纸：{error}",
+   "hi": "सिस्टम ने नया वॉलपेपर अस्वीकार कर दिया: {error}",
+   "es": "El sistema rechazó el nuevo fondo de pantalla: {error}",
+   "ar": "رفض النظام خلفية الشاشة الجديدة: {error}",
+   "fr": "Le système a refusé le nouveau fond d'écran : {error}",
+   "bn": "সিস্টেম নতুন ওয়ালপেপার গ্রহণ করেনি: {error}",
+   "pt-BR": "O sistema recusou o novo papel de parede: {error}",
+   "ru": "Система отклонила новые обои: {error}",
+   "id": "Sistem menolak wallpaper baru: {error}"
+  },
+  "The system refused the new lock screen picture: {error}": {
+   "zh-Hans": "系统拒绝了新的锁屏图片：{error}",
+   "hi": "सिस्टम ने नई लॉक स्क्रीन तस्वीर अस्वीकार कर दी: {error}",
+   "es": "El sistema rechazó la nueva imagen de la pantalla de bloqueo: {error}",
+   "ar": "رفض النظام صورة شاشة القفل الجديدة: {error}",
+   "fr": "Le système a refusé la nouvelle image de l'écran de verrouillage : {error}",
+   "bn": "সিস্টেম লক স্ক্রিনের নতুন ছবি গ্রহণ করেনি: {error}",
+   "pt-BR": "O sistema recusou a nova imagem da tela de bloqueio: {error}",
+   "ru": "Система отклонила новую картинку экрана блокировки: {error}",
+   "id": "Sistem menolak gambar layar kunci baru: {error}"
+  },
+  "Ciel couldn't keep a copy of your current picture, so nothing was changed: {error}": {
+   "zh-Hans": "Ciel 无法保存你当前图片的副本，因此没有做任何更改：{error}",
+   "hi": "Ciel आपकी मौजूदा तस्वीर की प्रति नहीं रख सका, इसलिए कुछ भी नहीं बदला गया: {error}",
+   "es": "Ciel no pudo guardar una copia de tu imagen actual, así que no se cambió nada: {error}",
+   "ar": "تعذّر على Ciel الاحتفاظ بنسخة من صورتك الحالية، لذا لم يتغيّر شيء: {error}",
+   "fr": "Ciel n'a pas pu garder une copie de ton image actuelle, donc rien n'a été changé : {error}",
+   "bn": "Ciel আপনার বর্তমান ছবির একটি কপি রাখতে পারেনি, তাই কিছুই বদলানো হয়নি: {error}",
+   "pt-BR": "O Ciel não conseguiu guardar uma cópia da sua imagem atual, então nada foi alterado: {error}",
+   "ru": "Ciel не смог сохранить копию вашей текущей картинки, поэтому ничего не изменено: {error}",
+   "id": "Ciel tidak bisa menyimpan salinan gambar Anda saat ini, jadi tidak ada yang diubah: {error}"
+  },
+  "Ciel couldn't save the picture: {error}": {
+   "zh-Hans": "Ciel 无法保存图片：{error}",
+   "hi": "Ciel तस्वीर सहेज नहीं सका: {error}",
+   "es": "Ciel no pudo guardar la imagen: {error}",
+   "ar": "تعذّر على Ciel حفظ الصورة: {error}",
+   "fr": "Ciel n'a pas pu enregistrer l'image : {error}",
+   "bn": "Ciel ছবিটি সংরক্ষণ করতে পারেনি: {error}",
+   "pt-BR": "O Ciel não conseguiu salvar a imagem: {error}",
+   "ru": "Ciel не смог сохранить картинку: {error}",
+   "id": "Ciel tidak bisa menyimpan gambar: {error}"
+  },
+  "Unknown theme: {theme}": {
+   "zh-Hans": "未知主题：{theme}",
+   "hi": "अज्ञात थीम: {theme}",
+   "es": "Tema desconocido: {theme}",
+   "ar": "سمة غير معروفة: {theme}",
+   "fr": "Thème inconnu : {theme}",
+   "bn": "অজানা থিম: {theme}",
+   "pt-BR": "Tema desconhecido: {theme}",
+   "ru": "Неизвестная тема: {theme}",
+   "id": "Tema tidak dikenal: {theme}"
+  },
+  "That file isn't one of Ciel's photos.": {
+   "zh-Hans": "这个文件不是 Ciel 的照片。",
+   "hi": "यह फ़ाइल Ciel की तस्वीरों में से नहीं है।",
+   "es": "Ese archivo no es una de las fotos de Ciel.",
+   "ar": "هذا الملف ليس من صور Ciel.",
+   "fr": "Ce fichier ne fait pas partie des photos de Ciel.",
+   "bn": "এই ফাইলটি Ciel-এর ছবিগুলোর একটি নয়।",
+   "pt-BR": "Esse arquivo não é uma das fotos do Ciel.",
+   "ru": "Этот файл не из фотографий Ciel.",
+   "id": "File itu bukan salah satu foto Ciel."
+  },
+  "Ciel couldn't read that photo: {error}": {
+   "zh-Hans": "Ciel 无法读取这张照片：{error}",
+   "hi": "Ciel वह तस्वीर पढ़ नहीं सका: {error}",
+   "es": "Ciel no pudo leer esa foto: {error}",
+   "ar": "تعذّر على Ciel قراءة تلك الصورة: {error}",
+   "fr": "Ciel n'a pas pu lire cette photo : {error}",
+   "bn": "Ciel ছবিটি পড়তে পারেনি: {error}",
+   "pt-BR": "O Ciel não conseguiu ler essa foto: {error}",
+   "ru": "Ciel не смог прочитать эту фотографию: {error}",
+   "id": "Ciel tidak bisa membaca foto itu: {error}"
+  },
+  "Ciel is already getting photos.": {
+   "zh-Hans": "Ciel 正在获取照片。",
+   "hi": "Ciel पहले से तस्वीरें ला रहा है।",
+   "es": "Ciel ya está descargando fotos.",
+   "ar": "يجلب Ciel الصور بالفعل.",
+   "fr": "Ciel est déjà en train de chercher des photos.",
+   "bn": "Ciel ইতিমধ্যে ছবি আনছে।",
+   "pt-BR": "O Ciel já está baixando fotos.",
+   "ru": "Ciel уже загружает фотографии.",
+   "id": "Ciel sedang mengambil foto."
+  },
+  "Ciel couldn't put the live wallpaper behind the desktop icons.": {
+   "zh-Hans": "Ciel 无法将动态壁纸放到桌面图标后面。",
+   "hi": "Ciel लाइव वॉलपेपर को डेस्कटॉप आइकनों के पीछे नहीं रख सका।",
+   "es": "Ciel no pudo poner el fondo animado detrás de los iconos del escritorio.",
+   "ar": "تعذّر على Ciel وضع الخلفية الحيّة خلف أيقونات سطح المكتب.",
+   "fr": "Ciel n'a pas pu placer le fond d'écran animé derrière les icônes du bureau.",
+   "bn": "Ciel লাইভ ওয়ালপেপারটি ডেস্কটপ আইকনের পেছনে রাখতে পারেনি।",
+   "pt-BR": "O Ciel não conseguiu colocar o papel de parede animado atrás dos ícones da área de trabalho.",
+   "ru": "Ciel не смог поместить живые обои под значки рабочего стола.",
+   "id": "Ciel tidak bisa menaruh wallpaper animasi di belakang ikon desktop."
+  },
+  "Live wallpapers aren't available on this desktop.": {
+   "zh-Hans": "此桌面不支持动态壁纸。",
+   "hi": "इस डेस्कटॉप पर लाइव वॉलपेपर उपलब्ध नहीं हैं।",
+   "es": "Los fondos animados no están disponibles en este escritorio.",
+   "ar": "الخلفيات الحيّة غير متاحة على سطح المكتب هذا.",
+   "fr": "Les fonds d'écran animés ne sont pas disponibles sur ce bureau.",
+   "bn": "এই ডেস্কটপে লাইভ ওয়ালপেপার পাওয়া যায় না।",
+   "pt-BR": "Papéis de parede animados não estão disponíveis nesta área de trabalho.",
+   "ru": "Живые обои недоступны на этом рабочем столе.",
+   "id": "Wallpaper animasi tidak tersedia di desktop ini."
+  },
+  "Ciel can't change the wallpaper on this system.": {
+   "zh-Hans": "Ciel 无法在此系统上更改壁纸。",
+   "hi": "Ciel इस सिस्टम पर वॉलपेपर नहीं बदल सकता।",
+   "es": "Ciel no puede cambiar el fondo de pantalla en este sistema.",
+   "ar": "لا يستطيع Ciel تغيير خلفية الشاشة على هذا النظام.",
+   "fr": "Ciel ne peut pas changer le fond d'écran sur ce système.",
+   "bn": "Ciel এই সিস্টেমে ওয়ালপেপার বদলাতে পারে না।",
+   "pt-BR": "O Ciel não consegue mudar o papel de parede neste sistema.",
+   "ru": "Ciel не может менять обои в этой системе.",
+   "id": "Ciel tidak bisa mengganti wallpaper di sistem ini."
+  },
+  "Ciel can't change the lock screen on this system.": {
+   "zh-Hans": "Ciel 无法在此系统上更改锁屏。",
+   "hi": "Ciel इस सिस्टम पर लॉक स्क्रीन नहीं बदल सकता।",
+   "es": "Ciel no puede cambiar la pantalla de bloqueo en este sistema.",
+   "ar": "لا يستطيع Ciel تغيير شاشة القفل على هذا النظام.",
+   "fr": "Ciel ne peut pas changer l'écran de verrouillage sur ce système.",
+   "bn": "Ciel এই সিস্টেমে লক স্ক্রিন বদলাতে পারে না।",
+   "pt-BR": "O Ciel não consegue mudar a tela de bloqueio neste sistema.",
+   "ru": "Ciel не может менять экран блокировки в этой системе.",
+   "id": "Ciel tidak bisa mengganti layar kunci di sistem ini."
+  },
+  "That screen isn't connected any more.": {
+   "zh-Hans": "这个屏幕已不再连接。",
+   "hi": "वह स्क्रीन अब जुड़ी नहीं है।",
+   "es": "Esa pantalla ya no está conectada.",
+   "ar": "تلك الشاشة لم تعد متصلة.",
+   "fr": "Cet écran n'est plus branché.",
+   "bn": "সেই স্ক্রিনটি আর সংযুক্ত নেই।",
+   "pt-BR": "Essa tela não está mais conectada.",
+   "ru": "Этот экран больше не подключён.",
+   "id": "Layar itu sudah tidak tersambung."
+  },
+  "Ciel couldn't put your wallpaper back: {error}": {
+   "zh-Hans": "Ciel 无法恢复你的壁纸：{error}",
+   "hi": "Ciel आपका वॉलपेपर वापस नहीं लगा सका: {error}",
+   "es": "Ciel no pudo devolver tu fondo de pantalla: {error}",
+   "ar": "تعذّر على Ciel إعادة خلفية شاشتك: {error}",
+   "fr": "Ciel n'a pas pu remettre ton fond d'écran : {error}",
+   "bn": "Ciel আপনার ওয়ালপেপার ফিরিয়ে আনতে পারেনি: {error}",
+   "pt-BR": "O Ciel não conseguiu restaurar seu papel de parede: {error}",
+   "ru": "Ciel не смог вернуть ваши обои: {error}",
+   "id": "Ciel tidak bisa mengembalikan wallpaper Anda: {error}"
+  },
+  "Ciel couldn't put your lock screen back: {error}": {
+   "zh-Hans": "Ciel 无法恢复你的锁屏：{error}",
+   "hi": "Ciel आपकी लॉक स्क्रीन वापस नहीं लगा सका: {error}",
+   "es": "Ciel no pudo devolver tu pantalla de bloqueo: {error}",
+   "ar": "تعذّر على Ciel إعادة شاشة القفل: {error}",
+   "fr": "Ciel n'a pas pu remettre ton écran de verrouillage : {error}",
+   "bn": "Ciel আপনার লক স্ক্রিন ফিরিয়ে আনতে পারেনি: {error}",
+   "pt-BR": "O Ciel não conseguiu restaurar sua tela de bloqueio: {error}",
+   "ru": "Ciel не смог вернуть ваш экран блокировки: {error}",
+   "id": "Ciel tidak bisa mengembalikan layar kunci Anda: {error}"
+  },
   "Next or previous pill": {
    "zh-Hans": "下一个或上一个标签",
    "hi": "अगला या पिछला टैब",
@@ -4335,6 +4511,750 @@
    "pt-BR": "O Ciel não conseguiu responder: verifique sua chave do Claude em Notch → Chat.",
    "ru": "Ciel не смог ответить: проверьте ключ Claude в Notch → Чат.",
    "id": "Ciel tidak bisa menjawab: periksa kunci Claude-mu di Notch → Obrolan."
+  },
+  "Wallpaper": {
+   "zh-Hans": "壁纸",
+   "hi": "वॉलपेपर",
+   "es": "Fondo de pantalla",
+   "ar": "خلفية الشاشة",
+   "fr": "Fond d'écran",
+   "bn": "ওয়ালপেপার",
+   "pt-BR": "Papel de parede",
+   "ru": "Обои",
+   "id": "Wallpaper"
+  },
+  "Ciel's sky on your desktop and lock screen, in his mood.": {
+   "zh-Hans": "Ciel 的天空，随他的心情出现在桌面和锁屏上。",
+   "hi": "Ciel का आसमान, उसके मूड में, आपके डेस्कटॉप और लॉक स्क्रीन पर।",
+   "es": "El cielo de Ciel en tu escritorio y tu pantalla de bloqueo, según su estado de ánimo.",
+   "ar": "سماء Ciel على سطح المكتب وشاشة القفل، بحسب مزاجه.",
+   "fr": "Le ciel de Ciel sur votre bureau et votre écran de verrouillage, selon son humeur.",
+   "bn": "Ciel-এর আকাশ, তার মেজাজ অনুযায়ী, আপনার ডেস্কটপ ও লক স্ক্রিনে।",
+   "pt-BR": "O céu do Ciel na sua área de trabalho e tela de bloqueio, no humor dele.",
+   "ru": "Небо Ciel на рабочем столе и экране блокировки — под его настроение.",
+   "id": "Langit Ciel di desktop dan layar kunci Anda, sesuai suasana hatinya."
+  },
+  "Clear sky": {
+   "zh-Hans": "晴空",
+   "hi": "साफ़ आसमान",
+   "es": "Cielo despejado",
+   "ar": "سماء صافية",
+   "fr": "Ciel dégagé",
+   "bn": "পরিষ্কার আকাশ",
+   "pt-BR": "Céu limpo",
+   "ru": "Ясное небо",
+   "id": "Langit cerah"
+  },
+  "Cloudy": {
+   "zh-Hans": "多云",
+   "hi": "बादल",
+   "es": "Nublado",
+   "ar": "غائم",
+   "fr": "Nuageux",
+   "bn": "মেঘলা",
+   "pt-BR": "Nublado",
+   "ru": "Облачно",
+   "id": "Berawan"
+  },
+  "Golden hour": {
+   "zh-Hans": "黄金时刻",
+   "hi": "सुनहरा समय",
+   "es": "Hora dorada",
+   "ar": "الساعة الذهبية",
+   "fr": "Heure dorée",
+   "bn": "সোনালি আলো",
+   "pt-BR": "Hora dourada",
+   "ru": "Золотой час",
+   "id": "Jam emas"
+  },
+  "Sunset": {
+   "zh-Hans": "日落",
+   "hi": "सूर्यास्त",
+   "es": "Atardecer",
+   "ar": "غروب",
+   "fr": "Coucher de soleil",
+   "bn": "সূর্যাস্ত",
+   "pt-BR": "Pôr do sol",
+   "ru": "Закат",
+   "id": "Matahari terbenam"
+  },
+  "Night": {
+   "zh-Hans": "夜晚",
+   "hi": "रात",
+   "es": "Noche",
+   "ar": "ليل",
+   "fr": "Nuit",
+   "bn": "রাত",
+   "pt-BR": "Noite",
+   "ru": "Ночь",
+   "id": "Malam"
+  },
+  "Space": {
+   "zh-Hans": "太空",
+   "hi": "अंतरिक्ष",
+   "es": "Espacio",
+   "ar": "الفضاء",
+   "fr": "Espace",
+   "bn": "মহাকাশ",
+   "pt-BR": "Espaço",
+   "ru": "Космос",
+   "id": "Luar angkasa"
+  },
+  "Storm": {
+   "zh-Hans": "暴风雨",
+   "hi": "तूफ़ान",
+   "es": "Tormenta",
+   "ar": "عاصفة",
+   "fr": "Orage",
+   "bn": "ঝড়",
+   "pt-BR": "Tempestade",
+   "ru": "Гроза",
+   "id": "Badai"
+  },
+  "Idle": {
+   "zh-Hans": "空闲",
+   "hi": "निष्क्रिय",
+   "es": "En reposo",
+   "ar": "خامل",
+   "fr": "Au repos",
+   "bn": "অলস",
+   "pt-BR": "Ocioso",
+   "ru": "Без дела",
+   "id": "Santai"
+  },
+  "Working": {
+   "zh-Hans": "工作中",
+   "hi": "काम कर रहा है",
+   "es": "Trabajando",
+   "ar": "يعمل",
+   "fr": "Au travail",
+   "bn": "কাজ করছে",
+   "pt-BR": "Trabalhando",
+   "ru": "Работает",
+   "id": "Bekerja"
+  },
+  "Thinking": {
+   "zh-Hans": "思考中",
+   "hi": "सोच रहा है",
+   "es": "Pensando",
+   "ar": "يفكّر",
+   "fr": "Réfléchit",
+   "bn": "ভাবছে",
+   "pt-BR": "Pensando",
+   "ru": "Думает",
+   "id": "Berpikir"
+  },
+  "Searching": {
+   "zh-Hans": "搜索中",
+   "hi": "खोज रहा है",
+   "es": "Buscando",
+   "ar": "يبحث",
+   "fr": "Cherche",
+   "bn": "খুঁজছে",
+   "pt-BR": "Pesquisando",
+   "ru": "Ищет",
+   "id": "Mencari"
+  },
+  "Waiting for approval": {
+   "zh-Hans": "等待批准",
+   "hi": "मंज़ूरी का इंतज़ार",
+   "es": "Esperando aprobación",
+   "ar": "بانتظار الموافقة",
+   "fr": "Attend une autorisation",
+   "bn": "অনুমোদনের অপেক্ষায়",
+   "pt-BR": "Aguardando aprovação",
+   "ru": "Ждёт разрешения",
+   "id": "Menunggu persetujuan"
+  },
+  "Asking a question": {
+   "zh-Hans": "正在提问",
+   "hi": "सवाल पूछ रहा है",
+   "es": "Haciendo una pregunta",
+   "ar": "يطرح سؤالًا",
+   "fr": "Pose une question",
+   "bn": "প্রশ্ন করছে",
+   "pt-BR": "Fazendo uma pergunta",
+   "ru": "Задаёт вопрос",
+   "id": "Mengajukan pertanyaan"
+  },
+  "Finished": {
+   "zh-Hans": "已完成",
+   "hi": "पूरा हुआ",
+   "es": "Terminado",
+   "ar": "انتهى",
+   "fr": "Terminé",
+   "bn": "শেষ হয়েছে",
+   "pt-BR": "Concluído",
+   "ru": "Готово",
+   "id": "Selesai"
+  },
+  "Rate limited": {
+   "zh-Hans": "达到速率限制",
+   "hi": "रेट लिमिट पर",
+   "es": "Límite de uso alcanzado",
+   "ar": "تجاوز حد الاستخدام",
+   "fr": "Limite atteinte",
+   "bn": "রেট লিমিটে পৌঁছেছে",
+   "pt-BR": "Limite de uso atingido",
+   "ru": "Лимит исчерпан",
+   "id": "Kena batas penggunaan"
+  },
+  "Sleeping": {
+   "zh-Hans": "睡觉中",
+   "hi": "सो रहा है",
+   "es": "Durmiendo",
+   "ar": "نائم",
+   "fr": "Dort",
+   "bn": "ঘুমাচ্ছে",
+   "pt-BR": "Dormindo",
+   "ru": "Спит",
+   "id": "Tidur"
+  },
+  "Dizzy": {
+   "zh-Hans": "头晕",
+   "hi": "चक्कर में",
+   "es": "Mareado",
+   "ar": "مصاب بالدوار",
+   "fr": "Étourdi",
+   "bn": "মাথা ঘুরছে",
+   "pt-BR": "Tonto",
+   "ru": "Кружится голова",
+   "id": "Pusing"
+  },
+  "Not on this desktop": {
+   "zh-Hans": "此桌面不支持",
+   "hi": "इस डेस्कटॉप पर नहीं",
+   "es": "No en este escritorio",
+   "ar": "غير متاح على سطح المكتب هذا",
+   "fr": "Pas sur ce bureau",
+   "bn": "এই ডেস্কটপে নেই",
+   "pt-BR": "Não nesta área de trabalho",
+   "ru": "Не на этом рабочем столе",
+   "id": "Tidak di desktop ini"
+  },
+  "Animated": {
+   "zh-Hans": "动态",
+   "hi": "एनिमेटेड",
+   "es": "Animado",
+   "ar": "متحرك",
+   "fr": "Animé",
+   "bn": "অ্যানিমেটেড",
+   "pt-BR": "Animado",
+   "ru": "Анимированные",
+   "id": "Animasi"
+  },
+  "Still": {
+   "zh-Hans": "静态",
+   "hi": "स्थिर",
+   "es": "Fijo",
+   "ar": "ثابت",
+   "fr": "Fixe",
+   "bn": "স্থির",
+   "pt-BR": "Estático",
+   "ru": "Статичные",
+   "id": "Diam"
+  },
+  "Apply now": {
+   "zh-Hans": "立即应用",
+   "hi": "अभी लागू करें",
+   "es": "Aplicar ahora",
+   "ar": "تطبيق الآن",
+   "fr": "Appliquer maintenant",
+   "bn": "এখনই প্রয়োগ করুন",
+   "pt-BR": "Aplicar agora",
+   "ru": "Применить сейчас",
+   "id": "Terapkan sekarang"
+  },
+  "Updating the wallpaper…": {
+   "zh-Hans": "正在更新壁纸…",
+   "hi": "वॉलपेपर अपडेट हो रहा है…",
+   "es": "Actualizando el fondo…",
+   "ar": "جارٍ تحديث الخلفية…",
+   "fr": "Mise à jour du fond d'écran…",
+   "bn": "ওয়ালপেপার আপডেট হচ্ছে…",
+   "pt-BR": "Atualizando o papel de parede…",
+   "ru": "Обновляю обои…",
+   "id": "Memperbarui wallpaper…"
+  },
+  "Restore my previous wallpaper": {
+   "zh-Hans": "恢复我之前的壁纸",
+   "hi": "मेरा पिछला वॉलपेपर वापस लाएँ",
+   "es": "Restaurar mi fondo anterior",
+   "ar": "استعادة خلفيتي السابقة",
+   "fr": "Remettre mon fond d'écran d'avant",
+   "bn": "আমার আগের ওয়ালপেপার ফিরিয়ে আনুন",
+   "pt-BR": "Restaurar meu papel de parede anterior",
+   "ru": "Вернуть мои прежние обои",
+   "id": "Pulihkan wallpaper saya sebelumnya"
+  },
+  "Your previous wallpaper is back.": {
+   "zh-Hans": "之前的壁纸已恢复。",
+   "hi": "आपका पिछला वॉलपेपर वापस आ गया।",
+   "es": "Tu fondo anterior ha vuelto.",
+   "ar": "عادت خلفيتك السابقة.",
+   "fr": "Votre fond d'écran d'avant est revenu.",
+   "bn": "আপনার আগের ওয়ালপেপার ফিরে এসেছে।",
+   "pt-BR": "Seu papel de parede anterior voltou.",
+   "ru": "Прежние обои вернулись.",
+   "id": "Wallpaper Anda sebelumnya sudah kembali."
+  },
+  "Nothing changes on your PC until you turn one of these on.": {
+   "zh-Hans": "在你打开其中一项之前，电脑上什么都不会改变。",
+   "hi": "जब तक आप इनमें से कोई चालू नहीं करते, आपके पीसी पर कुछ नहीं बदलता।",
+   "es": "Nada cambia en tu PC hasta que actives una de estas opciones.",
+   "ar": "لا يتغيّر شيء على حاسوبك حتى تفعّل أحد هذه الخيارات.",
+   "fr": "Rien ne change sur votre PC tant que vous n'activez pas l'une de ces options.",
+   "bn": "এগুলোর একটি চালু না করা পর্যন্ত আপনার পিসিতে কিছুই বদলায় না।",
+   "pt-BR": "Nada muda no seu PC até você ativar uma destas opções.",
+   "ru": "Пока вы не включите одно из этого, на компьютере ничего не изменится.",
+   "id": "Tidak ada yang berubah di PC Anda sampai Anda menyalakan salah satunya."
+  },
+  "Desktop": {
+   "zh-Hans": "桌面",
+   "hi": "डेस्कटॉप",
+   "es": "Escritorio",
+   "ar": "سطح المكتب",
+   "fr": "Bureau",
+   "bn": "ডেস্কটপ",
+   "pt-BR": "Área de trabalho",
+   "ru": "Рабочий стол",
+   "id": "Desktop"
+  },
+  "Lock screen": {
+   "zh-Hans": "锁屏",
+   "hi": "लॉक स्क्रीन",
+   "es": "Pantalla de bloqueo",
+   "ar": "شاشة القفل",
+   "fr": "Écran de verrouillage",
+   "bn": "লক স্ক্রিন",
+   "pt-BR": "Tela de bloqueio",
+   "ru": "Экран блокировки",
+   "id": "Layar kunci"
+  },
+  "The Windows lock screen can't animate: Ciel appears there as a picture, refreshed with his mood.": {
+   "zh-Hans": "Windows 锁屏无法播放动画：Ciel 会以图片形式出现，并随他的心情刷新。",
+   "hi": "Windows लॉक स्क्रीन एनिमेशन नहीं दिखा सकती: वहाँ Ciel एक तस्वीर के रूप में दिखता है, जो उसके मूड के साथ बदलती है।",
+   "es": "La pantalla de bloqueo de Windows no se puede animar: Ciel aparece ahí como una imagen que se actualiza con su estado de ánimo.",
+   "ar": "لا يمكن تحريك شاشة قفل Windows: يظهر Ciel عليها كصورة تتجدد مع مزاجه.",
+   "fr": "L'écran de verrouillage de Windows ne peut pas être animé : Ciel y apparaît en image, mise à jour selon son humeur.",
+   "bn": "Windows লক স্ক্রিনে অ্যানিমেশন চলে না: সেখানে Ciel একটি ছবি হিসেবে থাকে, যা তার মেজাজের সাথে বদলায়।",
+   "pt-BR": "A tela de bloqueio do Windows não pode ser animada: o Ciel aparece lá como uma imagem, atualizada conforme o humor dele.",
+   "ru": "Экран блокировки Windows не умеет анимацию: там Ciel — картинка, которая обновляется вместе с его настроением.",
+   "id": "Layar kunci Windows tidak bisa beranimasi: Ciel muncul di sana sebagai gambar yang diperbarui sesuai suasana hatinya."
+  },
+  "Mode": {
+   "zh-Hans": "模式",
+   "hi": "मोड",
+   "es": "Modo",
+   "ar": "الوضع",
+   "fr": "Mode",
+   "bn": "মোড",
+   "pt-BR": "Modo",
+   "ru": "Режим",
+   "id": "Mode"
+  },
+  "Animated pauses while a fullscreen app is in front and on battery.": {
+   "zh-Hans": "全屏应用在前台或使用电池时，动画会暂停。",
+   "hi": "जब कोई फ़ुलस्क्रीन ऐप सामने हो या बैटरी पर चल रहा हो, तो एनिमेशन रुक जाता है।",
+   "es": "La animación se pausa cuando hay una aplicación a pantalla completa delante y con batería.",
+   "ar": "تتوقف الحركة مؤقتًا عندما يكون تطبيق بملء الشاشة في المقدمة وعند العمل على البطارية.",
+   "fr": "L'animation se met en pause quand une application plein écran est au premier plan et sur batterie.",
+   "bn": "কোনো ফুলস্ক্রিন অ্যাপ সামনে থাকলে ও ব্যাটারিতে চললে অ্যানিমেশন থেমে থাকে।",
+   "pt-BR": "A animação pausa quando há um app em tela cheia na frente e na bateria.",
+   "ru": "Анимация приостанавливается, когда впереди полноэкранное приложение, и при работе от батареи.",
+   "id": "Animasi dijeda saat ada aplikasi layar penuh di depan dan saat memakai baterai."
+  },
+  "Animated isn't available on this desktop: still pictures are used.": {
+   "zh-Hans": "此桌面不支持动态壁纸：将使用静态图片。",
+   "hi": "इस डेस्कटॉप पर एनिमेशन उपलब्ध नहीं है: स्थिर तस्वीरें इस्तेमाल होती हैं।",
+   "es": "La animación no está disponible en este escritorio: se usan imágenes fijas.",
+   "ar": "الخلفية المتحركة غير متاحة على سطح المكتب هذا: تُستخدم صور ثابتة.",
+   "fr": "L'animation n'est pas disponible sur ce bureau : des images fixes sont utilisées.",
+   "bn": "এই ডেস্কটপে অ্যানিমেশন নেই: স্থির ছবি ব্যবহার করা হয়।",
+   "pt-BR": "A animação não está disponível nesta área de trabalho: são usadas imagens estáticas.",
+   "ru": "На этом рабочем столе анимация недоступна: используются статичные картинки.",
+   "id": "Animasi tidak tersedia di desktop ini: gambar diam yang dipakai."
+  },
+  "Pause on battery": {
+   "zh-Hans": "使用电池时暂停",
+   "hi": "बैटरी पर रोकें",
+   "es": "Pausar con batería",
+   "ar": "إيقاف مؤقت عند العمل على البطارية",
+   "fr": "Pause sur batterie",
+   "bn": "ব্যাটারিতে থামান",
+   "pt-BR": "Pausar na bateria",
+   "ru": "Пауза от батареи",
+   "id": "Jeda saat pakai baterai"
+  },
+  "Automatic (from your time zone)": {
+   "zh-Hans": "自动（根据你的时区）",
+   "hi": "स्वचालित (आपके समय क्षेत्र से)",
+   "es": "Automático (según tu zona horaria)",
+   "ar": "تلقائي (من منطقتك الزمنية)",
+   "fr": "Automatique (selon votre fuseau horaire)",
+   "bn": "স্বয়ংক্রিয় (আপনার টাইম জোন থেকে)",
+   "pt-BR": "Automático (pelo seu fuso horário)",
+   "ru": "Автоматически (по часовому поясу)",
+   "id": "Otomatis (dari zona waktu Anda)"
+  },
+  "Coordinates": {
+   "zh-Hans": "坐标",
+   "hi": "निर्देशांक",
+   "es": "Coordenadas",
+   "ar": "إحداثيات",
+   "fr": "Coordonnées",
+   "bn": "স্থানাঙ্ক",
+   "pt-BR": "Coordenadas",
+   "ru": "Координаты",
+   "id": "Koordinat"
+  },
+  "Latitude": {
+   "zh-Hans": "纬度",
+   "hi": "अक्षांश",
+   "es": "Latitud",
+   "ar": "خط العرض",
+   "fr": "Latitude",
+   "bn": "অক্ষাংশ",
+   "pt-BR": "Latitude",
+   "ru": "Широта",
+   "id": "Lintang"
+  },
+  "Longitude": {
+   "zh-Hans": "经度",
+   "hi": "देशांतर",
+   "es": "Longitud",
+   "ar": "خط الطول",
+   "fr": "Longitude",
+   "bn": "দ্রাঘিমাংশ",
+   "pt-BR": "Longitude",
+   "ru": "Долгота",
+   "id": "Bujur"
+  },
+  "Today: sunrise {rise} · sunset {set}": {
+   "zh-Hans": "今天：日出 {rise} · 日落 {set}",
+   "hi": "आज: सूर्योदय {rise} · सूर्यास्त {set}",
+   "es": "Hoy: amanecer {rise} · atardecer {set}",
+   "ar": "اليوم: الشروق {rise} · الغروب {set}",
+   "fr": "Aujourd'hui : lever {rise} · coucher {set}",
+   "bn": "আজ: সূর্যোদয় {rise} · সূর্যাস্ত {set}",
+   "pt-BR": "Hoje: nascer do sol {rise} · pôr do sol {set}",
+   "ru": "Сегодня: восход {rise} · закат {set}",
+   "id": "Hari ini: matahari terbit {rise} · terbenam {set}"
+  },
+  "Today the sun doesn't set.": {
+   "zh-Hans": "今天太阳不落。",
+   "hi": "आज सूरज नहीं डूबता।",
+   "es": "Hoy el sol no se pone.",
+   "ar": "اليوم لا تغرب الشمس.",
+   "fr": "Aujourd'hui, le soleil ne se couche pas.",
+   "bn": "আজ সূর্য অস্ত যায় না।",
+   "pt-BR": "Hoje o sol não se põe.",
+   "ru": "Сегодня солнце не заходит.",
+   "id": "Hari ini matahari tidak terbenam."
+  },
+  "Today the sun doesn't rise.": {
+   "zh-Hans": "今天太阳不升起。",
+   "hi": "आज सूरज नहीं उगता।",
+   "es": "Hoy el sol no sale.",
+   "ar": "اليوم لا تشرق الشمس.",
+   "fr": "Aujourd'hui, le soleil ne se lève pas.",
+   "bn": "আজ সূর্য ওঠে না।",
+   "pt-BR": "Hoje o sol não nasce.",
+   "ru": "Сегодня солнце не встаёт.",
+   "id": "Hari ini matahari tidak terbit."
+  },
+  "Guessed from your time zone ({zone}).": {
+   "zh-Hans": "根据你的时区（{zone}）推测。",
+   "hi": "आपके समय क्षेत्र ({zone}) से अनुमानित।",
+   "es": "Estimado a partir de tu zona horaria ({zone}).",
+   "ar": "مُقدَّر من منطقتك الزمنية ({zone}).",
+   "fr": "Déduit de votre fuseau horaire ({zone}).",
+   "bn": "আপনার টাইম জোন ({zone}) থেকে আন্দাজ করা।",
+   "pt-BR": "Estimado pelo seu fuso horário ({zone}).",
+   "ru": "Определено по часовому поясу ({zone}).",
+   "id": "Diperkirakan dari zona waktu Anda ({zone})."
+  },
+  "Where you are": {
+   "zh-Hans": "你的位置",
+   "hi": "आप कहाँ हैं",
+   "es": "Dónde estás",
+   "ar": "مكانك",
+   "fr": "Où vous êtes",
+   "bn": "আপনি কোথায়",
+   "pt-BR": "Onde você está",
+   "ru": "Где вы",
+   "id": "Lokasi Anda"
+  },
+  "Auto": {
+   "zh-Hans": "自动",
+   "hi": "ऑटो",
+   "es": "Auto",
+   "ar": "تلقائي",
+   "fr": "Auto",
+   "bn": "অটো",
+   "pt-BR": "Auto",
+   "ru": "Авто",
+   "id": "Otomatis"
+  },
+  "Moods": {
+   "zh-Hans": "心情",
+   "hi": "मूड",
+   "es": "Estados de ánimo",
+   "ar": "الأمزجة",
+   "fr": "Humeurs",
+   "bn": "মেজাজ",
+   "pt-BR": "Humores",
+   "ru": "Настроения",
+   "id": "Suasana hati"
+  },
+  "Each mood picks the weather. Auto follows the time of day.": {
+   "zh-Hans": "每种心情选择一种天气。“自动”跟随一天中的时间。",
+   "hi": "हर मूड मौसम चुनता है। ऑटो दिन के समय के साथ चलता है।",
+   "es": "Cada estado de ánimo elige el tiempo. Auto sigue la hora del día.",
+   "ar": "كل مزاج يختار الطقس. «تلقائي» يتبع وقت اليوم.",
+   "fr": "Chaque humeur choisit la météo. Auto suit l'heure de la journée.",
+   "bn": "প্রতিটি মেজাজ আবহাওয়া বেছে নেয়। অটো দিনের সময় অনুসরণ করে।",
+   "pt-BR": "Cada humor escolhe o clima. Auto segue a hora do dia.",
+   "ru": "Каждое настроение выбирает погоду. «Авто» следует времени суток.",
+   "id": "Setiap suasana hati memilih cuacanya. Otomatis mengikuti waktu."
+  },
+  "Themes": {
+   "zh-Hans": "主题",
+   "hi": "थीम",
+   "es": "Temas",
+   "ar": "السمات",
+   "fr": "Thèmes",
+   "bn": "থিম",
+   "pt-BR": "Temas",
+   "ru": "Темы",
+   "id": "Tema"
+  },
+  "Drawn skies are made by Ciel. Photos are free pictures from NASA (space) and Wikimedia Commons, downloaded only when you ask.": {
+   "zh-Hans": "绘制的天空由 Ciel 生成。照片是来自 NASA（太空）和 Wikimedia Commons 的免费图片，只在你要求时下载。",
+   "hi": "बनाए गए आसमान Ciel खुद बनाता है। फ़ोटो NASA (अंतरिक्ष) और Wikimedia Commons की मुफ़्त तस्वीरें हैं, जो सिर्फ़ आपके कहने पर डाउनलोड होती हैं।",
+   "es": "Los cielos dibujados los crea Ciel. Las fotos son imágenes libres de la NASA (espacio) y Wikimedia Commons, que solo se descargan cuando lo pides.",
+   "ar": "السماوات المرسومة من صنع Ciel. أما الصور فهي صور مجانية من NASA (الفضاء) وWikimedia Commons، لا تُنزَّل إلا عندما تطلب ذلك.",
+   "fr": "Les ciels dessinés sont faits par Ciel. Les photos sont des images libres de la NASA (espace) et de Wikimedia Commons, téléchargées seulement quand vous le demandez.",
+   "bn": "আঁকা আকাশ Ciel নিজেই তৈরি করে। ছবিগুলো NASA (মহাকাশ) ও Wikimedia Commons-এর বিনামূল্যের ছবি, শুধু আপনি চাইলে ডাউনলোড হয়।",
+   "pt-BR": "Os céus desenhados são feitos pelo Ciel. As fotos são imagens livres da NASA (espaço) e do Wikimedia Commons, baixadas só quando você pede.",
+   "ru": "Нарисованное небо делает сам Ciel. Фото — свободные снимки NASA (космос) и Wikimedia Commons, они скачиваются только по вашему запросу.",
+   "id": "Langit gambar dibuat oleh Ciel. Foto adalah gambar gratis dari NASA (luar angkasa) dan Wikimedia Commons, diunduh hanya saat Anda memintanya."
+  },
+  "Drawn": {
+   "zh-Hans": "绘制",
+   "hi": "बनाया हुआ",
+   "es": "Dibujado",
+   "ar": "مرسوم",
+   "fr": "Dessiné",
+   "bn": "আঁকা",
+   "pt-BR": "Desenhado",
+   "ru": "Рисованное",
+   "id": "Gambar"
+  },
+  "Photos": {
+   "zh-Hans": "照片",
+   "hi": "फ़ोटो",
+   "es": "Fotos",
+   "ar": "صور",
+   "fr": "Photos",
+   "bn": "ছবি",
+   "pt-BR": "Fotos",
+   "ru": "Фото",
+   "id": "Foto"
+  },
+  "Get 10 photos": {
+   "zh-Hans": "获取 10 张照片",
+   "hi": "10 फ़ोटो लें",
+   "es": "Obtener 10 fotos",
+   "ar": "جلب 10 صور",
+   "fr": "Obtenir 10 photos",
+   "bn": "10টি ছবি আনুন",
+   "pt-BR": "Baixar 10 fotos",
+   "ru": "Скачать 10 фото",
+   "id": "Ambil 10 foto"
+  },
+  "No photos yet: the drawn sky is used.": {
+   "zh-Hans": "还没有照片：使用绘制的天空。",
+   "hi": "अभी कोई फ़ोटो नहीं: बनाया हुआ आसमान इस्तेमाल होता है।",
+   "es": "Aún no hay fotos: se usa el cielo dibujado.",
+   "ar": "لا صور بعد: تُستخدم السماء المرسومة.",
+   "fr": "Pas encore de photos : le ciel dessiné est utilisé.",
+   "bn": "এখনো কোনো ছবি নেই: আঁকা আকাশ ব্যবহার হচ্ছে।",
+   "pt-BR": "Ainda não há fotos: o céu desenhado é usado.",
+   "ru": "Фото пока нет: используется рисованное небо.",
+   "id": "Belum ada foto: langit gambar yang dipakai."
+  },
+  "Downloading…": {
+   "zh-Hans": "正在下载…",
+   "hi": "डाउनलोड हो रहा है…",
+   "es": "Descargando…",
+   "ar": "جارٍ التنزيل…",
+   "fr": "Téléchargement…",
+   "bn": "ডাউনলোড হচ্ছে…",
+   "pt-BR": "Baixando…",
+   "ru": "Загрузка…",
+   "id": "Mengunduh…"
+  },
+  "Could not download: {error}": {
+   "zh-Hans": "无法下载：{error}",
+   "hi": "डाउनलोड नहीं हो सका: {error}",
+   "es": "No se pudo descargar: {error}",
+   "ar": "تعذّر التنزيل: {error}",
+   "fr": "Téléchargement impossible : {error}",
+   "bn": "ডাউনলোড করা যায়নি: {error}",
+   "pt-BR": "Não foi possível baixar: {error}",
+   "ru": "Не удалось скачать: {error}",
+   "id": "Tidak bisa mengunduh: {error}"
+  },
+  "{title} by {author} ({license})": {
+   "zh-Hans": "{title}，作者 {author}（{license}）",
+   "hi": "{title}, {author} द्वारा ({license})",
+   "es": "{title}, de {author} ({license})",
+   "ar": "{title} من {author} ({license})",
+   "fr": "{title}, par {author} ({license})",
+   "bn": "{title}, {author}-এর ({license})",
+   "pt-BR": "{title}, de {author} ({license})",
+   "ru": "{title}, автор {author} ({license})",
+   "id": "{title} oleh {author} ({license})"
+  },
+  "Open the source page": {
+   "zh-Hans": "打开来源页面",
+   "hi": "स्रोत पेज खोलें",
+   "es": "Abrir la página de origen",
+   "ar": "فتح صفحة المصدر",
+   "fr": "Ouvrir la page source",
+   "bn": "উৎস পেজ খুলুন",
+   "pt-BR": "Abrir a página de origem",
+   "ru": "Открыть страницу источника",
+   "id": "Buka halaman sumber"
+  },
+  "Size": {
+   "zh-Hans": "大小",
+   "hi": "आकार",
+   "es": "Tamaño",
+   "ar": "الحجم",
+   "fr": "Taille",
+   "bn": "আকার",
+   "pt-BR": "Tamanho",
+   "ru": "Размер",
+   "id": "Ukuran"
+  },
+  "Horizontal position": {
+   "zh-Hans": "水平位置",
+   "hi": "क्षैतिज स्थिति",
+   "es": "Posición horizontal",
+   "ar": "الموضع الأفقي",
+   "fr": "Position horizontale",
+   "bn": "অনুভূমিক অবস্থান",
+   "pt-BR": "Posição horizontal",
+   "ru": "По горизонтали",
+   "id": "Posisi horizontal"
+  },
+  "Vertical position": {
+   "zh-Hans": "垂直位置",
+   "hi": "ऊर्ध्वाधर स्थिति",
+   "es": "Posición vertical",
+   "ar": "الموضع العمودي",
+   "fr": "Position verticale",
+   "bn": "উল্লম্ব অবস্থান",
+   "pt-BR": "Posição vertical",
+   "ru": "По вертикали",
+   "id": "Posisi vertikal"
+  },
+  "On the lock screen he stays below the clock.": {
+   "zh-Hans": "在锁屏上，他会待在时钟下方。",
+   "hi": "लॉक स्क्रीन पर वह घड़ी के नीचे रहता है।",
+   "es": "En la pantalla de bloqueo se queda debajo del reloj.",
+   "ar": "على شاشة القفل يبقى أسفل الساعة.",
+   "fr": "Sur l'écran de verrouillage, il reste sous l'horloge.",
+   "bn": "লক স্ক্রিনে সে ঘড়ির নিচে থাকে।",
+   "pt-BR": "Na tela de bloqueio ele fica abaixo do relógio.",
+   "ru": "На экране блокировки он держится ниже часов.",
+   "id": "Di layar kunci ia tetap di bawah jam."
+  },
+  "{count} photos": {
+   "zh-Hans": {
+    "other": "{count} 张照片"
+   },
+   "hi": {
+    "one": "{count} फ़ोटो",
+    "other": "{count} फ़ोटो"
+   },
+   "es": {
+    "one": "{count} foto",
+    "other": "{count} fotos"
+   },
+   "ar": {
+    "zero": "لا صور",
+    "one": "صورة واحدة",
+    "two": "صورتان",
+    "few": "{count} صور",
+    "many": "{count} صورة",
+    "other": "{count} صورة"
+   },
+   "fr": {
+    "one": "{count} photo",
+    "other": "{count} photos"
+   },
+   "bn": {
+    "one": "{count}টি ছবি",
+    "other": "{count}টি ছবি"
+   },
+   "pt-BR": {
+    "one": "{count} foto",
+    "other": "{count} fotos"
+   },
+   "ru": {
+    "one": "{count} фото",
+    "few": "{count} фото",
+    "many": "{count} фото",
+    "other": "{count} фото"
+   },
+   "id": {
+    "other": "{count} foto"
+   }
+  },
+  "{count} new photos": {
+   "zh-Hans": {
+    "other": "{count} 张新照片"
+   },
+   "hi": {
+    "one": "{count} नई फ़ोटो",
+    "other": "{count} नई फ़ोटो"
+   },
+   "es": {
+    "one": "{count} foto nueva",
+    "other": "{count} fotos nuevas"
+   },
+   "ar": {
+    "zero": "لا صور جديدة",
+    "one": "صورة جديدة واحدة",
+    "two": "صورتان جديدتان",
+    "few": "{count} صور جديدة",
+    "many": "{count} صورة جديدة",
+    "other": "{count} صورة جديدة"
+   },
+   "fr": {
+    "one": "{count} nouvelle photo",
+    "other": "{count} nouvelles photos"
+   },
+   "bn": {
+    "one": "{count}টি নতুন ছবি",
+    "other": "{count}টি নতুন ছবি"
+   },
+   "pt-BR": {
+    "one": "{count} foto nova",
+    "other": "{count} fotos novas"
+   },
+   "ru": {
+    "one": "{count} новое фото",
+    "few": "{count} новых фото",
+    "many": "{count} новых фото",
+    "other": "{count} новых фото"
+   },
+   "id": {
+    "other": "{count} foto baru"
+   }
   }
  }
 }

@@ -1,0 +1,334 @@
+{
+ "collection": {
+  "version": "1.1",
+  "href": "http://images-api.nasa.gov/search?q=nebula&media_type=image&page_size=100",
+  "items": [
+   {
+    "href": "https://images-assets.nasa.gov/image/PIA14417/collection.json",
+    "data": [
+     {
+      "center": "JPL",
+      "date_created": "2011-08-10T21:00:09Z",
+      "description": "The Dumbbell nebula, also known as Messier 27, pumps out infrared light in this image from NASA Spitzer Space Telescope. Planetary nebulae are now known to be the remains of stars that once looked a lot like our sun.",
+      "description_508": "The Dumbbell nebula, also known as Messier 27, pumps out infrared light in this image from NASA Spitzer Space Telescope. Planetary nebulae are now known to be the remains of stars that once looked a lot like our sun.",
+      "keywords": [
+       "Helix Nebula",
+       "Spitzer Space Telescope"
+      ],
+      "media_type": "image",
+      "nasa_id": "PIA14417",
+      "secondary_creator": "NASA/JPL-Caltech/Harvard-Smithsonian CfA",
+      "title": "Weighing in on the Dumbbell Nebula"
+     }
+    ],
+    "links": [
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA14417/PIA14417~medium.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 1280,
+      "size": 161000,
+      "height": 640
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA14417/PIA14417~small.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 640,
+      "size": 54000,
+      "height": 320
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA14417/PIA14417~thumb.jpg",
+      "rel": "preview",
+      "render": "image",
+      "width": 640,
+      "size": 54000,
+      "height": 320
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA14417/PIA14417~orig.jpg",
+      "rel": "canonical",
+      "render": "image",
+      "height": 1400,
+      "width": 2800,
+      "size": 490000
+     }
+    ]
+   },
+   {
+    "href": "https://images-assets.nasa.gov/image/PIA13014/collection.json",
+    "data": [
+     {
+      "center": "JPL",
+      "date_created": "2010-04-05T21:11:05Z",
+      "description": "This mosaic from NASA WISE Telescope is of the Soul Nebula. It is an open cluster of stars surrounded by a cloud of dust and gas located about 6,500 light-years from Earth in the constellation Cassiopeia, near the Heart Nebula.",
+      "description_508": "This mosaic from NASA WISE Telescope is of the Soul Nebula. It is an open cluster of stars surrounded by a cloud of dust and gas located about 6,500 light-years from Earth in the constellation Cassiopeia, near the Heart Nebula.",
+      "keywords": [
+       "Wide-field Infrared Survey Explorer WISE"
+      ],
+      "media_type": "image",
+      "nasa_id": "PIA13014",
+      "secondary_creator": "NASA/JPL-Caltech/UCLA",
+      "title": "Soul Nebula"
+     }
+    ],
+    "links": [
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA13014/PIA13014~medium.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 1280,
+      "size": 179000,
+      "height": 669
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA13014/PIA13014~small.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 640,
+      "size": 50000,
+      "height": 334
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA13014/PIA13014~thumb.jpg",
+      "rel": "preview",
+      "render": "image",
+      "width": 640,
+      "size": 50000,
+      "height": 334
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA13014/PIA13014~large.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 1920,
+      "size": 352000,
+      "height": 1003
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA13014/PIA13014~orig.jpg",
+      "rel": "canonical",
+      "render": "image",
+      "height": 3482,
+      "width": 6660,
+      "size": 2030000
+     }
+    ]
+   },
+   {
+    "href": "https://images-assets.nasa.gov/image/PIA04220/collection.json",
+    "data": [
+     {
+      "center": "JPL",
+      "date_created": "1999-12-02T00:00:06Z",
+      "description": "Atlas Image mosaic, covering 14.8 x 20.0 on the sky, of the Trifid Nebula, aka Messier 20 and NGC 6514. The Trifid is only about 1.5 degrees northwest on the sky of the larger Lagoon Nebula Messier 8 in the constellation Sagittarius",
+      "description_508": "Atlas Image mosaic, covering 14.8 x 20.0 on the sky, of the Trifid Nebula, aka Messier 20 and NGC 6514. The Trifid is only about 1.5 degrees northwest on the sky of the larger Lagoon Nebula Messier 8 in the constellation Sagittarius",
+      "keywords": [
+       "Trifid Nebula",
+       "Two Micron All Sky Survey 2MASS"
+      ],
+      "media_type": "image",
+      "nasa_id": "PIA04220",
+      "secondary_creator": "2MASS",
+      "title": "Trifid Nebula"
+     }
+    ],
+    "links": [
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA04220/PIA04220~small.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 422,
+      "size": 97000,
+      "height": 640
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA04220/PIA04220~thumb.jpg",
+      "rel": "preview",
+      "render": "image",
+      "width": 422,
+      "size": 97000,
+      "height": 640
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA04220/PIA04220~orig.jpg",
+      "rel": "canonical",
+      "render": "image",
+      "height": 1408,
+      "width": 930,
+      "size": 313000
+     }
+    ]
+   },
+   {
+    "href": "https://images-assets.nasa.gov/image/PIA04216/collection.json",
+    "data": [
+     {
+      "center": "JPL",
+      "date_created": "1999-12-10T00:00:01Z",
+      "description": "This image from NASA Hubble Space Telescope image of a celestial object called the Ant Nebula may shed new light on the future demise of our Sun. ",
+      "description_508": "This image from NASA Hubble Space Telescope image of a celestial object called the Ant Nebula may shed new light on the future demise of our Sun. ",
+      "keywords": [
+       "Ant nebula",
+       "Hubble Space Telescope"
+      ],
+      "media_type": "image",
+      "nasa_id": "PIA04216",
+      "secondary_creator": "NASA/Space Telescope Science Institute",
+      "title": "Ant Nebula"
+     }
+    ],
+    "links": [
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA04216/PIA04216~small.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 640,
+      "size": 53000,
+      "height": 422
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA04216/PIA04216~thumb.jpg",
+      "rel": "preview",
+      "render": "image",
+      "width": 640,
+      "size": 53000,
+      "height": 422
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/PIA04216/PIA04216~orig.jpg",
+      "rel": "canonical",
+      "render": "image",
+      "height": 708,
+      "width": 1072,
+      "size": 145000
+     }
+    ]
+   },
+   {
+    "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001955/collection.json",
+    "data": [
+     {
+      "album": [
+       "Test"
+      ],
+      "center": "GSFC",
+      "date_created": "2017-12-08T00:00:00Z",
+      "description": "Image release date September 22, 2010  To view a video of this image go here: <a href=\"http://www.flickr.com/photos/gsfc/5014452203\">www.flickr.com/photos/gsfc/5014452203</a>  Caption: A spectacular new NASA/ESA Hubble Space Telescope image reveals the heart of the Lagoon Nebula. Seen as a massive cloud of glowing dust and gas, bombarded by the energetic radiation of new stars, this placid name hides a dramatic reality.  The Advanced Camera for Surveys (ACS) on the NASA/ESA Hubble Space Telescope has captured a dramatic view of gas and dust sculpted by intense radiation from hot young stars deep in the heart of the Lagoon Nebula (Messier 8). This spectacular object is named after the wide, lagoon-shaped dust lane that crosses the glowing gas of the nebula.  This structure is prominent in wide-field images, but cannot be seen in this close-up. However the strange billowing shapes and sandy texture visible in this image make the Lagoon Nebula’s watery name eerily appropriate from this viewpoint too.  Located four to five thousand light-years away, in the constellation of Sagittarius (the Archer), Messier 8 is a huge region of star birth that stretches across one hundred light-years. Clouds of hydrogen gas are slowly collapsing to form new stars, whose bright ultraviolet rays then light up the surrounding gas in a distinctive shade of red.  The wispy tendrils and beach-like features of the nebula are not caused by the ebb and flow of tides, but rather by ultraviolet radiation’s ability to erode and disperse the gas and dust into the distinctive shapes that we see.  In recent years astronomers probing the secrets of the Lagoon Nebula have found the first unambiguous proof that star formation by accretion of matter from the gas cloud is ongoing in this region.  Young stars that are still surrounded by an accretion disc occasionally shoot out long tendrils of matter from their poles. Several examples of these jets, known as Herbig-Haro objects, have been found in this nebula in the last five years, providing strong support for astronomers’ theories about star formation in such hydrogen-rich regions.  The Lagoon Nebula is faintly visible to the naked eye on dark nights as a small patch of grey in the heart of the Milky Way. Without a telescope, the nebula looks underwhelming because human eyes are unable to distinguish clearly between colours at low light levels. Charles Messier, the 18th century French astronomer, observed the nebula and included it in his famous astronomical catalogue, from which the nebula’s alternative name comes. But his relatively small refracting telescope would only have hinted at the dramatic structures and colours now visible thanks to Hubble.  The Hubble Space Telescope is a project of international cooperation between ESA and NASA.  Image credit: NASA, ESA  <b><a href=\"http://www.nasa.gov/audience/formedia/features/MP_Photo_Guidelines.html\" rel=\"nofollow\">NASA image use policy.</a></b>  <b><a href=\"http://www.nasa.gov/centers/goddard/home/index.html\" rel=\"nofollow\">NASA Goddard Space Flight Center</a></b> enables NASA’s mission through four scientific endeavors: Earth Science, Heliophysics, Solar System Exploration, and Astrophysics. Goddard plays a leading role in NASA’s accomplishments by contributing compelling scientific knowledge to advance the Agency’s mission.  <b>Follow us on <a href=\"http://twitter.com/NASAGoddardPix\" rel=\"nofollow\">Twitter</a></b>  <b>Like us on <a href=\"http://www.facebook.com/pages/Greenbelt-MD/NASA-Goddard/395013845897?ref=tsd\" rel=\"nofollow\">Facebook</a></b>  <b>Find us on <a href=\"http://instagram.com/nasagoddard?vm=grid\" rel=\"nofollow\">Instagram</a></b>  To learn more about the Hubble Space Telescope go here: <a href=\"http://www.nasa.gov/mission_pages/hubble/main/index.html\" rel=\"nofollow\">www.nasa.gov/mission_pages/hubble/main/index.html</a>",
+      "keywords": [
+       "Hubble reveals heart of Lagoon Nebula",
+       "space",
+       "nasa",
+       "nebula",
+       "hubble",
+       "hubblespacetelescope",
+       "lagoonnebula",
+       "goddardspaceflightcenter"
+      ],
+      "location": "Greenbelt, MD",
+      "media_type": "image",
+      "nasa_id": "GSFC_20171208_Archive_e001955",
+      "title": "Hubble reveals heart of Lagoon Nebula"
+     }
+    ],
+    "links": [
+     {
+      "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001955/GSFC_20171208_Archive_e001955~medium.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 1280,
+      "size": 80000,
+      "height": 654
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001955/GSFC_20171208_Archive_e001955~small.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 640,
+      "size": 25000,
+      "height": 327
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001955/GSFC_20171208_Archive_e001955~thumb.jpg",
+      "rel": "preview",
+      "render": "image",
+      "width": 640,
+      "size": 25000,
+      "height": 327
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001955/GSFC_20171208_Archive_e001955~large.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 1920,
+      "size": 172000,
+      "height": 981
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001955/GSFC_20171208_Archive_e001955~orig.jpg",
+      "rel": "canonical",
+      "render": "image"
+     }
+    ]
+   },
+   {
+    "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001465/collection.json",
+    "data": [
+     {
+      "album": [
+       "Test"
+      ],
+      "center": "GSFC",
+      "date_created": "2017-12-08T00:00:00Z",
+      "description": "This planetary nebula's simple, graceful appearance is thought to be due to perspective: our view from Earth looking straight into what is actually a barrel-shaped cloud of gas shrugged off by a dying central star. Hot blue gas near the energizing central star gives way to progressively cooler green and yellow gas at greater distances with the coolest red gas along the outer boundary. Credit: NASA/Hubble Heritage Team   ----  The Ring Nebula's distinctive shape makes it a popular illustration for astronomy books. But new observations by NASA's Hubble Space Telescope of the glowing gas shroud around an old, dying, sun-like star reveal a new twist.  &quot;The nebula is not like a bagel, but rather, it's like a jelly doughnut, because it's filled with material in the middle,&quot; said C. Robert O'Dell of Vanderbilt University in Nashville, Tenn. He leads a research team that used Hubble and several ground-based telescopes to obtain the best view yet of the iconic nebula. The images show a more complex structure than astronomers once thought and have allowed them to construct the most precise 3-D model of the nebula.  &quot;With Hubble's detail, we see a completely different shape than what's been thought about historically for this classic nebula,&quot; O'Dell said. &quot;The new Hubble observations show the nebula in much clearer detail, and we see things are not as simple as we previously thought.&quot;   The Ring Nebula is about 2,000 light-years from Earth and measures roughly 1 light-year across. Located in the constellation Lyra, the nebula is a popular target for amateur astronomers. Read more: <a href=\"http://1.usa.gov/14VAOMk\" rel=\"nofollow\">1.usa.gov/14VAOMk</a>  <b><a href=\"http://www.nasa.gov/audience/formedia/features/MP_Photo_Guidelines.html\" rel=\"nofollow\">NASA image use policy.</a></b>  <b><a href=\"http://www.nasa.gov/centers/goddard/home/index.html\" rel=\"nofollow\">NASA Goddard Space Flight Center</a></b> enables NASA’s mission through four scientific endeavors: Earth Science, Heliophysics, Solar System Exploration, and Astrophysics. Goddard plays a leading role in NASA’s accomplishments by contributing compelling scientific knowledge to advance the Agency’s mission.  <b>Follow us on <a href=\"http://twitter.com/NASAGoddardPix\" rel=\"nofollow\">Twitter</a></b>  <b>Like us on <a href=\"http://www.facebook.com/pages/Greenbelt-MD/NASA-Goddard/395013845897?ref=tsd\" rel=\"nofollow\">Facebook</a></b>  <b>Find us on <a href=\"http://instagram.com/nasagoddard?vm=grid\" rel=\"nofollow\">Instagram</a></b>",
+      "keywords": [
+       "Planetary Nebula",
+       "nasa",
+       "nebula",
+       "hubble",
+       "hubblespacetelescope"
+      ],
+      "location": "Greenbelt, MD",
+      "media_type": "image",
+      "nasa_id": "GSFC_20171208_Archive_e001465",
+      "title": "Planetary Nebula"
+     }
+    ],
+    "links": [
+     {
+      "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001465/GSFC_20171208_Archive_e001465~small.jpg",
+      "rel": "alternate",
+      "render": "image",
+      "width": 626,
+      "size": 20000,
+      "height": 639
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001465/GSFC_20171208_Archive_e001465~thumb.jpg",
+      "rel": "preview",
+      "render": "image",
+      "width": 626,
+      "size": 20000,
+      "height": 639
+     },
+     {
+      "href": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001465/GSFC_20171208_Archive_e001465~orig.jpg",
+      "rel": "canonical",
+      "render": "image"
+     }
+    ]
+   }
+  ],
+  "metadata": {
+   "total_hits": 316
+  },
+  "links": [
+   {
+    "rel": "next",
+    "prompt": "Next",
+    "href": "http://images-api.nasa.gov/search?q=nebula&media_type=image&page_size=100&page=2"
+   }
+  ]
+ }
+}

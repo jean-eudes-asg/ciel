@@ -66,6 +66,15 @@ windows = { version = "0.61", features = [
   "Win32_UI_WindowsAndMessaging",
   # Flow dictation's keyboard hook.
   "Win32_System_LibraryLoader",
+  # Wallpapers (wallpaper/): the lock screen through WinRT, the live window
+  # behind the desktop icons, and what pauses it (power, session, display).
+  "Storage",
+  "System_UserProfile",
+  "Win32_Graphics_Dwm",
+  "Win32_Graphics_Gdi",
+  "Win32_System_Power",
+  "Win32_System_RemoteDesktop",
+  "Win32_UI_Shell_Common",
 ] }
 # The clipboard for Flow dictation, kept out of the clipboard history. MIT/Apache-2.0.
 arboard = { version = "3.6", default-features = false }

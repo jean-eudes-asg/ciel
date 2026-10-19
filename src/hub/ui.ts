@@ -31,6 +31,7 @@ export const HUB_ICONS: Record<string, string> = {
   dots: "M6 12h.01M12 12h.01M18 12h.01",
   lock: "M6.5 11h11v9h-11zM8.5 11V8a3.5 3.5 0 0 1 7 0v3",
   window: "M3.5 5h17v14h-17zM3.5 9h17",
+  image: "M3.5 5h17v14h-17zM3.5 16l5-5 4 4 2.5-2.5 5.5 5.5M15.5 9.5a1.5 1.5 0 1 0 0 .01",
 };
 
 export function icon(name: string): SVGSVGElement {

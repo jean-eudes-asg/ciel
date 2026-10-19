@@ -1,7 +1,7 @@
 // Preferences, stored as plain JSON in settings.json under platform::config_dir().
 // No secret ever lands here — API keys live in the OS keychain (see secrets.rs).
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::{Map, Value};
 use std::collections::BTreeMap;
 use std::io::ErrorKind;
@@ -72,6 +72,9 @@ pub struct Settings {
     /// The Finance pill's folder (expenses.csv and settings.json). Empty means
     /// `<config dir>/finance`; see finance.rs.
     pub finance_folder: String,
+    /// Ciel's wallpapers (wallpaper/): what they go on and how they look.
+    /// Written by the webviews, keys this build doesn't know included.
+    pub wallpaper: WallpaperPrefs,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -81,6 +84,89 @@ pub struct DesktopCloudPref {
     pub on_desktop: bool,
     /// Top-left corner of his window where the user last left him.
     pub spot: Option<DesktopSpot>,
+}
+
+/// Settings → Wallpapers. Off by default: nothing on the user's desktop or lock
+/// screen changes until they turn it on. Rust reads `pauseOnBattery` and
+/// `lockScreen`; the island owns the rest. A key this build doesn't know is
+/// kept as it comes, and a value of the wrong kind falls back to its default
+/// without costing the others.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WallpaperPrefs {
+    /// Apply to the desktop.
+    pub desktop: bool,
+    /// Apply to the lock screen.
+    pub lock_screen: bool,
+    /// Desktop animated; false = still pictures.
+    pub live: bool,
+    /// Live pauses on battery.
+    pub pause_on_battery: bool,
+    /// Where the sun is reckoned from; `None` = guessed from the time zone.
+    pub lat: Option<f64>,
+    pub lon: Option<f64>,
+    /// Ciel's width as a fraction of the screen height.
+    pub ciel_size: f64,
+    /// Ciel's centre, as fractions of the width and height.
+    pub ciel_x: f64,
+    pub ciel_y: f64,
+    /// Still pictures are redrawn at least this often.
+    pub refresh_minutes: u32,
+    /// Mood → theme or "auto"; a missing mood is "auto".
+    pub moods: Map<String, Value>,
+    /// Theme → "drawn" or "photos"; a missing theme is "drawn".
+    pub sources: Map<String, Value>,
+    /// Whatever else the webviews keep here.
+    #[serde(flatten)]
+    pub extra: Map<String, Value>,
+}
+
+impl Default for WallpaperPrefs {
+    fn default() -> Self {
+        Self {
+            desktop: false,
+            lock_screen: false,
+            live: true,
+            pause_on_battery: true,
+            lat: None,
+            lon: None,
+            ciel_size: 0.2,
+            ciel_x: 0.5,
+            ciel_y: 0.66,
+            refresh_minutes: 15,
+            moods: Map::new(),
+            sources: Map::new(),
+            extra: Map::new(),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for WallpaperPrefs {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        fn take<T: serde::de::DeserializeOwned>(fields: &mut Map<String, Value>, key: &str, into: &mut T) {
+            if let Some(value) = fields.remove(key) {
+                if let Ok(value) = serde_json::from_value(value) {
+                    *into = value;
+                }
+            }
+        }
+        let mut fields = Map::<String, Value>::deserialize(deserializer)?;
+        let mut prefs = WallpaperPrefs::default();
+        take(&mut fields, "desktop", &mut prefs.desktop);
+        take(&mut fields, "lockScreen", &mut prefs.lock_screen);
+        take(&mut fields, "live", &mut prefs.live);
+        take(&mut fields, "pauseOnBattery", &mut prefs.pause_on_battery);
+        take(&mut fields, "lat", &mut prefs.lat);
+        take(&mut fields, "lon", &mut prefs.lon);
+        take(&mut fields, "cielSize", &mut prefs.ciel_size);
+        take(&mut fields, "cielX", &mut prefs.ciel_x);
+        take(&mut fields, "cielY", &mut prefs.ciel_y);
+        take(&mut fields, "refreshMinutes", &mut prefs.refresh_minutes);
+        take(&mut fields, "moods", &mut prefs.moods);
+        take(&mut fields, "sources", &mut prefs.sources);
+        prefs.extra = fields;
+        Ok(prefs)
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -128,6 +214,7 @@ impl Default for Settings {
             language: String::new(),
             desktop_cloud: DesktopCloudPref::default(),
             finance_folder: String::new(),
+            wallpaper: WallpaperPrefs::default(),
         }
     }
 }
@@ -405,7 +492,13 @@ mod tests {
   "pillColors": { "integration_claude": "#2DD4BF" },
   "language": "pt-BR",
   "desktopCloud": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } },
-  "financeFolder": "/srv/dashboard/data"
+  "financeFolder": "/srv/dashboard/data",
+  "wallpaper": {
+    "desktop": true, "lockScreen": true, "live": false, "pauseOnBattery": false,
+    "lat": 48.85, "lon": 2.35, "cielSize": 0.3, "cielX": 0.25, "cielY": 0.5,
+    "refreshMinutes": 30, "moods": { "error": "storm", "idle": "auto" },
+    "sources": { "space": "photos" }, "aKeyFromALaterVersion": [1, 2]
+  }
 }"##;
 
     fn custom() -> Value {
@@ -684,6 +777,48 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
     }
 
+    #[test]
+    fn wallpapers_are_off_until_the_user_turns_them_on() {
+        assert_eq!(
+            serde_json::to_value(WallpaperPrefs::default()).unwrap(),
+            json!({
+                "desktop": false, "lockScreen": false, "live": true, "pauseOnBattery": true,
+                "lat": null, "lon": null, "cielSize": 0.2, "cielX": 0.5, "cielY": 0.66,
+                "refreshMinutes": 15, "moods": {}, "sources": {}
+            })
+        );
+        assert_eq!(parse(&custom_with("wallpaper", None)).unwrap().wallpaper, WallpaperPrefs::default());
+        assert_eq!(parse(b"{}").unwrap().wallpaper, WallpaperPrefs::default());
+    }
+
+    #[test]
+    fn wallpaper_keys_from_a_later_version_are_kept() {
+        let loaded = parse(CUSTOM.as_bytes()).unwrap();
+        assert_eq!(loaded.wallpaper.extra.get("aKeyFromALaterVersion"), Some(&json!([1, 2])));
+        assert_eq!(loaded.wallpaper.lat, Some(48.85));
+        assert_eq!(loaded.wallpaper.moods.get("error"), Some(&json!("storm")));
+        let written = serde_json::to_value(&loaded).unwrap();
+        assert_eq!(written["wallpaper"]["aKeyFromALaterVersion"], json!([1, 2]));
+        assert_eq!(written["wallpaper"]["refreshMinutes"], json!(30));
+    }
+
+    #[test]
+    fn a_bad_wallpaper_value_costs_only_itself() {
+        let loaded = parse(&custom_with(
+            "wallpaper",
+            Some(json!({ "desktop": true, "cielSize": "big", "lat": "north", "moods": [1], "refreshMinutes": -5 })),
+        ))
+        .unwrap();
+        let w = loaded.wallpaper;
+        assert!(w.desktop);
+        assert_eq!((w.ciel_size, w.lat, w.refresh_minutes), (0.2, None, 15));
+        assert!(w.moods.is_empty() && w.extra.is_empty());
+        // Not an object at all: the defaults, and nothing else is lost.
+        let loaded = parse(&custom_with("wallpaper", Some(json!("on")))).unwrap();
+        assert_eq!(loaded.wallpaper, WallpaperPrefs::default());
+        assert_eq!(loaded.model, "some-model");
+    }
+
     // ── Copies set aside ──────────────────────────────────────────────────────
 
     #[test]
@@ -798,6 +933,7 @@ mod tests {
                 "language",
                 "desktopCloud",
                 "financeFolder",
+                "wallpaper",
             ]
         );
         let _ = std::fs::remove_dir_all(&dir);

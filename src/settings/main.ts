@@ -24,6 +24,7 @@ import { agentsSection } from "./agents";
 import { brainSection } from "./brain";
 import { colorDot } from "./colors";
 import { renderDiff, statusDot } from "./parts";
+import { wallpaperSections } from "./wallpaper";
 import {
   LANGUAGES, N_, isRtl, onLanguageChange, resolveLanguage, setLanguage, systemLanguages, t, tn,
 } from "../i18n/i18n";
@@ -1422,6 +1423,15 @@ async function render() {
     chatKeys[key] = (await Bridge.secretPresent(key)) ?? false;
   }
   const customKey = (await Bridge.secretPresent(CUSTOM_SERVER_KEY)) ?? false;
+  const wallpaper = notchPage === "wallpaper"
+    ? await wallpaperSections({
+      get: () => settings.wallpaper,
+      set: (next) => {
+        settings.wallpaper = next;
+        void save();
+      },
+    })
+    : [];
 
   declaredViews.length = 0;
   localRedraw = null;
@@ -1434,6 +1444,7 @@ async function render() {
     chat: () => [apiSection(hasKey), brain(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
     integrations: () => [integrationsSection(present)],
     shortcuts: () => [shortcutsSection(shortcutReport)],
+    wallpaper: () => wallpaper,
   };
   root.append(...(sections[notchPage]?.() ?? []));
   if (notchPage === "general") {

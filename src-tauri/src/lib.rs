@@ -36,6 +36,7 @@ mod speech;
 mod spotify;
 mod tray;
 mod voice;
+mod wallpaper;
 #[cfg(windows)]
 mod webview_drop;
 
@@ -126,6 +127,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     }
     // Ciel's brain may have changed (its setting, a local server): « OK Ciel » follows.
     voice::sync(&app);
+    wallpaper::sync(&app, &settings.wallpaper);
     // Keep the other window in step (island ⇄ settings window).
     let _ = app.emit("settings-changed", settings);
 }
@@ -832,6 +834,15 @@ pub fn run() {
             notes::notes_export,
             voice::voice_done,
             voice::voice_say_native,
+            wallpaper::wallpaper_monitors,
+            wallpaper::wallpaper_set_desktop,
+            wallpaper::wallpaper_set_lock_screen,
+            wallpaper::wallpaper_restore,
+            wallpaper::wallpaper_photos,
+            wallpaper::wallpaper_photos_fetch,
+            wallpaper::wallpaper_photo_bytes,
+            wallpaper::wallpaper_live,
+            wallpaper::wallpaper_status,
         ])
         .setup(move |app| {
             let handle = app.handle().clone();
@@ -872,6 +883,7 @@ pub fn run() {
             integrations::start(handle.clone());
             spotify::sync(&handle, &loaded.active_integrations);
             shortcuts::apply(&handle, &loaded.shortcuts);
+            wallpaper::sync(&handle, &loaded.wallpaper);
             if loaded.autostart {
                 // Login items written before 0.5 start Ciel without --autostart:
                 // writing it again adds it, so the window stays hidden at login.
@@ -888,6 +900,7 @@ pub fn run() {
         .run(|app, event| {
             if let tauri::RunEvent::Exit = event {
                 notes::shutdown(app);
+                wallpaper::shutdown(app);
             }
         });
 }

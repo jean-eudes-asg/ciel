@@ -65,6 +65,7 @@ export default defineConfig({
         settings: resolve(__dirname, "settings.html"),
         cloud: resolve(__dirname, "cloud.html"),
         pill: resolve(__dirname, "pill.html"),
+        wallpaper: resolve(__dirname, "wallpaper.html"),
       },
     },
   },
