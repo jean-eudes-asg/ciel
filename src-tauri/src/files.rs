@@ -36,6 +36,10 @@ const DROP_MAX_PENDING: usize = 64;
 
 static DROPPED: std::sync::Mutex<Vec<(String, std::time::Instant)>> = std::sync::Mutex::new(Vec::new());
 
+/// Tests run in parallel and the list is process-wide: a test that drops takes this first.
+#[cfg(test)]
+static DROP_TESTS: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 /// Records paths that came from a real drop.
 pub fn allow_dropped<I: IntoIterator<Item = String>>(paths: I) {
     let mut list = DROPPED.lock().unwrap_or_else(|e| e.into_inner());
@@ -132,6 +136,7 @@ mod tests {
 
     #[test]
     fn ingest_copies_and_never_overwrites() {
+        let _serial = DROP_TESTS.lock().unwrap_or_else(|e| e.into_inner());
         let tmp = std::env::temp_dir().join(format!("ciel-test-{}", std::process::id()));
         std::fs::create_dir_all(&tmp).unwrap();
         let source = tmp.join("note.txt");
@@ -183,9 +188,10 @@ mod tests {
 mod drop_tests {
     use super::*;
 
-    // One test: the list is process-wide and tests run in parallel.
+    // One test, holding DROP_TESTS: the list is process-wide and tests run in parallel.
     #[test]
     fn only_a_dropped_path_is_ingested_once_and_the_list_stays_bounded() {
+        let _serial = DROP_TESTS.lock().unwrap_or_else(|e| e.into_inner());
         let p = "/tmp/ciel-test-not-dropped.txt".to_string();
         assert!(ingest(&p).is_err(), "never dropped");
         allow_dropped([p.clone()]);
