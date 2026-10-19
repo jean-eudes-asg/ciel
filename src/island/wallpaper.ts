@@ -41,7 +41,8 @@ export interface WallpaperDeps {
   monitors(): Promise<WallpaperMonitor[] | null>;
   setDesktop(monitorId: string, png: Uint8Array): Promise<void>;
   setLockScreen(png: Uint8Array): Promise<void>;
-  live(enabled: boolean): Promise<unknown>;
+  /** False when this desktop can't run live windows. */
+  live(enabled: boolean): Promise<boolean>;
   emitScene(scene: LiveScene): void;
   photos(theme: Theme): Promise<WallpaperPhoto[] | null>;
   /** A PNG of `spec` at `width`×`height`; `photo` is a cached photo's path. */
@@ -58,6 +59,8 @@ export class WallpaperController {
   private rawPrefs: unknown = undefined;
   private mood: BotStateName = "idle";
   private liveOn = false;
+  /** Live mode as the settings ask for it; liveOn is what actually runs. */
+  private liveWanted = false;
   private ticker: number | null = null;
   private timers = new Map<string, number>();
   /** What each still shows and when it was last drawn. */
@@ -98,10 +101,18 @@ export class WallpaperController {
     }
     if (this.ticker == null) this.ticker = this.deps.setInterval(() => this.tick(), TIMING.tickMs);
     const wantLive = prefs.desktop && prefs.live;
-    if (wantLive !== this.liveOn) {
+    if (wantLive !== this.liveWanted) {
+      this.liveWanted = wantLive;
       this.liveOn = wantLive;
       this.liveKey = "";
-      void this.deps.live(wantLive);
+      void this.deps.live(wantLive).then((ok) => {
+        // No live windows on this desktop: the still picture stands in.
+        if (ok === false && wantLive && this.liveWanted) {
+          this.deps.log("wallpaper: live unavailable, using a still picture");
+          this.liveOn = false;
+          this.refresh("desktop", true);
+        }
+      });
     }
     if (prefsChanged) {
       // New settings show at once (a slider saves when it is let go).
@@ -110,7 +121,7 @@ export class WallpaperController {
     }
     if (moodChanged) {
       if (this.liveOn) this.later("live", TIMING.liveDebounceMs, () => void this.pushLive());
-      if (prefs.desktop && !prefs.live) this.later("desktop", TIMING.stillDebounceMs, () => this.refresh("desktop", false));
+      if (prefs.desktop && !this.liveOn) this.later("desktop", TIMING.stillDebounceMs, () => this.refresh("desktop", false));
       if (prefs.lockScreen) this.later("lock", TIMING.stillDebounceMs, () => this.refresh("lock", false));
     }
   }
@@ -140,7 +151,8 @@ export class WallpaperController {
     this.ticker = null;
     for (const id of this.timers.values()) this.deps.clearTimeout(id);
     this.timers.clear();
-    if (this.liveOn) {
+    if (this.liveWanted) {
+      this.liveWanted = false;
       this.liveOn = false;
       void this.deps.live(false);
     }
