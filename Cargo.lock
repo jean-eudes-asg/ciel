@@ -623,6 +623,7 @@ dependencies = [
  "ring",
  "serde",
  "serde_json",
+ "sha2",
  "sherpa-onnx",
  "tauri",
  "tauri-build",

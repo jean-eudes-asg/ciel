@@ -5365,6 +5365,83 @@
    "pt-BR": "Dispensar",
    "ru": "Скрыть",
    "id": "Abaikan"
+  },
+  "Notifications": {
+   "zh-Hans": "通知",
+   "hi": "सूचनाएँ",
+   "es": "Notificaciones",
+   "ar": "الإشعارات",
+   "fr": "Notifications",
+   "bn": "বিজ্ঞপ্তি",
+   "pt-BR": "Notificações",
+   "ru": "Уведомления",
+   "id": "Notifikasi"
+  },
+  "Websites' notifications from Chrome, Edge or Brave show in the island, through the Ciel for Chrome extension, instead of the browser's popups.": {
+   "zh-Hans": "Chrome、Edge 或 Brave 中网站的通知会通过 Ciel for Chrome 扩展显示在岛中，而不是浏览器的弹窗。",
+   "hi": "Chrome, Edge या Brave में वेबसाइटों की सूचनाएँ, Ciel for Chrome एक्सटेंशन के ज़रिए, ब्राउज़र के पॉपअप की जगह आइलैंड में दिखती हैं।",
+   "es": "Las notificaciones de los sitios web en Chrome, Edge o Brave aparecen en la isla, a través de la extensión Ciel for Chrome, en lugar de las ventanas emergentes del navegador.",
+   "ar": "تظهر إشعارات المواقع في Chrome أو Edge أو Brave في الشريط، عبر إضافة Ciel for Chrome، بدلًا من النوافذ المنبثقة للمتصفح.",
+   "fr": "Les notifications des sites dans Chrome, Edge ou Brave s'affichent dans l'île, grâce à l'extension Ciel for Chrome, au lieu des fenêtres du navigateur.",
+   "bn": "Chrome, Edge বা Brave-এর ওয়েবসাইটের বিজ্ঞপ্তি, Ciel for Chrome এক্সটেনশনের মাধ্যমে, ব্রাউজারের পপআপের বদলে আইল্যান্ডে দেখায়।",
+   "pt-BR": "As notificações dos sites no Chrome, Edge ou Brave aparecem na ilha, pela extensão Ciel for Chrome, em vez dos pop-ups do navegador.",
+   "ru": "Уведомления сайтов из Chrome, Edge или Brave показываются на острове через расширение Ciel for Chrome, а не во всплывающих окнах браузера.",
+   "id": "Notifikasi situs web dari Chrome, Edge, atau Brave tampil di pulau melalui ekstensi Ciel for Chrome, bukan di pop-up peramban."
+  },
+  "Browsers": {
+   "zh-Hans": "浏览器",
+   "hi": "ब्राउज़र",
+   "es": "Navegadores",
+   "ar": "المتصفحات",
+   "fr": "Navigateurs",
+   "bn": "ব্রাউজার",
+   "pt-BR": "Navegadores",
+   "ru": "Браузеры",
+   "id": "Peramban"
+  },
+  "Then add the extension: unzip Ciel-for-Chrome.zip from the latest release, open chrome://extensions, turn on Developer mode and choose Load unpacked.": {
+   "zh-Hans": "然后添加扩展：解压最新版本中的 Ciel-for-Chrome.zip，打开 chrome://extensions，开启开发者模式，然后选择“加载已解压的扩展程序”。",
+   "hi": "फिर एक्सटेंशन जोड़ें: नवीनतम रिलीज़ से Ciel-for-Chrome.zip अनज़िप करें, chrome://extensions खोलें, Developer mode चालू करें और Load unpacked चुनें।",
+   "es": "Después añade la extensión: descomprime Ciel-for-Chrome.zip de la última versión, abre chrome://extensions, activa el modo de desarrollador y elige Cargar descomprimida.",
+   "ar": "ثم أضف الإضافة: فك ضغط Ciel-for-Chrome.zip من أحدث إصدار، وافتح chrome://extensions، وفعّل وضع المطوّر، واختر Load unpacked.",
+   "fr": "Ajoute ensuite l'extension : décompresse Ciel-for-Chrome.zip de la dernière version, ouvre chrome://extensions, active le mode développeur et choisis Charger l'extension non empaquetée.",
+   "bn": "তারপর এক্সটেনশন যোগ করুন: সর্বশেষ রিলিজ থেকে Ciel-for-Chrome.zip আনজিপ করুন, chrome://extensions খুলুন, Developer mode চালু করুন এবং Load unpacked বেছে নিন।",
+   "pt-BR": "Depois adicione a extensão: descompacte Ciel-for-Chrome.zip da versão mais recente, abra chrome://extensions, ative o modo de desenvolvedor e escolha Carregar sem compactação.",
+   "ru": "Затем добавьте расширение: распакуйте Ciel-for-Chrome.zip из последнего выпуска, откройте chrome://extensions, включите режим разработчика и выберите «Загрузить распакованное».",
+   "id": "Lalu tambahkan ekstensinya: ekstrak Ciel-for-Chrome.zip dari rilis terbaru, buka chrome://extensions, aktifkan Mode pengembang, lalu pilih Muat yang belum dikemas."
+  },
+  "Get the extension": {
+   "zh-Hans": "获取扩展",
+   "hi": "एक्सटेंशन पाएँ",
+   "es": "Obtener la extensión",
+   "ar": "احصل على الإضافة",
+   "fr": "Obtenir l'extension",
+   "bn": "এক্সটেনশন নিন",
+   "pt-BR": "Obter a extensão",
+   "ru": "Скачать расширение",
+   "id": "Dapatkan ekstensinya"
+  },
+  "Ciel writes these, and nothing else:": {
+   "zh-Hans": "Ciel 只会写入以下内容：",
+   "hi": "Ciel केवल ये लिखता है:",
+   "es": "Ciel escribe esto, y nada más:",
+   "ar": "يكتب Ciel هذه فقط، ولا شيء غيرها:",
+   "fr": "Ciel écrit ceci, et rien d'autre :",
+   "bn": "Ciel শুধু এগুলো লেখে:",
+   "pt-BR": "O Ciel grava isto, e nada mais:",
+   "ru": "Ciel запишет только это:",
+   "id": "Ciel menulis ini, dan tidak ada yang lain:"
+  },
+  "Ciel removes these:": {
+   "zh-Hans": "Ciel 会删除以下内容：",
+   "hi": "Ciel ये हटाता है:",
+   "es": "Ciel elimina esto:",
+   "ar": "يحذف Ciel هذه:",
+   "fr": "Ciel supprime ceci :",
+   "bn": "Ciel এগুলো সরায়:",
+   "pt-BR": "O Ciel remove isto:",
+   "ru": "Ciel удалит это:",
+   "id": "Ciel menghapus ini:"
   }
  }
 }

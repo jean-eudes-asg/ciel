@@ -120,6 +120,14 @@ jobs:
           path: release
           merge-multiple: true
 
+      # The extension that brings websites' notifications to the island; loaded
+      # unpacked from this zip (Settings → Integrations → Notifications).
+      - name: Ciel for Chrome
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          (cd extension && zip -r -X "../release/Ciel-for-Chrome-$version.zip" .)
+          cp "release/Ciel-for-Chrome-$version.zip" release/Ciel-for-Chrome.zip
+
       - name: Checksums and release notes
         run: |
           version="${GITHUB_REF_NAME#v}"
@@ -146,6 +154,8 @@ jobs:
             echo "**Windows will warn you the first time:** the installer isn't code-signed yet. Click **More info**, then **Run anyway**. Check a download with \`SHA256SUMS\`."
             echo
             echo "**Linux:** the \`.deb\` (Debian, Ubuntu 22.04+), the \`.rpm\` (Fedora) or the AppImage (anywhere else)."
+            echo
+            echo "**Ciel for Chrome:** \`Ciel-for-Chrome.zip\` brings websites' notifications (Chrome, Edge, Brave) to the island. Connect it in Settings → Integrations → Notifications, then load it unpacked in \`chrome://extensions\`."
           } >> release-notes.md
           cat release-notes.md
 

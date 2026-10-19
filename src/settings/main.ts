@@ -24,6 +24,7 @@ import { agentsSection } from "./agents";
 import { brainSection } from "./brain";
 import { colorDot } from "./colors";
 import { demoRows } from "./demo";
+import { notificationsSection } from "./notifications";
 import { renderDiff, statusDot } from "./parts";
 import { wallpaperSections } from "./wallpaper";
 import {
@@ -1451,7 +1452,7 @@ async function render() {
     pills: () => [activePillsSection(connected)],
     agents: () => [claudeSection(status), agentsSection(agents), planSection(status)],
     chat: () => [apiSection(hasKey), brain(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
-    integrations: () => [integrationsSection(present)],
+    integrations: () => [notificationsSection(), integrationsSection(present)],
     shortcuts: () => [shortcutsSection(shortcutReport)],
     wallpaper: () => wallpaper,
   };

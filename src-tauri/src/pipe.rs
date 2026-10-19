@@ -208,6 +208,8 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
 
     // A browser bridge (notify.rs): a notification, or its connection for Ciel's answers.
     if let Some((n, target)) = crate::notify::from_bridge(&payload) {
+        // Never what it says: only that one came.
+        log::line("notifications: a notification from a browser");
         crate::notify::show(&app, n, target);
         pipe.finish();
         return;

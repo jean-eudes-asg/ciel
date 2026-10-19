@@ -251,6 +251,10 @@ export const Bridge = {
     call<boolean>("spotify_control", { action, value: value ?? null }),
   /** Brings Spotify forward or starts it; without it, its download page. */
   spotifyOpen: () => call<boolean>("spotify_open"),
+  /** Whether the browsers know Ciel for Chrome's bridge, and the places involved (browser_bridge.rs). */
+  browserBridgeStatus: () => call<{ installed: boolean; places: string[] }>("browser_bridge_status"),
+  /** Makes the bridge known to the browsers, or takes it out. */
+  browserBridgeSet: (on: boolean) => call<{ installed: boolean; places: string[] }>("browser_bridge_set", { on }),
   /** A notification's Open (back to its tab or its mail) or Dismiss (src-tauri/src/notify.rs). */
   notificationAction: (id: string, action: "open" | "dismiss") => call<void>("notification_action", { id, action }),
   /** Whether there is a Spotify to launch (Settings). */

@@ -2,6 +2,7 @@
 
 mod agent_hooks;
 mod agents;
+mod browser_bridge;
 mod ai;
 mod chat;
 mod claude;
@@ -727,6 +728,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             boot,
             notify::notification_action,
+            browser_bridge::browser_bridge_status,
+            browser_bridge::browser_bridge_set,
             save_settings,
             set_system_languages,
             set_collapsed,
