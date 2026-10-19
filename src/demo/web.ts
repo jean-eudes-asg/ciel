@@ -11,7 +11,9 @@
 //   ?bg=transparent  no backdrop
 //
 // Embedded in a page of the same origin, it posts the island's mood to it
-// ({ type: "ciel-demo-mood", mood }): Ciel's website paints its sky with it.
+// ({ type: "ciel-demo-mood", mood }), and takes "ciel-demo-play" (a moment,
+// now) and "ciel-demo-sound" (on or off) from it: Ciel's website paints its
+// sky with his mood and has buttons and a sound switch around the demo.
 
 import "../style.css";
 import "./demo.css";
@@ -23,7 +25,8 @@ import { h, svg } from "../views/dom";
 import { ICONS } from "../views/icons";
 import { resolveLanguage, setLanguage, systemLanguages, tl } from "../i18n/i18n";
 import { readParams } from "./params";
-import { startDemo } from "./session";
+import { startDemo, type DemoSession } from "./session";
+import { isScene } from "./timeline";
 
 function main() {
   const root = document.getElementById("root");
@@ -36,18 +39,56 @@ function main() {
   const island = new Island(root);
   // The Finance pill's label and its card's reading, through the gate.
   registerFinanceHandlers();
-  startDemo(island, {
+  const session = startDemo(island, {
     app: false,
     loop: params.loop,
     scene: params.scene,
-    // Muted until asked; hovering opens the island, as a visitor expects.
-    settings: { soundEnabled: false, openOnHover: true },
+    // Muted until asked, then at the top of the app's slider (on the website
+    // they play over a bed of sound); hovering opens the island, as a visitor expects.
+    settings: { soundEnabled: false, soundVolume: 0.2, openOnHover: true },
   });
 
-  // A frozen scene is for a picture: no sound button in it.
-  if (!params.scene) document.body.append(soundToggle());
-  // On Ciel's website, the page around the iframe paints its sky from his mood.
-  if (window.parent !== window) tellMood();
+  // Whichever switch turns the sounds on (ours, the page's, the island's own).
+  State.subscribe(loadSounds);
+
+  if (window.parent !== window) {
+    // On Ciel's website, the page around the iframe paints its sky from his
+    // mood, plays a moment when asked, and has the one sound switch.
+    tellMood();
+    listenToPage(session);
+  } else if (!params.scene) {
+    // A frozen scene is for a picture: no sound button in it.
+    document.body.append(soundToggle());
+  }
+}
+
+/** The sounds are fetched the first time they are turned on. */
+let soundsLoaded = false;
+function loadSounds() {
+  if (soundsLoaded || !State.settings.soundEnabled) return;
+  soundsLoaded = true;
+  void Sound.preload().then(() => Sound.resume());
+}
+
+function setSound(on: boolean) {
+  State.settings.soundEnabled = on;
+  Sound.setEnabled(on);
+  Sound.resume();
+  State.notify();
+}
+
+/**
+ * Messages from the page this demo is embedded in (same origin only):
+ * { type: "ciel-demo-play", scene } plays that moment now;
+ * { type: "ciel-demo-sound", on } turns Ciel's sounds on or off.
+ */
+function listenToPage(session: DemoSession) {
+  window.addEventListener("message", (e) => {
+    if (e.origin !== location.origin || e.source !== window.parent) return;
+    const data = e.data as { type?: unknown; scene?: unknown; on?: unknown } | null;
+    if (data?.type === "ciel-demo-play" && isScene(data.scene)) session.player.playFrom(data.scene);
+    else if (data?.type === "ciel-demo-sound" && typeof data.on === "boolean") setSound(data.on);
+  });
 }
 
 /** The island's mood, for the page this demo is embedded in (same origin only). */
@@ -63,7 +104,7 @@ function tellMood() {
   tell();
 }
 
-/** The sounds, off by default. They are fetched the first time they are turned on. */
+/** The sounds, off by default. */
 function soundToggle(): HTMLElement {
   const button = h("button", { class: "demo-sound", title: tl("Sound"), "aria-pressed": "false" });
   const draw = () => {
@@ -71,26 +112,16 @@ function soundToggle(): HTMLElement {
     button.setAttribute("aria-pressed", String(on));
     button.replaceChildren(svg(on ? ICONS.speakerOn : ICONS.speakerOff, 14));
   };
-  let loaded = false;
   let shown: boolean | null = null;
   const sync = () => {
     // The island's own mute button flips the same setting.
     const on = State.settings.soundEnabled;
-    if (on && !loaded) {
-      loaded = true;
-      void Sound.preload().then(() => Sound.resume());
-    }
     if (on !== shown) {
       shown = on;
       draw();
     }
   };
-  button.addEventListener("click", () => {
-    State.settings.soundEnabled = !State.settings.soundEnabled;
-    Sound.setEnabled(State.settings.soundEnabled);
-    Sound.resume();
-    State.notify();
-  });
+  button.addEventListener("click", () => setSound(!State.settings.soundEnabled));
   State.subscribe(sync);
   sync();
   return button;

@@ -31,6 +31,9 @@ export interface DemoHost {
   setFast(fast: boolean): void;
 }
 
+/** `playFrom()`: the moment's first step comes this soon after the click. */
+export const PLAY_FROM_MS = 250;
+
 /** How a demo card was answered. "terminal": handed to the terminal, which counts as a no. */
 export type DemoAnswer = "allow" | "deny" | "answer" | "terminal";
 
@@ -81,6 +84,35 @@ export class DemoPlayer {
     this.running = false;
     this.clearTimers();
     this.waiting = null;
+  }
+
+  /**
+   * Plays a moment now (the website's buttons): every step before the one that
+   * leads to it runs at once, as for `?scene=`, then the script carries on
+   * live from there, so the card slides in with its sound and the loop goes on.
+   */
+  playFrom(scene: SceneName) {
+    if (!this.running) return;
+    const marker = this.steps.findIndex((s) => s.action.kind === "scene" && s.action.name === scene);
+    if (marker < 0) return;
+    let lead = marker - 1;
+    while (lead > 0 && this.steps[lead].action.kind === "scene") lead--;
+    this.begin();
+    this.host.setFast(true);
+    try {
+      while (this.index < lead) {
+        const step = this.steps[this.index++];
+        if (step.ifAllowed && !this.allowed) continue;
+        this.run(step, true);
+        if (step.action.kind === "permission" || step.action.kind === "question") this.autoAnswer(step);
+      }
+    } finally {
+      this.host.setFast(false);
+    }
+    this.timer = window.setTimeout(() => {
+      this.timer = null;
+      this.runNext();
+    }, PLAY_FROM_MS);
   }
 
   /** A demo card got its answer: the script carries on from there. */

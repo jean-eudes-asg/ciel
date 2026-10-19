@@ -27,7 +27,7 @@ const { registerHookHandlers, settleHookTimers } = await import("../src/island/h
 const { buildPrompt } = await import("../src/views/chat.ts");
 const { FINANCE_ID } = await import("../src/core/finance.ts");
 const { startDemo } = await import("../src/demo/session.ts");
-const { DemoPlayer } = await import("../src/demo/player.ts");
+const { DemoPlayer, PLAY_FROM_MS } = await import("../src/demo/player.ts");
 const { AUTO_ANSWER_MS, DEMO_TIMELINE, SCENES, loopDuration } = await import("../src/demo/timeline.ts");
 const { WINDOW_COMMANDS } = await import("../src/demo/gate.ts");
 const { readParams } = await import("../src/demo/params.ts");
@@ -695,4 +695,45 @@ test("?scene=chat: the question and its whole answer", async () => {
     assert.equal(State.view, "prompt");
     assert.deepEqual(State.chatHistory.map((m) => m.content), [data.CHAT_QUESTION, data.CHAT_ANSWER]);
   });
+});
+
+// ── The website's buttons: playFrom() ─────────────────────────────────────────
+
+test("playFrom: mid-loop, the permission card slides in live and waits, then the loop goes on", async () => {
+  const session = startDemo(island, { app: false, loop: true });
+  await play(3000);
+  session.player.playFrom("approval");
+  assert.equal(State.pendingApproval, null, "the card comes with its own step, live");
+  await play(PLAY_FROM_MS + 100);
+  assert.equal(State.pendingApproval?.command, "Bash · npm test");
+  assert.equal(State.view, "approval");
+  assert.ok(session.player.isWaiting, "it waits for Allow or Deny");
+  assert.ok(!session.player.frozen, "and the script carries on afterwards");
+  await playUntil(() => State.pendingApproval?.questions != null, AUTO_ANSWER_MS + 10_000, "the question that follows");
+  await stop(session);
+});
+
+test("playFrom: the finished card, then the chat, each from its own first step", async () => {
+  const session = startDemo(island, { app: false, loop: true });
+  session.player.playFrom("finished");
+  await play(PLAY_FROM_MS + 200);
+  assert.equal(task().state, "finished");
+  assert.equal(task().finalLine, data.FINAL_LINE);
+  session.player.playFrom("chat");
+  await playUntil(() => State.chatHistory[1]?.content === data.CHAT_ANSWER, 20_000, "the chat's answer");
+  assert.equal(State.view, "prompt");
+  assert.equal(State.chatHistory[0].content, data.CHAT_QUESTION);
+  await stop(session);
+});
+
+test("playFrom: an unknown moment, or a stopped demo, changes nothing", async () => {
+  const session = startDemo(island, { app: false, loop: true });
+  await play(2000);
+  const index = session.player.index;
+  session.player.playFrom("nope");
+  assert.equal(session.player.index, index);
+  await stop(session);
+  session.player.playFrom("approval");
+  await play(1000);
+  assert.equal(State.pendingApproval, null);
 });
