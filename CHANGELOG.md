@@ -2,7 +2,7 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.2.2] - 2026-10-19
 
 ### Added
 - **Notifications in the island**: the folded island slides out with the app's
@@ -102,6 +102,7 @@ an eye on your AI coding agents. Windows 10/11; Linux builds from source.
 Ciel is a fork of [Coucou](https://github.com/Louis-CFM/coucou) by Louis
 Raillé (MIT). Thank you.
 
+[0.2.2]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.2
 [0.2.1]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.1
 [0.2.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.1.0
