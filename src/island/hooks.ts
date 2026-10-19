@@ -35,19 +35,40 @@ export function dropPendingCard(island: Island): void {
 
 /** The return to idle that Stop arms, per pill, so the next turn can cancel it. */
 const stopTimers = new Map<string, number>();
+/** What each of those timers does when it fires, so it can also be run early. */
+const stopEffects = new Map<string, () => void>();
 
 function cancelStopTimer(id: string): boolean {
   const timer = stopTimers.get(id);
   if (timer == null) return false;
   window.clearTimeout(timer);
   stopTimers.delete(id);
+  stopEffects.delete(id);
   return true;
+}
+
+/**
+ * Demo mode (src/demo) puts the island's state aside and brings it back: no
+ * timer kept here may fire into the other side. `run` brings stopped sessions
+ * back to idle now — they were due within 5.2 s anyway — and `drop` forgets
+ * them. The permission card's timeout goes either way.
+ */
+export function settleHookTimers(mode: "run" | "drop") {
+  if (pendingTimeout != null) window.clearTimeout(pendingTimeout);
+  pendingTimeout = null;
+  for (const [id, timer] of [...stopTimers]) {
+    const effect = stopEffects.get(id);
+    window.clearTimeout(timer);
+    stopTimers.delete(id);
+    stopEffects.delete(id);
+    if (mode === "run") effect?.();
+  }
 }
 
 /** Events after which a pending permission request of the same session is moot. */
 const TURN_OVER = new Set(["Stop", "StopFailure", "UserPromptSubmit", "SessionEnd", "Interrupt"]);
 
-interface HookPayload {
+export interface HookPayload {
   hook_event_name?: string;
   request_id?: string;
   session_id?: string;
@@ -229,7 +250,8 @@ export function registerHookHandlers(island: Island) {
   void onEvent<HookPayload>("hook", (payload) => handleHook(island, payload));
 }
 
-function handleHook(island: Island, payload: HookPayload) {
+/** One hook event, from Rust — or from the demo (src/demo), which feeds its own. */
+export function handleHook(island: Island, payload: HookPayload) {
   // Account-wide numbers from the status line relay, not part of any session:
   // keep the latest, nothing else (no reveal, no sound), paused or not.
   if (payload.hook_event_name === "StatusLine") {
@@ -401,18 +423,18 @@ function handleHook(island: Island, payload: HookPayload) {
       if (focused && !State.pendingApproval) surface("finished", true);
       else State.setPillBadge(agentId, "finished");
       cancelStopTimer(agentId);
-      stopTimers.set(
-        agentId,
-        window.setTimeout(() => {
-          stopTimers.delete(agentId);
-          if (isExternalAgent) {
-            State.removeTask(agentId);
-          } else {
-            State.updateTask(agentId, "idle");
-            State.setPillBadge(agentId, null);
-          }
-        }, 5200),
-      );
+      const backToIdle = () => {
+        stopTimers.delete(agentId);
+        stopEffects.delete(agentId);
+        if (isExternalAgent) {
+          State.removeTask(agentId);
+        } else {
+          State.updateTask(agentId, "idle");
+          State.setPillBadge(agentId, null);
+        }
+      };
+      stopEffects.set(agentId, backToIdle);
+      stopTimers.set(agentId, window.setTimeout(backToIdle, 5200));
       break;
     }
 

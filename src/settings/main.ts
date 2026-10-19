@@ -23,6 +23,7 @@ import { FLOW_PAGE_RENDERERS } from "../hub/pages";
 import { agentsSection } from "./agents";
 import { brainSection } from "./brain";
 import { colorDot } from "./colors";
+import { demoRows } from "./demo";
 import { renderDiff, statusDot } from "./parts";
 import { wallpaperSections } from "./wallpaper";
 import {
@@ -1047,6 +1048,7 @@ function generalSection(): HTMLElement {
     ),
     ...recapRows(),
     languageRow(),
+    ...demoRows(),
   );
 }
 

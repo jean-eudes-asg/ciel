@@ -5255,6 +5255,61 @@
    "id": {
     "other": "{count} foto baru"
    }
+  },
+  "Esc stops the demo.": {
+   "zh-Hans": "按 Esc 停止演示。",
+   "hi": "Esc दबाने पर डेमो रुक जाता है।",
+   "es": "Esc detiene la demo.",
+   "ar": "مفتاح Esc يوقف العرض.",
+   "fr": "Échap arrête la démo.",
+   "bn": "Esc চাপলে ডেমো থেমে যায়।",
+   "pt-BR": "Esc encerra a demo.",
+   "ru": "Esc останавливает демо.",
+   "id": "Esc menghentikan demo."
+  },
+  "Answer the waiting request first.": {
+   "zh-Hans": "请先回答正在等待的请求。",
+   "hi": "पहले प्रतीक्षा कर रहे अनुरोध का जवाब दें।",
+   "es": "Responde primero a la solicitud pendiente.",
+   "ar": "أجب عن الطلب المنتظر أولًا.",
+   "fr": "Répondez d'abord à la demande en attente.",
+   "bn": "আগে অপেক্ষমাণ অনুরোধের উত্তর দিন।",
+   "pt-BR": "Responda primeiro à solicitação pendente.",
+   "ru": "Сначала ответьте на ожидающий запрос.",
+   "id": "Jawab dulu permintaan yang sedang menunggu."
+  },
+  "Plays a short scripted session with made-up projects and numbers. Nothing is saved, and your island comes back as it was. Esc stops it.": {
+   "zh-Hans": "播放一段简短的脚本会话，项目和数字都是虚构的。不会保存任何内容，结束后岛会恢复原样。按 Esc 停止。",
+   "hi": "बनावटी प्रोजेक्ट और आंकड़ों के साथ एक छोटा, पहले से लिखा सत्र चलाता है। कुछ भी सहेजा नहीं जाता, और आपका आइलैंड पहले जैसा लौट आता है। Esc से रुकता है।",
+   "es": "Reproduce una breve sesión guionizada con proyectos y cifras inventados. No se guarda nada y tu isla vuelve a quedar como estaba. Esc la detiene.",
+   "ar": "يشغّل جلسة قصيرة معدّة مسبقًا بمشاريع وأرقام مختلَقة. لا يُحفظ أي شيء، وتعود جزيرتك كما كانت. يوقفه Esc.",
+   "fr": "Joue une courte session scénarisée, avec des projets et des chiffres inventés. Rien n'est enregistré, et votre île revient telle qu'elle était. Échap l'arrête.",
+   "bn": "বানানো প্রজেক্ট ও সংখ্যা দিয়ে একটি ছোট, আগে থেকে লেখা সেশন চালায়। কিছুই সংরক্ষিত হয় না, আর আপনার আইল্যান্ড আগের মতো ফিরে আসে। Esc চাপলে থামে।",
+   "pt-BR": "Reproduz uma sessão curta e roteirizada, com projetos e números inventados. Nada é salvo, e sua ilha volta a ficar como estava. Esc encerra.",
+   "ru": "Проигрывает короткий сценарий с выдуманными проектами и цифрами. Ничего не сохраняется, и остров возвращается в прежнее состояние. Esc останавливает.",
+   "id": "Memutar sesi singkat bernaskah dengan proyek dan angka rekaan. Tidak ada yang disimpan, dan pulau Anda kembali seperti semula. Esc menghentikannya."
+  },
+  "Not available in the demo.": {
+   "zh-Hans": "演示中不可用。",
+   "hi": "डेमो में उपलब्ध नहीं।",
+   "es": "No disponible en la demo.",
+   "ar": "غير متاح في العرض.",
+   "fr": "Indisponible dans la démo.",
+   "bn": "ডেমোতে উপলব্ধ নয়।",
+   "pt-BR": "Indisponível na demo.",
+   "ru": "Недоступно в демо.",
+   "id": "Tidak tersedia dalam demo."
+  },
+  "This is a demo, so my answers are scripted. In Ciel, the chat talks to the model you connect.": {
+   "zh-Hans": "这是演示，我的回答都是预先写好的。在 Ciel 中，聊天会与你连接的模型对话。",
+   "hi": "यह एक डेमो है, इसलिए मेरे जवाब पहले से लिखे हुए हैं। Ciel में चैट उस मॉडल से बात करती है जिसे आप जोड़ते हैं।",
+   "es": "Esto es una demo, así que mis respuestas están escritas de antemano. En Ciel, el chat habla con el modelo que conectes.",
+   "ar": "هذا عرض تجريبي، لذا إجاباتي مكتوبة مسبقًا. في Ciel، تتحدث الدردشة مع النموذج الذي تربطه.",
+   "fr": "Ceci est une démo : mes réponses sont écrites d'avance. Dans Ciel, le chat parle au modèle que vous connectez.",
+   "bn": "এটি একটি ডেমো, তাই আমার উত্তরগুলো আগে থেকে লেখা। Ciel-এ চ্যাট আপনার যুক্ত করা মডেলের সাথে কথা বলে।",
+   "pt-BR": "Isto é uma demo, então minhas respostas são roteirizadas. No Ciel, o chat conversa com o modelo que você conectar.",
+   "ru": "Это демо, поэтому мои ответы заготовлены заранее. В Ciel чат общается с моделью, которую вы подключите.",
+   "id": "Ini demo, jadi jawaban saya sudah ditulis sebelumnya. Di Ciel, obrolan terhubung ke model yang Anda sambungkan."
   }
  }
 }

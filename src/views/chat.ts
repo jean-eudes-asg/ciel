@@ -235,7 +235,11 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
   (el.querySelector(".card") as HTMLElement).style.setProperty("--wash", "rgba(99,102,241,0.5)");
 
   let sending = false;
-  let renderedCount = -1;
+  /**
+   * What the log shows: how many messages, the newest one's id, the dots. The id
+   * tells two conversations of the same length apart (the demo's and yours).
+   */
+  let renderedKey = "";
   // A local model answers token by token: where its text so far is shown.
   let live: HTMLElement | null = null;
 
@@ -295,7 +299,7 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
     } finally {
       sending = false;
       live = null;
-      renderedCount = -1; // the finished answer replaces the streamed one
+      renderedKey = ""; // the finished answer replaces the streamed one
       drawModelButton();
       State.notify();
       onHeightChange();
@@ -328,9 +332,9 @@ export function buildPrompt(onHeightChange: () => void): ViewHost {
       }
 
       const thinking = State.stateOverride === "thinking";
-      const count = State.chatHistory.length + (thinking ? 0.5 : 0);
-      if (count !== renderedCount && !live) {
-        renderedCount = count;
+      const key = `${State.chatHistory.length}:${State.chatHistory.at(-1)?.id ?? ""}:${thinking}`;
+      if (key !== renderedKey && !live) {
+        renderedKey = key;
         clear(log);
         for (const m of State.chatHistory) log.append(bubble(m));
         if (thinking) log.append(typingDots());
