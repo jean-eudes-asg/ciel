@@ -7,6 +7,10 @@ use std::io::Write;
 use crate::{platform, settings};
 
 pub fn line(message: impl AsRef<str>) {
+    // Tests never write into the log of the Ciel running on this machine.
+    if cfg!(test) {
+        return;
+    }
     let t = platform::local_time();
     let stamp = format!(
         "{:04}-{:02}-{:02} {:02}:{:02}:{:02}",
