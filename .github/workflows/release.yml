@@ -1,0 +1,99 @@
+name: Release
+
+# Pushing a version tag (v0.1.0, v0.2.0…) builds the Windows installers and
+# publishes them as a GitHub release, with SHA256SUMS and the changelog's
+# section for that version as the notes. The tag must match the version in
+# src-tauri/tauri.conf.json.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Cache cargo
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ciel-release-cargo-${{ hashFiles('Cargo.lock') }}
+          restore-keys: ciel-release-cargo-
+
+      - name: The tag matches the app's version
+        shell: bash
+        run: |
+          version=$(node -p "require('./src-tauri/tauri.conf.json').version")
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME doesn't match version $version in tauri.conf.json"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Front-end tests
+        run: npm test
+
+      # The app bundles target/release/ciel-hook.exe; its build script needs it first.
+      - name: Build the relay
+        run: cargo build --release -p ciel-hook
+
+      - name: Rust tests
+        run: cargo test --workspace --locked
+
+      - name: Build the installers
+        run: npm run pack
+
+      - name: Checksums and release notes
+        shell: bash
+        run: |
+          cd release
+          sha256sum Ciel-Windows-*-setup.exe Ciel-Windows-*.msi > SHA256SUMS
+          cat SHA256SUMS
+          cd ..
+          version="${GITHUB_REF_NAME#v}"
+          # The lines between "## [<version>]" and the next "## [" (or the links).
+          awk -v head="## [$version]" '
+            index($0, head) == 1 { on = 1; next }
+            on && (index($0, "## [") == 1 || index($0, "[") == 1 && index($0, "]: ") > 0) { exit }
+            on { print }
+          ' CHANGELOG.md > release-notes.md
+          {
+            echo
+            echo "**Windows will warn you the first time:** the installer isn't code-signed yet. Click **More info**, then **Run anyway**. Check a download with \`SHA256SUMS\`."
+          } >> release-notes.md
+          cat release-notes.md
+
+      - name: Publish the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          gh release create "$GITHUB_REF_NAME" \
+            --title "Ciel $version" \
+            --notes-file release-notes.md \
+            "release/Ciel-Windows-$version-setup.exe" \
+            "release/Ciel-Windows-$version.msi" \
+            "release/Ciel-Windows-setup.exe" \
+            "release/Ciel-Windows.msi" \
+            release/SHA256SUMS
