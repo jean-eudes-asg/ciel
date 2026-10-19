@@ -35,6 +35,11 @@ Windows 10/11 · Linux (X11 and Wayland) · Tauri 2 · Rust + TypeScript · MIT
   LM Studio) from the island, with your own keys.
 - **Integrations**, each with its own coloured mini cloud: GitHub, Vercel,
   Stripe, n8n, Resend, Notion, Cal.com and Spotify.
+- **Finance.** A pill for your own spending: this month against your budget,
+  the top categories, the latest entries, and a quick form to add an expense.
+  Everything stays in two plain files in a folder you choose
+  (`expenses.csv` opens in Excel). With a local brain, tell « OK Ciel » "I
+  spent 12 euros on lunch" or ask how much you spent this month.
 - **Flow dictation.** Hold **right Ctrl** anywhere, speak, let go: your words
   are pasted where you type. It uses [Parakeet](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3),
   running offline on your CPU.
@@ -53,6 +58,23 @@ Windows 10/11 · Linux (X11 and Wayland) · Tauri 2 · Rust + TypeScript · MIT
 - **Private by design.** No telemetry, no account. Keys live in Windows
   Credential Manager or the Linux Secret Service. Your voice never leaves the
   computer; only text goes to the AI providers you configure.
+
+## Run a local model
+
+Ciel's chat, « OK Ciel », dictation clean-up and call summaries can all run on a
+model on your own computer, with no key and nothing sent anywhere. The easiest
+way is [Ollama](https://ollama.com), natively or in Docker:
+
+```powershell
+docker run -d --name ollama --gpus all -p 11434:11434 -v ollama-models:/root/.ollama --restart unless-stopped ollama/ollama
+docker exec ollama ollama pull qwen3.5:9b
+```
+
+Then in Ciel: **Settings → Chat**, connect Ollama and pick the model, and set
+**Ciel's brain** to *Local model* (or *Automatic*). `qwen3.5:9b` (6.6 GB) runs
+well on an 8 GB graphics card; on less, try `qwen3.5:4b`. Ciel asks the model to
+think before it acts on « OK Ciel », which makes a small model reliable at
+using its tools.
 
 ## Install
 
