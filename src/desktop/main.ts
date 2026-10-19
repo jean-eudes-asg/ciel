@@ -74,7 +74,7 @@ class DesktopCloud {
   }
 
   async start() {
-    void Sound.preload();
+    void Sound.preload(Bridge);
     const info = await Bridge.desktopInfo();
     if (info) this.mode = info.mode;
 

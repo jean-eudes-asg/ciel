@@ -17,6 +17,11 @@ chat, dictate and drop files. It is a fork of Coucou's Windows/Linux app (MIT).
 - `scripts/gen-icons.mjs`, `scripts/gen-sounds.mjs` — the icon and the 29 sounds,
   generated in code. Never commit art or sounds from elsewhere.
 - `dev/*.html` — preview pages (`npx vite`), not shipped.
+- `site/` — the website on GitHub Pages (`npm run site:dev`, `npm run site:build`,
+  config in `vite.site.config.ts`). It draws with the real sky renderer and Ciel
+  in a plain browser, so what it imports (`src/sky` but `live.ts`,
+  `cloud/engine.ts`, `core/sound`, `core/anim`, `core/layout`) must not import
+  `core/bridge` or anything from Tauri.
 
 ## Build and test
 ```

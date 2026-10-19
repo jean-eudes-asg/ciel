@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en" data-tone="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Ciel · a little cloud that keeps an eye on your AI coding agents</title>
+    <meta
+      name="description"
+      content="Ciel is a small cloud at the top of your screen that watches Claude Code, Codex, Cursor and Gemini CLI. Allow or deny their requests, read live diffs, dictate offline and say « OK Ciel », with a local model if you like. Free and open source, for Windows and Linux."
+    />
+    <meta name="theme-color" content="#2c5b9c" />
+    <link rel="canonical" href="https://jean-eudes-asg.github.io/ciel/" />
+    <link rel="icon" type="image/png" sizes="32x32" href="../src-tauri/icons/32x32.png" />
+    <link rel="apple-touch-icon" href="../src-tauri/icons/128x128@2x.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ciel" />
+    <meta property="og:title" content="Ciel · a little cloud that keeps an eye on your AI coding agents" />
+    <meta
+      property="og:description"
+      content="Allow or deny your agents' requests, watch every session live, dictate offline and say « OK Ciel ». Free and open source, for Windows and Linux."
+    />
+    <meta property="og:url" content="https://jean-eudes-asg.github.io/ciel/" />
+    <meta property="og:image" content="https://jean-eudes-asg.github.io/ciel/og.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Ciel, a small white cloud with round eyes, floating in a golden-hour sky above a sea of clouds" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ciel · a little cloud that keeps an eye on your AI coding agents" />
+    <meta
+      name="twitter:description"
+      content="Allow or deny your agents' requests, watch every session live, dictate offline and say « OK Ciel ». Free and open source."
+    />
+    <meta name="twitter:image" content="https://jean-eudes-asg.github.io/ciel/og.jpg" />
+    <meta name="twitter:image:alt" content="Ciel, a small white cloud with round eyes, floating in a golden-hour sky above a sea of clouds" />
+
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./main.ts"></script>
+  </head>
+  <body>
+    <a class="skip" href="#features">Skip to the features</a>
+
+    <header class="top">
+      <a class="brand" href="#top">
+        <img src="../src-tauri/icons/128x128.png" width="30" height="30" alt="" />
+        <span>Ciel</span>
+      </a>
+      <nav aria-label="Sections">
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#try">Try it</a>
+        <a class="nav-link" href="#install">Install</a>
+        <a class="nav-gh" href="https://github.com/jean-eudes-asg/ciel" aria-label="Ciel on GitHub">
+          <svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><use href="#i-github" /></svg>
+          <span>GitHub</span>
+        </a>
+      </nav>
+    </header>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></symbol>
+    </svg>
+
+    <main id="top">
+      <!-- The journey: the sky and Ciel stay put (sticky) while the sections
+           scroll over them; each section sets the scene and his mood. -->
+      <div class="journey">
+        <div class="stage">
+          <canvas class="sky" aria-hidden="true"></canvas>
+          <canvas class="ciel-layer" aria-hidden="true"></canvas>
+          <button class="poke" type="button" aria-label="Poke Ciel"></button>
+        </div>
+
+        <section class="step hero" data-scene="real" data-mood="idle" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <h1 id="hero-title" class="wordmark">Ciel</h1>
+            <p class="tagline">A little cloud that keeps an eye on your AI&nbsp;coding&nbsp;agents.</p>
+            <div class="cta">
+              <a class="btn btn-primary" data-react="love" href="https://github.com/jean-eudes-asg/ciel/releases/latest">
+                <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16.5h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Download for Windows
+              </a>
+              <a class="btn btn-ghost" data-react="wink" href="https://github.com/jean-eudes-asg/ciel">
+                <svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true"><use href="#i-github" /></svg>
+                GitHub
+              </a>
+            </div>
+            <p class="fine">Linux · <a href="https://github.com/jean-eudes-asg/ciel#build-it-yourself">build from source</a></p>
+          </div>
+
+          <p class="sky-note">
+            <span class="sky-glyph" aria-hidden="true"></span>
+            <span>
+              <span class="sky-line">This is your sky right now: <b class="sky-phase">golden hour</b></span>
+              <span class="sky-detail"></span>
+            </span>
+          </p>
+
+          <a class="scroll-cue" href="#features" aria-label="Scroll to the features">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </section>
+
+        <section class="step feature" id="features" data-scene="clear" data-mood="working" aria-labelledby="f-agents">
+          <article class="card">
+            <p class="kicker"><span class="dot" style="--c: #3b9eff"></span>Watches your agents</p>
+            <h2 id="f-agents">Every session, live.</h2>
+            <p>
+              Claude Code, Codex, Cursor, Gemini CLI, Copilot CLI and more. Ciel shows what each one reads, edits and
+              runs, step by step, with the diff of every file, and does a happy little jump when it's done.
+            </p>
+            <ul class="chips" aria-label="Some of the agents Ciel watches">
+              <li>Claude Code</li><li>Codex</li><li>Cursor</li><li>Gemini CLI</li><li>Copilot CLI</li><li>OpenCode</li><li>Amp</li>
+            </ul>
+            <figure class="shot">
+              <img data-shot="agents" src="./shots/agents.png" loading="lazy" decoding="async"
+                alt="Ciel's island showing a Claude Code session at work: the files it reads and edits, with the lines added and removed" />
+            </figure>
+          </article>
+        </section>
+
+        <section class="step feature" data-scene="golden" data-mood="approval" aria-labelledby="f-approval">
+          <article class="card">
+            <p class="kicker"><span class="dot" style="--c: #f5a524"></span>Asks before anything runs</p>
+            <h2 id="f-approval">Nothing runs without your OK.</h2>
+            <p>
+              When an agent wants to run a command or change a file, the island slides down with <b>Deny</b> and
+              <b>Allow</b>. Ciel never says yes on his own, and if he isn't running, your agent simply asks in its
+              terminal as usual.
+            </p>
+            <figure class="shot">
+              <img data-shot="approval" src="./shots/approval.png" loading="lazy" decoding="async"
+                alt="A permission request in the island: the command an agent wants to run, with Deny and Allow buttons" />
+            </figure>
+          </article>
+        </section>
+
+        <section class="step feature" data-scene="cloudy" data-mood="thinking" aria-labelledby="f-voice">
+          <article class="card">
+            <p class="kicker"><span class="dot" style="--c: #8b5cf6"></span>Dictation and Notetaker</p>
+            <h2 id="f-voice">Hold Right Ctrl and talk.</h2>
+            <p>
+              Speak anywhere, let go, and your words are typed where you were. The Notetaker records a call and hands
+              you the transcript, person by person, with a summary and the to-dos. The speech is recognised offline, on
+              your own CPU.
+            </p>
+            <figure class="shot">
+              <img data-shot="dictation" src="./shots/dictation.png" loading="lazy" decoding="async"
+                alt="Ciel listening while Right Ctrl is held, and the Notetaker's transcript of a call with its summary" />
+            </figure>
+          </article>
+        </section>
+
+        <section class="step feature" data-scene="sunset" data-mood="idle" aria-labelledby="f-ok">
+          <article class="card">
+            <p class="kicker"><span class="dot" style="--c: #ff8a5a"></span>« OK Ciel »</p>
+            <h2 id="f-ok">Ask out loud. Nothing leaves your computer.</h2>
+            <p>
+              Ask for your pills, your music, what you spent this month, or to open an app. Ciel answers with Claude
+              and your own key, or with a model on your own machine through Ollama, such as <code>qwen3.5:9b</code>.
+              Then nothing leaves your computer.
+            </p>
+            <figure class="shot">
+              <img data-shot="ok-ciel" src="./shots/ok-ciel.png" loading="lazy" decoding="async"
+                alt="« OK Ciel » answering a spoken question in the island, with a local model as Ciel's brain" />
+            </figure>
+          </article>
+        </section>
+
+        <section class="step feature" data-scene="golden" data-mood="finished" aria-labelledby="f-finance">
+          <article class="card">
+            <p class="kicker"><span class="dot" style="--c: #34d499"></span>Finance pill</p>
+            <h2 id="f-finance">Where the money went, at a glance.</h2>
+            <p>
+              This month against your budget, the top categories and the latest entries. Add an expense in a few
+              clicks, or just tell Ciel “I spent 12 euros on lunch”. It all stays in two plain files, in a folder you
+              choose.
+            </p>
+            <ul class="chips pills" aria-label="Other pills">
+              <li style="--c: #8b949e">GitHub</li><li style="--c: #a3a9b5">Vercel</li><li style="--c: #635bff">Stripe</li><li style="--c: #ea4b71">n8n</li><li style="--c: #1db954">Spotify</li>
+            </ul>
+            <figure class="shot">
+              <img data-shot="finance" src="./shots/finance.png" loading="lazy" decoding="async"
+                alt="The Finance pill: this month's spending against the budget, the top categories and the latest expenses" />
+            </figure>
+          </article>
+        </section>
+
+        <section class="step feature dark" data-scene="night" data-mood="sleeping" aria-labelledby="f-sky">
+          <article class="card">
+            <p class="kicker"><span class="dot" style="--c: #c9d6ff"></span>Wallpapers and lock screen</p>
+            <h2 id="f-sky">Skies for your desktop, lit by the real sun.</h2>
+            <p>
+              Clear, cloudy, golden, sunset, night, space and storm, drawn by Ciel and lit by the sun where you are,
+              with the weather following his mood. Live on the desktop, still on the lock screen. The skies on this
+              page are the very same.
+            </p>
+            <figure class="shot">
+              <img data-shot="wallpaper" src="./shots/wallpaper.png" loading="lazy" decoding="async"
+                alt="A live wallpaper: a night sky over a sea of clouds, with Ciel asleep in the middle" />
+            </figure>
+          </article>
+        </section>
+
+        <div class="step beat dark" data-scene="space" data-mood="sleeping">
+          <p class="card card-small">Late at night, when he falls asleep, he drifts off into space.</p>
+        </div>
+
+        <section class="step try" id="try" data-scene="real" data-mood="idle" data-away aria-labelledby="try-title">
+          <h2 id="try-title">Try the island.</h2>
+          <div class="demo" data-state="waiting">
+            <div class="demo-box">
+              <iframe class="demo-frame" title="Ciel's island in demo mode" width="900" height="420" loading="lazy" tabindex="-1"></iframe>
+              <div class="demo-fallback">
+                <img src="../src-tauri/icons/128x128.png" width="64" height="64" alt="" />
+                <p><b>The live demo is on its way.</b><br />Meanwhile, Ciel is one download away.</p>
+                <a class="btn btn-primary" href="https://github.com/jean-eudes-asg/ciel/releases/latest">Download for Windows</a>
+              </div>
+            </div>
+          </div>
+          <p class="demo-caption">
+            This is the real island, running in your browser in demo mode. Click around: no agent is connected and
+            nothing is sent anywhere.
+          </p>
+        </section>
+      </div>
+
+      <div class="ground">
+
+        <section class="block" id="open-source" aria-labelledby="os-title">
+          <div class="block-head">
+            <p class="eyebrow">Open source</p>
+            <h2 id="os-title">Free, open, and yours to change.</h2>
+          </div>
+          <div class="cols">
+            <div class="panel">
+              <h3>MIT licensed</h3>
+              <p>
+                Read the code, fork it, make it yours. Ciel is built in the open with Tauri, Rust and TypeScript, and
+                every bit of him (the cloud, the icon, the sounds, the skies) is drawn or synthesised in code.
+              </p>
+              <a class="link" href="https://github.com/jean-eudes-asg/ciel">github.com/jean-eudes-asg/ciel</a>
+            </div>
+            <div class="panel">
+              <h3>Forked from Coucou, with thanks</h3>
+              <p>
+                Ciel started as a fork of <a href="https://github.com/Louis-CFM/coucou">Coucou</a> by Louis Raillé and
+                builds on its Windows and Linux app. Ciel's name, character, icon and sounds are its own, and Ciel is
+                not made or endorsed by Coucou's author.
+              </p>
+            </div>
+            <div class="panel">
+              <h3>Come and help</h3>
+              <p>
+                Found a bug, or have an idea? <a href="https://github.com/jean-eudes-asg/ciel/issues">Open an issue</a>.
+                Pull requests are welcome: <code>CLAUDE.md</code> in the repository is a quick map of the code, for
+                people and coding agents alike.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="install" aria-labelledby="install-title">
+          <div class="block-head">
+            <p class="eyebrow">Install</p>
+            <h2 id="install-title">Three steps, then he's on duty.</h2>
+          </div>
+          <ol class="steps">
+            <li>
+              <h3>Download</h3>
+              <p>Get the installer, <code>Ciel-Windows-setup.exe</code>, from the latest release. Windows 10 and 11.</p>
+              <a class="btn btn-primary btn-small" href="https://github.com/jean-eudes-asg/ciel/releases/latest">Latest release</a>
+            </li>
+            <li>
+              <h3>Run it anyway</h3>
+              <p>
+                The installer isn't code-signed yet, so Windows SmartScreen may stop it. Click
+                <b>More info</b>, then <b>Run anyway</b>.
+              </p>
+              <div class="smartscreen" aria-hidden="true">
+                <span class="ss-title">Windows protected your PC</span>
+                <span class="ss-link">More info</span>
+                <span class="ss-button">Run anyway</span>
+              </div>
+            </li>
+            <li>
+              <h3>Connect your agents</h3>
+              <p>
+                Ciel appears at the top of your screen. Open <b>Settings → Claude Code → Install hooks…</b> (and the
+                page of each other agent you use): you see the exact change and a dated backup is kept before
+                anything is written.
+              </p>
+            </li>
+          </ol>
+          <div class="linux">
+            <div>
+              <h3>On Linux</h3>
+              <p>
+                X11 and Wayland. Build it from source with Node 22.18+ and Rust: the AppImage, <code>.deb</code> and
+                <code>.rpm</code> land in <code>release/</code>.
+              </p>
+            </div>
+            <pre><code>npm install
+npm run pack</code></pre>
+            <a class="link" href="https://github.com/jean-eudes-asg/ciel#build-it-yourself">Build it yourself, step by step</a>
+          </div>
+        </section>
+
+        <section class="block" id="privacy" aria-labelledby="privacy-title">
+          <div class="block-head">
+            <p class="eyebrow">Privacy</p>
+            <h2 id="privacy-title">What happens on your computer stays there.</h2>
+          </div>
+          <ul class="tiles">
+            <li>
+              <svg class="tile-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 9 4.5 10 7-.4 1-1.2 2.3-2.4 3.5M6.1 6.1C4.1 7.4 2.7 9.4 2 12c1 2.5 5 7 10 7 1.8 0 3.4-.5 4.8-1.3"/></svg>
+              <h3>No telemetry, no account</h3>
+              <p>Ciel only talks to the services you set up yourself. Its log stays on your machine.</p>
+            </li>
+            <li>
+              <svg class="tile-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 20 3m-4 4 3 3m-5.5-.5 2 2"/></svg>
+              <h3>Keys in your keychain</h3>
+              <p>API keys live in Windows Credential Manager or the Linux Secret Service, never in a file.</p>
+            </li>
+            <li>
+              <svg class="tile-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5m-3.5 0h7"/></svg>
+              <h3>Your voice stays home</h3>
+              <p>Dictation and the Notetaker transcribe on your CPU. Only text goes to the AI you choose.</p>
+            </li>
+            <li>
+              <svg class="tile-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5"/><path d="M9.5 2.5v3.5m5-3.5v3.5m-5 12v3.5m5-3.5v3.5M2.5 9.5H6m-3.5 5H6m12-5h3.5M18 14.5h3.5M10 10h4v4h-4z"/></svg>
+              <h3>Local models</h3>
+              <p>Point « OK Ciel », the chat and the call summaries at Ollama or LM Studio, and nothing leaves your computer.</p>
+            </li>
+          </ul>
+        </section>
+
+        <footer class="foot">
+          <div class="foot-brand">
+            <canvas class="foot-ciel" width="100" height="100" aria-hidden="true"></canvas>
+            <div>
+              <p class="foot-name">Ciel</p>
+              <p>A little cloud that keeps an eye on your AI coding agents.</p>
+            </div>
+          </div>
+          <nav class="foot-links" aria-label="Links">
+            <a href="https://github.com/jean-eudes-asg/ciel">GitHub</a>
+            <a href="https://github.com/jean-eudes-asg/ciel/releases/latest">Releases</a>
+            <a href="https://github.com/jean-eudes-asg/ciel/issues">Issues</a>
+            <a href="https://github.com/jean-eudes-asg/ciel/blob/main/LICENSE">MIT License</a>
+          </nav>
+          <p class="foot-note">
+            © 2026 jean-eudes-asg. Forked from <a href="https://github.com/Louis-CFM/coucou">Coucou</a> by Louis Raillé,
+            with thanks. This page has no cookies and no analytics: your sky is worked out in your browser, from your
+            time zone.
+          </p>
+        </footer>
+      </div>
+    </main>
+  </body>
+</html>

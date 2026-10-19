@@ -25,7 +25,7 @@ async function main() {
   const root = document.getElementById("root");
   if (!root) return;
 
-  void Sound.preload();
+  void Sound.preload(Bridge);
 
   // Before the island exists: its canvases size their bitmaps from the pixel
   // ratio once, so the zoom correction has to land first. If zoom was adjusted,

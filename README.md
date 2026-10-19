@@ -168,6 +168,7 @@ npx tsc --noEmit       # type check
 cargo test --workspace # Rust tests (build ciel-hook first: cargo build --release -p ciel-hook)
 npm run icons          # redraws src-tauri/icons from scripts/gen-icons.mjs
 npm run sounds         # re-synthesizes the 29 sounds in sounds/ from scripts/gen-sounds.mjs
+npm run site:dev       # the website (site/), with the real sky and Ciel; site:build → site-dist/
 ```
 
 `npx vite` alone serves the front end in an ordinary browser, which is enough to
