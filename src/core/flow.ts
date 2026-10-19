@@ -3,6 +3,7 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import type { AiStatus } from "./brain";
+import { t } from "../i18n/i18n";
 
 const IS_TAURI = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
@@ -22,7 +23,8 @@ async function callOrThrow<T>(cmd: string, args?: Record<string, unknown>): Prom
 }
 
 export type FlowKey = "right_ctrl" | "right_alt" | "right_shift" | "left_ctrl_super";
-export type Edge = "bottom" | "left" | "right";
+/** Where dictation shows: in the island (the default), or in the pill on an edge. */
+export type Edge = "island" | "bottom" | "left" | "right";
 export type Style = "verbatim" | "natural" | "polished";
 
 export interface FlowPrefs {
@@ -39,6 +41,8 @@ export interface FlowPrefs {
   voice: boolean;
   voiceOutput: VoiceOutput;
   voiceGender: "female" | "male";
+  /** Rust moved dictation into the island once (store.rs); kept as it came. */
+  movedToIsland?: boolean;
 }
 
 export type ModelState =
@@ -184,6 +188,68 @@ export interface VoiceView {
 }
 
 export type VoiceOutput = "system" | "elevenlabs" | "off";
+
+// ── What the pill, or the island, shows ───────────────────────────────────────
+
+export type PillLook = "resting" | "toolbar" | "note" | "live" | "handsFree" | "message" | "voice";
+
+/** A dictation first, then « OK Ciel », then a call; else at rest, or the toolbar while hovered. */
+export function pillLook(s: PillState, hovered = false): PillLook {
+  switch (s.phase) {
+    case "locked":
+      return "handsFree";
+    case "listening":
+    case "thinking":
+      return "live";
+    case "copied":
+    case "failed":
+    case "pastedAgain":
+      return "message";
+    default:
+      if (s.voice) return "voice";
+      if (s.noteStartedAt) return "note";
+      return hovered ? "toolbar" : "resting";
+  }
+}
+
+/** The "message" look's line, in the current language. */
+export function pillMessage(phase: PillState["phase"]): string | null {
+  switch (phase) {
+    case "copied":
+      return t("Copied · press Ctrl+V to paste");
+    case "failed":
+      return t("Microphone unavailable");
+    case "pastedAgain":
+      return t("Last dictation pasted");
+    default:
+      return null;
+  }
+}
+
+/**
+ * Where dot `i` goes (0…1): the voice while you speak, a slow wave while
+ * thinking, a lively one while Ciel speaks (`speaking`: his voice is heard).
+ */
+export function dotGoal(s: PillState, voice: readonly number[], now: number, i: number, speaking: boolean): number {
+  const wave = () => 0.25 + 0.25 * Math.sin(now / 160 - i * 0.7);
+  if (s.phase === "thinking") return wave();
+  if (s.phase === "listening" || s.phase === "locked") return voice[i] ?? 0;
+  switch (s.voice?.phase) {
+    case "thinking":
+      return wave();
+    case "speaking":
+      return speaking ? 0.2 + 0.35 * Math.abs(Math.sin(now / 110 + i * 1.3) * Math.sin(now / 270 - i * 0.6)) : 0.05;
+    case "listening":
+      return 0.08 + 0.08 * Math.sin(now / 400 - i * 0.5);
+    default:
+      return 0;
+  }
+}
+
+/** Dictation shows in the island and has something to show: a look, or a message. */
+export function islandFlowActive(s: PillState): boolean {
+  return s.edge === "island" && (s.announcement != null || pillLook(s) !== "resting");
+}
 
 export const FlowBridge = {
   status: () => call<FlowStatus>("flow_status"),

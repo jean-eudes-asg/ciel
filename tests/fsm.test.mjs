@@ -377,3 +377,25 @@ test("open on hover: an island opened by an alert keeps the normal delay", () =>
   seconds(2);
   assert.equal(fsm.state, "petit");
 });
+
+test("dictation holds the compact island on screen, then lets it go as usual", () => {
+  fsm.reveal();
+  assert.equal(fsm.state, "petit");
+  fsm.hold(true);
+  seconds(fsm.petitToHiddenDelay * 3);
+  assert.equal(fsm.state, "petit", "held while dictation shows");
+  fsm.hold(false);
+  seconds(fsm.petitToHiddenDelay - 1);
+  assert.equal(fsm.state, "petit");
+  seconds(1);
+  assert.equal(fsm.state, "hidden");
+});
+
+test("a hold taken while the hide is already counting stops it", () => {
+  fsm.reveal();
+  seconds(fsm.petitToHiddenDelay - 1);
+  fsm.hold(true);
+  seconds(10);
+  assert.equal(fsm.state, "petit");
+});
+

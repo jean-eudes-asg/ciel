@@ -21,6 +21,7 @@ import { UploadCanvas } from "../upload/canvas";
 import { USC, UploadSeq } from "../upload/sequence";
 import { closePlanCard, openPlanColor, planCardOpen } from "../views/usage";
 import { buildPlanRings, type PlanRings } from "../views/plan-rings";
+import { buildFlowStrip, type FlowStrip } from "./flow";
 import { buildHeader, buildViews, type ViewActions, type ViewHost } from "../views/views";
 import { h } from "../views/dom";
 import { IslandStateMachine } from "./fsm";
@@ -59,6 +60,7 @@ export class Island {
   private greetingCanvas!: HTMLCanvasElement;
   private miniGrid!: HTMLElement;
   private planRings!: PlanRings;
+  private flowStrip!: FlowStrip;
   private countdown!: HTMLElement;
   private wakeStrip!: HTMLElement;
 
@@ -252,6 +254,7 @@ export class Island {
     this.greetingCanvas = h("canvas", { id: "greeting-canvas" });
     this.miniGrid = h("div", { id: "mini-grid" });
     this.planRings = buildPlanRings();
+    this.flowStrip = buildFlowStrip(() => this.onFlowChange());
     this.countdown = h("div", { id: "countdown" });
 
     this.header = buildHeader(actions);
@@ -288,6 +291,8 @@ export class Island {
       this.miniGrid,
       this.planRings.el,
       this.planRings.pop,
+      this.flowStrip.el,
+      this.flowStrip.pop,
       this.countdown,
     );
 
@@ -647,7 +652,11 @@ export class Island {
     this.uploadCanvas.el.style.left = `${(w - EXPANDED_W) / 2}px`;
 
     const viewportW = window.innerWidth > 0 ? window.innerWidth : PANEL_W;
-    const rect = { x: (viewportW - w) / 2, y: 0, w, h: hh };
+    // A dictation message under the island has buttons: they take clicks too.
+    const extra = this.flowStrip?.hitBox();
+    const rw = extra ? Math.max(w, extra.w) : w;
+    const rh = extra ? Math.max(hh, extra.h) : hh;
+    const rect = { x: (viewportW - rw) / 2, y: 0, w: rw, h: rh };
     const p = this.pushedRect;
     if (Math.abs(p.x - rect.x) > 0.5 || Math.abs(p.w - rect.w) > 0.5 || Math.abs(p.h - rect.h) > 0.5) {
       this.pushedRect = rect;
@@ -1120,8 +1129,12 @@ export class Island {
       }
     }
 
+    // Dictation in the island takes the folded island's room while it shows.
+    this.flowStrip.sync(State.mode === "compact");
+    const dictating = this.flowStrip.active;
+
     // Compact mini grid
-    const showGrid = State.mode === "compact";
+    const showGrid = State.mode === "compact" && !dictating;
     this.miniGrid.style.opacity = showGrid ? "1" : "0";
     if (showGrid) {
       const others = State.otherTasks.slice(0, 4);
@@ -1138,10 +1151,20 @@ export class Island {
 
     // Plan usage rings: beside the mini grid, or at the end when it is empty.
     this.planRings.sync();
+    if (dictating) this.planRings.el.classList.remove("on");
     this.planRings.el.style.right = `${showGrid && State.otherTasks.length ? 62 : 14}px`;
 
     syncMiniBotStates(State.tasks);
     this.engine.setState(State.effectiveState);
+  }
+
+  /** Dictation in the island: the folded island shows it, and stays while it does. */
+  private onFlowChange() {
+    const on = this.flowStrip.active;
+    if (on && State.mode === "hidden") this.revealSilently();
+    this.fsm.hold(on);
+    this.applyGeometry();
+    State.notify();
   }
 
   /** Applies settings coming from Rust at boot. */

@@ -2,6 +2,16 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Changed
+- **Dictation in the island**: while you dictate, the folded island shows
+  it — the dots of your voice, hands-free's ✕ and ✓, a call's clock, short
+  messages — and what « OK Ciel » heard and answered shows under it. The pill
+  is still there for whoever prefers it: Ciel window → Dictation → Where
+  dictation shows. A pill at the bottom, the old default, moves to the island
+  once; a side you picked stays.
+
 ## [0.2.0] - 2026-10-19
 
 ### Added

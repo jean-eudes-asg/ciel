@@ -5321,6 +5321,39 @@
    "pt-BR": "Mostra o que estiver tocando: Spotify, um navegador, VLC, Media Player… O controle de volume é só do Spotify.",
    "ru": "Показывает всё, что играет: Spotify, браузер, VLC, Медиаплеер… Ползунок громкости — только для Spotify.",
    "id": "Menampilkan apa pun yang sedang diputar: Spotify, browser, VLC, Pemutar Media… Penggeser volume hanya untuk Spotify."
+  },
+  "Island": {
+   "zh-Hans": "岛",
+   "hi": "आइलैंड",
+   "es": "Isla",
+   "ar": "الشريط",
+   "fr": "Île",
+   "bn": "আইল্যান্ড",
+   "pt-BR": "Ilha",
+   "ru": "Остров",
+   "id": "Pulau"
+  },
+  "Where dictation shows": {
+   "zh-Hans": "听写显示位置",
+   "hi": "डिक्टेशन कहाँ दिखे",
+   "es": "Dónde se muestra el dictado",
+   "ar": "مكان عرض الإملاء",
+   "fr": "Où s'affiche la dictée",
+   "bn": "ডিক্টেশন কোথায় দেখাবে",
+   "pt-BR": "Onde o ditado aparece",
+   "ru": "Где показывать диктовку",
+   "id": "Tempat dikte ditampilkan"
+  },
+  "The island at the top of the screen, or the pill on an edge.": {
+   "zh-Hans": "屏幕顶部的岛，或屏幕边缘的胶囊。",
+   "hi": "स्क्रीन के ऊपर आइलैंड में, या किनारे पर पिल में।",
+   "es": "La isla en la parte superior de la pantalla, o la píldora en un borde.",
+   "ar": "الشريط أعلى الشاشة، أو الكبسولة على أحد الحواف.",
+   "fr": "L'île en haut de l'écran, ou la pilule sur un bord.",
+   "bn": "স্ক্রিনের ওপরে আইল্যান্ডে, অথবা কোনো কিনারায় পিলে।",
+   "pt-BR": "A ilha no topo da tela, ou a pílula em uma borda.",
+   "ru": "Остров вверху экрана или капсула у края.",
+   "id": "Pulau di bagian atas layar, atau pil di salah satu tepi."
   }
  }
 }

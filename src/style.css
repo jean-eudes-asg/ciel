@@ -263,6 +263,181 @@ body {
   padding: 8px 0 0;
 }
 
+/* Dictation in the island (island/flow.ts): the pill's looks beside Ciel in
+   the folded island, and what « OK Ciel » says, or a message, under it. */
+.flow-strip {
+  position: absolute;
+  top: 0;
+  left: 62px;
+  right: 14px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.flow-strip.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.flow-bars {
+  display: flex;
+  align-items: center;
+  gap: 3.2px;
+  height: 22px;
+}
+
+.flow-bars i {
+  width: 3.4px;
+  height: 3.4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.flow-btn {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.flow-btn:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.flow-btn.filled {
+  background: #fff;
+  color: #000;
+}
+
+.flow-btn svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.flow-btn.stop i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.flow-msg {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 500 12px var(--font);
+  color: var(--ink);
+}
+
+.flow-rec {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff453a;
+  box-shadow: 0 0 3px rgba(255, 69, 58, 0.6);
+}
+
+.flow-clock {
+  font: 600 12px var(--font);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.flow-pop {
+  position: absolute;
+  top: calc(100% + 9px);
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  max-width: 420px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.94);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 10px 28px rgba(0, 0, 0, 0.45);
+  font: 500 12px/1.45 var(--font);
+  color: var(--ink);
+  opacity: 0;
+  transform: translate(-50%, -4px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.flow-pop.on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Only a message's buttons take clicks; what Ciel says is to be read. */
+.flow-pop.on.announce {
+  pointer-events: auto;
+  padding: 8px 8px 8px 14px;
+}
+
+.flow-pop.voice {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.flow-pop-icon svg {
+  display: block;
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.flow-pop-text {
+  flex: 1 1 auto;
+}
+
+.flow-act {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font: 600 11.5px var(--font);
+  cursor: pointer;
+}
+
+.flow-heard {
+  color: var(--dim-2);
+}
+
+.flow-answer {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* A mini Ciel: the slot is the body, the canvas is larger and overflows it so
    hands, badges and particles are not cut off. */
 .mini {

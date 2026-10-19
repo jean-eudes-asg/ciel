@@ -148,6 +148,11 @@ pub fn dictating(app: &AppHandle) -> bool {
     get(app).is_some_and(|p| matches!(p.state.lock().unwrap().phase.as_str(), "listening" | "locked" | "thinking"))
 }
 
+/// Dictation shows in the island rather than in the pill.
+pub fn in_island(app: &AppHandle) -> bool {
+    get(app).is_some_and(|p| p.state.lock().unwrap().edge == "island")
+}
+
 pub fn get(app: &AppHandle) -> Option<Arc<Pill>> {
     app.try_state::<Arc<Pill>>().map(|s| s.inner().clone())
 }
@@ -166,6 +171,7 @@ fn size_for(edge: &str) -> (f64, f64) {
 
 pub fn edge_name(edge: Edge) -> &'static str {
     match edge {
+        Edge::Island => "island",
         Edge::Bottom => "bottom",
         Edge::Left => "left",
         Edge::Right => "right",
@@ -182,7 +188,11 @@ pub fn update(app: &AppHandle, change: impl FnOnce(&mut PillState)) {
         (s.clone(), s.edge != edge_before)
     };
     let _ = app.emit_to(LABEL, "pill-state", &state);
-    let visible = state.enabled || state.note_started_at.is_some() || state.announcement.is_some() || state.voice.is_some() || state.phase != "idle";
+    // In the island (the default), the island draws it all and the pill stays
+    // away; its page still runs, as it speaks « OK Ciel »'s answers.
+    let _ = app.emit_to(crate::island::WINDOW_LABEL, "pill-state", &state);
+    let busy = state.enabled || state.note_started_at.is_some() || state.announcement.is_some() || state.voice.is_some() || state.phase != "idle";
+    let visible = busy && state.edge != "island";
     let was = pill.shown.swap(visible, Ordering::Relaxed);
     if visible && (!was || edge_changed) {
         place(app, &pill, &state.edge, state.phase == "listening");

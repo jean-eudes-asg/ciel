@@ -286,10 +286,12 @@ fn run(app: AppHandle, flow: Arc<Flow>, rx: mpsc::Receiver<(KeyEvent, Instant)>)
                 }
             }
         }
-        // The pill's dots, about 30 times a second while you speak.
+        // The dots, about 30 times a second while you speak: to the pill, or
+        // to the island when dictation shows there.
         if let Some(l) = &listening {
             let levels = l.take.lock().unwrap().meter.levels;
-            let _ = app.emit_to(pill::LABEL, "pill-bands", levels);
+            let to = if pill::in_island(&app) { crate::island::WINDOW_LABEL } else { pill::LABEL };
+            let _ = app.emit_to(to, "pill-bands", levels);
         }
     }
     pill::update(&app, |s| s.phase = "idle".into());
@@ -485,7 +487,9 @@ pub fn flow_status(flow: State<Arc<Flow>>, shared: State<crate::Shared>) -> Flow
 }
 
 #[tauri::command]
-pub fn flow_set_prefs(app: AppHandle, flow: State<Arc<Flow>>, prefs: Prefs) {
+pub fn flow_set_prefs(app: AppHandle, flow: State<Arc<Flow>>, mut prefs: Prefs) {
+    // The move into the island happened at load; a page that doesn't know of it can't undo it.
+    prefs.moved_to_island = true;
     let flow = flow.inner().clone();
     let before = {
         let mut store = flow.store.lock().unwrap();

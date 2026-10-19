@@ -29,6 +29,8 @@ export class IslandStateMachine {
   greetHoverCollapseDelay = 10;
   /** An alert waiting for an answer stays open, even when the mouse leaves. */
   pinned = false;
+  /** Dictation shows in the compact island: it stays on screen meanwhile (hold()). */
+  held = false;
   /**
    * Hovering opens the island all the way instead of peeking (Settings →
    * General → Open on hover, off by default), as IslandStateMachine.openOnHover.
@@ -159,12 +161,20 @@ export class IslandStateMachine {
   private schedulePetitHide() {
     this.clear("petitHide");
     // A card folded away while it waits for an answer keeps the compact island
-    // on screen, so it can be reopened (isHeldOpen on macOS).
-    if (this.pinned) return;
+    // on screen, so it can be reopened (isHeldOpen on macOS); so does dictation.
+    if (this.pinned || this.held) return;
     this.petitHide = window.setTimeout(() => {
       this.petitHide = null;
-      if (this.state === "petit" && !this.pinned) this.transition("hidden");
+      if (this.state === "petit" && !this.pinned && !this.held) this.transition("hidden");
     }, this.petitToHiddenDelay * 1000);
+  }
+
+  /** Dictation in the island: the compact island stays while it shows, then goes as usual. */
+  hold(on: boolean) {
+    if (this.held === on) return;
+    this.held = on;
+    if (on) this.clear("petitHide");
+    else if (this.state === "petit") this.schedulePetitHide();
   }
 
   private scheduleHomeCollapse() {

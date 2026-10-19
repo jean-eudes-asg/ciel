@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel — dictation in the island</title>
+    <style>
+      body { margin: 0; padding: 24px 0 60px; background: #1b1b1f; font: 12px system-ui; color: #ddd; }
+      h1 { font: 600 14px system-ui; text-align: center; margin: 0 0 18px; }
+      .cases { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+      .case { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      .case.tall { margin-bottom: 70px; }
+      /* A folded island: the real strip and bubble, on a 288×32 strip. */
+      .strip { position: relative; width: 288px; height: 32px; background: #000; border-radius: 0 0 14px 14px; }
+      .strip .ciel { position: absolute; left: 30px; top: 6px; width: 20px; height: 20px; border-radius: 50%; background: #f5f6f8; }
+    </style>
+  </head>
+  <body>
+    <h1>Dictation in the folded island (src/island/flow.ts)</h1>
+    <div class="cases" id="cases"></div>
+    <script type="module" src="./flow-preview.ts"></script>
+  </body>
+</html>

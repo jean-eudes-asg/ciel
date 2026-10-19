@@ -7,7 +7,7 @@
 
 import "./pill.css";
 import { Bridge, onEvent } from "../core/bridge";
-import { FlowBridge, clock, type PillState } from "../core/flow";
+import { FlowBridge, clock, dotGoal as goalOf, pillLook, pillMessage, type PillLook, type PillState } from "../core/flow";
 import type { Settings } from "../core/state";
 import { BotEngine, hexToRGB } from "../cloud/engine";
 import { resolveLanguage, setLanguage, systemLanguages, t } from "../i18n/i18n";
@@ -61,40 +61,13 @@ function cloudSlot(): HTMLElement {
 
 // ── Looks ─────────────────────────────────────────────────────────────────────
 
-type Look = "resting" | "toolbar" | "note" | "live" | "handsFree" | "message" | "voice";
+type Look = PillLook;
 
-function look(): Look {
-  switch (state.phase) {
-    case "locked":
-      return "handsFree";
-    case "listening":
-    case "thinking":
-      return "live";
-    case "copied":
-    case "failed":
-    case "pastedAgain":
-      return "message";
-    default:
-      if (state.voice) return "voice";
-      if (state.noteStartedAt) return "note";
-      return hovered ? "toolbar" : "resting";
-  }
-}
+const look = (): Look => pillLook(state, hovered);
 
 const vertical = () => state.edge !== "bottom";
 
-function messageText(): string | null {
-  switch (state.phase) {
-    case "copied":
-      return t("Copied · press Ctrl+V to paste");
-    case "failed":
-      return t("Microphone unavailable");
-    case "pastedAgain":
-      return t("Last dictation pasted");
-    default:
-      return null;
-  }
-}
+const messageText = (): string | null => pillMessage(state.phase);
 
 function measure(text: string): number {
   const c = document.createElement("canvas").getContext("2d")!;
@@ -347,21 +320,7 @@ function animating(): boolean {
   return visible && look() !== "resting";
 }
 
-/** Where dot `i` goes: the voice, a slow wave while thinking, a lively one while Ciel speaks. */
-function dotGoal(now: number, i: number): number {
-  if (state.phase === "thinking") return 0.25 + 0.25 * Math.sin(now / 160 - i * 0.7);
-  if (state.phase === "listening" || state.phase === "locked") return target[i];
-  switch (state.voice?.phase) {
-    case "thinking":
-      return 0.25 + 0.25 * Math.sin(now / 160 - i * 0.7);
-    case "speaking":
-      return speaking ? 0.2 + 0.35 * Math.abs(Math.sin(now / 110 + i * 1.3) * Math.sin(now / 270 - i * 0.6)) : 0.05;
-    case "listening":
-      return 0.08 + 0.08 * Math.sin(now / 400 - i * 0.5);
-    default:
-      return 0;
-  }
-}
+const dotGoal = (now: number, i: number): number => goalOf(state, target, now, i, speaking);
 
 function tick(now: number) {
   frame = null;

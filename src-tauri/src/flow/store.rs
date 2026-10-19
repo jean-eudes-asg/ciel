@@ -65,10 +65,13 @@ pub struct AppStyle {
     pub style: Style,
 }
 
+/// Where dictation shows: in the island (its listening strip), or in the
+/// pill on an edge of the screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum Edge {
     #[default]
+    Island,
     Bottom,
     Left,
     Right,
@@ -111,6 +114,24 @@ pub struct Prefs {
     pub voice_output: String,
     /// The ElevenLabs voice: "female" or "male".
     pub voice_gender: String,
+    /// Dictation moved into the island once: the pill at the bottom, the old
+    /// default, went there. Missing from older files, so false for them.
+    #[serde(default)]
+    pub moved_to_island: bool,
+}
+
+/// Dictation moved into the island: prefs from before follow once if they
+/// had the pill at the bottom (the old default); a side the user picked stays.
+/// True when they changed.
+pub fn move_to_island(prefs: &mut Prefs) -> bool {
+    if prefs.moved_to_island {
+        return false;
+    }
+    if prefs.edge == Edge::Bottom {
+        prefs.edge = Edge::Island;
+    }
+    prefs.moved_to_island = true;
+    true
 }
 
 impl Default for Prefs {
@@ -118,7 +139,7 @@ impl Default for Prefs {
         Self {
             enabled: false,
             key: FlowKey::default(),
-            edge: Edge::Bottom,
+            edge: Edge::Island,
             mic: String::new(),
             keep_days: 30,
             cleanup: false,
@@ -128,6 +149,7 @@ impl Default for Prefs {
             voice: false,
             voice_output: "system".into(),
             voice_gender: "female".into(),
+            moved_to_island: true,
         }
     }
 }
@@ -211,6 +233,9 @@ impl Store {
             last_unkept: None,
             folder,
         };
+        if move_to_island(&mut store.prefs) {
+            store.save_prefs();
+        }
         store.prune(now_ms());
         store
     }
@@ -392,5 +417,28 @@ mod tests {
         assert_eq!(p.key, FlowKey::RightAlt);
         assert_eq!(p.keep_days, 30);
         assert!(p.open_at_launch);
+    }
+
+    #[test]
+    fn dictation_moves_into_the_island_once_unless_a_side_was_picked() {
+        // An older file, with the pill at the bottom (the old default): it follows, once.
+        let mut p: Prefs = serde_json::from_str(r#"{"enabled":true,"edge":"bottom"}"#).unwrap();
+        assert!(!p.moved_to_island);
+        assert!(move_to_island(&mut p));
+        assert_eq!(p.edge, Edge::Island);
+        assert!(p.moved_to_island);
+        // Put back at the bottom afterwards, it stays there.
+        p.edge = Edge::Bottom;
+        assert!(!move_to_island(&mut p));
+        assert_eq!(p.edge, Edge::Bottom);
+        // A side the user picked is kept.
+        let mut side: Prefs = serde_json::from_str(r#"{"edge":"left"}"#).unwrap();
+        assert!(move_to_island(&mut side));
+        assert_eq!(side.edge, Edge::Left);
+        // A new install starts in the island, nothing to move.
+        let mut fresh = Prefs::default();
+        assert_eq!(fresh.edge, Edge::Island);
+        assert!(!move_to_island(&mut fresh));
+        assert_eq!(serde_json::to_value(&fresh).unwrap()["edge"], "island");
     }
 }
