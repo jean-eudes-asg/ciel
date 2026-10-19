@@ -24,6 +24,18 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   dictation shows. A pill at the bottom, the old default, moves to the island
   once; a side you picked stays.
 
+### Fixed
+- Settings → Wallpaper no longer calls the lock screen "the Windows lock screen"
+  on Linux.
+
+## [0.2.1] - 2026-10-19
+
+### Fixed
+- Linux: where live wallpapers can't run (GNOME, X11), the desktop gets Ciel's
+  still sky instead of nothing at all.
+- Linux on X11: no more frozen copy of Ciel left behind in the island after it
+  folds.
+
 ## [0.2.0] - 2026-10-19
 
 ### Added
@@ -90,5 +102,6 @@ an eye on your AI coding agents. Windows 10/11; Linux builds from source.
 Ciel is a fork of [Coucou](https://github.com/Louis-CFM/coucou) by Louis
 Raillé (MIT). Thank you.
 
+[0.2.1]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.1
 [0.2.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.1.0

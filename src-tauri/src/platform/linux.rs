@@ -94,6 +94,7 @@ fn xdg_user_dir(text: &str, key: &str, home: &Path) -> Option<PathBuf> {
 /// plugin paths that vanish once Ciel quits. Give ours its own file.
 pub fn prepare_environment() {
     prefer_x11_on_gnome();
+    no_webkit_compositing_on_x11();
     follow_gnome_text_scaling();
     if std::env::var_os("APPIMAGE").is_none() || std::env::var_os("GST_REGISTRY").is_some() {
         return;
@@ -128,6 +129,17 @@ fn should_prefer_x11(session: &str, desktop: &str, opt: &str, display: &str) -> 
         && desktop.split(':').any(|d| d.eq_ignore_ascii_case("gnome"))
         && opt != "0"
         && !display.trim().is_empty()
+}
+
+/// On X11, WebKitGTK's compositing mode leaves a frozen copy of Ciel behind in
+/// the transparent island once it folds. Without it the island repaints
+/// properly, and it is small enough not to miss the GPU. An explicit value wins.
+fn no_webkit_compositing_on_x11() {
+    let x11 = std::env::var("GDK_BACKEND").is_ok_and(|b| b == "x11")
+        || std::env::var("XDG_SESSION_TYPE").is_ok_and(|s| s.eq_ignore_ascii_case("x11"));
+    if x11 && std::env::var_os("WEBKIT_DISABLE_COMPOSITING_MODE").is_none() {
+        std::env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+    }
 }
 
 fn is_gnome(desktop: &str) -> bool {

@@ -221,6 +221,26 @@ test("switching from live to still closes the windows and draws stills", async (
   assert.equal(renders(calls).length, 2);
 });
 
+test("live where the desktop can't run it (GNOME, X11): the still picture stands in", async () => {
+  const h = harness();
+  h.deps.live = async (on) => {
+    h.calls.push(["live", on]);
+    return !on;
+  };
+  const c = new WallpaperController(h.deps);
+  c.update({ desktop: true, live: true, ...HERE }, "idle");
+  await h.advance(1_000);
+  const calls = h.take();
+  assert.deepEqual(calls[0], ["live", true]);
+  assert.ok(calls.some((x) => x[0] === "desktop"), JSON.stringify(calls));
+  // A new mood redraws the still, without asking for live windows again.
+  c.update({ desktop: true, live: true, ...HERE }, "thinking");
+  await h.advance(TIMING.stillMinGapMs + 1_000);
+  const later = h.take();
+  assert.equal(later.some((x) => x[0] === "live"), false);
+  assert.ok(later.some((x) => x[0] === "desktop"), JSON.stringify(later));
+});
+
 test("turning everything off stops it all", async () => {
   const h = harness();
   const c = new WallpaperController(h.deps);

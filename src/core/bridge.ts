@@ -291,7 +291,12 @@ export const Bridge = {
   /** A cached photo's bytes, to decode here (the page can't load file URLs). */
   wallpaperPhotoBytes: async (path: string) => toBytes(await call<ArrayBuffer | number[]>("wallpaper_photo_bytes", { path })),
   /** Creates (or destroys) the live window(s) behind the desktop icons. */
-  wallpaperLive: (enabled: boolean) => call<void>("wallpaper_live", { enabled }),
+  /** False when the live windows could not start (no layer-shell: GNOME, X11). */
+  wallpaperLive: (enabled: boolean) =>
+    callOrThrow<void>("wallpaper_live", { enabled }).then(
+      () => true,
+      () => false,
+    ),
   /** What this OS supports, and whether live mode runs, is paused, and a wallpaper is saved. */
   wallpaperStatus: () => call<WallpaperStatus>("wallpaper_status"),
 };
