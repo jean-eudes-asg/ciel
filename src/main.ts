@@ -13,6 +13,7 @@ import { applySpotify, registerSpotifyHandlers } from "./island/spotify";
 import { SPOTIFY_ID } from "./core/spotify";
 import { registerFinanceHandlers } from "./island/finance";
 import { registerWallpaper } from "./island/wallpaper";
+import { registerDemo } from "./demo/app";
 import { Recap } from "./recap/recap";
 import { onLanguageChange, resolveLanguage, setLanguage, systemLanguages } from "./i18n/i18n";
 
@@ -138,6 +139,8 @@ async function main() {
   registerVoiceHandlers();
   registerSpotifyHandlers(island);
   registerFinanceHandlers();
+  // Settings → General → Try demo mode plays here (src/demo).
+  registerDemo(island);
   // Ciel's wallpapers: nothing at all happens while they are off.
   void registerWallpaper();
   // Rust may have read Spotify before this page listened: ask once.

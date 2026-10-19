@@ -13,7 +13,37 @@ import type { FinanceFolderInfo, FinancePoll, NewExpense } from "./finance";
 export const IS_TAURI =
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
+// ── Demo mode (src/demo) ──────────────────────────────────────────────────────
+
+/**
+ * While the demo runs, every command and every event from Rust passes its gate
+ * first: the demo answers from made-up data and swallows anything that would
+ * write, so nothing it shows comes from the user's files, keychain or agents,
+ * and nothing reaches them. Null the rest of the time.
+ */
+export interface BridgeGate {
+  /** `{ value }` answers the command here (a rejected promise throws); undefined lets it through. */
+  command(cmd: string, args?: Record<string, unknown>): { value: unknown } | undefined;
+  /** False drops an event Rust sent. */
+  event(name: string, payload: unknown): boolean;
+}
+
+let gate: BridgeGate | null = null;
+
+export function setBridgeGate(next: BridgeGate | null) {
+  gate = next;
+}
+
 async function call<T>(cmd: string, args?: Record<string, unknown>): Promise<T | null> {
+  const routed = gate?.command(cmd, args);
+  if (routed) {
+    try {
+      return (await routed.value) as T;
+    } catch (err) {
+      console.error(`[ciel] ${cmd} failed`, err);
+      return null;
+    }
+  }
   if (!IS_TAURI) return null;
   try {
     return await invoke<T>(cmd, args);
@@ -303,6 +333,11 @@ function toBytes(v: ArrayBuffer | ArrayLike<number> | null): Uint8Array | null {
  * again as JSON (`args`, with `png` as a number array). Throws why it failed.
  */
 async function sendBytes(cmd: string, png: Uint8Array, headers: Record<string, string>, args: Record<string, string>): Promise<void> {
+  const routed = gate?.command(cmd, args);
+  if (routed) {
+    await routed.value;
+    return;
+  }
   if (!IS_TAURI) throw new Error("not running inside Ciel");
   try {
     await invoke(cmd, png, { headers });
@@ -432,6 +467,8 @@ export interface HookPreview {
 
 /** Same as `call`, but surfaces the error so the UI can show what went wrong. */
 async function callOrThrow<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
+  const routed = gate?.command(cmd, args);
+  if (routed) return (await routed.value) as T;
   if (!IS_TAURI) throw new Error("not running inside Ciel");
   return invoke<T>(cmd, args);
 }
@@ -513,7 +550,30 @@ export async function onDragDrop(handler: (e: DragDropPayload) => void) {
   };
 }
 
+/** Every handler given to onEvent, by event, so the page can hand them an event itself. */
+const pageHandlers = new Map<string, Set<(payload: unknown) => void>>();
+
 export async function onEvent<T>(name: string, handler: (payload: T) => void) {
-  if (!IS_TAURI) return () => {};
-  return listen<T>(name, (e) => handler(e.payload));
+  const own = handler as (payload: unknown) => void;
+  const handlers = pageHandlers.get(name) ?? new Set();
+  pageHandlers.set(name, handlers);
+  handlers.add(own);
+  const forget = () => void handlers.delete(own);
+  if (!IS_TAURI) return forget;
+  const unlisten = await listen<T>(name, (e) => {
+    if (gate && !gate.event(name, e.payload)) return;
+    handler(e.payload);
+  });
+  return () => {
+    forget();
+    unlisten();
+  };
+}
+
+/**
+ * Hands an event to this page's own handlers as if Rust had sent it (the demo's
+ * streamed chat answer, or what it held back while it ran). Never gated.
+ */
+export function emitLocal(name: string, payload?: unknown) {
+  for (const handler of [...(pageHandlers.get(name) ?? [])]) handler(payload);
 }

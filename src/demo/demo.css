@@ -1,0 +1,105 @@
+/* Demo mode: the badge in the island (app), and the browser page (demo.html). */
+
+/* ── The badge: centred in the compact island, in the header once it opens ── */
+
+.demo-badge {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 16px;
+  pointer-events: auto;
+  transition: top 0.25s ease, opacity 0.2s ease;
+  z-index: 2;
+}
+
+.demo-badge[data-mode="hidden"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.demo-badge[data-mode="expanded"] {
+  top: 17px;
+}
+
+.demo-badge-label {
+  padding: 1px 7px;
+  border-radius: 8px;
+  background: rgba(245, 165, 36, 0.16);
+  border: 1px solid rgba(245, 165, 36, 0.45);
+  color: #f5c46a;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 12px;
+  text-transform: uppercase;
+}
+
+.demo-badge-stop {
+  display: none;
+  padding: 1px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--dim, #9398a1);
+  font: 600 10px/12px var(--font);
+  cursor: default;
+}
+
+.demo-badge-stop:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--ink, #f5f6f8);
+}
+
+.demo-badge[data-mode="expanded"] .demo-badge-stop {
+  display: block;
+}
+
+/* ── demo.html: the island on a dark sky, sized for an iframe (~900×420) ── */
+
+html.ciel-demo,
+html.ciel-demo body {
+  background: radial-gradient(120% 90% at 50% -10%, #263042 0%, #141822 48%, #0b0d12 100%);
+}
+
+html.ciel-demo[data-bg="transparent"],
+html.ciel-demo[data-bg="transparent"] body {
+  background: transparent;
+}
+
+/* The top edge of a screen, where the island lives. */
+html.ciel-demo:not([data-bg="transparent"]) body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.demo-sound {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 15px;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--dim-2, #8e939c);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.demo-sound:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink, #f5f6f8);
+}
+
+.demo-sound[aria-pressed="true"] {
+  color: var(--ink, #f5f6f8);
+}

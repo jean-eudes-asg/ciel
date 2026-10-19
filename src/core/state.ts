@@ -197,6 +197,12 @@ export const DEFAULT_SETTINGS: Settings = {
 
 type Listener = () => void;
 
+/** Every pill's diffs and their expiry timers (AppState.swapSessionDiffs). */
+export interface SessionDiffStore {
+  diffs: Map<string, FileDiff[]>;
+  timers: Map<string, number>;
+}
+
 /** Live diffs kept per pill (oldest dropped first) — same cap as macOS. */
 export const MAX_DIFFS_PER_PILL = 50;
 /** A pill's diffs are forgotten after an hour without a new one, as on macOS. */
@@ -383,6 +389,18 @@ class AppState {
     if (timer != null) window.clearTimeout(timer);
     this.sessionDiffTimers.delete(pillId);
     this.sessionDiffs.delete(pillId);
+  }
+
+  /**
+   * Demo mode (src/demo): puts every pill's diffs, with the timers that expire
+   * them, aside whole and hands back what was there, so neither side's diffs
+   * leak into the other's.
+   */
+  swapSessionDiffs(next: SessionDiffStore = { diffs: new Map(), timers: new Map() }): SessionDiffStore {
+    const out = { diffs: this.sessionDiffs, timers: this.sessionDiffTimers };
+    this.sessionDiffs = next.diffs;
+    this.sessionDiffTimers = next.timers;
+    return out;
   }
 
   /** The always-on workspace pill, once the setting has been checked. */
