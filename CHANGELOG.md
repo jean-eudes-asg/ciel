@@ -2,6 +2,12 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+- Settings → Wallpaper no longer calls the lock screen "the Windows lock screen"
+  on Linux.
+
 ## [0.2.1] - 2026-10-19
 
 ### Fixed

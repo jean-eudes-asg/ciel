@@ -180,7 +180,7 @@ function mainSection(
     h("div", { class: "hint", text: t("Nothing changes on your PC until you turn one of these on.") }),
     h("div", { class: "row" }, h("label", { text: t("Desktop") }), desktop, sup.desktop ? null : unsupported()),
     h("div", { class: "row" }, h("label", { text: t("Lock screen") }), lock, sup.lockScreen ? null : unsupported()),
-    h("div", { class: "hint", text: t("The Windows lock screen can't animate: Ciel appears there as a picture, refreshed with his mood.") }),
+    h("div", { class: "hint", text: t("The lock screen can't animate: Ciel appears there as a picture, refreshed with his mood.") }),
     h("div", { class: "row" }, h("label", { text: t("Mode") }), mode),
     h("div", {
       class: "hint",

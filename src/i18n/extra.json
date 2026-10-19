@@ -4831,16 +4831,16 @@
    "ru": "Экран блокировки",
    "id": "Layar kunci"
   },
-  "The Windows lock screen can't animate: Ciel appears there as a picture, refreshed with his mood.": {
-   "zh-Hans": "Windows 锁屏无法播放动画：Ciel 会以图片形式出现，并随他的心情刷新。",
-   "hi": "Windows लॉक स्क्रीन एनिमेशन नहीं दिखा सकती: वहाँ Ciel एक तस्वीर के रूप में दिखता है, जो उसके मूड के साथ बदलती है।",
-   "es": "La pantalla de bloqueo de Windows no se puede animar: Ciel aparece ahí como una imagen que se actualiza con su estado de ánimo.",
-   "ar": "لا يمكن تحريك شاشة قفل Windows: يظهر Ciel عليها كصورة تتجدد مع مزاجه.",
-   "fr": "L'écran de verrouillage de Windows ne peut pas être animé : Ciel y apparaît en image, mise à jour selon son humeur.",
-   "bn": "Windows লক স্ক্রিনে অ্যানিমেশন চলে না: সেখানে Ciel একটি ছবি হিসেবে থাকে, যা তার মেজাজের সাথে বদলায়।",
-   "pt-BR": "A tela de bloqueio do Windows não pode ser animada: o Ciel aparece lá como uma imagem, atualizada conforme o humor dele.",
-   "ru": "Экран блокировки Windows не умеет анимацию: там Ciel — картинка, которая обновляется вместе с его настроением.",
-   "id": "Layar kunci Windows tidak bisa beranimasi: Ciel muncul di sana sebagai gambar yang diperbarui sesuai suasana hatinya."
+  "The lock screen can't animate: Ciel appears there as a picture, refreshed with his mood.": {
+   "zh-Hans": "锁屏无法播放动画：Ciel 会以图片形式出现，并随他的心情刷新。",
+   "hi": "लॉक स्क्रीन एनिमेशन नहीं दिखा सकती: वहाँ Ciel एक तस्वीर के रूप में दिखता है, जो उसके मूड के साथ बदलती है।",
+   "es": "La pantalla de bloqueo no se puede animar: Ciel aparece ahí como una imagen que se actualiza con su estado de ánimo.",
+   "ar": "لا يمكن تحريك شاشة القفل: يظهر Ciel عليها كصورة تتجدد مع مزاجه.",
+   "fr": "L'écran de verrouillage ne peut pas être animé : Ciel y apparaît en image, mise à jour selon son humeur.",
+   "bn": "লক স্ক্রিনে অ্যানিমেশন চলে না: সেখানে Ciel একটি ছবি হিসেবে থাকে, যা তার মেজাজের সাথে বদলায়।",
+   "pt-BR": "A tela de bloqueio não pode ser animada: o Ciel aparece lá como uma imagem, atualizada conforme o humor dele.",
+   "ru": "Экран блокировки не умеет анимацию: там Ciel — картинка, которая обновляется вместе с его настроением.",
+   "id": "Layar kunci tidak bisa beranimasi: Ciel muncul di sana sebagai gambar yang diperbarui sesuai suasana hatinya."
   },
   "Mode": {
    "zh-Hans": "模式",
