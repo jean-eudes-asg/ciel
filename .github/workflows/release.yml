@@ -3,7 +3,8 @@ name: Release
 # Pushing a version tag (v0.1.0, v0.2.0…) builds the Windows installers and
 # publishes them as a GitHub release, with SHA256SUMS and the changelog's
 # section for that version as the notes. The tag must match the version in
-# src-tauri/tauri.conf.json.
+# src-tauri/tauri.conf.json. A release that already exists (published by hand
+# from a local build, which creates its tag) is left as it is.
 
 on:
   push:
@@ -13,7 +14,25 @@ permissions:
   contents: write
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.look.outputs.released }}
+    steps:
+      - id: look
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "$GITHUB_REF_NAME is already released: nothing to build."
+          else
+            echo "released=false" >> "$GITHUB_OUTPUT"
+          fi
+
   windows:
+    needs: check
+    if: needs.check.outputs.released != 'true'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
