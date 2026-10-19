@@ -1,5 +1,6 @@
-// The Spotify pill on the page: what src-tauri/src/spotify.rs reports (MPRIS
-// on Linux, the system media controls on Windows), and the pure rules the views and Ciel follow — ports of
+// The Spotify pill on the page: what src-tauri/src/spotify.rs reports (Spotify
+// over MPRIS on Linux; on Windows, whatever plays, through the system media
+// controls, Spotify keeping its extras), and the pure rules the views and Ciel follow — ports of
 // SpotifyController.swift, NowPlayingViews.swift and the Mac's dance rules
 // (BotCanvasView, DesktopCloud.swift).
 
@@ -34,12 +35,35 @@ export interface SpotifyState {
   repeat: boolean;
   /** 0…100. */
   volume: number;
+  /** The app playing ("Spotify", "Microsoft Edge", "VLC"…), "" when none. */
+  player: string;
+  /** That app is Spotify: its volume, "Open Spotify", its ads. */
+  spotify: boolean;
+  /** What the player takes from the card. */
+  canSeek: boolean;
+  canShuffle: boolean;
+  canRepeat: boolean;
+  /** The volume slider: Spotify's own volume. */
+  hasVolume: boolean;
 }
 
 export const IDLE_SPOTIFY: SpotifyState = {
   running: false, installed: false, track: null, playing: false,
   position: 0, positionAt: 0, shuffle: false, repeat: false, volume: 50,
+  player: "", spotify: false, canSeek: false, canShuffle: false, canRepeat: false, hasVolume: false,
 };
+
+/** The pill's name while something plays: the player's, unless it is Spotify (the pill's own). */
+export function playerLabel(s: SpotifyState, pillName: string): string {
+  return s.track && s.player && !s.spotify ? s.player : pillName;
+}
+
+/** Under the title: artist and album, and the player when it isn't Spotify. */
+export function trackSubtitle(s: SpotifyState): string {
+  const t = s.track;
+  if (!t) return "";
+  return [t.artist, t.album, s.spotify ? "" : s.player].filter((x) => x).join(" · ");
+}
 
 /** The page's copy of the player, and the cover of the track that has one. */
 export const Spotify = {

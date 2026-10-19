@@ -24,9 +24,18 @@ const track = (over = {}) => ({
   duration: 180, artUrl: "https://i.scdn.co/image/abc", ...over,
 });
 
+/** Spotify playing: it takes every control. */
 const playing = (over = {}) => ({
   ...IDLE_SPOTIFY, running: true, installed: true, track: track(), playing: true,
-  position: 10, positionAt: 1_000, volume: 70, ...over,
+  position: 10, positionAt: 1_000, volume: 70,
+  player: "Spotify", spotify: true, canSeek: true, canShuffle: true, canRepeat: true, hasVolume: true, ...over,
+});
+
+/** Another player (Windows): a video in a browser, which only plays, pauses and skips. */
+const elsewhere = (over = {}) => playing({
+  player: "Microsoft Edge", spotify: false, canSeek: false, canShuffle: false, canRepeat: false, hasVolume: false,
+  track: track({ id: "media:track:1", title: "Artist - Song", artist: "Channel", album: "", artUrl: "smtc:1" }),
+  ...over,
 });
 
 // ── Position ──────────────────────────────────────────────────────────────────
@@ -301,4 +310,43 @@ test("the pill shows play/pause and next on hover, only with a track", () => {
   assert.equal(Spotify.state.playing, false);
   pill.el.fire("mouseleave");
   assert.ok(!pill.el.classList.contains("controls"));
+});
+
+// ── Another player than Spotify (Windows) ─────────────────────────────────────
+
+test("another player: its name under the title and on the pill, only the controls it takes", () => {
+  const card = buildSpotifyCard();
+  Spotify.state = elsewhere();
+  card.sync();
+  assert.ok(card.el.textContent.includes("Artist - Song"));
+  assert.ok(card.el.textContent.includes("Channel · Microsoft Edge"));
+  const [shuffle, , , , repeat] = card.el.querySelector("np-buttons").children;
+  assert.equal(shuffle.style.display, "none");
+  assert.equal(repeat.style.display, "none");
+  assert.equal(card.el.querySelector("np-volume").style.display, "none");
+
+  // Its cover opens nothing (only Spotify can be brought forward), and its volume isn't ours.
+  const before = sent("spotify_open").length;
+  card.el.querySelector("np-art").fire("click");
+  assert.equal(sent("spotify_open").length, before);
+  shuffle.fire("click");
+  assert.equal(Spotify.state.shuffle, false);
+
+  const pill = buildSpotifyPill(spotifyTask(), () => {});
+  pill.sync();
+  assert.equal(pill.el.querySelector("lbl").textContent, "Microsoft Edge");
+  // Spotify playing, or nothing: the pill's own name.
+  Spotify.state = playing();
+  pill.sync();
+  assert.equal(pill.el.querySelector("lbl").textContent, spotifyTask().name);
+});
+
+test("a live stream has no progress bar; a video that can't seek shows its bar still", () => {
+  const card = buildSpotifyCard();
+  Spotify.state = elsewhere({ track: track({ id: "media:track:2", duration: 0 }) });
+  card.sync();
+  assert.equal(card.el.querySelector("np-progress").style.display, "none");
+  Spotify.state = elsewhere();
+  card.sync();
+  assert.equal(card.el.querySelector("np-progress").style.display, "");
 });

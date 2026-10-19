@@ -2,6 +2,20 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **Plan usage at a glance**: while the island is folded, a ring per plan
+  (Claude, Codex) beside Ciel shows how much of the busier window is gone, in
+  green, orange or red. Hover one for its 5-hour and weekly card. Same switches
+  and numbers as the plan pills: nothing new is read or fetched.
+- **Now playing, any player** (Windows): the music pill shows whatever plays —
+  Spotify, a browser, VLC, Media Player… — with the controls that player takes.
+  Spotify keeps its volume and "Open Spotify". Linux still follows Spotify.
+
+### Fixed
+- The hub's little Clouds look at the pointer, not away from it vertically.
+
 ## [0.1.0] - 2026-10-19
 
 The first release of Ciel: a little cloud at the top of your screen that keeps

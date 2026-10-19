@@ -5310,6 +5310,17 @@
    "pt-BR": "Isto é uma demo, então minhas respostas são roteirizadas. No Ciel, o chat conversa com o modelo que você conectar.",
    "ru": "Это демо, поэтому мои ответы заготовлены заранее. В Ciel чат общается с моделью, которую вы подключите.",
    "id": "Ini demo, jadi jawaban saya sudah ditulis sebelumnya. Di Ciel, obrolan terhubung ke model yang Anda sambungkan."
+  },
+  "Shows whatever is playing: Spotify, a browser, VLC, Media Player… The volume slider is Spotify's alone.": {
+   "zh-Hans": "显示正在播放的任何内容：Spotify、浏览器、VLC、媒体播放器……音量滑块仅适用于 Spotify。",
+   "hi": "जो भी चल रहा हो, वह दिखाता है: Spotify, ब्राउज़र, VLC, मीडिया प्लेयर… वॉल्यूम स्लाइडर केवल Spotify के लिए है।",
+   "es": "Muestra lo que esté sonando: Spotify, un navegador, VLC, Reproductor multimedia… El control de volumen es solo para Spotify.",
+   "ar": "يعرض كل ما يُشغَّل: Spotify أو متصفح أو VLC أو مشغّل الوسائط… شريط مستوى الصوت خاص بـ Spotify وحده.",
+   "fr": "Affiche ce qui joue, quel que soit le lecteur : Spotify, un navigateur, VLC, Lecteur multimédia… Le curseur de volume n'est que pour Spotify.",
+   "bn": "যা-ই বাজুক তা দেখায়: Spotify, ব্রাউজার, VLC, মিডিয়া প্লেয়ার… ভলিউম স্লাইডার শুধু Spotify-এর জন্য।",
+   "pt-BR": "Mostra o que estiver tocando: Spotify, um navegador, VLC, Media Player… O controle de volume é só do Spotify.",
+   "ru": "Показывает всё, что играет: Spotify, браузер, VLC, Медиаплеер… Ползунок громкости — только для Spotify.",
+   "id": "Menampilkan apa pun yang sedang diputar: Spotify, browser, VLC, Pemutar Media… Penggeser volume hanya untuk Spotify."
   }
  }
 }

@@ -12,7 +12,8 @@ import { ICONS } from "./icons";
 import { Bridge } from "../core/bridge";
 import { State, type AgentTask } from "../core/state";
 import {
-  SPOTIFY_GREEN, SPOTIFY_ID, Spotify, currentArtwork, formatTime, isAd, spotifyPosition, volumeLevel, withPlaying,
+  SPOTIFY_GREEN, SPOTIFY_ID, Spotify, currentArtwork, formatTime, isAd, playerLabel, spotifyPosition, trackSubtitle,
+  volumeLevel, withPlaying,
   type SpotifyTrack,
 } from "../core/spotify";
 import { createMiniBot } from "../cloud/minibots";
@@ -40,7 +41,7 @@ export function togglePlay() {
 function seek(seconds: number) {
   const s = Spotify.state;
   const track = s.track;
-  if (!s.running || !track || isAd(track)) return;
+  if (!s.running || !track || isAd(track) || !s.canSeek) return;
   const target = Math.min(Math.max(0, seconds), Math.max(0, track.duration - 1));
   Spotify.state = { ...s, position: target, positionAt: Date.now() };
   State.notify();
@@ -48,7 +49,8 @@ function seek(seconds: number) {
 }
 
 function setFlag(which: "shuffle" | "repeat", on: boolean) {
-  if (!Spotify.state.running) return;
+  const s = Spotify.state;
+  if (!s.running || !(which === "shuffle" ? s.canShuffle : s.canRepeat)) return;
   Spotify.state = { ...Spotify.state, [which]: on };
   State.notify();
   void Bridge.spotifyControl(which, on ? 1 : 0);
@@ -59,7 +61,7 @@ let pendingVolume: number | null = null;
 let volumeTimer: number | null = null;
 
 function setVolume(value: number) {
-  if (!Spotify.state.running) return;
+  if (!Spotify.state.running || !Spotify.state.hasVolume) return;
   const v = Math.min(100, Math.max(0, Math.round(value)));
   Spotify.state = { ...Spotify.state, volume: v };
   State.notify();
@@ -127,7 +129,7 @@ export function buildSpotifyPill(task: AgentTask, onTap: () => void): SpotifyPil
   const sync = () => {
     const s = Spotify.state;
     const current = State.tasks.find((x) => x.id === task.id);
-    const name = current?.name ?? task.name;
+    const name = playerLabel(s, current?.name ?? task.name);
     if (label.textContent !== name) label.textContent = name;
     const show = hovered && s.track != null;
     pill.classList.toggle("controls", show);
@@ -263,7 +265,10 @@ export function buildSpotifyCard(): SpotifyCardHost {
   const artNote = svg(ICONS.musicNote, 16);
   artNote.style.color = `${green}b3`;
   art.append(artNote, artImg);
-  art.addEventListener("click", () => void Bridge.spotifyOpen());
+  // Only Spotify can be brought forward from here.
+  art.addEventListener("click", () => {
+    if (Spotify.state.spotify) void Bridge.spotifyOpen();
+  });
   const title = h("span", { class: "np-title" });
   const subtitle = h("div", { class: "np-sub" });
   const head = h("div", { class: "np-head" },
@@ -360,13 +365,14 @@ export function buildSpotifyCard(): SpotifyCardHost {
     if (shownTrack !== track) {
       shownTrack = track;
       title.textContent = isAd(track) ? t("Advertisement") : track.title;
-      const sub = [track.artist, track.album].filter((x) => x).join(" · ");
-      subtitle.textContent = sub;
-      subtitle.style.display = sub ? "" : "none";
     } else if (isAd(track)) {
       title.textContent = t("Advertisement");
     }
-    art.title = track.album ? t("{0} — open Spotify", { 0: track.album }) : t("Open Spotify");
+    const sub = trackSubtitle(s);
+    if (subtitle.textContent !== sub) subtitle.textContent = sub;
+    subtitle.style.display = sub ? "" : "none";
+    art.title = !s.spotify ? "" : track.album ? t("{0} — open Spotify", { 0: track.album }) : t("Open Spotify");
+    art.style.cursor = s.spotify ? "" : "default";
     const cover = currentArtwork(s);
     if (cover) {
       if (artImg.getAttribute("src") !== cover) artImg.setAttribute("src", cover);
@@ -376,8 +382,13 @@ export function buildSpotifyCard(): SpotifyCardHost {
       artImg.removeAttribute("src");
     }
 
-    progress.enabled = !isAd(track) && track.duration > 0;
+    // A live stream has no length: no bar. A player that can't seek shows it still.
+    progressRow.style.display = track.duration > 0 ? "" : "none";
+    progress.enabled = !isAd(track) && track.duration > 0 && s.canSeek;
     paintProgress();
+    shuffle.style.display = s.canShuffle ? "" : "none";
+    repeat.style.display = s.canRepeat ? "" : "none";
+    volumeBox.style.display = s.hasVolume ? "" : "none";
 
     shuffle.style.color = s.shuffle ? green : "#6B7079";
     shuffle.title = s.shuffle ? t("Shuffle on") : t("Shuffle off");

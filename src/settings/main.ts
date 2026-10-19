@@ -14,7 +14,7 @@ import { DEFAULT_SETTINGS, type Settings } from "../core/state";
 import { isFullPath, type FinanceFolderInfo } from "../core/finance";
 import { SOUND_NAMES } from "../core/sound";
 import {
-  MAX_DECLARED, PILL_CATEGORIES, availablePills, chooseMainPill, isComingSoon, mainPillChoices,
+  HOST_OS, MAX_DECLARED, PILL_CATEGORIES, availablePills, chooseMainPill, isComingSoon, mainPillChoices,
   sanitizeDeclared, toggleDeclared, type PillDefinition,
 } from "../core/pills";
 import { h, clear } from "../views/dom";
@@ -929,7 +929,14 @@ function integrationsSection(present: Record<string, boolean>): HTMLElement {
 
     if (def.hint) rows.append(h("div", { class: "hint", text: t(def.hint) }));
     if (def.id === "integration_finance") rows.append(...financeFolderRows());
-    if (def.id === "integration_spotify") {
+    if (def.id === "integration_spotify" && HOST_OS === "windows") {
+      // Windows: the pill follows whatever plays, not Spotify alone.
+      rows.append(h("div", {
+        class: "hint",
+        style: "padding-top:5px",
+        text: t("Shows whatever is playing: Spotify, a browser, VLC, Media Player… The volume slider is Spotify's alone."),
+      }));
+    } else if (def.id === "integration_spotify") {
       // As on the Mac's row: said only when there is no Spotify to launch.
       const hint = h("div", { class: "hint", style: "padding-top:5px" });
       rows.append(hint);
