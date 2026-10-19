@@ -21,6 +21,7 @@ mod local_chat;
 mod log;
 mod net;
 mod notes;
+mod notify;
 mod openai_compat;
 mod pipe;
 mod platform;
@@ -725,6 +726,7 @@ pub fn run() {
         .manage(recap::load())
         .invoke_handler(tauri::generate_handler![
             boot,
+            notify::notification_action,
             save_settings,
             set_system_languages,
             set_collapsed,

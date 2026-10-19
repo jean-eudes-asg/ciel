@@ -5354,6 +5354,17 @@
    "pt-BR": "A ilha no topo da tela, ou a pílula em uma borda.",
    "ru": "Остров вверху экрана или капсула у края.",
    "id": "Pulau di bagian atas layar, atau pil di salah satu tepi."
+  },
+  "Dismiss": {
+   "zh-Hans": "忽略",
+   "hi": "हटाएँ",
+   "es": "Descartar",
+   "ar": "تجاهل",
+   "fr": "Ignorer",
+   "bn": "সরান",
+   "pt-BR": "Dispensar",
+   "ru": "Скрыть",
+   "id": "Abaikan"
   }
  }
 }

@@ -251,6 +251,8 @@ export const Bridge = {
     call<boolean>("spotify_control", { action, value: value ?? null }),
   /** Brings Spotify forward or starts it; without it, its download page. */
   spotifyOpen: () => call<boolean>("spotify_open"),
+  /** A notification's Open (back to its tab or its mail) or Dismiss (src-tauri/src/notify.rs). */
+  notificationAction: (id: string, action: "open" | "dismiss") => call<void>("notification_action", { id, action }),
   /** Whether there is a Spotify to launch (Settings). */
   spotifyInstalled: () => call<boolean>("spotify_installed"),
 

@@ -22,6 +22,7 @@ import { USC, UploadSeq } from "../upload/sequence";
 import { closePlanCard, openPlanColor, planCardOpen } from "../views/usage";
 import { buildPlanRings, type PlanRings } from "../views/plan-rings";
 import { buildFlowStrip, type FlowStrip } from "./flow";
+import { buildNotificationCard, type NotificationCard } from "./notifications";
 import { buildHeader, buildViews, type ViewActions, type ViewHost } from "../views/views";
 import { h } from "../views/dom";
 import { IslandStateMachine } from "./fsm";
@@ -61,6 +62,7 @@ export class Island {
   private miniGrid!: HTMLElement;
   private planRings!: PlanRings;
   private flowStrip!: FlowStrip;
+  private notes!: NotificationCard;
   private countdown!: HTMLElement;
   private wakeStrip!: HTMLElement;
 
@@ -254,7 +256,16 @@ export class Island {
     this.greetingCanvas = h("canvas", { id: "greeting-canvas" });
     this.miniGrid = h("div", { id: "mini-grid" });
     this.planRings = buildPlanRings();
-    this.flowStrip = buildFlowStrip(() => this.onFlowChange());
+    this.flowStrip = buildFlowStrip(() => this.onOverlayChange());
+    this.notes = buildNotificationCard(
+      () => this.onOverlayChange(),
+      () => {
+        // A notification: the island slides out for it, and Ciel looks up.
+        if (State.mode === "hidden") this.revealSilently();
+        this.engine.triggerEmote("surprised");
+        Sound.play("blip");
+      },
+    );
     this.countdown = h("div", { id: "countdown" });
 
     this.header = buildHeader(actions);
@@ -293,6 +304,8 @@ export class Island {
       this.planRings.pop,
       this.flowStrip.el,
       this.flowStrip.pop,
+      this.notes.el,
+      this.notes.pop,
       this.countdown,
     );
 
@@ -652,8 +665,8 @@ export class Island {
     this.uploadCanvas.el.style.left = `${(w - EXPANDED_W) / 2}px`;
 
     const viewportW = window.innerWidth > 0 ? window.innerWidth : PANEL_W;
-    // A dictation message under the island has buttons: they take clicks too.
-    const extra = this.flowStrip?.hitBox();
+    // A dictation message or a notification under the island has buttons: they take clicks too.
+    const extra = this.flowStrip?.hitBox() ?? this.notes?.hitBox();
     const rw = extra ? Math.max(w, extra.w) : w;
     const rh = extra ? Math.max(hh, extra.h) : hh;
     const rect = { x: (viewportW - rw) / 2, y: 0, w: rw, h: rh };
@@ -1129,12 +1142,15 @@ export class Island {
       }
     }
 
-    // Dictation in the island takes the folded island's room while it shows.
+    // Dictation in the island takes the folded island's room while it shows;
+    // a notification takes it otherwise.
     this.flowStrip.sync(State.mode === "compact");
     const dictating = this.flowStrip.active;
+    this.notes.sync(State.mode === "compact" && !dictating);
+    const busy = dictating || this.notes.active;
 
     // Compact mini grid
-    const showGrid = State.mode === "compact" && !dictating;
+    const showGrid = State.mode === "compact" && !busy;
     this.miniGrid.style.opacity = showGrid ? "1" : "0";
     if (showGrid) {
       const others = State.otherTasks.slice(0, 4);
@@ -1151,18 +1167,18 @@ export class Island {
 
     // Plan usage rings: beside the mini grid, or at the end when it is empty.
     this.planRings.sync();
-    if (dictating) this.planRings.el.classList.remove("on");
+    if (busy) this.planRings.el.classList.remove("on");
     this.planRings.el.style.right = `${showGrid && State.otherTasks.length ? 62 : 14}px`;
 
     syncMiniBotStates(State.tasks);
     this.engine.setState(State.effectiveState);
   }
 
-  /** Dictation in the island: the folded island shows it, and stays while it does. */
-  private onFlowChange() {
-    const on = this.flowStrip.active;
-    if (on && State.mode === "hidden") this.revealSilently();
-    this.fsm.hold(on);
+  /** Dictation or a notification in the folded island: it shows them, and stays while they do. */
+  private onOverlayChange() {
+    const dictating = this.flowStrip.active;
+    if (dictating && State.mode === "hidden") this.revealSilently();
+    this.fsm.hold(dictating || this.notes.active);
     this.applyGeometry();
     State.notify();
   }

@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Ciel for Chrome",
+  "version": "0.3.0",
+  "description": "Shows websites' notifications in Ciel's island instead of the browser's popups. Talks only to Ciel, on this computer.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3I5Pwv0crZdYnv40vTHjxh5F2qnCIX2V3IC2I7lemZ/dzqt7dc0yfpQ8H9+kO9TzZNdJ9me9nvOTTNCgnVPknY8EcPm1KnCxDpVhIEzb7leLbwx8jnbgBTVRx7s5SfqfpDGyN8x8yQtK/ahi6iiBFT18E0L+GYCWn5VN0bVVEi6zDPoW2xQxFNsPqRSxl50kkqXndRfPhYVvqVj3AcaQ0dZs2mcE8jdVH9nloE6ilx42rlekLjEPyUa4SXvItI1Ct3KRSBw51ZcwQShcF8tYPSrezi1LFQOOx4GSTwT7gwaxYu/8BAgGZuhVMq4tcE0BUNpSHwTVwMkOcR6eHPq7PQIDAQAB",
+  "minimum_chrome_version": "111",
+  "permissions": [
+    "nativeMessaging",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "sw.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "page.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "relay.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "16": "icons/32.png",
+    "32": "icons/32.png",
+    "48": "icons/128.png",
+    "128": "icons/128.png"
+  }
+}

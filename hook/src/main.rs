@@ -21,7 +21,8 @@
 //! read from the JSON; `--agent` is absent for Claude Code), or
 //! `ciel-hook --statusline` as Claude Code's status line command (plan usage,
 //! see statusline.rs): it passes the plan limits on and runs the status line the
-//! user had before, so that keeps working.
+//! user had before, so that keeps working. Started by a browser with an
+//! extension's origin, it is the bridge of Ciel for Chrome (chrome.rs).
 
 use std::io::{Read, Write};
 use std::sync::mpsc;
@@ -29,6 +30,7 @@ use std::time::Duration;
 
 use serde_json::{Map, Value};
 
+mod chrome;
 mod normalize;
 mod reply;
 
@@ -102,6 +104,10 @@ struct Event {
 fn main() {
     if std::env::args().skip(1).any(|a| a == "--statusline") {
         statusline::run();
+    }
+    // Started by a browser for Ciel for Chrome (native messaging): the bridge.
+    if chrome::is_bridge(&std::env::args().skip(1).collect::<Vec<_>>()) {
+        chrome::run();
     }
     let args = args();
     let mut raw = Vec::new();

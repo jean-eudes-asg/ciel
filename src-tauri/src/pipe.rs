@@ -206,6 +206,19 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
         return;
     }
 
+    // A browser bridge (notify.rs): a notification, or its connection for Ciel's answers.
+    if let Some((n, target)) = crate::notify::from_bridge(&payload) {
+        crate::notify::show(&app, n, target);
+        pipe.finish();
+        return;
+    }
+    if payload.get("ciel_listen").and_then(Value::as_str) == Some("chrome") {
+        if let Some(bridge) = payload.get("ciel_bridge").and_then(Value::as_str).filter(|b| !b.is_empty()) {
+            bridge_connection(pipe, bridge.to_string()).await;
+        }
+        return;
+    }
+
     let event = payload
         .get("hook_event_name")
         .and_then(Value::as_str)
@@ -246,6 +259,30 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
         let _ = pipe.write_all(format!("{d}\n").as_bytes()).await;
         let _ = pipe.flush().await;
     }
+    pipe.finish();
+}
+
+/// A browser bridge's own connection: it hears that Ciel is there, then gets
+/// Ciel's answers (a click, a close) until it goes away. It says nothing on it.
+async fn bridge_connection(mut pipe: impl Relay, bridge: String) {
+    let mut rx = crate::notify::listen(&bridge);
+    let mut scratch = [0u8; 256];
+    loop {
+        tokio::select! {
+            line = rx.recv() => {
+                let Some(line) = line else { break };
+                if pipe.write_all(line.as_bytes()).await.is_err() || pipe.flush().await.is_err() {
+                    break;
+                }
+            }
+            read = pipe.read(&mut scratch) => {
+                if matches!(read, Ok(0) | Err(_)) {
+                    break;
+                }
+            }
+        }
+    }
+    crate::notify::forget(&bridge);
     pipe.finish();
 }
 
