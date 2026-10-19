@@ -2,6 +2,7 @@
 // the pill see them (src-tauri/src/flow, speech, notes).
 
 import { invoke } from "@tauri-apps/api/core";
+import type { AiStatus } from "./brain";
 
 const IS_TAURI = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
@@ -34,7 +35,7 @@ export interface FlowPrefs {
   defaultStyle: Style;
   summaryEngine: "claude" | "off";
   openAtLaunch: boolean;
-  /** « OK Ciel »: listen for it and answer with Claude. */
+  /** « OK Ciel »: listen for it and answer with Ciel's brain (Claude or a local model). */
   voice: boolean;
   voiceOutput: VoiceOutput;
   voiceGender: "female" | "male";
@@ -57,6 +58,8 @@ export interface FlowStatus {
   /** "ok", or why the key can't be watched ("wayland", "no-display"). */
   keys: string;
   hasClaudeKey: boolean;
+  /** Ciel's brain for « OK Ciel », the clean-up and the summaries (core/brain.ts). */
+  ai: AiStatus;
   mics: { name: string; default: boolean }[];
   platform: "windows" | "linux";
   autostarted: boolean;

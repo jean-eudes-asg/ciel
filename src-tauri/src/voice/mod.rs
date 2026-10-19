@@ -4,10 +4,11 @@
 // While it is on, the microphone is open and a cheap energy detector cuts what
 // you say into stretches; only a stretch of speech goes to Parakeet, on this
 // computer, and only a stretch that starts with « OK Ciel » goes further:
-// what you said after it goes to Claude with your own key (brain.rs), never
-// the audio. Ciel shows it all in the pill at the bottom of the screen —
-// listening, thinking, then the answer, said out loud by the system's voice
-// (the pill's speechSynthesis) or ElevenLabs with your key.
+// what you said after it goes to Ciel's brain (brain.rs, ai.rs) — Claude with
+// your own key, or the chat's local model — never the audio. Ciel shows it all
+// in the pill at the bottom of the screen — listening, thinking, then the
+// answer, said out loud by the system's voice (the pill's speechSynthesis) or
+// ElevenLabs with your key.
 //
 // It stops listening while you dictate, while a call is recorded and while it
 // speaks itself.
@@ -53,16 +54,28 @@ fn pending() -> &'static Mutex<HashMap<u64, mpsc::Sender<String>>> {
 }
 static NEXT_ID: AtomicU64 = AtomicU64::new(1);
 
-/// Whether « OK Ciel » can run: the voice model and a Claude key.
-pub fn requirements_met() -> bool {
-    speech::is_ready() && crate::secrets::present(crate::claude::KEY)
+/// Whether « OK Ciel » can run: the voice model, and a brain to answer — a
+/// Claude key or a connected local model (ai.rs).
+pub fn requirements_met(app: &AppHandle) -> bool {
+    speech::is_ready() && crate::ai::current(app).is_some()
+}
+
+/// What the pill says when no answer came.
+fn cannot_answer(app: &AppHandle) -> String {
+    match crate::ai::current(app) {
+        Some(crate::ai::Engine::Local(local)) => crate::i18n::tf(
+            "Ciel couldn't answer: check that {server} is running with {model}.",
+            &[("server", &crate::i18n::t(local.name)), ("model", &local.model)],
+        ),
+        _ => crate::i18n::t("Ciel couldn't answer: check your Claude key in Notch → Chat."),
+    }
 }
 
 /// Starts or stops listening to follow the preference.
 pub fn sync(app: &AppHandle) {
     let wanted = crate::flow::get(app).is_some_and(|f| f.store.lock().unwrap().prefs.voice);
     let mut running = RUNNING.lock().unwrap();
-    match (wanted && requirements_met(), running.is_some()) {
+    match (wanted && requirements_met(app), running.is_some()) {
         (true, false) => {
             let stop = Arc::new(AtomicBool::new(false));
             let app2 = app.clone();
@@ -168,6 +181,8 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
                 Mode::Wake => match wake::after_wake(&heard) {
                     Some(rest) => {
                         crate::log::line("voice: « OK Ciel » heard");
+                        // A local model loads while the question comes.
+                        crate::ai::warm_up(&app);
                         hide_at = None;
                         if crate::flow::text::word_count(&rest) >= 2 {
                             Some(rest)
@@ -198,7 +213,7 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
                 show(&app, Some(VoiceView {
                     phase: "speaking".into(),
                     heard: question,
-                    answer: if done { "✓".into() } else { crate::i18n::t("Ciel couldn't answer: check your Claude key in Notch → Chat.") },
+                    answer: if done { "✓".into() } else { cannot_answer(&app) },
                 }));
                 hide_at = Some(Instant::now() + Duration::from_secs(5));
                 continue;
@@ -369,7 +384,8 @@ pub fn ask_island(app: &AppHandle, kind: &str, input: Value) -> Option<String> {
     answer
 }
 
-/// Runs one of Claude's tools: what goes back to Claude, and whether something changed.
+/// Runs one of the tools, for Claude or a local model alike: what goes back to
+/// the model, and whether something changed.
 pub fn run_tool(app: &AppHandle, name: &str, input: &Value) -> (String, bool) {
     match name {
         "pills" => {

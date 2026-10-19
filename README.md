@@ -42,7 +42,10 @@ Windows 10/11 · Linux (X11 and Wayland) · Tauri 2 · Rust + TypeScript · MIT
   then get the transcript person by person, a summary and the to-dos.
 - **« OK Ciel ».** Say it (the French way, "see-ell"), then ask: your pills,
   music, your services' numbers, web search, open an app. Claude answers with
-  your own key.
+  your own key, or the local model you picked for the chat (**Settings → Chat →
+  Ciel's brain**, which also cleans up dictations and writes the call
+  summaries). With a model running on your computer, nothing leaves it; web
+  search needs Claude.
 - **Ciel on your desktop.** Drag him out of the island (or press `Ctrl+Alt+D`)
   and he floats on your desktop, follows your cursor, and flies back when an
   agent needs you.

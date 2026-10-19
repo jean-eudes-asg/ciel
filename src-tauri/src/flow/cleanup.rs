@@ -1,12 +1,15 @@
-// The clean-up of Flow dictation: Claude removes the "um", the repeats and the
-// corrections said on the way ("at 3, no, at 4" → "at 4"), fixes the
-// punctuation and writes in the app's style. Only when it is turned on in the
-// Ciel window and a Claude key is set; the text (never the audio) then goes
-// to Anthropic with that key, and nowhere else. Any problem (no network, slow
-// answer, odd reply) and the words are pasted as they were heard. Port of
-// FlowCleanup.swift.
+// The clean-up of Flow dictation: Ciel's brain (ai.rs) removes the "um", the
+// repeats and the corrections said on the way ("at 3, no, at 4" → "at 4"),
+// fixes the punctuation and writes in the app's style. Only when it is turned
+// on in the Ciel window and there is a brain: Claude with the user's key (the
+// text, never the audio, then goes to Anthropic and nowhere else) or the
+// chat's local model (the text goes to that server only). Any problem (no
+// network, slow answer, odd reply) and the words are pasted as they were
+// heard. Port of FlowCleanup.swift.
 
 use std::time::Duration;
+
+use crate::ai::{self, Engine};
 
 use super::store::Style;
 use super::text;
@@ -14,17 +17,29 @@ use super::text;
 pub const MODEL: &str = "claude-haiku-4-5";
 /// Past this, the words are pasted as heard rather than keeping you waiting.
 const TIMEOUT: Duration = Duration::from_secs(4);
+/// A local model may first have to load (20 to 30 s the first time). The
+/// dictation key already asks Ollama to load it (ai::warm_up); this leaves
+/// room for the rest.
+const LOCAL_TIMEOUT: Duration = Duration::from_secs(45);
 
 pub fn has_key() -> bool {
     crate::secrets::present(crate::claude::KEY)
 }
 
-pub async fn clean(raw: &str, style: Style, app: Option<&str>, words: &[String]) -> String {
-    if style == Style::Verbatim || text::word_count(raw) < 3 || !has_key() {
+pub async fn clean(engine: &Engine, raw: &str, style: Style, app: Option<&str>, words: &[String]) -> String {
+    if style == Style::Verbatim || text::word_count(raw) < 3 {
         return raw.to_string();
     }
     let user = format!("<dictation>\n{raw}\n</dictation>");
-    match crate::claude::complete(MODEL, &system(style, app, words), &user, 2048, TIMEOUT).await {
+    let system = system(style, app, words);
+    let reply = match engine {
+        Engine::Claude => crate::claude::complete(MODEL, &system, &user, 2048, TIMEOUT).await,
+        Engine::Local(local) => {
+            let how = ai::Ask { max_tokens: 2048, json: false, context: None, timeout: LOCAL_TIMEOUT };
+            ai::complete(local, &system, &user, how).await
+        }
+    };
+    match reply {
         Ok(reply) => {
             let cleaned = reply.replace("<dictation>", "").replace("</dictation>", "").trim().to_string();
             if plausible(&cleaned, raw) {
@@ -48,7 +63,7 @@ pub fn plausible(cleaned: &str, raw: &str) -> bool {
     after > 0.0 && after <= before * 1.4 + 4.0 && after >= before * 0.35
 }
 
-fn system(style: Style, app: Option<&str>, words: &[String]) -> String {
+pub(crate) fn system(style: Style, app: Option<&str>, words: &[String]) -> String {
     let tone = match style {
         Style::Polished => "Write it as clean, well-formed sentences suitable for an email, with paragraphs when the speaker changes topic. Keep it in the speaker's own words; do not add greetings or sign-offs they did not say.",
         _ => "Keep the speaker's tone and words: casual stays casual. Only make it read the way they meant it.",
@@ -93,5 +108,60 @@ mod tests {
         assert!(s.contains("pasted in Outlook"));
         assert!(s.contains("Supabase"));
         assert!(s.contains("⟦1⟧"));
+    }
+
+    fn block_on<T>(f: impl std::future::Future<Output = T>) -> T {
+        tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap().block_on(f)
+    }
+
+    /// A local server answering the clean-up with `content` (Ollama's API).
+    fn local_answering(content: &str) -> Engine {
+        let body = serde_json::json!({ "message": { "role": "assistant", "content": content } }).to_string().into_bytes();
+        let url = crate::net::tests::serve_once("200 OK", &format!("Content-Length: {}\r\n", body.len()), body);
+        Engine::Local(crate::ai::test_local("ollama", &url, "qwen3.5:9b"))
+    }
+
+    #[test]
+    fn a_local_model_cleans_up_and_its_thinking_is_never_pasted() {
+        let raw = "euh on se voit à 3 h non à 4 h demain";
+        let engine = local_answering("<think>Remove the filler.</think>\n\nOn se voit à 4 h demain.");
+        assert_eq!(block_on(clean(&engine, raw, Style::Natural, None, &[])), "On se voit à 4 h demain.");
+    }
+
+    #[test]
+    fn a_local_model_that_answers_instead_is_ignored() {
+        let raw = "euh on se voit à 3 h non à 4 h demain";
+        let rambling = "Bien sûr ! Voici quelques idées pour organiser votre rendez-vous de demain : ".repeat(4);
+        assert_eq!(block_on(clean(&local_answering(&rambling), raw, Style::Natural, None, &[])), raw);
+        assert_eq!(block_on(clean(&local_answering(""), raw, Style::Natural, None, &[])), raw);
+        // Nothing listening: the words as heard.
+        let gone = Engine::Local(crate::ai::test_local("ollama", "http://127.0.0.1:1", "m"));
+        assert_eq!(block_on(clean(&gone, raw, Style::Polished, None, &[])), raw);
+        // As said: never sent.
+        assert_eq!(block_on(clean(&gone, raw, Style::Verbatim, None, &[])), raw);
+    }
+}
+
+/// With a real model server: see crate::ai::with_a_local_model.
+#[cfg(test)]
+mod with_a_local_model {
+    use super::*;
+    use crate::ai::with_a_local_model::{block_on, local};
+
+    #[test]
+    #[ignore]
+    fn cleans_up_a_dictation_with_a_local_model() {
+        let raw = "euh so um I wanted to to say that the the meeting is at 3 no sorry at 4 tomorrow and uh bring the slides";
+        let started = std::time::Instant::now();
+        let user = format!("<dictation>\n{raw}\n</dictation>");
+        let how = ai::Ask { max_tokens: 2048, json: false, context: None, timeout: LOCAL_TIMEOUT };
+        let reply = block_on(ai::complete(&local(), &system(Style::Natural, Some("Slack"), &[]), &user, how)).expect("an answer");
+        println!("clean-up in {:?}: {reply}", started.elapsed());
+        assert!(plausible(&reply, raw));
+        assert!(!reply.contains("<think>") && !reply.contains("um "));
+        let engine = Engine::Local(local());
+        let cleaned = block_on(clean(&engine, raw, Style::Natural, Some("Slack"), &[]));
+        println!("clean(): {cleaned}");
+        assert_ne!(cleaned, raw);
     }
 }

@@ -434,7 +434,7 @@ fn process(app: &AppHandle, id: &str) {
     taker.working.lock().unwrap().retain(|w| w != id);
     if result.is_ok() {
         let engine = crate::flow::get(app).map(|f| f.store.lock().unwrap().prefs.summary_engine).unwrap_or_default();
-        if engine == SummaryEngine::Claude && crate::flow::cleanup::has_key() {
+        if engine == SummaryEngine::Claude && crate::ai::current(app).is_some() {
             summarize(app, id);
         }
         let title = taker.note(id).map(|n| n.title).unwrap_or_default();
@@ -501,37 +501,75 @@ fn plain_transcript(note: &Note) -> String {
         .join("\n")
 }
 
-/// Writes (or writes again) the summary, key points and to-dos of a note.
+/// A local model's context is small: a long call keeps its start and its end
+/// (where the to-dos usually are), without the middle.
+const LOCAL_MAX_TRANSCRIPT: usize = 48_000;
+
+/// `text` cut to at most `max` bytes, keeping its start and its end.
+fn without_the_middle(text: &str, max: usize) -> String {
+    if text.len() <= max {
+        return text.to_string();
+    }
+    let mut head = max * 2 / 5;
+    while !text.is_char_boundary(head) {
+        head -= 1;
+    }
+    let mut tail = text.len() - (max - head);
+    while !text.is_char_boundary(tail) {
+        tail += 1;
+    }
+    format!("{}\n[…]\n{}", &text[..head], &text[tail..])
+}
+
+/// Writes (or writes again) the summary, key points and to-dos of a note,
+/// with Ciel's brain: Claude, or the chat's local model.
 fn summarize(app: &AppHandle, id: &str) {
     let Some(taker) = get(app) else { return };
     let Some(note) = taker.note(id) else { return };
     if note.lines.is_empty() {
         return;
     }
+    let Some(engine) = crate::ai::current(app) else { return };
     taker.working.lock().unwrap().push(id.to_string());
     let _ = app.emit_to(crate::HUB_LABEL, "notes-changed", id);
-    let model = app
-        .try_state::<crate::Shared>()
-        .map(|s| s.settings.lock().unwrap().model.clone())
-        .filter(|m| !m.is_empty())
-        .unwrap_or_else(|| crate::claude::DEFAULT_MODEL.to_string());
     let mut transcript = plain_transcript(&note);
-    if transcript.len() > 400_000 {
-        let mut cut = 400_000;
-        while !transcript.is_char_boundary(cut) {
-            cut -= 1;
+    let reply = match engine {
+        crate::ai::Engine::Claude => {
+            let model = app
+                .try_state::<crate::Shared>()
+                .map(|s| s.settings.lock().unwrap().model.clone())
+                .filter(|m| !m.is_empty())
+                .unwrap_or_else(|| crate::claude::DEFAULT_MODEL.to_string());
+            if transcript.len() > 400_000 {
+                let mut cut = 400_000;
+                while !transcript.is_char_boundary(cut) {
+                    cut -= 1;
+                }
+                transcript.truncate(cut);
+            }
+            let user = format!("<transcript>\n{transcript}\n</transcript>");
+            tauri::async_runtime::block_on(async {
+                match crate::claude::complete(&model, builder::SUMMARY_INSTRUCTIONS, &user, 2048, Duration::from_secs(120)).await {
+                    Ok(text) => Some(text),
+                    Err(_) => crate::claude::complete(crate::flow::cleanup::MODEL, builder::SUMMARY_INSTRUCTIONS, &user, 2048, Duration::from_secs(120))
+                        .await
+                        .ok(),
+                }
+            })
         }
-        transcript.truncate(cut);
-    }
-    let user = format!("<transcript>\n{transcript}\n</transcript>");
-    let reply = tauri::async_runtime::block_on(async {
-        match crate::claude::complete(&model, builder::SUMMARY_INSTRUCTIONS, &user, 2048, Duration::from_secs(120)).await {
-            Ok(text) => Some(text),
-            Err(_) => crate::claude::complete(crate::flow::cleanup::MODEL, builder::SUMMARY_INSTRUCTIONS, &user, 2048, Duration::from_secs(120))
-                .await
-                .ok(),
+        crate::ai::Engine::Local(local) => {
+            let user = format!("<transcript>\n{}\n</transcript>", without_the_middle(&transcript, LOCAL_MAX_TRANSCRIPT));
+            let how = crate::ai::Ask {
+                max_tokens: 2048,
+                json: true,
+                context: crate::ai::context_for(builder::SUMMARY_INSTRUCTIONS.len() + user.len(), 2048),
+                // A long call on a model that has to load first.
+                timeout: Duration::from_secs(300),
+            };
+            let reply = tauri::async_runtime::block_on(crate::ai::complete(&local, builder::SUMMARY_INSTRUCTIONS, &user, how));
+            reply.map_err(|err| crate::log::line(format!("notes: local summary failed: {err}"))).ok()
         }
-    });
+    };
     taker.working.lock().unwrap().retain(|w| w != id);
     let Some(reply) = reply else {
         let _ = app.emit_to(crate::HUB_LABEL, "notes-changed", id);
@@ -715,4 +753,23 @@ pub fn notes_export(taker: State<Arc<NoteTaker>>, id: String) -> Result<String, 
     std::fs::write(&path, markdown(&note)).map_err(|e| e.to_string())?;
     crate::platform::reveal_folder(&dir.to_string_lossy());
     Ok(path.to_string_lossy().to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_long_call_keeps_its_start_and_its_end_for_a_local_model() {
+        assert_eq!(without_the_middle("short", 100), "short");
+        let text = format!("{}{}{}", "début ".repeat(100), "milieu ".repeat(1000), "à faire : envoyer le devis");
+        let cut = without_the_middle(&text, 1000);
+        assert!(cut.len() <= 1000 + "\n[…]\n".len());
+        assert!(cut.starts_with("début début"));
+        assert!(cut.ends_with("à faire : envoyer le devis"));
+        assert!(cut.contains("\n[…]\n"));
+        // Never in the middle of a character.
+        let accents = "é".repeat(5000);
+        assert!(without_the_middle(&accents, 1001).chars().all(|c| c == 'é' || "\n[…]".contains(c)));
+    }
 }

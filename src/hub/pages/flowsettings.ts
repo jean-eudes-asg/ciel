@@ -6,6 +6,7 @@ import { h, clear } from "../../views/dom";
 import { t } from "../../i18n/i18n";
 import { onEvent } from "../../core/bridge";
 import { FlowBridge, type Edge, type FlowKey, type ModelsStatus } from "../../core/flow";
+import { localName, staysHere } from "../../core/brain";
 import type { HubContext } from "../shell";
 import { button, card, divider, keyKeycap, keycap, label, number, row, segmented, select, toggle } from "../ui";
 
@@ -110,9 +111,17 @@ export async function flowSettingsPage(page: HTMLElement, ctx: HubContext) {
 
   // ── Notetaker ──
   page.append(label(t("Notetaker")));
+  // "claude" is the stored value for "summaries on": Ciel's brain writes them, Claude or the local model.
+  const ai = status.ai;
+  const local = ai.engine === "local" ? localName(ai) : null;
+  const summaryNote = !local
+    ? t("With Claude, the transcript (never the audio) goes to Anthropic with your key from Notch → Chat.")
+    : staysHere(ai)
+      ? t("With {model}, the transcript stays on this computer.", { model: local })
+      : t("With {model}, the transcript (never the audio) goes to {url}, your model server.", { model: local, url: ai.url ?? "" });
   page.append(card(
-    row(t("Summaries"), null, select([["claude", t("Claude (your key)")], ["off", t("No summary")]], prefs.summaryEngine, (engine) => void ctx.setPrefs((p) => (p.summaryEngine = engine)))),
-    h("div", { class: "hub-note", text: t("With Claude, the transcript (never the audio) goes to Anthropic with your key from Notch → Chat.") }),
+    row(t("Summaries"), null, select([["claude", local ?? t("Claude (your key)")], ["off", t("No summary")]], prefs.summaryEngine, (engine) => void ctx.setPrefs((p) => (p.summaryEngine = engine)))),
+    h("div", { class: "hub-note", text: summaryNote }),
     divider(),
     h("div", { class: "hub-note", text: t("Everything stays on this computer. Tell the people in the call that you are recording.") }),
   ));
