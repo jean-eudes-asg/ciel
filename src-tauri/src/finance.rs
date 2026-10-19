@@ -74,6 +74,9 @@ pub fn default_folder() -> PathBuf {
 
 /// The folder a `financeFolder` setting points at: the default when it is
 /// empty or not a full path.
+/// The Finance pill's ID (src/core/pills.ts). Never renamed.
+pub const PILL_ID: &str = "integration_finance";
+
 pub fn folder_from(setting: &str) -> PathBuf {
     let path = Path::new(setting.trim());
     if path.is_absolute() {

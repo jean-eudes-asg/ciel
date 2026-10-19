@@ -43,6 +43,29 @@ pub struct Reply {
     pub acted: bool,
 }
 
+/// The Finance pill, for a local brain (see `respond_local`).
+fn finance_tool() -> Value {
+    json!({
+        "name": "finance",
+        "description": "The user's own spending tracker, on this computer. action summary: this month's spending, budget, top categories, and the categories and currencies to use. action add: record an expense the user says they made.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "action": { "type": "string", "enum": ["summary", "add"] },
+                "amount": { "type": "number", "description": "For add: how much, a positive number." },
+                "currency": { "type": "string", "description": "For add: 3-letter code (e.g. USD, EUR, TRY). Leave out for the usual currency." },
+                "category": { "type": "string", "description": "For add: one of the user's categories (summary lists them), e.g. Groceries." },
+                "note": { "type": "string", "description": "For add: a few words on what it was." },
+                "date": { "type": "string", "description": "For add: YYYY-MM-DD. Leave out for today." }
+            },
+            "required": ["action"]
+        }
+    })
+}
+
+const FINANCE_PROMPT: &str = "
+Finance: when the user says they spent or paid something, call finance with action add right away (amount, currency if they said one, the closest category); when they ask about their spending or budget, call finance with action summary. Read amounts back with their currency.";
+
 fn tools() -> Vec<Value> {
     vec![
         json!({
@@ -206,8 +229,14 @@ impl Brain {
     }
 
     fn respond_local(&mut self, app: &AppHandle, local: &ai::Local, pills: &str) -> Option<Reply> {
-        let system = system_prompt(pills, false);
-        let tools = ai::function_tools(&tools());
+        let mut system = system_prompt(pills, false);
+        let mut all = tools();
+        // The user's spending, with a local brain only: it stays on this computer.
+        if super::finance_on(app) {
+            all.push(finance_tool());
+            system.push_str(FINANCE_PROMPT);
+        }
+        let tools = ai::function_tools(&all);
         let names: Vec<String> = tools.iter().filter_map(|t| t["function"]["name"].as_str().map(String::from)).collect();
         let ask = |messages: &[Value], with_tools: bool| {
             let req = ai::Request {
@@ -283,8 +312,9 @@ fn local_loop(
             spoken = turn.text.clone();
         }
         if turn.calls.is_empty() {
-            if turn.text.is_empty() && turn.malformed > 0 && with_tools {
-                // Only calls that can't be read: once more, for words this time.
+            if turn.text.is_empty() && with_tools && (turn.malformed > 0 || round > 0) {
+                // Only calls that can't be read, or nothing at all after a tool ran
+                // (qwen3.5 thinking can stop there): once more, for words this time.
                 with_tools = false;
                 continue;
             }
@@ -565,5 +595,41 @@ mod with_a_local_model {
             && input["action"] == "add"
             && input["names"].as_array().is_some_and(|n| n.iter().any(|v| v.as_str().is_some_and(|s| s.eq_ignore_ascii_case("github"))))));
         assert!(!reply.text.contains("<think>"));
+    }
+
+    #[test]
+    #[ignore]
+    fn records_a_spoken_expense_with_a_local_model() {
+        let local = crate::ai::with_a_local_model::local();
+        let mut system = system_prompt(r#"{"main":"VS Code","shown":["Finance"],"maxBesidesMain":4,"freePlaces":3,"available":["GitHub"]}"#, false);
+        system.push_str(FINANCE_PROMPT);
+        let mut all = tools();
+        all.push(finance_tool());
+        let tools = ai::function_tools(&all);
+        let names: Vec<String> = tools.iter().filter_map(|t| t["function"]["name"].as_str().map(String::from)).collect();
+        let mut messages = vec![json!({ "role": "user", "content": "I just spent 250 lira on groceries" })];
+        let mut ran = Vec::new();
+        let reply = local_loop(
+            &mut messages,
+            local.dialect(),
+            &names,
+            |messages, with_tools| {
+                let req = ai::Request { system: &system, messages, tools: if with_tools { tools.as_slice() } else { &[] }, max_tokens: 1024, json: false, context: None };
+                let turn = crate::ai::with_a_local_model::block_on(ai::ask(&local, &req, LOCAL_TIMEOUT));
+                println!("turn: {turn:?}");
+                turn
+            },
+            |name, input| {
+                ran.push((name.to_string(), input.clone()));
+                ("Added 250.00 TRY to Groceries on 2026-10-19.".into(), true)
+            },
+        )
+        .expect("a reply");
+        println!("said: {:?}, tools: {ran:?}", reply.text);
+        assert!(ran.iter().any(|(name, input)| name == "finance"
+            && input["action"] == "add"
+            && input["amount"].as_f64() == Some(250.0)
+            && input["currency"].as_str().is_some_and(|c| c.eq_ignore_ascii_case("TRY"))
+            && input["category"].as_str().is_some_and(|c| c.to_lowercase().contains("grocer"))));
     }
 }

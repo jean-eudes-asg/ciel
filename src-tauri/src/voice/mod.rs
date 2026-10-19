@@ -395,6 +395,7 @@ pub fn run_tool(app: &AppHandle, name: &str, input: &Value) -> (String, bool) {
         }
         "service_info" => (ask_island(app, "info", json!({})).unwrap_or_else(|| "no data".into()), false),
         "music" => music(app, input),
+        "finance" => finance(app, input),
         "open_app" => open_app(input["name"].as_str().unwrap_or("")),
         "prepare_email" => {
             let to = input["recipient"].as_str().unwrap_or("").trim().to_string();
@@ -419,6 +420,92 @@ pub fn run_tool(app: &AppHandle, name: &str, input: &Value) -> (String, bool) {
             (format!("The mail app opened with the email to {to}. Nothing is sent until the user sends it."), true)
         }
         _ => (format!("unknown tool {name}"), false),
+    }
+}
+
+// ── Finance (the Finance pill's folder) ──────────────────────────────────────
+
+/// Whether « OK Ciel » may use the Finance pill: only once the pill is declared,
+/// and only with a local brain, so the user's spending never leaves the computer.
+pub fn finance_on(app: &AppHandle) -> bool {
+    use tauri::Manager;
+    let Some(shared) = app.try_state::<crate::Shared>() else { return false };
+    let settings = shared.settings.lock().unwrap().clone();
+    let declared = settings.main_pill == crate::finance::PILL_ID
+        || settings.active_integrations.iter().any(|id| id == crate::finance::PILL_ID);
+    declared && matches!(crate::ai::engine_for(&settings), Some(crate::ai::Engine::Local(_)))
+}
+
+fn finance_folder(app: &AppHandle) -> Option<std::path::PathBuf> {
+    use tauri::Manager;
+    let shared = app.try_state::<crate::Shared>()?;
+    let settings = shared.settings.lock().unwrap().clone();
+    Some(crate::finance::folder(&settings))
+}
+
+/// The category of the user's list closest to the one heard: the same name,
+/// then one that contains the other, then "Other" (or the last one).
+fn closest_category(heard: &str, categories: &[String]) -> Option<String> {
+    let norm = |s: &str| s.trim().to_lowercase();
+    let h = norm(heard);
+    if let Some(c) = categories.iter().find(|c| norm(c) == h) {
+        return Some(c.clone());
+    }
+    if !h.is_empty() {
+        if let Some(c) = categories.iter().find(|c| {
+            let c = norm(c);
+            c.contains(&h) || h.contains(&c) || c.split(|ch: char| !ch.is_alphanumeric()).any(|w| w.len() > 2 && h.contains(w))
+        }) {
+            return Some(c.clone());
+        }
+    }
+    categories.iter().find(|c| norm(c) == "other").or(categories.last()).cloned()
+}
+
+/// The month in a few lines the model can read back.
+fn finance_text(s: &crate::finance::Summary) -> String {
+    let cur = &s.base_currency;
+    let mut out = format!("Month {}: spent {:.2} {cur} ({} entries), today {:.2} {cur}.", s.month, s.spent_month, s.month_count, s.spent_today);
+    match (s.budget, s.remaining, s.percent_used) {
+        (Some(b), Some(r), Some(p)) => out.push_str(&format!(" Budget {b:.2} {cur}: {p:.0}% used, {r:.2} {cur} left.")),
+        _ => out.push_str(" No monthly budget set."),
+    }
+    if !s.top_categories.is_empty() {
+        let top: Vec<String> = s.top_categories.iter().map(|c| format!("{} {:.2}", c.category, c.amount)).collect();
+        out.push_str(&format!(" Top categories: {}.", top.join(", ")));
+    }
+    out.push_str(&format!(" Categories to use: {}. Currencies: {} (usual: {cur}).", s.categories.join(", "), s.currencies.join(", ")));
+    if !s.unconverted.is_empty() {
+        out.push_str(&format!(" Left out of the totals, no rate: {}.", s.unconverted.join(", ")));
+    }
+    out
+}
+
+fn finance(app: &AppHandle, input: &Value) -> (String, bool) {
+    let Some(dir) = finance_folder(app) else { return ("The Finance pill isn't ready.".into(), false) };
+    let summary = match crate::finance::summary(&dir) {
+        Ok(s) => s,
+        Err(e) => return (format!("Could not read the finance folder: {e}"), false),
+    };
+    if input["action"].as_str() != Some("add") {
+        return (finance_text(&summary), false);
+    }
+    let amount = input["amount"].as_f64().or_else(|| input["amount"].as_str().and_then(|s| s.trim().replace(',', ".").parse().ok()));
+    let Some(amount) = amount else { return ("No amount: ask the user how much it was.".into(), false) };
+    let currency = input["currency"].as_str().map(|c| c.trim().to_uppercase()).filter(|c| !c.is_empty()).unwrap_or_else(|| summary.base_currency.clone());
+    let Some(category) = closest_category(input["category"].as_str().unwrap_or(""), &summary.categories) else {
+        return ("The finance folder has no categories.".into(), false);
+    };
+    let new = crate::finance::NewExpense {
+        amount: (amount * 100.0).round() / 100.0,
+        currency,
+        category,
+        note: input["note"].as_str().unwrap_or("").to_string(),
+        date: input["date"].as_str().map(String::from),
+    };
+    match crate::finance::add_expense(&dir, &new) {
+        Ok(e) => (format!("Added {:.2} {} to {} on {}.", e.amount, e.currency, e.category, e.date), true),
+        Err(e) => (format!("Not added: {e}"), false),
     }
 }
 
@@ -578,5 +665,47 @@ mod with_models {
         }
         println!("{heard:?}");
         assert!(heard.iter().any(|h| h.as_deref().is_some_and(|q| !q.is_empty())));
+    }
+}
+
+#[cfg(test)]
+mod finance_tests {
+    use super::*;
+
+    fn cats() -> Vec<String> {
+        ["Housing", "Groceries", "Eating out", "Transport", "Health & Gym", "Other"].iter().map(|s| s.to_string()).collect()
+    }
+
+    #[test]
+    fn a_spoken_category_finds_the_users_own() {
+        assert_eq!(closest_category("groceries", &cats()).as_deref(), Some("Groceries"));
+        assert_eq!(closest_category("Gym", &cats()).as_deref(), Some("Health & Gym"));
+        assert_eq!(closest_category("eating out with friends", &cats()).as_deref(), Some("Eating out"));
+        // Nothing close: "Other", or the last category when there is no "Other".
+        assert_eq!(closest_category("rocket fuel", &cats()).as_deref(), Some("Other"));
+        let no_other: Vec<String> = vec!["Food".into(), "Fun".into()];
+        assert_eq!(closest_category("", &no_other).as_deref(), Some("Fun"));
+        assert_eq!(closest_category("x", &[]), None);
+    }
+
+    #[test]
+    fn the_month_reads_back_in_the_base_currency() {
+        let dir = std::env::temp_dir().join(format!("ciel-voice-finance-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let new = |amount: f64, category: &str| crate::finance::NewExpense {
+            amount,
+            currency: "USD".into(),
+            category: category.into(),
+            note: String::new(),
+            date: None,
+        };
+        crate::finance::add_expense(&dir, &new(12.5, "Groceries")).unwrap();
+        crate::finance::add_expense(&dir, &new(7.5, "Transport")).unwrap();
+        let text = finance_text(&crate::finance::summary(&dir).unwrap());
+        assert!(text.contains("spent 20.00 USD (2 entries)"), "{text}");
+        assert!(text.contains("No monthly budget set."), "{text}");
+        assert!(text.contains("Top categories: Groceries 12.50, Transport 7.50."), "{text}");
+        assert!(text.contains("Categories to use: Housing"), "{text}");
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }
