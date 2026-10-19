@@ -1,8 +1,21 @@
 <!doctype html>
-<html lang="en" data-tone="light">
+<html lang="en" data-tone="light" data-os="windows">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script>
+      // Which download comes first (data-os on <html>, read by style.css), set
+      // before anything is drawn: this device's, Windows or Linux; both for a
+      // Mac, a phone or anything else. Without script, Windows.
+      (function () {
+        var ua = navigator.userAgent;
+        var p = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+        var os = /android|cros|iphone|ipad/i.test(ua) || /android|chrome os|iphone|ipad|mac/i.test(p)
+          ? "other"
+          : /win/i.test(p) ? "windows" : /linux/i.test(p) || /linux|x11/i.test(ua) ? "linux" : "other";
+        document.documentElement.setAttribute("data-os", os);
+      })();
+    </script>
     <title>Ciel · a little cloud that keeps an eye on your AI coding agents</title>
     <meta
       name="description"
@@ -83,17 +96,22 @@
             <h1 id="hero-title" class="wordmark">Ciel</h1>
             <p class="tagline">A little cloud that keeps an eye on your AI&nbsp;coding&nbsp;agents.</p>
             <div class="cta">
-              <a class="btn btn-primary" data-react="love" data-dl href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Windows-setup.exe">
+              <a class="btn btn-primary" data-react="love" data-os-show="windows other" href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Windows-setup.exe">
                 <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16.5h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <span class="dl-label">Download for Windows</span>
+                Download for Windows
+              </a>
+              <a class="btn btn-primary" data-react="love" data-os-show="linux other" href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.AppImage">
+                <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16.5h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Download for Linux
               </a>
               <a class="btn btn-ghost" data-react="wink" href="https://github.com/jean-eudes-asg/ciel">
                 <svg viewBox="0 0 16 16" width="17" height="17" aria-hidden="true"><use href="#i-github" /></svg>
                 GitHub
               </a>
             </div>
-            <p class="fine" data-for="windows">Linux · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-amd64.deb">.deb</a> · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.rpm">.rpm</a> · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.AppImage">AppImage</a></p>
-            <p class="fine" data-for="linux" hidden>Also <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-amd64.deb">.deb</a> · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.rpm">.rpm</a> · Windows <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Windows-setup.exe">installer</a></p>
+            <p class="fine" data-os-show="windows">Windows 10 and 11 · also for Linux: <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-amd64.deb">.deb</a> · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.rpm">.rpm</a> · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.AppImage">AppImage</a></p>
+            <p class="fine" data-os-show="linux">The AppImage runs anywhere · or the <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-amd64.deb">.deb</a> (Debian, Ubuntu) · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.rpm">.rpm</a> (Fedora) · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Windows-setup.exe">Windows</a></p>
+            <p class="fine" data-os-show="other">For Windows 10 and 11, and Linux: <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-amd64.deb">.deb</a> · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.rpm">.rpm</a></p>
           </div>
 
           <p class="sky-note">
@@ -219,7 +237,8 @@
               <div class="demo-fallback">
                 <img src="../src-tauri/icons/128x128.png" width="64" height="64" alt="" />
                 <p><b>The live demo is on its way.</b><br />Meanwhile, Ciel is one download away.</p>
-                <a class="btn btn-primary" data-dl href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Windows-setup.exe"><span class="dl-label">Download for Windows</span></a>
+                <a class="btn btn-primary" data-os-show="windows other" href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Windows-setup.exe">Download for Windows</a>
+                <a class="btn btn-primary" data-os-show="linux" href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.AppImage">Download for Linux</a>
               </div>
             </div>
             <div class="demo-actions" role="group" aria-label="Make something happen on the island">
@@ -278,7 +297,7 @@
             <p class="eyebrow">Install</p>
             <h2 id="install-title">Three steps, then he's on duty.</h2>
           </div>
-          <ol class="steps">
+          <ol class="steps" data-os-show="windows other">
             <li>
               <h3>Download</h3>
               <p>Get the installer, <code>Ciel-Windows-setup.exe</code>, from the latest release. Windows 10 and 11.</p>
@@ -306,7 +325,43 @@
               </p>
             </li>
           </ol>
-          <div class="linux">
+          <ol class="steps" data-os-show="linux">
+            <li>
+              <h3>Download</h3>
+              <p>
+                The AppImage runs on any distribution. Prefer a package? The <code>.deb</code> for Debian and Ubuntu
+                22.04+, the <code>.rpm</code> for Fedora.
+              </p>
+              <a class="btn btn-primary btn-small" href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.AppImage">Download the AppImage</a>
+              <p class="pkgs"><a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-amd64.deb">.deb</a> · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Linux-x86_64.rpm">.rpm</a> · <a href="https://github.com/jean-eudes-asg/ciel/releases/latest">every download</a></p>
+            </li>
+            <li>
+              <h3>Install it</h3>
+              <p>One line, for the one you took. X11 and Wayland both work.</p>
+              <pre><code>sudo apt install ./Ciel-Linux-amd64.deb
+sudo dnf install ./Ciel-Linux-x86_64.rpm
+chmod +x Ciel-Linux-x86_64.AppImage</code></pre>
+            </li>
+            <li>
+              <h3>Connect your agents</h3>
+              <p>
+                Ciel appears at the top of your screen. Open <b>Settings → Claude Code → Install hooks…</b> (and the
+                page of each other agent you use): you see the exact change and a dated backup is kept before
+                anything is written.
+              </p>
+            </li>
+          </ol>
+          <div class="linux" data-os-show="linux">
+            <div>
+              <h3>On Windows</h3>
+              <p>
+                Windows 10 and 11: the installer, <code>Ciel-Windows-setup.exe</code>. It isn't code-signed yet: if
+                SmartScreen stops it, click <b>More info</b>, then <b>Run anyway</b>.
+              </p>
+            </div>
+            <a class="link" href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Windows-setup.exe">Download the Windows installer</a>
+          </div>
+          <div class="linux" data-os-show="windows other">
             <div>
               <h3>On Linux</h3>
               <p>

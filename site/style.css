@@ -1108,9 +1108,23 @@ a {
   margin-top: 16px;
 }
 
-.steps .btn + .link {
+.steps .btn + .link,
+.steps .pkgs {
   display: block;
   margin-top: 12px;
+}
+
+.steps pre {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* One system's downloads first: data-os on <html>, set in index.html's head. */
+html[data-os="windows"] [data-os-show]:not([data-os-show~="windows"]),
+html[data-os="linux"] [data-os-show]:not([data-os-show~="linux"]),
+html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
+  display: none !important;
 }
 
 .smartscreen {
@@ -1154,6 +1168,7 @@ a {
   margin-top: 18px;
 }
 
+.steps pre,
 .linux pre {
   margin: 0;
   padding: 16px 18px;
@@ -1164,6 +1179,7 @@ a {
   overflow-x: auto;
 }
 
+.steps pre code,
 .linux pre code {
   padding: 0;
   background: none;
