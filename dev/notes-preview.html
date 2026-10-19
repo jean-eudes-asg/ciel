@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel — notifications in the island</title>
+    <style>
+      body { margin: 0; padding: 24px 0 60px; background: #1b1b1f; font: 12px system-ui; color: #ddd; }
+      h1 { font: 600 14px system-ui; text-align: center; margin: 0 0 18px; }
+      .cases { display: flex; flex-direction: column; align-items: center; gap: 190px; }
+      .case { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      .strip { position: relative; width: 288px; height: 32px; background: #000; border-radius: 0 0 14px 14px; }
+      .strip .ciel { position: absolute; left: 30px; top: 6px; width: 20px; height: 20px; border-radius: 50%; background: #f5f6f8; }
+    </style>
+  </head>
+  <body>
+    <h1>Notifications in the folded island (src/island/notifications.ts)</h1>
+    <div class="cases" id="cases"></div>
+    <script type="module" src="./notes-preview.ts"></script>
+  </body>
+</html>

@@ -2,8 +2,9 @@
 // folded island slides out with its app's icon and title beside Ciel, and the
 // card shows under it — the app, the title, the text, Open and Dismiss —
 // for a few seconds, longer while the pointer is on it. Several at once: the
-// newest shows, with how many more wait. Dictation goes first: a notification
-// that arrives meanwhile waits for it to end.
+// newest shows, with how many more came, and they all fold away together (they
+// are still in their apps). Dictation goes first: a notification that arrives
+// meanwhile waits for it to end.
 //
 // Open goes back to where it came from (Rust: the tab in Chrome, the mail in
 // Gmail); Dismiss only takes it out of the island.
@@ -54,7 +55,16 @@ function appIcon(n: CielNotification, size: number): HTMLElement {
   return box;
 }
 
-export function buildNotificationCard(onChange: () => void, onArrive: (n: CielNotification) => void): NotificationCard {
+/** Where notifications come from: Rust's events, or a preview page. */
+export type NotificationSource = (deliver: (raw: unknown) => void) => void;
+
+const FROM_RUST: NotificationSource = (deliver) => void onEvent<unknown>("notification", deliver);
+
+export function buildNotificationCard(
+  onChange: () => void,
+  onArrive: (n: CielNotification) => void,
+  source: NotificationSource = FROM_RUST,
+): NotificationCard {
   let queue: CielNotification[] = [];
   /** The one showing, if any. */
   let showing: CielNotification | null = null;
@@ -83,8 +93,8 @@ export function buildNotificationCard(onChange: () => void, onArrive: (n: CielNo
     if (!showing || hovered) return;
     timer = window.setTimeout(() => {
       timer = null;
-      // Shown long enough: it folds away; the next waiting one, if any, comes.
-      if (showing) queue = queue.filter((q) => q.id !== showing!.id);
+      // Shown long enough: it folds away, with the ones that came with it.
+      queue = [];
       showing = null;
       next();
     }, SHOW_MS);
@@ -138,7 +148,7 @@ export function buildNotificationCard(onChange: () => void, onArrive: (n: CielNo
     onChange();
   }
 
-  void onEvent<unknown>("notification", (raw) => {
+  source((raw) => {
     const n = parseNotification(raw);
     // Paused from the tray: Ciel says nothing.
     if (!n || State.paused) return;
