@@ -5,6 +5,7 @@ import "../src/style.css";
 import { buildNotificationCard } from "../src/island/notifications";
 import { State } from "../src/core/state";
 import { buildInbox, buildNoteStack } from "../src/views/inbox";
+import { inboxHeight } from "../src/core/layout";
 import type { ViewActions } from "../src/views/views";
 
 /** A small coloured square as a site's icon. */
@@ -65,6 +66,9 @@ State.notifications = [
   n("i3", { source: "desktop", app: "Slack", title: "#design", body: "Marc: the new island list looks great", icon: icon("#e01e5a"), at: minutesAgo(38) }),
   n("i4", { source: "gmail", app: "Gmail", title: "GitHub", body: "[ciel] CI passed on main", at: minutesAgo(140) }),
   n("i5", { source: "desktop", app: "Software Updater", title: "Updated software is available", body: "", at: minutesAgo(60 * 26) }),
+  n("i6", { app: "Discord", title: "#general", body: "Sam: anyone up for a game tonight?", icon: icon("#5865F2"), at: minutesAgo(60 * 27) }),
+  n("i7", { app: "Google Calendar", title: "Stand-up in 5 minutes", body: "Google Meet · 10:30 – 10:45", at: minutesAgo(60 * 28) }),
+  n("i8", { source: "gmail", app: "Gmail", title: "Stripe", body: "Your weekly summary is ready", at: minutesAgo(60 * 30) }),
 ] as typeof State.notifications;
 
 const inboxRoot = document.getElementById("inbox")!;
@@ -84,8 +88,15 @@ open.className = "open";
 open.innerHTML = '<div class="head"><span style="font:600 11px system-ui;color:#8e939c">header</span></div><div class="body"></div><i class="ciel"></i>';
 open.querySelector(".body")!.append(inbox.el);
 inbox.sync();
+// As the island does (island.ts fitInbox): the list holds them all, up to
+// three quarters of the display, then scrolls.
+const fit = () => requestAnimationFrame(() => {
+  open.style.height = `${inboxHeight(open.offsetHeight + (inbox.shortfall?.() ?? 0), window.screen.availHeight)}px`;
+});
 State.subscribe(() => {
   inbox.sync();
   stack.sync(true);
+  fit();
 });
 inboxRoot.append(folded, open);
+fit();

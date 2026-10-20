@@ -49,3 +49,15 @@ test("the queue: newest first, a tag replaces its older one, capped", () => {
   assert.equal(many.length, MAX_QUEUED);
   assert.equal(many[0].id, `n${MAX_QUEUED + 4}`);
 });
+
+test("the list grows to hold them all, up to three quarters of the display", async () => {
+  const { inboxHeight, panelHeightFor, PANEL_H, VIEW_LAYOUTS } = await import("../src/core/layout.ts");
+  const base = VIEW_LAYOUTS.notifications.height;
+  assert.equal(inboxHeight(200, 1080), base, "never under its usual height");
+  assert.equal(inboxHeight(520.4, 1080), 520, "as tall as its rows need");
+  assert.equal(inboxHeight(5000, 1080), 810, "three quarters of the display, then it scrolls");
+  assert.equal(inboxHeight(5000, 200), base, "a tiny display: its usual height still");
+  // The window: the panel's, or the island plus a margin.
+  assert.equal(panelHeightFor(160), PANEL_H);
+  assert.equal(panelHeightFor(520), 528);
+});

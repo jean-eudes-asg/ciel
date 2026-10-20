@@ -100,6 +100,21 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
 // dropped the whole sequence — Ciel included — is drawn by src/upload, which
 // owns its own constants (USC) straight from UploadSequenceEngine.swift.
 
+/**
+ * The notifications list grows to hold them all, from its usual height up to
+ * three quarters of the display; past that, it scrolls.
+ */
+export function inboxHeight(want: number, screenH: number): number {
+  const base = VIEW_LAYOUTS.notifications.height;
+  const max = Math.max(base, Math.floor(screenH * 0.75));
+  return Math.round(Math.min(max, Math.max(base, want)));
+}
+
+/** The island's window: the panel, or taller while the island needs it (a long list). */
+export function panelHeightFor(islandH: number): number {
+  return Math.max(PANEL_H, Math.ceil(islandH) + 8);
+}
+
 /** The question view with options to pick from: room for two rows of them. */
 export const QUESTION_PICKER_H = 200;
 

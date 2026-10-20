@@ -5,7 +5,7 @@
 // centre of the main display inside a borderless, transparent, always-on-top
 // window that never takes focus.
 
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::Duration;
 
@@ -22,6 +22,22 @@ pub const STRIP_W: f64 = 240.0;
 pub const STRIP_H: f64 = 6.0;
 
 pub const WINDOW_LABEL: &str = "island";
+
+/// The window's height while the island is open (logical px): the panel's, or
+/// more while the notifications list holds more than fits in it (the page asks,
+/// island.ts syncPanel). Stored as f64 bits.
+static OPEN_HEIGHT: AtomicU64 = AtomicU64::new(PANEL_H.to_bits());
+
+pub fn open_height() -> f64 {
+    f64::from_bits(OPEN_HEIGHT.load(Ordering::Relaxed))
+}
+
+/// The page's ask, kept within sense: never under the panel, never past what
+/// any display has. True when it changed.
+pub fn set_open_height(height: f64) -> bool {
+    let h = if height.is_finite() { height.clamp(PANEL_H, 4000.0).round() } else { PANEL_H };
+    OPEN_HEIGHT.swap(h.to_bits(), Ordering::Relaxed) != h.to_bits()
+}
 
 /// Margin around the island that still counts as "on the island", in logical px.
 /// Wider than the macOS 6 pt because a click must never be swallowed.
@@ -300,6 +316,20 @@ mod click_tests {
     use super::*;
 
     #[test]
+    fn the_open_window_grows_for_a_long_list_within_sense() {
+        assert!(set_open_height(700.0));
+        assert_eq!(open_height(), 700.0);
+        assert!(!set_open_height(700.0), "the same height is no change");
+        set_open_height(100.0);
+        assert_eq!(open_height(), PANEL_H, "never under the panel");
+        set_open_height(f64::NAN);
+        assert_eq!(open_height(), PANEL_H);
+        set_open_height(1e9);
+        assert_eq!(open_height(), 4000.0);
+        set_open_height(PANEL_H);
+    }
+
+    #[test]
     fn a_press_on_the_island_or_its_margin_is_no_click_outside() {
         let r = IslandRect { x: 40.0, y: 0.0, w: 640.0, h: 160.0 };
         assert!(over_island(r, 50.0, 10.0));
@@ -374,7 +404,7 @@ pub fn apply_geometry(app: &AppHandle, pref: &str, collapsed: bool) {
     let mp = *m.position();
     let ms = *m.size();
 
-    let (lw, lh) = if collapsed { (STRIP_W, STRIP_H) } else { (PANEL_W, PANEL_H) };
+    let (lw, lh) = if collapsed { (STRIP_W, STRIP_H) } else { (PANEL_W, open_height()) };
     let pw = (lw * scale).round().max(1.0) as u32;
     let ph = (lh * scale).round().max(1.0) as u32;
     let x = mp.x + (ms.width as i32 - pw as i32) / 2;
@@ -480,7 +510,7 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
                 let y = (cy - origin.y as f64) / scale;
                 let size = match win.inner_size() {
                     Ok(s) => (s.width as f64 / scale, s.height as f64 / scale),
-                    Err(_) => (PANEL_W, PANEL_H),
+                    Err(_) => (PANEL_W, open_height()),
                 };
                 let r = *gate.rect.lock().unwrap();
                 let on_island = over_island(r, x, y);

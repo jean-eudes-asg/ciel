@@ -202,6 +202,18 @@ fn set_collapsed(app: AppHandle, shared: State<Shared>, collapsed: bool) {
     platform::set_pointer_watch(!collapsed);
 }
 
+/// The window grows for a long notifications list, and back after (island.rs
+/// open_height). Collapsed, the next opening uses it.
+#[tauri::command]
+fn set_panel_height(app: AppHandle, shared: State<Shared>, height: f64) {
+    if !island::set_open_height(height) || shared.gate.collapsed.load(Ordering::Relaxed) {
+        return;
+    }
+    let pref = shared.settings.lock().unwrap().screen.clone();
+    island::apply_geometry(&app, &pref, false);
+    island::refresh_click_through(&app, &shared.gate);
+}
+
 /// The front end pushes the island shape; Rust decides click-through from it.
 #[tauri::command]
 fn set_island_rect(app: AppHandle, shared: State<Shared>, x: f64, y: f64, width: f64, height: f64) {
@@ -785,6 +797,7 @@ pub fn run() {
             save_settings,
             set_system_languages,
             set_collapsed,
+            set_panel_height,
             set_island_rect,
             focus_window,
             reposition,

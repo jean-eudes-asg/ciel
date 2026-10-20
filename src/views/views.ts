@@ -58,6 +58,8 @@ export interface ViewHost {
   sync(): void;
   /** Called when the view becomes active, for views with a text field. */
   focus?(): void;
+  /** The notifications list: the px its rows lack (+) or leave spare (−). */
+  shortfall?(): number;
   /** Called every frame while the view is on screen. True = needs another frame. */
   tick?(nowMs: number): boolean | void;
   /** Ctrl+O / Ctrl+E while the view is on screen (island/shortcuts.ts). */
@@ -984,6 +986,7 @@ function buildPlaceholder(title: Msg, sub: string): ViewHost {
 export function buildViews(
   actions: ViewActions,
   onChatHeightChange: () => void,
+  onInboxRows: () => void = () => {},
 ): Map<IslandViewName, ViewHost> {
   const map = new Map<IslandViewName, ViewHost>();
   map.set("overview", buildOverview(actions));
@@ -1000,7 +1003,7 @@ export function buildViews(
   map.set("uploading", buildUploading());
   map.set("choose", buildChoose(actions));
   map.set("recap", buildRecap(actions));
-  map.set("notifications", buildInbox(actions));
+  map.set("notifications", buildInbox(actions, onInboxRows));
   // Not in the Windows v1: sending a file by email, window attach + web result.
   map.set("mail", buildPlaceholder(tl("Sending by email isn't in this version."), ""));
   map.set("searching", buildPlaceholder(tl("Claude is searching…"), ""));

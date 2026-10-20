@@ -79,6 +79,8 @@ export const Bridge = {
    * Pushes the island shape in window coordinates. Rust flips click-through from
    * its own cursor poll, so the flag is never a frame behind a click.
    */
+  /** The window's height while the island is open: the panel's, or more for a long notifications list. */
+  setPanelHeight: (height: number) => call<void>("set_panel_height", { height }),
   setIslandRect: (x: number, y: number, width: number, height: number) =>
     call<void>("set_island_rect", { x, y, width, height }),
 

@@ -6,7 +6,7 @@ import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
 import {
   EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W,
   ROUNDED_CORNER, VIEW_LAYOUTS, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
-  islandSize,
+  inboxHeight, islandSize, panelHeightFor,
   QUESTION_PICKER_H,
   type BotEmoteName, type IslandMode, type IslandViewName,
 } from "../core/layout";
@@ -87,6 +87,12 @@ export class Island {
 
   private running = false;
   private lastFrame = 0;
+  /** The height was animating last frame: its end is when the island is at rest. */
+  private sizing = false;
+  /** The notifications list's height: its usual one, or what holds them all (fitInbox). */
+  private inboxH = VIEW_LAYOUTS.notifications.height;
+  /** The window's height, as last asked of Rust: the panel's, or more for a long list. */
+  private panelH = PANEL_H;
   private dirty = true;
   private canvasPx = 0;
 
@@ -275,7 +281,7 @@ export class Island {
     this.noteStack = buildNoteStack();
 
     this.header = buildHeader(actions);
-    this.views = buildViews(actions, () => this.animateGeometry(false));
+    this.views = buildViews(actions, () => this.animateGeometry(false), () => this.fitInbox());
     this.viewsEl = h("div", { id: "views" });
     for (const v of this.views.values()) this.viewsEl.append(v.el);
     this.contentEl = h("div", { id: "content" }, this.header.el, this.viewsEl);
@@ -640,12 +646,14 @@ export class Island {
     if (State.mode === "expanded" && State.view === "question" && State.pendingApproval?.questions) {
       h = QUESTION_PICKER_H;
     }
+    if (State.mode === "expanded" && State.view === "notifications") h = this.inboxH;
     const r = State.mode === "expanded" ? EXPANDED_CORNER : ROUNDED_CORNER;
     return { w, h, r };
   }
 
   private animateGeometry(shrinking: boolean) {
     const { w, h, r } = this.targetSize();
+    this.syncPanel(h, false);
     if (shrinking) {
       this.width.curveTowards(w);
       this.height.curveTowards(h);
@@ -684,6 +692,33 @@ export class Island {
       this.pushedRect = rect;
       void Bridge.setIslandRect(rect.x, rect.y, rect.w, rect.h);
     }
+  }
+
+  /**
+   * The window grows before the island does (a long notifications list), and
+   * goes back to the panel's size once the island has shrunk.
+   */
+  private syncPanel(islandH: number, atRest: boolean) {
+    const want = panelHeightFor(islandH);
+    if (want > this.panelH || (atRest && want < this.panelH)) {
+      this.panelH = want;
+      void Bridge.setPanelHeight(want);
+    }
+  }
+
+  /**
+   * The notifications list holds them all: once the island is at rest on it,
+   * it grows by what the rows lack, or gives back what they leave spare, up to
+   * three quarters of the display (then the list scrolls). One step: the list
+   * is measured at its real width and height.
+   */
+  private fitInbox() {
+    if (State.mode !== "expanded" || State.view !== "notifications" || this.height.animating) return;
+    const extra = this.views.get("notifications")?.shortfall?.() ?? 0;
+    const want = inboxHeight(this.height.value + extra, window.screen?.availHeight || 1080);
+    if (Math.abs(want - this.inboxH) < 2) return;
+    this.inboxH = want;
+    this.animateGeometry(want < this.height.value);
   }
 
   /** Island rect in window coordinates (origin top-left of the 720×320 window). */
@@ -944,6 +979,12 @@ export class Island {
     this.height.step(dt, nowMs);
     this.radius.step(dt, nowMs);
     this.applyGeometry();
+    // At rest: the list measures itself, and a window grown for it shrinks back.
+    if (this.sizing && !this.height.animating) {
+      this.fitInbox();
+      this.syncPanel(this.targetSize().h, true);
+    }
+    this.sizing = this.height.animating;
 
     if (this.dirty) {
       this.dirty = false;
@@ -1245,7 +1286,7 @@ export class Island {
   }
 
   get panelSize() {
-    return { w: PANEL_W, h: PANEL_H };
+    return { w: PANEL_W, h: this.panelH };
   }
 
   get chatHeight() {

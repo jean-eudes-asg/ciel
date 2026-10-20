@@ -22,6 +22,9 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   bigger cover. With two pills, both are in detail side by side, each in its
   place (the main pill beside Ciel); a press on one gives it the keys.
   From three on, as before.
+- **The notifications list holds them all**: the island grows with it, up
+  to three quarters of the screen, and only scrolls beyond; it gives the room
+  back as they are opened or dismissed.
 
 ## [0.2.5] - 2026-10-20
 

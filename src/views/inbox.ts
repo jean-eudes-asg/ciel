@@ -84,7 +84,19 @@ export function buildNoteStack(): NoteStack {
 
 // ── Open: the list ────────────────────────────────────────────────────────────
 
-export function buildInbox(actions: ViewActions): ViewHost {
+/**
+ * How much room the list lacks to show every row (+), or has to spare (−), in
+ * px: the island grows or shrinks by it (island.ts, layout.ts inboxHeight).
+ */
+export function listShortfall(list: HTMLElement): number {
+  const last = list.lastElementChild as HTMLElement | null;
+  const pad = parseFloat(getComputedStyle(list).paddingBottom) || 0;
+  const natural = last ? last.getBoundingClientRect().bottom - list.getBoundingClientRect().top + list.scrollTop + pad : pad;
+  return natural - list.clientHeight;
+}
+
+/** `onRows`: the rows changed, the island measures again (shortfall) once at rest. */
+export function buildInbox(actions: ViewActions, onRows: () => void = () => {}): ViewHost {
   const count = h("span", { class: "inbox-count" });
   const clearBtn = h("button", {
     class: "inbox-clear",
@@ -141,6 +153,7 @@ export function buildInbox(actions: ViewActions): ViewHost {
 
   return {
     el,
+    shortfall: () => listShortfall(list),
     sync() {
       const all = State.notifications;
       count.textContent = all.length ? String(all.length) : "";
@@ -151,6 +164,8 @@ export function buildInbox(actions: ViewActions): ViewHost {
         key = next;
         times.clear();
         list.replaceChildren(...all.map(row));
+        // Every one in sight: the island makes the room, or gives it back.
+        onRows();
       } else {
         const now = Date.now();
         for (const n of all) {
