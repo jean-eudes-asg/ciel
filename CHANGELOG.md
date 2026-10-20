@@ -2,7 +2,7 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.2.5] - 2026-10-20
 
 ### Added
 - Linux: **your other apps' notifications in the island**: Thunderbird,
@@ -124,6 +124,7 @@ an eye on your AI coding agents. Windows 10/11; Linux builds from source.
 Ciel is a fork of [Coucou](https://github.com/Louis-CFM/coucou) by Louis
 Raillé (MIT). Thank you.
 
+[0.2.5]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.5
 [0.2.4]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.4
 [0.2.3]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.3
 [0.2.2]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.2
