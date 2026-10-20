@@ -2,6 +2,15 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **Updates from the app** (Settings → General → Updates): Check now, or
+  once a day if you turn it on (off by default). A newer version installs on
+  "Install and restart" only: Windows' installer, or the AppImage replacing
+  itself. A .deb or .rpm is told, and gets the release page. Updates are
+  signed, and Ciel refuses one whose signature doesn't match.
+
 ## [0.2.6] - 2026-10-20
 
 ### Added

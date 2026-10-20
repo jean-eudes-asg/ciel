@@ -4,7 +4,7 @@
 // src-tauri/src/notify.rs), and on Linux the other apps' (notify.rs too). Pure rules here; nothing is stored, nothing is kept
 // past the queue.
 
-export type NotificationSource = "chrome" | "gmail" | "desktop";
+export type NotificationSource = "chrome" | "gmail" | "desktop" | "ciel";
 
 export interface CielNotification {
   /** Unique, given by Rust. */
@@ -44,7 +44,7 @@ const clip = (s: unknown, max: number) => {
 export function parseNotification(raw: unknown): CielNotification | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
-  const source = r.source === "gmail" || r.source === "chrome" || r.source === "desktop" ? r.source : null;
+  const source = r.source === "gmail" || r.source === "chrome" || r.source === "desktop" || r.source === "ciel" ? r.source : null;
   const title = clip(r.title, MAX_TITLE);
   const body = clip(r.body, MAX_BODY);
   if (!source || typeof r.id !== "string" || !r.id || (!title && !body)) return null;
@@ -52,7 +52,7 @@ export function parseNotification(raw: unknown): CielNotification | null {
   return {
     id: r.id,
     source,
-    app: clip(r.app, 60) || { gmail: "Gmail", chrome: "Chrome", desktop: "" }[source],
+    app: clip(r.app, 60) || { gmail: "Gmail", chrome: "Chrome", desktop: "", ciel: "Ciel" }[source],
     title: title || body,
     body: title ? body : "",
     icon,

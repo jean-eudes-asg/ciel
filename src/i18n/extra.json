@@ -5728,6 +5728,171 @@
    "pt-BR": "Precisa da extensão do Ciel para o GNOME Shell: Integrações → Notificações → Abrir no app.",
    "ru": "Нужно расширение Ciel для GNOME Shell: Интеграции → Уведомления → Открывать в приложении.",
    "id": "Memerlukan ekstensi Ciel untuk GNOME Shell: Integrasi → Notifikasi → Buka di aplikasi."
+  },
+  "This build can't update itself: new versions are on the website.": {
+   "zh-Hans": "此版本无法自行更新：新版本请到网站下载。",
+   "hi": "यह बिल्ड खुद अपडेट नहीं हो सकता: नए संस्करण वेबसाइट पर हैं।",
+   "es": "Esta compilación no puede actualizarse sola: las nuevas versiones están en el sitio web.",
+   "ar": "لا يمكن لهذا الإصدار تحديث نفسه: الإصدارات الجديدة على الموقع.",
+   "fr": "Cette version ne peut pas se mettre à jour seule : les nouvelles versions sont sur le site.",
+   "bn": "এই বিল্ড নিজে আপডেট হতে পারে না: নতুন সংস্করণ ওয়েবসাইটে আছে।",
+   "pt-BR": "Esta versão não consegue se atualizar sozinha: as novas versões estão no site.",
+   "ru": "Эта сборка не может обновиться сама: новые версии — на сайте.",
+   "id": "Build ini tidak bisa memperbarui dirinya sendiri: versi baru ada di situs web."
+  },
+  "Downloading… {percent}%": {
+   "zh-Hans": "正在下载… {percent}%",
+   "hi": "डाउनलोड हो रहा है… {percent}%",
+   "es": "Descargando… {percent} %",
+   "ar": "جارٍ التنزيل… {percent}%",
+   "fr": "Téléchargement… {percent} %",
+   "bn": "ডাউনলোড হচ্ছে… {percent}%",
+   "pt-BR": "Baixando… {percent}%",
+   "ru": "Загрузка… {percent}%",
+   "id": "Mengunduh… {percent}%"
+  },
+  "Checking…": {
+   "zh-Hans": "正在检查…",
+   "hi": "जाँच हो रही है…",
+   "es": "Comprobando…",
+   "ar": "جارٍ التحقق…",
+   "fr": "Vérification…",
+   "bn": "যাচাই করা হচ্ছে…",
+   "pt-BR": "Verificando…",
+   "ru": "Проверка…",
+   "id": "Memeriksa…"
+  },
+  "Something went wrong: {error}": {
+   "zh-Hans": "出了点问题：{error}",
+   "hi": "कुछ गड़बड़ हो गई: {error}",
+   "es": "Algo salió mal: {error}",
+   "ar": "حدث خطأ ما: {error}",
+   "fr": "Un problème est survenu : {error}",
+   "bn": "কিছু একটা ভুল হয়েছে: {error}",
+   "pt-BR": "Algo deu errado: {error}",
+   "ru": "Что-то пошло не так: {error}",
+   "id": "Terjadi kesalahan: {error}"
+  },
+  "Ciel {version} is out.": {
+   "zh-Hans": "Ciel {version} 已发布。",
+   "hi": "Ciel {version} आ गया है।",
+   "es": "Ya está disponible Ciel {version}.",
+   "ar": "صدر Ciel {version}.",
+   "fr": "Ciel {version} est disponible.",
+   "bn": "Ciel {version} এসে গেছে।",
+   "pt-BR": "O Ciel {version} já está disponível.",
+   "ru": "Вышел Ciel {version}.",
+   "id": "Ciel {version} sudah tersedia."
+  },
+  "Ciel is up to date.": {
+   "zh-Hans": "Ciel 已是最新版本。",
+   "hi": "Ciel अप टू डेट है।",
+   "es": "Ciel está actualizado.",
+   "ar": "Ciel محدَّث.",
+   "fr": "Ciel est à jour.",
+   "bn": "Ciel হালনাগাদ আছে।",
+   "pt-BR": "O Ciel está atualizado.",
+   "ru": "Ciel обновлён.",
+   "id": "Ciel sudah versi terbaru."
+  },
+  "Updates": {
+   "zh-Hans": "更新",
+   "hi": "अपडेट",
+   "es": "Actualizaciones",
+   "ar": "التحديثات",
+   "fr": "Mises à jour",
+   "bn": "আপডেট",
+   "pt-BR": "Atualizações",
+   "ru": "Обновления",
+   "id": "Pembaruan"
+  },
+  "Check now": {
+   "zh-Hans": "立即检查",
+   "hi": "अभी जाँचें",
+   "es": "Comprobar ahora",
+   "ar": "تحقق الآن",
+   "fr": "Vérifier maintenant",
+   "bn": "এখনই যাচাই করুন",
+   "pt-BR": "Verificar agora",
+   "ru": "Проверить сейчас",
+   "id": "Periksa sekarang"
+  },
+  "What's new": {
+   "zh-Hans": "新功能",
+   "hi": "नया क्या है",
+   "es": "Novedades",
+   "ar": "ما الجديد",
+   "fr": "Nouveautés",
+   "bn": "নতুন কী আছে",
+   "pt-BR": "Novidades",
+   "ru": "Что нового",
+   "id": "Yang baru"
+  },
+  "Install and restart": {
+   "zh-Hans": "安装并重启",
+   "hi": "इंस्टॉल करें और फिर से शुरू करें",
+   "es": "Instalar y reiniciar",
+   "ar": "التثبيت وإعادة التشغيل",
+   "fr": "Installer et redémarrer",
+   "bn": "ইনস্টল করে আবার চালু করুন",
+   "pt-BR": "Instalar e reiniciar",
+   "ru": "Установить и перезапустить",
+   "id": "Pasang dan mulai ulang"
+  },
+  "Version": {
+   "zh-Hans": "版本",
+   "hi": "संस्करण",
+   "es": "Versión",
+   "ar": "الإصدار",
+   "fr": "Version",
+   "bn": "সংস্করণ",
+   "pt-BR": "Versão",
+   "ru": "Версия",
+   "id": "Versi"
+  },
+  "Check for updates automatically": {
+   "zh-Hans": "自动检查更新",
+   "hi": "अपडेट अपने आप जाँचें",
+   "es": "Buscar actualizaciones automáticamente",
+   "ar": "التحقق من التحديثات تلقائيًا",
+   "fr": "Rechercher les mises à jour automatiquement",
+   "bn": "স্বয়ংক্রিয়ভাবে আপডেট খুঁজুন",
+   "pt-BR": "Procurar atualizações automaticamente",
+   "ru": "Проверять обновления автоматически",
+   "id": "Periksa pembaruan secara otomatis"
+  },
+  "Once a day, Ciel asks its latest release on GitHub whether a newer version is out. Nothing else is sent, and nothing installs without your click.": {
+   "zh-Hans": "Ciel 每天一次向其在 GitHub 上的最新发布询问是否有新版本。不会发送其他任何内容，未经你点按也不会安装任何东西。",
+   "hi": "दिन में एक बार, Ciel GitHub पर अपनी नवीनतम रिलीज़ से पूछता है कि कोई नया संस्करण आया है या नहीं। और कुछ नहीं भेजा जाता, और आपके क्लिक के बिना कुछ भी इंस्टॉल नहीं होता।",
+   "es": "Una vez al día, Ciel consulta su última versión en GitHub para saber si hay una más nueva. No se envía nada más y nada se instala sin tu clic.",
+   "ar": "مرة واحدة يوميًا، يسأل Ciel أحدث إصدار له على GitHub عمّا إذا كان هناك إصدار أحدث. لا يُرسَل أي شيء آخر، ولا يُثبَّت شيء دون نقرتك.",
+   "fr": "Une fois par jour, Ciel demande à sa dernière version sur GitHub si une version plus récente est sortie. Rien d'autre n'est envoyé, et rien ne s'installe sans votre clic.",
+   "bn": "দিনে একবার, Ciel GitHub-এ তার সর্বশেষ রিলিজকে জিজ্ঞেস করে নতুন সংস্করণ এসেছে কি না। আর কিছু পাঠানো হয় না, এবং আপনার ক্লিক ছাড়া কিছুই ইনস্টল হয় না।",
+   "pt-BR": "Uma vez por dia, o Ciel consulta sua versão mais recente no GitHub para saber se saiu uma mais nova. Nada mais é enviado, e nada é instalado sem o seu clique.",
+   "ru": "Раз в день Ciel спрашивает свой последний релиз на GitHub, не вышла ли новая версия. Больше ничего не отправляется, и ничего не устанавливается без вашего щелчка.",
+   "id": "Sekali sehari, Ciel menanyakan rilis terbarunya di GitHub apakah ada versi yang lebih baru. Tidak ada hal lain yang dikirim, dan tidak ada yang terpasang tanpa klik Anda."
+  },
+  "Ciel {version} is out": {
+   "zh-Hans": "Ciel {version} 已发布",
+   "hi": "Ciel {version} आ गया है",
+   "es": "Ya está disponible Ciel {version}",
+   "ar": "صدر Ciel {version}",
+   "fr": "Ciel {version} est disponible",
+   "bn": "Ciel {version} এসে গেছে",
+   "pt-BR": "O Ciel {version} já está disponível",
+   "ru": "Вышел Ciel {version}",
+   "id": "Ciel {version} sudah tersedia"
+  },
+  "Install it from Settings → General.": {
+   "zh-Hans": "在“设置 → 通用”中安装。",
+   "hi": "इसे सेटिंग्स → सामान्य से इंस्टॉल करें।",
+   "es": "Instálalo desde Ajustes → General.",
+   "ar": "ثبّته من الإعدادات ← عام.",
+   "fr": "Installez-la depuis Réglages → Général.",
+   "bn": "সেটিংস → সাধারণ থেকে ইনস্টল করুন।",
+   "pt-BR": "Instale em Ajustes → Geral.",
+   "ru": "Установите его в «Настройки → Основные».",
+   "id": "Pasang dari Pengaturan → Umum."
   }
  }
 }

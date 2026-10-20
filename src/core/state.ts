@@ -108,6 +108,8 @@ export interface Settings {
   openOnHover: boolean;
   /** A press outside the open island folds it (on Wayland: the pointer leaving). */
   closeOnClickOutside: boolean;
+  /** Once a day, Ciel asks its latest release whether a newer version is out (off by default). */
+  checkUpdates: boolean;
   absenceInterval: number;
   /** Declared pills next to the main one (at most 4), in the order they were added. */
   activeIntegrations: string[];
@@ -181,6 +183,7 @@ export const DEFAULT_SETTINGS: Settings = {
   autoCloseInterval: 15,
   openOnHover: false,
   closeOnClickOutside: true,
+  checkUpdates: false,
   absenceInterval: 180,
   activeIntegrations: [
     "integration_resend", "integration_n8n", "integration_vercel", "integration_github",

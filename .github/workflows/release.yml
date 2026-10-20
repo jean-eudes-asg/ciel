@@ -97,8 +97,37 @@ jobs:
       - name: Rust tests
         run: cargo test --workspace --locked
 
+      # With the updater's key (the TAURI_SIGNING_PRIVATE_KEY secret) the build
+      # signs what it makes, and the release gets latest.json for Ciel's
+      # updater (src-tauri/src/updates.rs). The key and the public key in
+      # tauri.conf.json go together: one without the other stops the release.
+      - name: Updater key and public key agree
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        run: |
+          pub=$(node -p "require('./src-tauri/tauri.conf.json').plugins.updater.pubkey")
+          if [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] && [ -z "$pub" ]; then
+            echo "::error::The TAURI_SIGNING_PRIVATE_KEY secret is set, but tauri.conf.json has no updater pubkey."
+            exit 1
+          fi
+          if [ -z "$TAURI_SIGNING_PRIVATE_KEY" ] && [ -n "$pub" ]; then
+            echo "::error::tauri.conf.json has an updater pubkey, but the TAURI_SIGNING_PRIVATE_KEY secret is missing."
+            exit 1
+          fi
+
       - name: Build the packages
-        run: npm run pack
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          if [ -n "$TAURI_SIGNING_PRIVATE_KEY" ]; then
+            npx tauri build --config src-tauri/tauri.updater.conf.json
+            node scripts/pack.mjs
+          else
+            npm run pack
+          fi
 
       - uses: actions/upload-artifact@v5
         with:
@@ -158,6 +187,18 @@ jobs:
             echo "**Ciel for Chrome:** \`Ciel-for-Chrome.zip\` brings websites' notifications (Chrome, Edge, Brave) to the island. Connect it in Settings → Integrations → Notifications, then load it unpacked in \`chrome://extensions\`."
           } >> release-notes.md
           cat release-notes.md
+
+      # What Ciel's updater reads from the latest release, when the build signed
+      # the packages.
+      - name: Updates
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if ls release/*.sig > /dev/null 2>&1; then
+            node scripts/latest-json.mjs "$version" release release-notes.md > release/latest.json
+            cat release/latest.json
+          else
+            echo "No signed package: this release has no in-app update."
+          fi
 
       - name: Publish the release
         env:

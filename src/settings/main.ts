@@ -25,6 +25,7 @@ import { brainSection } from "./brain";
 import { colorDot } from "./colors";
 import { demoRows } from "./demo";
 import { notificationsSection } from "./notifications";
+import { updatesSection } from "./updates";
 import { renderDiff, statusDot } from "./parts";
 import { wallpaperSections } from "./wallpaper";
 import {
@@ -1492,7 +1493,16 @@ async function render() {
   shortcutsListener = null;
   clear(root);
   const sections: Partial<Record<PageId, () => HTMLElement[]>> = {
-    general: () => [generalSection()],
+    general: () => [
+      generalSection(),
+      updatesSection({
+        auto: settings.checkUpdates,
+        setAuto: (on) => {
+          settings.checkUpdates = on;
+          void save();
+        },
+      }),
+    ],
     pills: () => [activePillsSection(connected)],
     agents: () => [claudeSection(status), agentsSection(agents), planSection(status)],
     chat: () => [apiSection(hasKey), brain(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],

@@ -255,6 +255,12 @@ export const Bridge = {
     call<boolean>("spotify_control", { action, value: value ?? null }),
   /** Brings Spotify forward or starts it; without it, its download page. */
   spotifyOpen: () => call<boolean>("spotify_open"),
+  // ── Ciel's own updates (src-tauri/src/updates.rs) ─────────────────────────
+  updateStatus: () => call<UpdateStatus>("update_status"),
+  /** Asks the latest release whether a newer version is out. */
+  updateCheck: () => call<UpdateStatus>("update_check"),
+  /** Downloads, checks and installs it; Ciel restarts. Only on the user's press. */
+  updateInstall: () => call<void>("update_install"),
   // ── YouTube Music, through Ciel for Chrome (src-tauri/src/ytmusic.rs) ─────
   /** The player in a YouTube Music tab, in Spotify's shape. */
   ytMusicState: () => call<SpotifyState>("ytmusic_state"),
@@ -373,6 +379,23 @@ async function sendBytes(cmd: string, png: Uint8Array, headers: Record<string, s
 }
 
 export type SpotifyAction = "playPause" | "next" | "previous" | "seek" | "shuffle" | "repeat" | "volume";
+
+/** Ciel's own updates, as Settings shows them (src-tauri/src/updates.rs UpdateStatus). */
+export interface UpdateStatus {
+  /** This build knows the key updates are signed with. */
+  ready: boolean;
+  current: string;
+  /** A newer version found by the last check. */
+  available: string | null;
+  /** This install replaces itself (Windows, an AppImage); else the release page. */
+  canInstall: boolean;
+  busy: boolean;
+  /** 0…1 while downloading, when the size is known. */
+  progress: number | null;
+  error: string | null;
+  /** When the last check ended (Unix ms), 0 when none did. */
+  checkedAt: number;
+}
 
 export type ShortcutStatus =
   | "active" | "off" | "inUse" | "duplicate" | "invalid"

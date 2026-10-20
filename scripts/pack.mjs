@@ -2,7 +2,7 @@
 // windows/release/, with the names they ship under. Used by `npm run pack` and
 // by the release workflows, so both produce exactly the same file names.
 
-import { readFileSync, mkdirSync, copyFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, mkdirSync, copyFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -80,6 +80,14 @@ for (const { dir, suffix, names } of packages) {
   for (const name of names) {
     const dest = join(outDir, name);
     copyFileSync(built, dest);
+    written.push(dest);
+  }
+  // A release build with the updater's key signs what it makes (release.yml):
+  // the signature goes with the versioned name, which latest.json points at.
+  const sig = `${built}.sig`;
+  if (existsSync(sig) && statSync(sig).mtimeMs >= statSync(built).mtimeMs) {
+    const dest = join(outDir, `${names[0]}.sig`);
+    copyFileSync(sig, dest);
     written.push(dest);
   }
 }

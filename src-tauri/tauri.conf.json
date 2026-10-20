@@ -60,5 +60,12 @@
         "installerHooks": "nsis/hooks.nsh"
       }
     }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "",
+      "endpoints": ["https://github.com/jean-eudes-asg/ciel/releases/latest/download/latest.json"],
+      "windows": { "installMode": "passive" }
+    }
   }
 }

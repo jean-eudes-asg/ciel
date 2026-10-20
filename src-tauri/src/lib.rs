@@ -16,6 +16,7 @@ mod github;
 mod gnome_ext;
 mod gmail;
 mod ytmusic;
+mod updates;
 mod hooks;
 mod i18n;
 mod identity;
@@ -132,6 +133,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     integrations::settings_saved(&app, &settings.active_integrations);
     spotify::sync(&app, &settings.active_integrations);
     ytmusic::sync(&settings.active_integrations);
+    updates::sync(&app, settings.check_updates);
     gmail::sync(&app, &settings.active_integrations, false);
     #[cfg(target_os = "linux")]
     {
@@ -756,6 +758,22 @@ fn open_settings_window(app: AppHandle, page: Option<String>) {
     show_hub(&app, Some(page.as_deref().unwrap_or("general")));
 }
 
+/// Settings on a page, from Rust (a notification's Open).
+pub(crate) fn open_settings(app: &AppHandle, page: &str) {
+    show_hub(app, Some(page));
+}
+
+/// What Ciel does as it goes: on Quit, and before an update's installer
+/// closes it (updates.rs).
+pub(crate) fn before_exit(app: &AppHandle) {
+    notes::shutdown(app);
+    wallpaper::shutdown(app);
+    // Nothing shows the desktop's notifications once Ciel is gone:
+    // GNOME's banners come back if Ciel turned them off.
+    #[cfg(target_os = "linux")]
+    notify::desktop::quiet_desktop(false);
+}
+
 pub fn run() {
     platform::prepare_environment();
     let loaded = settings::load();
@@ -772,7 +790,9 @@ pub fn run() {
                 None => show_hub(app, None),
             }
         }))
-        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec![AUTOSTART_ARG])));
+        .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec![AUTOSTART_ARG])))
+        // Ciel's own updates, only when asked (updates.rs).
+        .plugin(tauri_plugin_updater::Builder::new().build());
     // Where no global shortcut can work, the plugin isn't even started.
     if platform::global_shortcuts_blocked().is_none() {
         builder = builder.plugin(shortcuts::plugin());
@@ -864,6 +884,9 @@ pub fn run() {
             sounds::reload_sounds,
             spotify::spotify_refresh,
             ytmusic::ytmusic_state,
+            updates::update_status,
+            updates::update_check,
+            updates::update_install,
             ytmusic::ytmusic_control,
             spotify::spotify_control,
             spotify::spotify_open,
@@ -955,6 +978,7 @@ pub fn run() {
             integrations::start(handle.clone());
             spotify::sync(&handle, &loaded.active_integrations);
             ytmusic::sync(&loaded.active_integrations);
+            updates::sync(&handle, loaded.check_updates);
             gmail::sync(&handle, &loaded.active_integrations, false);
             #[cfg(target_os = "linux")]
             {
@@ -981,12 +1005,7 @@ pub fn run() {
         .expect("error while building Ciel")
         .run(|app, event| {
             if let tauri::RunEvent::Exit = event {
-                notes::shutdown(app);
-                wallpaper::shutdown(app);
-                // Nothing shows the desktop's notifications once Ciel is gone:
-                // GNOME's banners come back if Ciel turned them off.
-                #[cfg(target_os = "linux")]
-                notify::desktop::quiet_desktop(false);
+                before_exit(app);
             }
         });
 }

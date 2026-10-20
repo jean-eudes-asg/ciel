@@ -24,6 +24,10 @@ pub struct Settings {
     /// the clicks in other windows: there the island folds once the pointer
     /// has left it for a moment.
     pub close_on_click_outside: bool,
+    /// Once a day, Ciel asks its latest release whether a newer version is out
+    /// (updates.rs). Off by default: the network only reaches what the user
+    /// turned on.
+    pub check_updates: bool,
     pub absence_interval: f64,
     pub active_integrations: Vec<String>,
     /// The always-on workspace pill (src/core/pills.ts checks it is one).
@@ -201,6 +205,7 @@ impl Default for Settings {
             auto_close_interval: 15.0,
             open_on_hover: false,
             close_on_click_outside: true,
+            check_updates: false,
             absence_interval: 180.0,
             active_integrations: vec![
                 "integration_resend".into(),
@@ -489,6 +494,7 @@ mod tests {
   "autoCloseInterval": 30.0,
   "openOnHover": true,
   "closeOnClickOutside": false,
+  "checkUpdates": true,
   "absenceInterval": 60.0,
   "activeIntegrations": ["integration_notion"],
   "mainPill": "agent_cursor",
@@ -933,6 +939,7 @@ mod tests {
                 "autoCloseInterval",
                 "openOnHover",
                 "closeOnClickOutside",
+                "checkUpdates",
                 "absenceInterval",
                 "activeIntegrations",
                 "mainPill",

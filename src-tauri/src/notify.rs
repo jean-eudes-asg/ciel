@@ -47,6 +47,8 @@ pub enum Target {
     Bridge { bridge: String, key: String },
     /// A page to open (a mail in Gmail).
     Url(String),
+    /// A page of Ciel's settings (a new version of Ciel: General).
+    Settings(String),
     /// The app that notified: its desktop entry id, the process that sent it
     /// (whose window comes forward), and GNOME's own copy of it once known.
     #[cfg(target_os = "linux")]
@@ -155,13 +157,20 @@ pub fn from_bridge(payload: &Value) -> Option<(Notification, Target)> {
 
 /// The island's Open or Dismiss.
 #[tauri::command]
-pub fn notification_action(id: String, action: String) {
+pub fn notification_action(app: AppHandle, id: String, action: String) {
+    act(&id, &action, |page| crate::open_settings(&app, page));
+}
+
+/// Open or Dismiss on the notification `id`; `open_settings` shows a page of
+/// Ciel's settings (its own notifications' Open).
+fn act(id: &str, action: &str, open_settings: impl FnOnce(&str)) {
     let target = TARGETS.lock().unwrap().iter().find(|(i, _)| *i == id).map(|(_, t)| t.clone());
     let Some(target) = target else { return };
-    match (target, action.as_str()) {
+    match (target, action) {
         (Target::Bridge { bridge, key }, "open") => tell_bridge(&bridge, json!({"type": "click", "key": key})),
         (Target::Bridge { bridge, key }, "dismiss") => tell_bridge(&bridge, json!({"type": "close", "key": key})),
         (Target::Url(url), "open") => crate::platform::open_url(&url),
+        (Target::Settings(page), "open") => open_settings(&page),
         // D-Bus, X11 and a launch: off the UI thread.
         #[cfg(target_os = "linux")]
         (Target::App { entry, pid, shell }, action) => {
@@ -654,12 +663,21 @@ mod tests {
         let next = |rx: &mut mpsc::UnboundedReceiver<String>| serde_json::from_str::<Value>(rx.try_recv().unwrap().trim()).unwrap();
         assert_eq!(next(&mut rx), json!({"type": "status", "ciel": true}));
         TARGETS.lock().unwrap().push_back(("chrome-x".into(), Target::Bridge { bridge: "test-bridge".into(), key: "7:t".into() }));
-        notification_action("chrome-x".into(), "open".into());
+        act("chrome-x", "open", |_| panic!("not a settings page"));
         assert_eq!(next(&mut rx), json!({"type": "click", "key": "7:t"}));
-        notification_action("chrome-x".into(), "dismiss".into());
+        act("chrome-x", "dismiss", |_| {});
         assert_eq!(next(&mut rx), json!({"type": "close", "key": "7:t"}));
         forget("test-bridge");
-        notification_action("chrome-x".into(), "open".into());
+        act("chrome-x", "open", |_| {});
         assert!(rx.try_recv().is_err(), "a bridge gone hears nothing");
+    }
+
+    #[test]
+    fn a_new_ciel_opens_settings_and_is_only_dismissed_otherwise() {
+        TARGETS.lock().unwrap().push_back(("ciel-x".into(), Target::Settings("general".into())));
+        let mut opened = None;
+        act("ciel-x", "open", |page| opened = Some(page.to_string()));
+        assert_eq!(opened.as_deref(), Some("general"));
+        act("ciel-x", "dismiss", |_| panic!("a dismissal opens nothing"));
     }
 }

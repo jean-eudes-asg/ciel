@@ -72,6 +72,8 @@ runs the real island in demo mode, under a sky that follows his mood. In the app
   Chrome, Edge or Brave notify (WhatsApp, Calendar, Slack…) through the Ciel for
   Chrome extension, instead of the browser's popups.
 - **Wallpapers and lock screen** drawn by Ciel (below).
+- **Updates from the app** on Windows and with the AppImage: signed, opt-in,
+  installed only when you click.
 - Weekly recap, global shortcuts, Ciel on your desktop, 10 languages.
 
 ## Wallpapers and lock screen
