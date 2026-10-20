@@ -2,19 +2,6 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
-
-### Added
-- GNOME: **Hide GNOME's top bar** (Settings → General), so the island has the
-  top of the screen; the bar still shows in the Activities overview. Done by
-  Ciel's GNOME Shell extension: no other extension needed. The extension is
-  updated, so install it again from Integrations → Notifications.
-
-### Fixed
-- Linux on GNOME: with Desktop apps on, quitting Ciel gives GNOME its
-  notification banners back (Ciel turns them off again when it starts), so
-  notifications still show while Ciel is closed.
-
 ## [0.2.5] - 2026-10-20
 
 ### Added
@@ -31,6 +18,9 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   notifications do, through a small Ciel extension for GNOME Shell (Settings →
   Integrations → Notifications → Open in the app; Ciel shows what it writes
   first). Dismiss takes GNOME's copy away too.
+- GNOME: **Hide GNOME's top bar** (Settings → General), so the island has the
+  top of the screen; the bar still shows in the Activities overview. Done by
+  Ciel's GNOME Shell extension: no other extension needed.
 
 ### Fixed
 - Linux: Discord's notifications, and other apps' that address GNOME's
@@ -38,6 +28,9 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 - Linux: Open no longer starts a second copy of the app (Discord's showed an
   error, Chrome opened a new window): without the extension, the app's own
   window comes forward.
+- Linux on GNOME: with Desktop apps on, quitting Ciel gives GNOME its
+  notification banners back (Ciel turns them off again when it starts), so
+  notifications still show while Ciel is closed.
 
 ## [0.2.4] - 2026-10-20
 
