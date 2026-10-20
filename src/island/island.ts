@@ -64,6 +64,8 @@ export class Island {
   private flowStrip!: FlowStrip;
   private notes!: NotificationCard;
   private countdown!: HTMLElement;
+  private clock!: HTMLElement;
+  private clockTimer = 0;
   private wakeStrip!: HTMLElement;
 
   private header!: ViewHost;
@@ -267,6 +269,7 @@ export class Island {
       },
     );
     this.countdown = h("div", { id: "countdown" });
+    this.clock = h("div", { id: "island-clock" });
 
     this.header = buildHeader(actions);
     this.views = buildViews(actions, () => this.animateGeometry(false));
@@ -300,6 +303,7 @@ export class Island {
       this.botGlow,
       this.botCanvas,
       this.miniGrid,
+      this.clock,
       this.planRings.el,
       this.planRings.pop,
       this.flowStrip.el,
@@ -1165,6 +1169,10 @@ export class Island {
       }
     }
 
+    // Open, it sits in the header row, between the tabs and the buttons.
+    this.clock.classList.toggle("open", expanded);
+    this.syncClock((State.mode === "compact" && !busy) || (live && State.view !== "confused"));
+
     // Plan usage rings: beside the mini grid, or at the end when it is empty.
     this.planRings.sync();
     if (busy) this.planRings.el.classList.remove("on");
@@ -1172,6 +1180,16 @@ export class Island {
 
     syncMiniBotStates(State.tasks);
     this.engine.setState(State.effectiveState);
+  }
+
+  /** The time in the middle of the island, redrawn on the minute while it shows. */
+  private syncClock(on: boolean) {
+    this.clock.style.opacity = on ? "1" : "0";
+    window.clearTimeout(this.clockTimer);
+    if (!on) return;
+    const now = new Date();
+    this.clock.textContent = now.toLocaleTimeString(document.documentElement.lang || undefined, { hour: "2-digit", minute: "2-digit" });
+    this.clockTimer = window.setTimeout(() => this.syncClock(true), 60_000 - (now.getTime() % 60_000));
   }
 
   /** Dictation or a notification in the folded island: it shows them, and stays while they do. */

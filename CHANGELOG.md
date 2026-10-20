@@ -2,6 +2,12 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- The time, in the middle of the island, folded or open. Handy where the
+  desktop's own clock is hidden.
+
 ## [0.2.3] - 2026-10-19
 
 ### Fixed

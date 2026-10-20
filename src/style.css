@@ -163,6 +163,25 @@ body {
   width: 0;
 }
 
+/* The time, in the middle of the island. */
+#island-clock {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 600 12px/32px var(--font);
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.25s ease-in-out;
+}
+
+/* Open, centred on the header row (#content's 8px inset + 34px header). */
+#island-clock.open {
+  top: 9px;
+}
+
 /* Compact 2×2 mini grid, to the right of the notch. */
 #mini-grid {
   position: absolute;
