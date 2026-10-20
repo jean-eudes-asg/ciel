@@ -63,7 +63,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCMjI2MTQ2QjNFODg5MUQKUldRZGllaXpSbUVpbThnSitDdy9rZW1JTjMydGRNRUtTaHBZOWFNNW93b1hxUDlUL0FWeTgrcXUK",
       "endpoints": ["https://github.com/jean-eudes-asg/ciel/releases/latest/download/latest.json"],
       "windows": { "installMode": "passive" }
     }
