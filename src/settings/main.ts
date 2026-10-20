@@ -1070,6 +1070,7 @@ function generalSection(): HTMLElement {
       h("label", { text: t("Island lives on") }),
       screen,
     ),
+    gnomePanelRows(),
     h("div", { class: "row" },
       h("label", { text: t("Launch at startup") }),
       toggle(settings.autostart, (v) => { settings.autostart = v; void save(); }),
@@ -1078,6 +1079,28 @@ function generalSection(): HTMLElement {
     languageRow(),
     ...demoRows(),
   );
+}
+
+/** GNOME: the top bar hidden by Ciel's extension (src-tauri/src/gnome_ext.rs), the island at the very top. */
+function gnomePanelRows(): HTMLElement {
+  const box = h("div", { style: "display:contents" });
+  void Bridge.gnomeExtensionStatus().then((ext) => {
+    if (!ext?.available) return;
+    const ready = ext.installed && ext.active;
+    box.append(
+      h("div", { class: "row" },
+        h("label", { text: t("Hide GNOME's top bar") }),
+        toggle(settings.hideGnomePanel, (v) => { settings.hideGnomePanel = v; void save(); }),
+      ),
+      h("div", {
+        class: "hint",
+        text: ready
+          ? t("The island takes the top of the screen; the bar still shows in the Activities overview.")
+          : t("Needs Ciel's extension for GNOME Shell: Integrations → Notifications → Open in the app."),
+      }),
+    );
+  });
+  return box;
 }
 
 /**

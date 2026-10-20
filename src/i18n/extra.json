@@ -5695,6 +5695,39 @@
    "pt-BR": "Fechar auto · nunca",
    "ru": "Автозакрытие · никогда",
    "id": "Tutup otomatis · tidak pernah"
+  },
+  "Hide GNOME's top bar": {
+   "zh-Hans": "隐藏 GNOME 顶栏",
+   "hi": "GNOME की ऊपरी पट्टी छिपाएँ",
+   "es": "Ocultar la barra superior de GNOME",
+   "ar": "إخفاء الشريط العلوي لـ GNOME",
+   "fr": "Masquer la barre supérieure de GNOME",
+   "bn": "GNOME-এর উপরের বার লুকান",
+   "pt-BR": "Ocultar a barra superior do GNOME",
+   "ru": "Скрыть верхнюю панель GNOME",
+   "id": "Sembunyikan bilah atas GNOME"
+  },
+  "The island takes the top of the screen; the bar still shows in the Activities overview.": {
+   "zh-Hans": "岛占据屏幕顶部；顶栏仍会在“活动”概览中显示。",
+   "hi": "आइलैंड स्क्रीन का ऊपरी हिस्सा ले लेता है; पट्टी Activities ओवरव्यू में फिर भी दिखती है।",
+   "es": "La isla ocupa la parte superior de la pantalla; la barra sigue apareciendo en la vista de Actividades.",
+   "ar": "يأخذ الشريط أعلى الشاشة؛ ويظل الشريط العلوي ظاهرًا في نظرة الأنشطة العامة.",
+   "fr": "L'île prend le haut de l'écran ; la barre s'affiche toujours dans la vue d'ensemble des Activités.",
+   "bn": "আইল্যান্ড স্ক্রিনের উপরটা নেয়; বারটি তবুও Activities ওভারভিউতে দেখা যায়।",
+   "pt-BR": "A ilha fica com o topo da tela; a barra ainda aparece na visão geral de Atividades.",
+   "ru": "Остров занимает верх экрана; панель по-прежнему видна в обзоре «Действия».",
+   "id": "Pulau menempati bagian atas layar; bilah tetap muncul di ikhtisar Aktivitas."
+  },
+  "Needs Ciel's extension for GNOME Shell: Integrations → Notifications → Open in the app.": {
+   "zh-Hans": "需要 Ciel 的 GNOME Shell 扩展：集成 → 通知 → 在应用中打开。",
+   "hi": "GNOME Shell के लिए Ciel का एक्सटेंशन चाहिए: एकीकरण → सूचनाएँ → ऐप में खोलें।",
+   "es": "Necesita la extensión de Ciel para GNOME Shell: Integraciones → Notificaciones → Abrir en la app.",
+   "ar": "يحتاج إلى إضافة Ciel لـ GNOME Shell: التكاملات ← الإشعارات ← الفتح في التطبيق.",
+   "fr": "Nécessite l'extension Ciel pour GNOME Shell : Intégrations → Notifications → Ouvrir dans l'application.",
+   "bn": "GNOME Shell-এর জন্য Ciel-এর এক্সটেনশন লাগবে: ইন্টিগ্রেশন → বিজ্ঞপ্তি → অ্যাপে খুলুন।",
+   "pt-BR": "Precisa da extensão do Ciel para o GNOME Shell: Integrações → Notificações → Abrir no app.",
+   "ru": "Нужно расширение Ciel для GNOME Shell: Интеграции → Уведомления → Открывать в приложении.",
+   "id": "Memerlukan ekstensi Ciel untuk GNOME Shell: Integrasi → Notifikasi → Buka di aplikasi."
   }
  }
 }

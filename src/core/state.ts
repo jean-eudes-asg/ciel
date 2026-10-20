@@ -129,6 +129,8 @@ export interface Settings {
   notificationSeconds: number;
   /** Linux: the other apps' notifications show in the island too. */
   desktopNotifications: boolean;
+  /** GNOME: Ciel's extension hides the top bar, the island has the top. */
+  hideGnomePanel: boolean;
   /** Who the chat talks to (see core/providers.ts); picked in the chat view. */
   chatProvider: ProviderId;
   /** The model picked for each provider other than Anthropic, by provider id. */
@@ -193,6 +195,7 @@ export const DEFAULT_SETTINGS: Settings = {
   showCodexPlanInNotch: false,
   notificationSeconds: 7,
   desktopNotifications: false,
+  hideGnomePanel: false,
   chatProvider: "anthropic",
   chatModels: {},
   ollamaUrl: "",
