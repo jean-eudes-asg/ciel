@@ -10,7 +10,7 @@ import { number, segmented, shortCount } from "../ui";
 
 type Period = "week" | "month" | "all";
 
-function duration(minutes: number): string {
+export function duration(minutes: number): string {
   const m = Math.round(minutes);
   if (m >= 60) return t("{0} h {1}", { 0: Math.floor(m / 60), 1: String(m % 60).padStart(2, "0") });
   return t("{0} min", { 0: m });

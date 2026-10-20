@@ -142,20 +142,9 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
             notify::desktop::quiet_desktop(settings.desktop_notifications);
         }
         if panel_changed {
-            // The bar goes or comes back, then the island moves to the top or under it,
-            // once GNOME has given the windows their new room.
-            let (app, hidden, screen) = (app.clone(), settings.hide_gnome_panel, settings.screen.clone());
-            std::thread::spawn(move || {
-                if !gnome_ext::set_panel(hidden) {
-                    return;
-                }
-                std::thread::sleep(std::time::Duration::from_millis(400));
-                let handle = app.clone();
-                let _ = app.run_on_main_thread(move || {
-                    let collapsed = handle.state::<Shared>().gate.collapsed.load(Ordering::Relaxed);
-                    island::apply_geometry(&handle, &screen, collapsed);
-                });
-            });
+            // The bar goes or comes back; the island follows the work area (watch_workarea).
+            let hidden = settings.hide_gnome_panel;
+            std::thread::spawn(move || gnome_ext::set_panel(hidden));
         }
     }
     #[cfg(not(target_os = "linux"))]
@@ -962,6 +951,20 @@ pub fn run() {
                 webview_drop::install(&handle);
                 island::apply_geometry(&handle, &loaded.screen, false);
                 let _ = win.show();
+            }
+            // A panel coming or going moves the top of the screen: the island follows.
+            #[cfg(target_os = "linux")]
+            if !platform::is_layer_surface() {
+                let app = handle.clone();
+                platform::watch_workarea(move || {
+                    let handle = app.clone();
+                    let _ = app.run_on_main_thread(move || {
+                        let shared = handle.state::<Shared>();
+                        let pref = shared.settings.lock().unwrap().screen.clone();
+                        let collapsed = shared.gate.collapsed.load(Ordering::Relaxed);
+                        island::apply_geometry(&handle, &pref, collapsed);
+                    });
+                });
             }
             gate.collapsed.store(false, Ordering::Relaxed);
             // Nothing drawn yet, so nothing takes the mouse until the page

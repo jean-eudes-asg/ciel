@@ -10,6 +10,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   "Install and restart" only: Windows' installer, or the AppImage replacing
   itself. A .deb or .rpm is told, and gets the release page. Updates are
   signed, and Ciel refuses one whose signature doesn't match.
+- **Home**, the page the Ciel window opens on: your sky right now, the real
+  one with the sun and the moon where they are for you, and Ciel floating in
+  it, with the greeting of the hour, what the sky does next and a line from
+  sunrise to sunset. Under it, your day: words dictated today, time saved,
+  the streak, the last dictations and the to-dos your calls left.
 
 ## [0.2.6] - 2026-10-20
 
@@ -34,6 +39,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 - **The notifications list holds them all**: the island grows with it, up
   to three quarters of the screen, and only scrolls beyond; it gives the room
   back as they are opened or dismissed.
+
+### Fixed
+- Linux on X11: the island no longer stays down where GNOME's top bar was
+  after the bar came back for a moment (the lock screen, GNOME starting the
+  extension): it follows the top of the screen as it moves.
 
 ## [0.2.5] - 2026-10-20
 
