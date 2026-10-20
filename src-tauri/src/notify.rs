@@ -38,6 +38,29 @@ pub struct Notification {
     /// Unix ms.
     pub at: f64,
     pub tag: Option<String>,
+    /// The card's own buttons in place of Open (a meeting's Take notes and
+    /// Join): the id of the one pressed comes back as the action.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub buttons: Vec<Button>,
+    /// Unix ms: the card stays in the island until then (a meeting's start),
+    /// whatever the setting says.
+    pub until: Option<f64>,
+    /// A meeting's start and end, which the island writes in its language.
+    pub time: Option<Span>,
+}
+
+/// A button of a notification's card.
+#[derive(Serialize, Clone, Debug, PartialEq)]
+pub struct Button {
+    pub id: String,
+    pub label: String,
+}
+
+/// From, to: Unix ms.
+#[derive(Serialize, Clone, Copy, Debug, PartialEq)]
+pub struct Span {
+    pub start: f64,
+    pub end: f64,
 }
 
 /// What Open does for one notification.
@@ -49,6 +72,9 @@ pub enum Target {
     Url(String),
     /// A page of Ciel's settings (a new version of Ciel: General).
     Settings(String),
+    /// A meeting of the calendar (calendar/mod.rs): Join (and Open) go to its
+    /// video room, Take notes starts the Notetaker on it.
+    Meeting { join: Option<String>, meeting: crate::notes::Meeting },
     /// The app that notified: its desktop entry id, the process that sent it
     /// (whose window comes forward), and GNOME's own copy of it once known.
     #[cfg(target_os = "linux")]
@@ -151,19 +177,33 @@ pub fn from_bridge(payload: &Value) -> Option<(Notification, Target)> {
         icon,
         at: now_ms(),
         tag,
+        buttons: Vec::new(),
+        until: None,
+        time: None,
     };
     Some((notification, Target::Bridge { bridge, key: clip(key, 300) }))
 }
 
-/// The island's Open or Dismiss.
+/// The island's Open or Dismiss, or one of the card's own buttons.
 #[tauri::command]
 pub fn notification_action(app: AppHandle, id: String, action: String) {
-    act(&id, &action, |page| crate::open_settings(&app, page));
+    act(
+        &id,
+        &action,
+        |page| crate::open_settings(&app, page),
+        |meeting| {
+            // The microphone and the computer's sound take a moment to open:
+            // not on the window's thread.
+            let app = app.clone();
+            std::thread::spawn(move || crate::notes::start_meeting(&app, meeting));
+        },
+    );
 }
 
-/// Open or Dismiss on the notification `id`; `open_settings` shows a page of
-/// Ciel's settings (its own notifications' Open).
-fn act(id: &str, action: &str, open_settings: impl FnOnce(&str)) {
+/// Open, Dismiss or a button on the notification `id`; `open_settings` shows
+/// a page of Ciel's settings (its own notifications' Open), `take_notes`
+/// starts the Notetaker on a meeting.
+fn act(id: &str, action: &str, open_settings: impl FnOnce(&str), take_notes: impl FnOnce(crate::notes::Meeting)) {
     let target = TARGETS.lock().unwrap().iter().find(|(i, _)| *i == id).map(|(_, t)| t.clone());
     let Some(target) = target else { return };
     match (target, action) {
@@ -171,6 +211,8 @@ fn act(id: &str, action: &str, open_settings: impl FnOnce(&str)) {
         (Target::Bridge { bridge, key }, "dismiss") => tell_bridge(&bridge, json!({"type": "close", "key": key})),
         (Target::Url(url), "open") => crate::platform::open_url(&url),
         (Target::Settings(page), "open") => open_settings(&page),
+        (Target::Meeting { join: Some(url), .. }, "join" | "open") => crate::platform::open_url(&url),
+        (Target::Meeting { meeting, .. }, "notes") => take_notes(meeting),
         // D-Bus, X11 and a launch: off the UI thread.
         #[cfg(target_os = "linux")]
         (Target::App { entry, pid, shell }, action) => {
@@ -407,6 +449,9 @@ pub mod desktop {
             icon: None,
             at: now_ms(),
             tag: None,
+            buttons: Vec::new(),
+            until: None,
+            time: None,
         };
         Some((notification, Target::App { entry: id, pid: None, shell }, icons))
     }
@@ -663,12 +708,12 @@ mod tests {
         let next = |rx: &mut mpsc::UnboundedReceiver<String>| serde_json::from_str::<Value>(rx.try_recv().unwrap().trim()).unwrap();
         assert_eq!(next(&mut rx), json!({"type": "status", "ciel": true}));
         TARGETS.lock().unwrap().push_back(("chrome-x".into(), Target::Bridge { bridge: "test-bridge".into(), key: "7:t".into() }));
-        act("chrome-x", "open", |_| panic!("not a settings page"));
+        act("chrome-x", "open", |_| panic!("not a settings page"), |_| panic!("not a meeting"));
         assert_eq!(next(&mut rx), json!({"type": "click", "key": "7:t"}));
-        act("chrome-x", "dismiss", |_| {});
+        act("chrome-x", "dismiss", |_| {}, |_| {});
         assert_eq!(next(&mut rx), json!({"type": "close", "key": "7:t"}));
         forget("test-bridge");
-        act("chrome-x", "open", |_| {});
+        act("chrome-x", "open", |_| {}, |_| {});
         assert!(rx.try_recv().is_err(), "a bridge gone hears nothing");
     }
 
@@ -676,8 +721,20 @@ mod tests {
     fn a_new_ciel_opens_settings_and_is_only_dismissed_otherwise() {
         TARGETS.lock().unwrap().push_back(("ciel-x".into(), Target::Settings("general".into())));
         let mut opened = None;
-        act("ciel-x", "open", |page| opened = Some(page.to_string()));
+        act("ciel-x", "open", |page| opened = Some(page.to_string()), |_| {});
         assert_eq!(opened.as_deref(), Some("general"));
-        act("ciel-x", "dismiss", |_| panic!("a dismissal opens nothing"));
+        act("ciel-x", "dismiss", |_| panic!("a dismissal opens nothing"), |_| {});
+    }
+
+    #[test]
+    fn a_meetings_take_notes_hands_the_meeting_to_the_notetaker() {
+        let meeting = crate::notes::Meeting { title: "Q4".into(), attendees: vec!["Ana".into()], agenda: None };
+        TARGETS.lock().unwrap().push_back(("calendar-x".into(), Target::Meeting { join: None, meeting: meeting.clone() }));
+        let mut taken = None;
+        act("calendar-x", "notes", |_| panic!("no settings"), |m| taken = Some(m));
+        assert_eq!(taken, Some(meeting));
+        // Without a room to join, Join and Open do nothing.
+        act("calendar-x", "join", |_| panic!("no settings"), |_| panic!("not notes"));
+        act("calendar-x", "dismiss", |_| panic!("no settings"), |_| panic!("not notes"));
     }
 }

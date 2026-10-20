@@ -145,6 +145,10 @@ export const PILL_CATALOG: readonly PillDefinition[] = [
   // dashboard if they have one (src-tauri/src/finance.rs). Not on the Mac.
   { id: "integration_finance", name: "Finance", color: "#10B981", category: "service",
     subtitle: N_("Spending"), source: "n8n", support: "yes", connect: none },
+  // The meetings of the user's calendars, from their secret iCal links, and
+  // a card before each one (src-tauri/src/calendar/). Not on the Mac.
+  { id: "integration_calendar", name: "Calendar", color: "#F472B6", category: "service",
+    subtitle: N_("Meetings"), source: "n8n", support: "yes", connect: key("calendar-ics-1") },
 ];
 
 /** The always-on pill unless the user picks another workspace tool. */

@@ -662,6 +662,7 @@ dependencies = [
  "arboard",
  "async-imap",
  "base64 0.22.1",
+ "chrono",
  "cpal",
  "dbus",
  "encoding_rs",

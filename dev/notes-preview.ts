@@ -29,6 +29,11 @@ const CASES: [string, Record<string, unknown>[]][] = [
     n("b2", { source: "gmail", app: "Gmail", title: "Stripe", body: "Your weekly summary" }),
     n("b3", { source: "gmail", app: "Gmail", title: "Léa Martin", body: "Re: the website — love the new sky!" }),
   ]],
+  ["A meeting from the Calendar pill: Take notes, Join", [n("m", {
+    source: "ciel", app: "Calendar", title: "Q4 budget review", body: "Marie Dupont, Paul Martin +2",
+    buttons: [{ id: "notes", label: "Take notes" }, { id: "join", label: "Join" }],
+    until: Date.now() + 10 * 60_000, time: { start: Date.now() + 5 * 60_000, end: Date.now() + 35 * 60_000 },
+  })]],
   ["A site without an icon", [n("c", { app: "calendar.google.com", title: "Stand-up in 5 minutes", body: "Google Meet · 10:30 – 10:45" })]],
 ];
 

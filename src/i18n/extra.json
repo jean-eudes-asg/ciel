@@ -6245,6 +6245,237 @@
    "pt-BR": "24 horas",
    "ru": "24-часовой",
    "id": "24 jam"
+  },
+  "Meetings": {
+   "zh-Hans": "会议",
+   "hi": "मीटिंग",
+   "es": "Reuniones",
+   "ar": "الاجتماعات",
+   "fr": "Réunions",
+   "bn": "মিটিং",
+   "pt-BR": "Reuniões",
+   "ru": "Встречи",
+   "id": "Rapat"
+  },
+  "Join": {
+   "zh-Hans": "加入",
+   "hi": "जुड़ें",
+   "es": "Unirse",
+   "ar": "انضمام",
+   "fr": "Rejoindre",
+   "bn": "যোগ দিন",
+   "pt-BR": "Entrar",
+   "ru": "Войти",
+   "id": "Gabung"
+  },
+  "Take notes": {
+   "zh-Hans": "记笔记",
+   "hi": "नोट्स लें",
+   "es": "Tomar notas",
+   "ar": "تدوين الملاحظات",
+   "fr": "Prendre des notes",
+   "bn": "নোট নিন",
+   "pt-BR": "Fazer anotações",
+   "ru": "Записать",
+   "id": "Catat"
+  },
+  "Now": {
+   "zh-Hans": "进行中",
+   "hi": "अभी",
+   "es": "Ahora",
+   "ar": "الآن",
+   "fr": "En cours",
+   "bn": "এখন",
+   "pt-BR": "Agora",
+   "ru": "Сейчас",
+   "id": "Sekarang"
+  },
+  "All day": {
+   "zh-Hans": "全天",
+   "hi": "पूरे दिन",
+   "es": "Todo el día",
+   "ar": "طوال اليوم",
+   "fr": "Toute la journée",
+   "bn": "সারাদিন",
+   "pt-BR": "Dia inteiro",
+   "ru": "Весь день",
+   "id": "Sepanjang hari"
+  },
+  "No meetings coming up": {
+   "zh-Hans": "近期没有会议",
+   "hi": "आगे कोई मीटिंग नहीं",
+   "es": "No hay reuniones próximas",
+   "ar": "لا اجتماعات قادمة",
+   "fr": "Aucune réunion à venir",
+   "bn": "সামনে কোনো মিটিং নেই",
+   "pt-BR": "Nenhuma reunião por vir",
+   "ru": "Встреч не предвидится",
+   "id": "Tidak ada rapat mendatang"
+  },
+  "No calendar link yet": {
+   "zh-Hans": "尚无日历链接",
+   "hi": "अभी कोई कैलेंडर लिंक नहीं",
+   "es": "Aún no hay enlace de calendario",
+   "ar": "لا يوجد رابط تقويم بعد",
+   "fr": "Pas encore de lien d'agenda",
+   "bn": "এখনো কোনো ক্যালেন্ডার লিংক নেই",
+   "pt-BR": "Nenhum link de agenda ainda",
+   "ru": "Ссылки на календарь пока нет",
+   "id": "Belum ada tautan kalender"
+  },
+  "Calendar {n}: {error}": {
+   "zh-Hans": "日历 {n}：{error}",
+   "hi": "कैलेंडर {n}: {error}",
+   "es": "Calendario {n}: {error}",
+   "ar": "التقويم {n}: {error}",
+   "fr": "Agenda {n} : {error}",
+   "bn": "ক্যালেন্ডার {n}: {error}",
+   "pt-BR": "Agenda {n}: {error}",
+   "ru": "Календарь {n}: {error}",
+   "id": "Kalender {n}: {error}"
+  },
+  "Calendar link": {
+   "zh-Hans": "日历链接",
+   "hi": "कैलेंडर लिंक",
+   "es": "Enlace del calendario",
+   "ar": "رابط التقويم",
+   "fr": "Lien de l'agenda",
+   "bn": "ক্যালেন্ডার লিংক",
+   "pt-BR": "Link da agenda",
+   "ru": "Ссылка на календарь",
+   "id": "Tautan kalender"
+  },
+  "Another calendar": {
+   "zh-Hans": "另一个日历",
+   "hi": "दूसरा कैलेंडर",
+   "es": "Otro calendario",
+   "ar": "تقويم آخر",
+   "fr": "Un autre agenda",
+   "bn": "আরেকটি ক্যালেন্ডার",
+   "pt-BR": "Outra agenda",
+   "ru": "Другой календарь",
+   "id": "Kalender lain"
+  },
+  "A calendar's secret iCal link. Google Calendar: Settings → your calendar → Integrate calendar → Secret address in iCal format. Outlook: Settings → Calendar → Shared calendars → Publish a calendar, with Can view all details. iCloud: share the calendar as a public calendar. The link is as secret as a password: it stays in the keychain.": {
+   "zh-Hans": "日历的 iCal 私密链接。Google 日历：设置 → 你的日历 → 集成日历 → iCal 格式的私密地址。Outlook：设置 → 日历 → 共享日历 → 发布日历，选择“可以查看所有详细信息”。iCloud：将日历共享为公开日历。这个链接和密码一样需要保密：它保存在钥匙串中。",
+   "hi": "कैलेंडर का सीक्रेट iCal लिंक। Google Calendar: सेटिंग्स → आपका कैलेंडर → कैलेंडर इंटिग्रेट करें → iCal फ़ॉर्मैट में सीक्रेट पता। Outlook: सेटिंग्स → कैलेंडर → साझा कैलेंडर → कैलेंडर प्रकाशित करें, \"सभी विवरण देख सकते हैं\" के साथ। iCloud: कैलेंडर को सार्वजनिक कैलेंडर के रूप में शेयर करें। यह लिंक पासवर्ड जितना गोपनीय है: यह कीचेन में रहता है।",
+   "es": "El enlace iCal secreto de un calendario. Google Calendar: Configuración → tu calendario → Integrar el calendario → Dirección secreta en formato iCal. Outlook: Configuración → Calendario → Calendarios compartidos → Publicar un calendario, con Puede ver todos los detalles. iCloud: comparte el calendario como calendario público. El enlace es tan secreto como una contraseña: se queda en el llavero.",
+   "ar": "رابط iCal السري للتقويم. تقويم Google: الإعدادات ← تقويمك ← دمج التقويم ← العنوان السري بتنسيق iCal. Outlook: الإعدادات ← التقويم ← التقويمات المشتركة ← نشر تقويم، مع «يمكنه عرض كافة التفاصيل». iCloud: شارك التقويم كتقويم عام. الرابط سري مثل كلمة المرور: يبقى في سلسلة المفاتيح.",
+   "fr": "Le lien iCal secret d'un agenda. Google Agenda : Paramètres → ton agenda → Intégrer l'agenda → Adresse secrète au format iCal. Outlook : Paramètres → Calendrier → Calendriers partagés → Publier un calendrier, avec Peut afficher tous les détails. iCloud : partage le calendrier en calendrier public. Le lien est aussi secret qu'un mot de passe : il reste dans le trousseau.",
+   "bn": "ক্যালেন্ডারের গোপন iCal লিংক। Google Calendar: সেটিংস → আপনার ক্যালেন্ডার → ক্যালেন্ডার ইন্টিগ্রেট করুন → iCal ফর্ম্যাটে গোপন ঠিকানা। Outlook: সেটিংস → ক্যালেন্ডার → শেয়ার করা ক্যালেন্ডার → একটি ক্যালেন্ডার প্রকাশ করুন, \"সব বিবরণ দেখতে পারেন\" সহ। iCloud: ক্যালেন্ডারটি পাবলিক ক্যালেন্ডার হিসেবে শেয়ার করুন। লিংকটি পাসওয়ার্ডের মতোই গোপন: এটি কীচেইনে থাকে।",
+   "pt-BR": "O link iCal secreto de uma agenda. Google Agenda: Configurações → sua agenda → Integrar agenda → Endereço secreto no formato iCal. Outlook: Configurações → Calendário → Calendários compartilhados → Publicar um calendário, com Pode exibir todos os detalhes. iCloud: compartilhe o calendário como calendário público. O link é tão secreto quanto uma senha: ele fica no chaveiro.",
+   "ru": "Секретная ссылка iCal на календарь. Google Календарь: Настройки → ваш календарь → Интеграция календаря → Закрытый адрес в формате iCal. Outlook: Параметры → Календарь → Общие календари → Опубликовать календарь, с правом «Может просматривать все сведения». iCloud: откройте календарь как общедоступный. Ссылка секретна, как пароль: она хранится в связке ключей.",
+   "id": "Tautan iCal rahasia sebuah kalender. Google Kalender: Setelan → kalender Anda → Integrasikan kalender → Alamat rahasia dalam format iCal. Outlook: Pengaturan → Kalender → Kalender bersama → Terbitkan kalender, dengan Dapat melihat semua detail. iCloud: bagikan kalender sebagai kalender publik. Tautan ini serahasia kata sandi: disimpan di keychain."
+  },
+  "{n} min before": {
+   "zh-Hans": "提前 {n} 分钟",
+   "hi": "{n} मिनट पहले",
+   "es": "{n} min antes",
+   "ar": "قبل {n} دقيقة",
+   "fr": "{n} min avant",
+   "bn": "{n} মিনিট আগে",
+   "pt-BR": "{n} min antes",
+   "ru": "За {n} мин",
+   "id": "{n} menit sebelumnya"
+  },
+  "Meeting card": {
+   "zh-Hans": "会议卡片",
+   "hi": "मीटिंग कार्ड",
+   "es": "Tarjeta de reunión",
+   "ar": "بطاقة الاجتماع",
+   "fr": "Carte de réunion",
+   "bn": "মিটিং কার্ড",
+   "pt-BR": "Cartão da reunião",
+   "ru": "Карточка встречи",
+   "id": "Kartu rapat"
+  },
+  "Before each meeting, a card in the island: Join opens its Meet, Teams or Zoom room, Take notes starts the Notetaker with the meeting's title and who is invited.": {
+   "zh-Hans": "每次会议前，岛中会出现一张卡片：“加入”打开会议的 Meet、Teams 或 Zoom 会议室，“记笔记”启动会议笔记，并带上会议标题和受邀者。",
+   "hi": "हर मीटिंग से पहले, आइलैंड में एक कार्ड: \"जुड़ें\" उसका Meet, Teams या Zoom रूम खोलता है, \"नोट्स लें\" मीटिंग के शीर्षक और आमंत्रित लोगों के साथ नोटटेकर शुरू करता है।",
+   "es": "Antes de cada reunión, una tarjeta en la isla: Unirse abre su sala de Meet, Teams o Zoom, Tomar notas inicia el Notetaker con el título de la reunión y los invitados.",
+   "ar": "قبل كل اجتماع، بطاقة في الشريط: «انضمام» يفتح غرفة Meet أو Teams أو Zoom الخاصة به، و«تدوين الملاحظات» يشغّل Notetaker مع عنوان الاجتماع والمدعوين.",
+   "fr": "Avant chaque réunion, une carte dans l'île : Rejoindre ouvre sa salle Meet, Teams ou Zoom, Prendre des notes lance le Notetaker avec le titre de la réunion et les invités.",
+   "bn": "প্রতিটি মিটিংয়ের আগে, আইল্যান্ডে একটি কার্ড: \"যোগ দিন\" এর Meet, Teams বা Zoom রুম খোলে, \"নোট নিন\" মিটিংয়ের শিরোনাম ও আমন্ত্রিতদের নিয়ে নোটটেকার চালু করে।",
+   "pt-BR": "Antes de cada reunião, um cartão na ilha: Entrar abre a sala do Meet, Teams ou Zoom, Fazer anotações inicia o Notetaker com o título da reunião e os convidados.",
+   "ru": "Перед каждой встречей — карточка в острове: «Войти» открывает её комнату Meet, Teams или Zoom, «Записать» запускает Notetaker с названием встречи и списком приглашённых.",
+   "id": "Sebelum setiap rapat, sebuah kartu di pulau: Gabung membuka ruang Meet, Teams, atau Zoom-nya, Catat memulai Notetaker dengan judul rapat dan siapa yang diundang."
+  },
+  "A calendar link starts with https:// or webcal://": {
+   "zh-Hans": "日历链接以 https:// 或 webcal:// 开头",
+   "hi": "कैलेंडर लिंक https:// या webcal:// से शुरू होता है",
+   "es": "Un enlace de calendario empieza por https:// o webcal://",
+   "ar": "يبدأ رابط التقويم بـ https:// أو webcal://",
+   "fr": "Un lien d'agenda commence par https:// ou webcal://",
+   "bn": "ক্যালেন্ডার লিংক https:// বা webcal:// দিয়ে শুরু হয়",
+   "pt-BR": "Um link de agenda começa com https:// ou webcal://",
+   "ru": "Ссылка на календарь начинается с https:// или webcal://",
+   "id": "Tautan kalender diawali https:// atau webcal://"
+  },
+  "The calendar took too long to answer": {
+   "zh-Hans": "日历响应超时",
+   "hi": "कैलेंडर ने जवाब देने में बहुत देर लगाई",
+   "es": "El calendario tardó demasiado en responder",
+   "ar": "استغرق التقويم وقتًا طويلًا للرد",
+   "fr": "L'agenda a mis trop de temps à répondre",
+   "bn": "ক্যালেন্ডার উত্তর দিতে অনেক সময় নিয়েছে",
+   "pt-BR": "A agenda demorou demais para responder",
+   "ru": "Календарь слишком долго не отвечал",
+   "id": "Kalender terlalu lama menjawab"
+  },
+  "Calendar unreachable": {
+   "zh-Hans": "无法访问日历",
+   "hi": "कैलेंडर तक नहीं पहुँच सके",
+   "es": "Calendario inaccesible",
+   "ar": "تعذّر الوصول إلى التقويم",
+   "fr": "Agenda injoignable",
+   "bn": "ক্যালেন্ডারে পৌঁছানো যাচ্ছে না",
+   "pt-BR": "Agenda inacessível",
+   "ru": "Календарь недоступен",
+   "id": "Kalender tidak dapat dijangkau"
+  },
+  "This calendar link no longer works": {
+   "zh-Hans": "此日历链接已失效",
+   "hi": "यह कैलेंडर लिंक अब काम नहीं करता",
+   "es": "Este enlace de calendario ya no funciona",
+   "ar": "رابط التقويم هذا لم يعد يعمل",
+   "fr": "Ce lien d'agenda ne marche plus",
+   "bn": "এই ক্যালেন্ডার লিংকটি আর কাজ করে না",
+   "pt-BR": "Este link de agenda não funciona mais",
+   "ru": "Эта ссылка на календарь больше не работает",
+   "id": "Tautan kalender ini tidak berfungsi lagi"
+  },
+  "The calendar answered {code}": {
+   "zh-Hans": "日历返回了 {code}",
+   "hi": "कैलेंडर ने {code} लौटाया",
+   "es": "El calendario respondió {code}",
+   "ar": "ردّ التقويم بـ {code}",
+   "fr": "L'agenda a répondu {code}",
+   "bn": "ক্যালেন্ডার {code} উত্তর দিয়েছে",
+   "pt-BR": "A agenda respondeu {code}",
+   "ru": "Календарь ответил {code}",
+   "id": "Kalender menjawab {code}"
+  },
+  "This calendar is too big to read": {
+   "zh-Hans": "此日历太大，无法读取",
+   "hi": "यह कैलेंडर पढ़ने के लिए बहुत बड़ा है",
+   "es": "Este calendario es demasiado grande para leerlo",
+   "ar": "هذا التقويم أكبر من أن يُقرأ",
+   "fr": "Cet agenda est trop gros pour être lu",
+   "bn": "এই ক্যালেন্ডারটি পড়ার জন্য অনেক বড়",
+   "pt-BR": "Esta agenda é grande demais para ser lida",
+   "ru": "Этот календарь слишком велик, чтобы его прочитать",
+   "id": "Kalender ini terlalu besar untuk dibaca"
+  },
+  "This link isn't an iCal calendar": {
+   "zh-Hans": "此链接不是 iCal 日历",
+   "hi": "यह लिंक iCal कैलेंडर नहीं है",
+   "es": "Este enlace no es un calendario iCal",
+   "ar": "هذا الرابط ليس تقويم iCal",
+   "fr": "Ce lien n'est pas un agenda iCal",
+   "bn": "এই লিংকটি কোনো iCal ক্যালেন্ডার নয়",
+   "pt-BR": "Este link não é uma agenda iCal",
+   "ru": "Эта ссылка не ведёт на календарь iCal",
+   "id": "Tautan ini bukan kalender iCal"
   }
  }
 }

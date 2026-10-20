@@ -61,3 +61,29 @@ test("the list grows to hold them all, up to three quarters of the display", asy
   assert.equal(panelHeightFor(160), PANEL_H);
   assert.equal(panelHeightFor(520), 528);
 });
+
+test("a meeting's card brings its own buttons, its time, and stays until the meeting began", async () => {
+  const { showFor, timeSpan } = await import("../src/core/notifications.ts");
+  const meeting = parseNotification(raw({
+    id: "calendar-1", source: "ciel", app: "Calendar", title: "Q4 budget", body: "Ana, Paul +2",
+    buttons: [{ id: "notes", label: "Take notes" }, { id: "join", label: "Join" }, { id: "dismiss", label: "x" }, { label: "no id" }],
+    until: 90_000, time: { start: 60_000, end: 30_000 },
+  }));
+  // Dismiss is the island's own, and a button needs an id.
+  assert.deepEqual(meeting.buttons, [{ id: "notes", label: "Take notes" }, { id: "join", label: "Join" }]);
+  assert.equal(meeting.until, 90_000);
+  // An end before the start is no end.
+  assert.deepEqual(meeting.time, { start: 60_000, end: 60_000 });
+  assert.equal(showFor(meeting, 7, 30_000), 60_000, "until its end, whatever the setting says");
+  assert.equal(showFor(meeting, 7, 89_900), 1000, "a second at least");
+
+  const plain = parseNotification(raw());
+  assert.deepEqual([plain.buttons, plain.until, plain.time], [[], null, null]);
+  assert.equal(showFor(plain, 10), 10_000);
+  assert.equal(showFor(plain, 0), 0, "until opened or dismissed");
+  assert.equal(showFor(plain, "x"), 7000);
+  assert.equal(parseNotification(raw({ time: { start: "soon" } })).time, null);
+
+  const span = timeSpan({ start: Date.UTC(2026, 9, 20, 13), end: Date.UTC(2026, 9, 20, 13, 30) }, "en-GB");
+  assert.match(span, /^\d\d:\d\d – \d\d:\d\d$/);
+});

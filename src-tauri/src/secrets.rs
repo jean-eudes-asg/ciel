@@ -25,6 +25,10 @@ pub const KNOWN_KEYS: &[&str] = &[
     // The Gmail pill (gmail.rs): the address, and an app password.
     "gmail-address",
     "gmail-app-password",
+    // The Calendar pill (calendar/mod.rs): up to three secret iCal links.
+    "calendar-ics-1",
+    "calendar-ics-2",
+    "calendar-ics-3",
 ];
 
 fn entry(key: &str) -> Option<Entry> {

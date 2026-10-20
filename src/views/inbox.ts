@@ -12,7 +12,7 @@ import { h } from "./dom";
 import type { ViewActions, ViewHost } from "./views";
 
 /** Open or dismiss: it leaves the list, and Rust does the rest. */
-export function settle(id: string, action: "open" | "dismiss") {
+export function settle(id: string, action: string) {
   State.notifications = State.notifications.filter((n) => n.id !== id);
   void Bridge.notificationAction(id, action);
   State.notify();

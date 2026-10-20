@@ -361,6 +361,9 @@ async fn look(app: &AppHandle, session: &mut async_imap::Session<Tls>, arrivals:
                 icon: None,
                 at: now_ms(),
                 tag: None,
+                buttons: Vec::new(),
+                until: None,
+                time: None,
             };
             notify::show(app, n, Target::Url(url));
             told += 1;

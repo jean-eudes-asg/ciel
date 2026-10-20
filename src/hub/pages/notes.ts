@@ -153,9 +153,13 @@ export async function notesPage(page: HTMLElement, ctx: HubContext) {
       confirm,
     );
 
-    // The people, renamed with a click.
+    // The people, renamed with a click; a meeting's guests are offered.
     if (note.speakers.length) {
       const people = h("div", { class: "hub-speakers" });
+      const guests = note.meeting?.attendees ?? [];
+      if (guests.length) {
+        people.append(h("datalist", { id: `guests-${note.id}` }, ...guests.map((name) => h("option", { value: name }))));
+      }
       for (const s of note.speakers) {
         const chip = h("button", { class: "hub-speaker", title: t("Who is it?") },
           h("span", { class: "av", style: `background:${speakerColor(s.color)}`, text: s.name.slice(0, 1).toUpperCase() }),
@@ -163,6 +167,7 @@ export async function notesPage(page: HTMLElement, ctx: HubContext) {
         );
         chip.addEventListener("click", () => {
           const input = h("input", { class: "hub-input", placeholder: t("Name"), style: "width:150px" }) as HTMLInputElement;
+          if (guests.length) input.setAttribute("list", `guests-${note.id}`);
           input.value = s.name;
           const done = () => void FlowBridge.renameSpeaker(note.id, s.id, input.value);
           input.addEventListener("keydown", (e) => e.key === "Enter" && done());

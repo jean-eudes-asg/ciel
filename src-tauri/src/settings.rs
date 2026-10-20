@@ -50,6 +50,9 @@ pub struct Settings {
     /// How long a notification shows in the island, in seconds; 0 keeps it
     /// until it is opened or dismissed (Settings → Integrations → Notifications).
     pub notification_seconds: u32,
+    /// How many minutes before a meeting of the Calendar pill its card shows
+    /// in the island (calendar/mod.rs); 0 never.
+    pub meeting_reminder_minutes: u32,
     /// Linux: the other apps' notifications show in the island too (notify.rs).
     pub desktop_notifications: bool,
     /// GNOME: Ciel's extension hides the top bar, the island has the top (gnome_ext.rs).
@@ -236,6 +239,7 @@ impl Default for Settings {
             plan_relay_installed: false,
             show_codex_plan_in_notch: false,
             notification_seconds: 7,
+            meeting_reminder_minutes: 5,
             desktop_notifications: false,
             hide_gnome_panel: false,
             screensaver_minutes: 0,
@@ -528,6 +532,7 @@ mod tests {
   "planRelayInstalled": true,
   "showCodexPlanInNotch": true,
   "notificationSeconds": 20,
+  "meetingReminderMinutes": 10,
   "desktopNotifications": true,
   "hideGnomePanel": true,
   "screensaverMinutes": 10,
@@ -981,6 +986,7 @@ mod tests {
                 "planRelayInstalled",
                 "showCodexPlanInNotch",
                 "notificationSeconds",
+                "meetingReminderMinutes",
                 "desktopNotifications",
                 "hideGnomePanel",
                 "screensaverMinutes",

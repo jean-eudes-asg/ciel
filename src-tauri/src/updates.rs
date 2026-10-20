@@ -166,6 +166,9 @@ fn tell_island(app: &AppHandle, version: &str) {
         icon: None,
         at: now_ms(),
         tag: Some("ciel-update".into()),
+        buttons: Vec::new(),
+        until: None,
+        time: None,
     };
     crate::notify::show(app, n, crate::notify::Target::Settings("general".into()));
 }

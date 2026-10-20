@@ -14,6 +14,18 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   night ends they come back on, with the clock.
 - **Flip clocks** in the island and on Home, and a **Clock** setting for 12 or
   24 hours (Automatic follows the language).
+- **Calendar**, a new pill: your next meetings, from the secret iCal link of
+  up to three calendars (Google Calendar, Outlook, iCloud, Fastmail…),
+  with repeating meetings, time zones and the changes of time handled. No
+  sign-in: the link is kept in the keychain, the meetings only in memory.
+  Settings → Integrations → Calendar.
+- **A card before each meeting**, 5 minutes ahead by default (or 1 to 15,
+  or never): its time and who comes, **Join** for its Meet, Teams, Zoom or
+  Webex room, and **Take notes**. It stays until the meeting has begun.
+- **Notes that know the meeting**: started from the card, the Notetaker
+  names the call after the meeting, its summary is told who was invited
+  and the agenda, and renaming a speaker offers the guests' names.
+- « OK Ciel » can answer what your next meetings are.
 
 ### Fixed
 - Linux on X11: out on the desktop, Ciel's eyes follow the pointer across the

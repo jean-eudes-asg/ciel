@@ -568,6 +568,14 @@ body {
   overflow-wrap: anywhere;
 }
 
+/* A meeting's "14:00 – 14:30" (the Calendar pill's card). */
+.note-time {
+  margin-top: 2px;
+  font: 600 12px/1.4 var(--font);
+  font-variant-numeric: tabular-nums;
+  color: #f9a8d4;
+}
+
 .note-body {
   margin-top: 3px;
   display: -webkit-box;
@@ -2486,6 +2494,23 @@ input[type="range"]::-webkit-slider-thumb {
   font: 500 10px var(--mono);
   color: #c9956a;
   flex: 0 0 auto;
+}
+
+/* The Calendar card's Join, on the meeting under way or about to begin. */
+.int-join {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 1px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #f472b6;
+  color: #000;
+  font: 600 10px var(--font);
+  cursor: pointer;
+}
+
+.int-join:hover {
+  background: #f9a8d4;
 }
 
 .int-more,

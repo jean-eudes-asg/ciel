@@ -238,9 +238,30 @@ pub struct Summary {
 
 pub const SUMMARY_INSTRUCTIONS: &str = "You write the notes of a meeting from its transcript. Each line is \"Name: words\".\n\
 Write in the language of the transcript. Invent nothing that was not said.\n\
+A <meeting> block, when there is one, comes from the calendar: the meeting's title, who was invited and its agenda. \
+Use it to follow the call and to spell names; what was said is in the transcript alone.\n\
 Reply ONLY with JSON, no code block, in this exact shape:\n\
 {\"title\": \"a short title, 6 words at most\", \"summary\": \"2 to 4 sentences: what was decided and why\", \
 \"key_points\": [\"up to 6 short points\"], \"todos\": [{\"text\": \"the task\", \"owner\": \"the person's name as written in the transcript, or null\", \"due\": \"the deadline as said, or null\"}]}";
+
+/// The calendar's meeting, before the transcript: what it was called, who
+/// was invited, its agenda. Empty when there is nothing to say.
+pub fn meeting_context(meeting: &super::Meeting) -> String {
+    let mut lines = Vec::new();
+    if !meeting.title.trim().is_empty() {
+        lines.push(format!("Title: {}", meeting.title.trim()));
+    }
+    if !meeting.attendees.is_empty() {
+        lines.push(format!("Invited: {}", meeting.attendees.join(", ")));
+    }
+    if let Some(agenda) = meeting.agenda.as_deref().filter(|a| !a.trim().is_empty()) {
+        lines.push(format!("Agenda:\n{}", agenda.trim()));
+    }
+    if lines.is_empty() {
+        return String::new();
+    }
+    format!("<meeting>\n{}\n</meeting>\n", lines.join("\n"))
+}
 
 /// Reads the model's JSON answer, even wrapped in a code block or with text
 /// around it. None when there is no JSON in it.
@@ -302,6 +323,17 @@ mod tests {
 
     fn t(speaker: &str, start: f64, end: f64) -> Turn {
         Turn { speaker: speaker.into(), start, end }
+    }
+
+    #[test]
+    fn the_calendars_meeting_goes_before_the_transcript() {
+        let meeting = super::super::Meeting {
+            title: "Q4 budget".into(),
+            attendees: vec!["Marie Dupont".into(), "Paul".into()],
+            agenda: Some("- hiring\n- tools".into()),
+        };
+        assert_eq!(meeting_context(&meeting), "<meeting>\nTitle: Q4 budget\nInvited: Marie Dupont, Paul\nAgenda:\n- hiring\n- tools\n</meeting>\n");
+        assert_eq!(meeting_context(&super::super::Meeting::default()), "");
     }
 
     fn person(n: usize) -> String {

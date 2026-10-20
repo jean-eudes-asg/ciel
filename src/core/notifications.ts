@@ -20,6 +20,18 @@ export interface CielNotification {
   at: number;
   /** A notification with the same tag replaces the older one (a site updating its own). */
   tag: string | null;
+  /** The card's own buttons instead of Open (a meeting's Take notes and Join); the last is the white one. */
+  buttons: NotificationButton[];
+  /** Unix ms: the card stays in the island until then (a meeting's start), whatever the setting says. */
+  until: number | null;
+  /** A meeting's start and end, Unix ms. */
+  time: { start: number; end: number } | null;
+}
+
+export interface NotificationButton {
+  /** What comes back to Rust as the action. */
+  id: string;
+  label: string;
 }
 
 /** How long a notification shows in the island before it folds away (unless hovered), without a setting. */
@@ -58,7 +70,42 @@ export function parseNotification(raw: unknown): CielNotification | null {
     icon,
     at: typeof r.at === "number" && Number.isFinite(r.at) ? r.at : Date.now(),
     tag: typeof r.tag === "string" && r.tag ? r.tag : null,
+    buttons: parseButtons(r.buttons),
+    until: typeof r.until === "number" && Number.isFinite(r.until) ? r.until : null,
+    time: parseTime(r.time),
   };
+}
+
+/** At most three, each with an id and a label. */
+function parseButtons(raw: unknown): NotificationButton[] {
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .filter((b): b is Record<string, unknown> => !!b && typeof b === "object")
+    .map((b) => ({ id: typeof b.id === "string" ? b.id : "", label: clip(b.label, 30) }))
+    .filter((b) => b.id && b.id !== "dismiss" && b.label)
+    .slice(0, 3);
+}
+
+function parseTime(raw: unknown): { start: number; end: number } | null {
+  if (!raw || typeof raw !== "object") return null;
+  const { start, end } = raw as Record<string, unknown>;
+  if (typeof start !== "number" || !Number.isFinite(start)) return null;
+  return { start, end: typeof end === "number" && Number.isFinite(end) && end >= start ? end : start };
+}
+
+/** "14:00 – 14:30" in the interface's language. */
+export function timeSpan(time: { start: number; end: number }, lang?: string): string {
+  const clock = (ms: number) => new Date(ms).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
+  return time.end > time.start ? `${clock(time.start)} – ${clock(time.end)}` : clock(time.start);
+}
+
+/**
+ * How long the card shows, in ms; 0 is until opened or dismissed. A card
+ * with an end of its own (a meeting) stays until then.
+ */
+export function showFor(n: CielNotification, seconds: unknown, now = Date.now()): number {
+  if (n.until != null) return Math.max(1000, n.until - now);
+  return typeof seconds === "number" && seconds >= 0 ? seconds * 1000 : SHOW_MS;
 }
 
 /** The queue with `n` in front: one with the same app and tag goes, and the oldest past the cap. */

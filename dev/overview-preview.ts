@@ -73,6 +73,21 @@ function gmailInbox() {
   State.integrations["integration_gmail"] = { loaded: true, configured: true, error: null, data: { unread: 7, mails } };
 }
 
+/** The Calendar pill: one meeting under way, the next in a few minutes, then later ones. */
+function calendarDay() {
+  const now = Date.now();
+  const at = (min: number) => now + min * 60_000;
+  const events = [
+    { id: "a", title: "Stand-up", start: at(-5), end: at(10), allDay: false, join: "https://meet.google.com/abc-defg-hij" },
+    { id: "b", title: "Q4 budget review with finance", start: at(12), end: at(42), allDay: false, join: "https://us02web.zoom.us/j/81234" },
+    { id: "c", title: "Design critique", start: at(150), end: at(210), allDay: false, where: "Room 4" },
+    { id: "d", title: "Offsite", start: at(60 * 24), end: at(60 * 48), allDay: true },
+    { id: "e", title: "1:1 with Ana", start: at(60 * 26), end: at(60 * 26 + 30), allDay: false },
+    { id: "f", title: "Sprint planning", start: at(60 * 50), end: at(60 * 51), allDay: false },
+  ];
+  State.integrations["integration_calendar"] = { loaded: true, configured: true, error: null, data: { events, calendars: 2, problems: [] } };
+}
+
 const CASES: [string, () => void][] = [
   ["One pill: Claude at work — its feed, the files it edited, its plan", () => {
     pills("integration_claude", []);
@@ -85,6 +100,17 @@ const CASES: [string, () => void][] = [
     State.tasks = State.tasks.filter((t) => t.id === "integration_gmail");
     State.focusId = "integration_gmail";
     gmailInbox();
+  }],
+  ["One pill: Calendar — under way, coming up, the next days", () => {
+    pills("integration_claude", ["integration_calendar"]);
+    State.tasks = State.tasks.filter((t) => t.id === "integration_calendar");
+    State.focusId = "integration_calendar";
+    calendarDay();
+  }],
+  ["Two pills: Claude at work, Calendar on the right", () => {
+    pills("integration_claude", ["integration_calendar"]);
+    claudeAtWork();
+    calendarDay();
   }],
   ["One pill: Spotify", () => {
     pills("integration_claude", ["integration_spotify"]);

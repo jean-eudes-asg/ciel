@@ -31,6 +31,18 @@ pub enum Status {
     Failed,
 }
 
+/// The calendar's meeting a call was noted in (calendar/mod.rs): its title
+/// names the note, and who was invited and its agenda help the summary.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Meeting {
+    pub title: String,
+    #[serde(default)]
+    pub attendees: Vec<String>,
+    #[serde(default)]
+    pub agenda: Option<String>,
+}
+
 /// A call noted by the Notetaker.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -63,6 +75,9 @@ pub struct Note {
     /// The start written out in local time ("2026-10-14 22:31"), for the Markdown.
     #[serde(default)]
     pub start_local: String,
+    /// Started from the calendar's card: the meeting.
+    #[serde(default)]
+    pub meeting: Option<Meeting>,
 }
 
 /// One side of the call being written to disk, with what the live transcript
@@ -235,36 +250,59 @@ pub fn toggle(app: &AppHandle) {
     if is_recording(app) {
         stop(app);
     } else if let Err(err) = start(app) {
-        let (text, action) = if err == "models" {
-            (t("Download the voice model first, in Ciel → Settings → Recognition."), Some((t("Open Settings"), "openSettings")))
-        } else {
-            (err, None)
-        };
-        pill::announce(app, "error", "#FF6B6B", text, action, 8);
+        say_why(app, err);
     }
 }
 
+/// The calendar card's Take notes: the meeting is noted, unless a call
+/// already is.
+pub fn start_meeting(app: &AppHandle, meeting: Meeting) {
+    if is_recording(app) {
+        return;
+    }
+    if let Err(err) = start_with(app, Some(meeting)) {
+        say_why(app, err);
+    }
+}
+
+/// What kept the Notetaker from starting, on the pill.
+fn say_why(app: &AppHandle, err: String) {
+    let (text, action) = if err == "models" {
+        (t("Download the voice model first, in Ciel → Settings → Recognition."), Some((t("Open Settings"), "openSettings")))
+    } else {
+        (err, None)
+    };
+    pill::announce(app, "error", "#FF6B6B", text, action, 8);
+}
+
 pub fn start(app: &AppHandle) -> Result<String, String> {
+    start_with(app, None)
+}
+
+fn start_with(app: &AppHandle, meeting: Option<Meeting>) -> Result<String, String> {
     let taker = get(app).ok_or("not ready")?;
     if taker.recording.lock().unwrap().is_some() || taker.starting.swap(true, Ordering::Relaxed) {
         return Err("already recording".into());
     }
-    let result = start_inner(app, &taker);
+    let result = start_inner(app, &taker, meeting);
     taker.starting.store(false, Ordering::Relaxed);
     result
 }
 
-fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>) -> Result<String, String> {
+fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>, meeting: Option<Meeting>) -> Result<String, String> {
     if !speech::is_ready() {
         return Err("models".into());
     }
     let now = now_ms();
     let stamp = local_stamp();
     let id = crate::flow::text::new_id();
+    // The calendar's title names the note, and the summary keeps it, as it
+    // keeps a title you typed.
+    let meeting_title = meeting.as_ref().map(|m| m.title.trim().to_string()).filter(|t| !t.is_empty());
     let note = Note {
         id: id.clone(),
-        title: tf("Call · {0}", &[("0", stamp.get(5..).unwrap_or(&stamp))]),
-        title_edited: false,
+        title: meeting_title.clone().unwrap_or_else(|| tf("Call · {0}", &[("0", stamp.get(5..).unwrap_or(&stamp))])),
+        title_edited: meeting_title.is_some(),
         start: now,
         end: None,
         app: crate::flow::os::foreground_app().filter(|(id, _)| !crate::flow::is_shell(id)).map(|(_, name)| name),
@@ -276,6 +314,7 @@ fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>) -> Result<String, String
         todos: Vec::new(),
         error: None,
         start_local: stamp,
+        meeting,
     };
     let dir = note_dir(&id);
     crate::platform::ensure_private_dir(&dir).map_err(|e| e.to_string())?;
@@ -533,6 +572,7 @@ fn summarize(app: &AppHandle, id: &str) {
     taker.working.lock().unwrap().push(id.to_string());
     let _ = app.emit_to(crate::HUB_LABEL, "notes-changed", id);
     let mut transcript = plain_transcript(&note);
+    let context = note.meeting.as_ref().map(builder::meeting_context).unwrap_or_default();
     let reply = match engine {
         crate::ai::Engine::Claude => {
             let model = app
@@ -547,7 +587,7 @@ fn summarize(app: &AppHandle, id: &str) {
                 }
                 transcript.truncate(cut);
             }
-            let user = format!("<transcript>\n{transcript}\n</transcript>");
+            let user = format!("{context}<transcript>\n{transcript}\n</transcript>");
             tauri::async_runtime::block_on(async {
                 match crate::claude::complete(&model, builder::SUMMARY_INSTRUCTIONS, &user, 2048, Duration::from_secs(120)).await {
                     Ok(text) => Some(text),
@@ -558,7 +598,7 @@ fn summarize(app: &AppHandle, id: &str) {
             })
         }
         crate::ai::Engine::Local(local) => {
-            let user = format!("<transcript>\n{}\n</transcript>", without_the_middle(&transcript, LOCAL_MAX_TRANSCRIPT));
+            let user = format!("{context}<transcript>\n{}\n</transcript>", without_the_middle(&transcript, LOCAL_MAX_TRANSCRIPT));
             let how = crate::ai::Ask {
                 max_tokens: 2048,
                 json: true,

@@ -129,6 +129,8 @@ export interface Settings {
   showCodexPlanInNotch: boolean;
   /** How long a notification shows in the island, in seconds; 0: until opened or dismissed. */
   notificationSeconds: number;
+  /** How many minutes before a meeting of the Calendar pill its card shows; 0: never. */
+  meetingReminderMinutes: number;
   /** Linux: the other apps' notifications show in the island too. */
   desktopNotifications: boolean;
   /** GNOME: Ciel's extension hides the top bar, the island has the top. */
@@ -210,6 +212,7 @@ export const DEFAULT_SETTINGS: Settings = {
   planRelayInstalled: false,
   showCodexPlanInNotch: false,
   notificationSeconds: 7,
+  meetingReminderMinutes: 5,
   desktopNotifications: false,
   hideGnomePanel: false,
   screensaverMinutes: 0,

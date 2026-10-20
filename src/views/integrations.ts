@@ -76,6 +76,7 @@ export function idleStatus(
   if (def?.connect.kind === "hooks") return configured ? ok(t("Hooks installed")) : missing(t("Hooks not installed"));
   if (def?.connect.kind === "none") return ok(t("Ready · no setup needed"));
   if (def?.connect.kind === "server") return configured ? ok(t("Connected")) : missing(t("Not connected"));
+  if (id === "integration_calendar" && !configured) return missing(t("No calendar link yet"));
   if (def?.category === "ai") {
     if (!configured) return missing(t("Key not configured"));
     return ok(id === "ai_anthropic" ? t("Key configured · {model}", { model: chatModel }) : t("Key configured"));
@@ -378,6 +379,60 @@ function calcomCard(): HTMLElement {
   return h("div", { class: "int-card" }, header("#C9956A", "Cal.com", t("Schedule")), rows);
 }
 
+// ── Calendar ──────────────────────────────────────────────────────────────────
+
+const CALENDAR = "#F472B6";
+
+/** The meetings under way or to come, in order (src-tauri/src/calendar/). */
+export function upcomingMeetings(now = Date.now()): Record<string, unknown>[] {
+  return arr("integration_calendar", "events").filter((e) => Number(e.end) > now || Number(e.start) >= now);
+}
+
+/** "14:00"; "Thu 14:00" on another day; "All day". */
+export function meetingWhen(e: Record<string, unknown>, now = Date.now()): string {
+  if (e.allDay === true) return t("All day");
+  const start = new Date(Number(e.start));
+  const time = start.toLocaleTimeString(language(), { hour: "2-digit", minute: "2-digit" });
+  if (start.toDateString() === new Date(now).toDateString()) return time;
+  return `${start.toLocaleDateString(language(), { weekday: "short" })} ${time}`;
+}
+
+/** The next meetings; the one under way or coming within the quarter hour can be joined from here. */
+function calendarCard(): HTMLElement {
+  const now = Date.now();
+  const meetings = upcomingMeetings(now);
+  const rows = h("div", { class: "int-rows tight" });
+  if (meetings.length === 0) rows.append(h("div", { class: "int-empty", text: t("No meetings coming up") }));
+  meetings.slice(0, rowsShown()).forEach((e, i) => {
+    const start = Number(e.start);
+    const live = e.allDay !== true && start <= now;
+    const soon = e.allDay !== true && start > now && start - now < 60 * 60_000;
+    const cells: Node[] = [
+      h("span", { class: "int-time", style: `color:${CALENDAR}`, text: meetingWhen(e, now) }),
+      h("span", { class: "int-name", text: String(e.title || t("Untitled")) }),
+    ];
+    if (live || soon) {
+      const minutes = Math.max(1, Math.round((start - now) / 60_000));
+      cells.push(h("span", { class: "int-ago", text: live ? t("Now") : t("in {m} min", { m: minutes }) }));
+    }
+    const join = typeof e.join === "string" && e.join.startsWith("https://") ? e.join : null;
+    if (join && (live || start - now < 15 * 60_000)) {
+      cells.push(h("button", { class: "int-join", text: t("Join"), onclick: () => void Bridge.openUrl(join) }));
+    }
+    rows.append(listRow(CALENDAR, i === 0, ...cells));
+  });
+  // A link that couldn't be read, while the others could.
+  const problem = arr("integration_calendar", "problems")[0];
+  if (problem) {
+    rows.append(h("div", {
+      class: "int-empty",
+      style: "color:#F4505E",
+      text: t("Calendar {n}: {error}", { n: Number(problem.calendar), error: String(problem.error ?? "") }),
+    }));
+  }
+  return h("div", { class: "int-card" }, header(CALENDAR, "Calendar", t("Meetings")), rows);
+}
+
 // ── n8n ───────────────────────────────────────────────────────────────────────
 
 function n8nCard(task: AgentTask, onDetail: () => void, openSettings: () => void): HTMLElement {
@@ -473,6 +528,7 @@ export function hasIntegrationData(id: string): boolean {
     case "integration_notion":
       return arr(id, "pages").length > 0;
     case "integration_calcom":
+    case "integration_calendar":
       return info.loaded;
     default:
       return false;
@@ -531,6 +587,8 @@ function listCard(task: AgentTask, hooks: IntegrationCardHooks): HTMLElement {
       return notionCard();
     case "integration_calcom":
       return calcomCard();
+    case "integration_calendar":
+      return calendarCard();
     default:
       return idleCard(task, hooks.openSettings);
   }

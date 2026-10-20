@@ -152,6 +152,8 @@ export interface Note {
   todos: Todo[];
   error?: string | null;
   startLocal: string;
+  /** Started from the Calendar pill's card: the meeting. */
+  meeting?: { title: string; attendees: string[]; agenda?: string | null } | null;
 }
 
 export interface NotesState {

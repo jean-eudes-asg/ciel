@@ -10,9 +10,9 @@
 // Gmail, the app); Dismiss only takes it out of the island and the list.
 
 import { onEvent } from "../core/bridge";
-import { addNotification, MAX_UNSEEN, parseNotification, SHOW_MS, type CielNotification } from "../core/notifications";
+import { addNotification, MAX_UNSEEN, parseNotification, showFor, timeSpan, type CielNotification } from "../core/notifications";
 import { State } from "../core/state";
-import { t } from "../i18n/i18n";
+import { language, t } from "../i18n/i18n";
 import { noteIcon as appIcon, settle } from "../views/inbox";
 
 export interface NotificationCard {
@@ -76,10 +76,10 @@ export function buildNotificationCard(
 
   function startTimer() {
     stopTimer();
+    if (!showing || hovered) return;
     // 0 (Settings): it stays until opened or dismissed.
-    const seconds = State.settings.notificationSeconds;
-    const ms = typeof seconds === "number" && seconds >= 0 ? seconds * 1000 : SHOW_MS;
-    if (!showing || hovered || ms === 0) return;
+    const ms = showFor(showing, State.settings.notificationSeconds);
+    if (ms === 0) return;
     timer = window.setTimeout(() => {
       timer = null;
       // Shown long enough: it folds away, with the ones that came with it.
@@ -89,7 +89,7 @@ export function buildNotificationCard(
     }, ms);
   }
 
-  function act(n: CielNotification, action: "open" | "dismiss") {
+  function act(n: CielNotification, action: string) {
     queue = queue.filter((q) => q.id !== n.id);
     if (showing?.id === n.id) showing = null;
     stopTimer();
@@ -112,19 +112,25 @@ export function buildNotificationCard(
       el("span", "note-strip-title", n.title),
       ...(more > 0 ? [el("span", "note-more", `+${more}`)] : []),
     );
-    const open = own(el("button", "note-open", t("Open")));
-    open.addEventListener("click", () => act(n, "open"));
+    // Its own buttons if it has some (the last one white), else Open.
+    const choices = n.buttons.length ? n.buttons : [{ id: "open", label: t("Open") }];
+    const buttons = choices.map((b, i) => {
+      const button = own(el("button", i === choices.length - 1 ? "note-open" : "note-dismiss", b.label));
+      button.addEventListener("click", () => act(n, b.id));
+      return button;
+    });
     const dismiss = own(el("button", "note-dismiss", t("Dismiss")));
     dismiss.addEventListener("click", () => act(n, "dismiss"));
     pop.replaceChildren(
       el("div", "note-head", ""),
       el("div", "note-title", n.title),
+      ...(n.time ? [el("div", "note-time", timeSpan(n.time, language()))] : []),
       ...(n.body ? [el("div", "note-body", n.body)] : []),
       el("div", "note-actions", ""),
     );
     const head = pop.firstElementChild as HTMLElement;
     head.append(appIcon(n, 18), el("span", "note-app", n.app));
-    (pop.lastElementChild as HTMLElement).append(dismiss, open);
+    (pop.lastElementChild as HTMLElement).append(dismiss, ...buttons);
   }
 
   /** The newest waiting one shows, when the island is free. */

@@ -15,6 +15,7 @@ mod flow;
 mod github;
 mod gnome_ext;
 mod gmail;
+mod calendar;
 mod ytmusic;
 mod updates;
 mod hooks;
@@ -136,6 +137,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     ytmusic::sync(&settings.active_integrations);
     updates::sync(&app, settings.check_updates);
     gmail::sync(&app, &settings.active_integrations, false);
+    calendar::settings_saved(&settings.active_integrations);
     #[cfg(target_os = "linux")]
     {
         notify::desktop::sync(&app, settings.desktop_notifications);
@@ -589,6 +591,9 @@ fn secret_set(app: AppHandle, shared: State<Shared>, key: String, value: String)
         }
     }
     gmail_credentials(&app, &shared, &key);
+    if calendar::is_link_key(&key) {
+        calendar::wake();
+    }
     Ok(())
 }
 
@@ -611,6 +616,9 @@ fn secret_clear(app: AppHandle, shared: State<Shared>, key: String) -> Result<()
         integrations::github_token_changed(&app);
     }
     gmail_credentials(&app, &shared, &key);
+    if calendar::is_link_key(&key) {
+        calendar::wake();
+    }
     Ok(())
 }
 
@@ -983,6 +991,8 @@ pub fn run() {
             hooks::ensure_hook_exe(&handle);
             pipe::start(handle.clone());
             integrations::start(handle.clone());
+            calendar::settings_saved(&loaded.active_integrations);
+            calendar::start(handle.clone());
             spotify::sync(&handle, &loaded.active_integrations);
             ytmusic::sync(&loaded.active_integrations);
             updates::sync(&handle, loaded.check_updates);

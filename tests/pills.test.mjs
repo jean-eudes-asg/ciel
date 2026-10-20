@@ -50,6 +50,8 @@ test("the catalog holds the Mac's pills with the Claude Code label for Windows a
     ["integration_youtube_music", "YouTube Music", "#FF0033", "service", "Integration"],
     // Not the Mac's: Windows and Linux only, after every pill of its.
     ["integration_finance", "Finance", "#10B981", "service", "Spending"],
+    // Windows and Linux only too: secret iCal links (src-tauri/src/calendar/).
+    ["integration_calendar", "Calendar", "#F472B6", "service", "Meetings"],
   ];
   assert.deepEqual(
     PILL_CATALOG.map((p) => [p.id, p.name, p.color, p.category, p.subtitle]),

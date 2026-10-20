@@ -50,3 +50,23 @@ test("a service that is not configured or is failing has no card, and n8n shows 
   assert.deepEqual(card.items, [{ label: "Nightly sync", detail: "" }]);
   assert.ok(!JSON.stringify(card).includes("hunter2"));
 });
+
+test("the Calendar's card says the next meetings' titles and times, never who comes or where", () => {
+  const now = Date.UTC(2026, 9, 20, 9, 0);
+  service("integration_calendar", {
+    events: [
+      { id: "a", title: "Done already", start: now - 7_200_000, end: now - 3_600_000, allDay: false },
+      { id: "b", title: "Standup", start: now - 300_000, end: now + 600_000, allDay: false, join: "https://meet.google.com/abc-defg-hij" },
+      { id: "c", title: "", start: now + 3_600_000, end: now + 5_400_000, allDay: false, where: "Room 4, Alice's office" },
+    ],
+  });
+  const card = serviceCards(now).find((c) => c.id === "integration_calendar");
+  assert.equal(card.title, "Calendar");
+  assert.deepEqual(card.items.map((i) => i.label), ["Standup", "Untitled"], "the one under way, then the next");
+  assert.match(card.headline, /^20\/10 \d\d:\d\d$/);
+  const text = JSON.stringify(card);
+  for (const secret of ["https://", "Room 4", "Alice"]) assert.ok(!text.includes(secret), `${secret} must not be in the card`);
+
+  service("integration_calendar", { events: [] });
+  assert.equal(serviceCards(now).find((c) => c.id === "integration_calendar").headline, "No meetings coming up");
+});

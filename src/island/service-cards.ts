@@ -111,6 +111,21 @@ const BUILDERS: Record<string, Builder> = {
       items: bookings.slice(0, 3).map((b) => ({ label: String(b.title ?? t("Meeting")), detail: when(b) })),
     };
   },
+  integration_calendar: (now) => {
+    const meetings = list("integration_calendar", "events").filter((e) => Number(e.end) > now || Number(e.start) >= now);
+    // Who comes, where and why stay in the island: the title and the time.
+    const when = (e: Record<string, unknown>) => {
+      const d = new Date(Number(e.start));
+      const day = `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`;
+      return e.allDay === true ? `${day} ${t("All day")}` : `${day} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+    };
+    return {
+      id: "integration_calendar", title: "Calendar",
+      headline: meetings.length === 0 ? t("No meetings coming up") : when(meetings[0]),
+      reason: t("Meetings"),
+      items: meetings.slice(0, 3).map((e) => ({ label: String(e.title || t("Untitled")), detail: when(e) })),
+    };
+  },
   integration_n8n: () => {
     const task = State.tasks.find((x) => x.id === "integration_n8n");
     if (!task || (task.state !== "finished" && task.state !== "error")) return null;

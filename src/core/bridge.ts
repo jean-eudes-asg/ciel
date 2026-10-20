@@ -280,7 +280,8 @@ export const Bridge = {
   /** Shows the screensaver now, to see it (Settings). */
   screensaverPreview: () => call<void>("screensaver_preview"),
   /** A notification's Open (back to its tab or its mail) or Dismiss (src-tauri/src/notify.rs). */
-  notificationAction: (id: string, action: "open" | "dismiss") => call<void>("notification_action", { id, action }),
+  /** Open, Dismiss, or the id of one of the card's own buttons (a meeting's "join", "notes"). */
+  notificationAction: (id: string, action: string) => call<void>("notification_action", { id, action }),
   /** Whether there is a Spotify to launch (Settings). */
   spotifyInstalled: () => call<boolean>("spotify_installed"),
 

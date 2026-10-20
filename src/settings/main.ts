@@ -811,6 +811,14 @@ const INTEGRATIONS: IntegrationDef[] = [
     fields: [{ key: "notion-api-key", label: N_("Integration token"), placeholder: "ntn_…", secret: true }] },
   { id: "integration_calcom", name: "Cal.com", color: "#C9956A",
     fields: [{ key: "calcom-api-key", label: N_("API key"), placeholder: "cal_…", secret: true }] },
+  // Secret iCal links, read-only, no sign-in (src-tauri/src/calendar/).
+  { id: "integration_calendar", name: "Calendar", color: "#F472B6",
+    fields: [
+      { key: "calendar-ics-1", label: N_("Calendar link"), placeholder: "https://calendar.google.com/calendar/ical/…/basic.ics", secret: true },
+      { key: "calendar-ics-2", label: N_("Another calendar"), placeholder: "webcal://…", secret: true },
+      { key: "calendar-ics-3", label: N_("Another calendar"), placeholder: "webcal://…", secret: true },
+    ],
+    hint: N_("A calendar's secret iCal link. Google Calendar: Settings → your calendar → Integrate calendar → Secret address in iCal format. Outlook: Settings → Calendar → Shared calendars → Publish a calendar, with Can view all details. iCloud: share the calendar as a public calendar. The link is as secret as a password: it stays in the keychain.") },
   // Nothing to enter: Spotify is read from the OS (src-tauri/src/spotify.rs).
   { id: "integration_spotify", name: "Spotify", color: "#1DB954", fields: [] },
   // No key either: a folder on this computer (src-tauri/src/finance.rs).
@@ -868,6 +876,27 @@ function financeFolderRows(): HTMLElement[] {
     h("div", { class: "row" }, openBtn),
     status,
     h("div", { class: "hint", text: t("Leave it empty for Ciel's own folder, or enter a folder that already holds expenses.csv and settings.json, such as a dashboard's data folder. Ciel adds expenses there and never changes settings.json.") }),
+  ];
+}
+
+/** The Calendar pill's card before a meeting, in minutes; 0 is no card. */
+const MEETING_CARD_CHOICES = [0, 1, 2, 5, 10, 15] as const;
+
+/** When a meeting's card shows in the island, with Join and Take notes (`meetingReminderMinutes`). */
+function meetingCardRows(): HTMLElement[] {
+  const select = h("select", {}) as HTMLSelectElement;
+  for (const m of MEETING_CARD_CHOICES) {
+    select.append(h("option", { value: String(m), text: m === 0 ? t("Never") : t("{n} min before", { n: m }) }));
+  }
+  const current = settings.meetingReminderMinutes;
+  select.value = String(MEETING_CARD_CHOICES.includes(current as never) ? current : 5);
+  select.addEventListener("change", () => {
+    settings.meetingReminderMinutes = Number(select.value);
+    void save();
+  });
+  return [
+    h("div", { class: "row" }, h("label", { style: "min-width:104px", text: t("Meeting card") }), select),
+    h("div", { class: "hint", text: t("Before each meeting, a card in the island: Join opens its Meet, Teams or Zoom room, Take notes starts the Notetaker with the meeting's title and who is invited.") }),
   ];
 }
 
@@ -940,6 +969,7 @@ function integrationsSection(present: Record<string, boolean>): HTMLElement {
 
     if (def.hint) rows.append(h("div", { class: "hint", text: t(def.hint) }));
     if (def.id === "integration_finance") rows.append(...financeFolderRows());
+    if (def.id === "integration_calendar") rows.append(...meetingCardRows());
     if (def.id === "integration_spotify" && HOST_OS === "windows") {
       // Windows: the pill follows whatever plays, not Spotify alone.
       rows.append(h("div", {
@@ -1547,6 +1577,7 @@ async function render() {
   const keys = [
     "stripe-api-key", "github-token", "vercel-token",
     "n8n-url", "n8n-api-key", "resend-api-key", "notion-api-key", "calcom-api-key",
+    "calendar-ics-1", "calendar-ics-2", "calendar-ics-3",
   ];
   const present: Record<string, boolean> = {};
   for (const k of keys) present[k] = (await Bridge.secretPresent(k)) ?? false;
