@@ -5728,6 +5728,171 @@
    "pt-BR": "Precisa da extensão do Ciel para o GNOME Shell: Integrações → Notificações → Abrir no app.",
    "ru": "Нужно расширение Ciel для GNOME Shell: Интеграции → Уведомления → Открывать в приложении.",
    "id": "Memerlukan ekstensi Ciel untuk GNOME Shell: Integrasi → Notifikasi → Buka di aplikasi."
+  },
+  "Good morning": {
+   "zh-Hans": "早上好",
+   "hi": "सुप्रभात",
+   "es": "Buenos días",
+   "ar": "صباح الخير",
+   "fr": "Bonjour",
+   "bn": "সুপ্রভাত",
+   "pt-BR": "Bom dia",
+   "ru": "Доброе утро",
+   "id": "Selamat pagi"
+  },
+  "Good afternoon": {
+   "zh-Hans": "下午好",
+   "hi": "नमस्कार",
+   "es": "Buenas tardes",
+   "ar": "مساء الخير",
+   "fr": "Bon après-midi",
+   "bn": "শুভ অপরাহ্ন",
+   "pt-BR": "Boa tarde",
+   "ru": "Добрый день",
+   "id": "Selamat siang"
+  },
+  "Good evening": {
+   "zh-Hans": "晚上好",
+   "hi": "शुभ संध्या",
+   "es": "Buenas noches",
+   "ar": "مساء الخير",
+   "fr": "Bonsoir",
+   "bn": "শুভ সন্ধ্যা",
+   "pt-BR": "Boa noite",
+   "ru": "Добрый вечер",
+   "id": "Selamat malam"
+  },
+  "Good night": {
+   "zh-Hans": "夜深了",
+   "hi": "शुभ रात्रि",
+   "es": "Buenas noches",
+   "ar": "تصبح على خير",
+   "fr": "Bonne nuit",
+   "bn": "শুভ রাত্রি",
+   "pt-BR": "Boa noite",
+   "ru": "Доброй ночи",
+   "id": "Selamat malam"
+  },
+  "The sun rises at {0}.": {
+   "zh-Hans": "太阳将在 {0} 升起。",
+   "hi": "सूरज {0} बजे उगेगा।",
+   "es": "El sol sale a las {0}.",
+   "ar": "تشرق الشمس عند {0}.",
+   "fr": "Le soleil se lève à {0}.",
+   "bn": "সূর্য উঠবে {0}-এ।",
+   "pt-BR": "O sol nasce às {0}.",
+   "ru": "Солнце взойдёт в {0}.",
+   "id": "Matahari terbit pukul {0}."
+  },
+  "Golden hour: the sun sets at {0}.": {
+   "zh-Hans": "黄金时刻：太阳将在 {0} 落下。",
+   "hi": "सुनहरा समय: सूरज {0} बजे ढलेगा।",
+   "es": "Hora dorada: el sol se pone a las {0}.",
+   "ar": "الساعة الذهبية: تغرب الشمس عند {0}.",
+   "fr": "Heure dorée : le soleil se couche à {0}.",
+   "bn": "সোনালি সময়: সূর্য অস্ত যাবে {0}-এ।",
+   "pt-BR": "Hora dourada: o sol se põe às {0}.",
+   "ru": "Золотой час: солнце сядет в {0}.",
+   "id": "Jam emas: matahari terbenam pukul {0}."
+  },
+  "The sun sets at {0}.": {
+   "zh-Hans": "太阳将在 {0} 落下。",
+   "hi": "सूरज {0} बजे ढलेगा।",
+   "es": "El sol se pone a las {0}.",
+   "ar": "تغرب الشمس عند {0}.",
+   "fr": "Le soleil se couche à {0}.",
+   "bn": "সূর্য অস্ত যাবে {0}-এ।",
+   "pt-BR": "O sol se põe às {0}.",
+   "ru": "Солнце сядет в {0}.",
+   "id": "Matahari terbenam pukul {0}."
+  },
+  "Tonight the moon is {0}% lit.": {
+   "zh-Hans": "今晚月亮的亮面为 {0}%。",
+   "hi": "आज रात चाँद {0}% रोशन है।",
+   "es": "Esta noche la luna está iluminada al {0} %.",
+   "ar": "القمر الليلة مضاء بنسبة {0}%.",
+   "fr": "Ce soir, la lune est éclairée à {0} %.",
+   "bn": "আজ রাতে চাঁদ {0}% আলোকিত।",
+   "pt-BR": "Hoje a lua está {0}% iluminada.",
+   "ru": "Сегодня луна освещена на {0}%.",
+   "id": "Malam ini bulan {0}% terang."
+  },
+  "Hold {0} to dictate": {
+   "zh-Hans": "按住 {0} 听写",
+   "hi": "डिक्टेट करने के लिए {0} दबाए रखें",
+   "es": "Mantén {0} para dictar",
+   "ar": "اضغط مطولًا على {0} للإملاء",
+   "fr": "Maintenez {0} pour dicter",
+   "bn": "ডিক্টেট করতে {0} চেপে ধরুন",
+   "pt-BR": "Segure {0} para ditar",
+   "ru": "Удерживайте {0}, чтобы диктовать",
+   "id": "Tahan {0} untuk mendikte"
+  },
+  "Nothing left to do from your calls.": {
+   "zh-Hans": "通话中没有待办事项了。",
+   "hi": "आपकी कॉल से कोई काम बाकी नहीं।",
+   "es": "No queda nada pendiente de tus llamadas.",
+   "ar": "لا شيء متبقٍ من مكالماتك.",
+   "fr": "Plus rien à faire après vos appels.",
+   "bn": "আপনার কল থেকে কোনো কাজ বাকি নেই।",
+   "pt-BR": "Nada pendente das suas chamadas.",
+   "ru": "После звонков дел не осталось.",
+   "id": "Tidak ada tugas tersisa dari panggilan Anda."
+  },
+  "words dictated today": {
+   "zh-Hans": "今日听写字数",
+   "hi": "आज बोले गए शब्द",
+   "es": "palabras dictadas hoy",
+   "ar": "كلمات أُمليت اليوم",
+   "fr": "mots dictés aujourd'hui",
+   "bn": "আজ ডিক্টেট করা শব্দ",
+   "pt-BR": "palavras ditadas hoje",
+   "ru": "слов надиктовано сегодня",
+   "id": "kata didikte hari ini"
+  },
+  "saved this week": {
+   "zh-Hans": "本周节省",
+   "hi": "इस हफ़्ते बचाया",
+   "es": "ahorrado esta semana",
+   "ar": "تم توفيره هذا الأسبوع",
+   "fr": "gagnés cette semaine",
+   "bn": "এই সপ্তাহে বাঁচানো",
+   "pt-BR": "economizados esta semana",
+   "ru": "сэкономлено за неделю",
+   "id": "dihemat minggu ini"
+  },
+  "Recent dictations": {
+   "zh-Hans": "最近的听写",
+   "hi": "हाल के डिक्टेशन",
+   "es": "Dictados recientes",
+   "ar": "الإملاءات الأخيرة",
+   "fr": "Dictées récentes",
+   "bn": "সাম্প্রতিক ডিক্টেশন",
+   "pt-BR": "Ditados recentes",
+   "ru": "Недавние диктовки",
+   "id": "Dikte terbaru"
+  },
+  "To-dos from your calls": {
+   "zh-Hans": "通话中的待办",
+   "hi": "आपकी कॉल के काम",
+   "es": "Pendientes de tus llamadas",
+   "ar": "مهام من مكالماتك",
+   "fr": "À faire après vos appels",
+   "bn": "আপনার কলের কাজ",
+   "pt-BR": "Tarefas das suas chamadas",
+   "ru": "Задачи из ваших звонков",
+   "id": "Tugas dari panggilan Anda"
+  },
+  "Home": {
+   "zh-Hans": "主页",
+   "hi": "होम",
+   "es": "Inicio",
+   "ar": "الرئيسية",
+   "fr": "Accueil",
+   "bn": "হোম",
+   "pt-BR": "Início",
+   "ru": "Главная",
+   "id": "Beranda"
   }
  }
 }

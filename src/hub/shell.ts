@@ -1,4 +1,4 @@
-// The Ciel window: a sidebar with Flow (dictation, the Notetaker, the
+// The Ciel window: a sidebar with Home (your sky and your day), Flow (dictation, the Notetaker, the
 // statistics, the dictionary, the snippets, the styles and their settings)
 // and Notch (every setting of the island), and the page on the right, under
 // its coloured band. Port of FlowHub.swift.
@@ -13,6 +13,7 @@ import { hero, liveCloud } from "./hero";
 import { icon, keyLabel } from "./ui";
 
 export type PageId =
+  | "home"
   | "dictation" | "notes" | "insights" | "dictionary" | "snippets" | "styles" | "flowsettings"
   | "general" | "pills" | "agents" | "chat" | "voice" | "integrations" | "shortcuts" | "wallpaper";
 
@@ -23,6 +24,9 @@ interface PageDef {
   /** The band's line; none for pages that draw their own band. */
   subtitle?: () => string;
 }
+
+/** The page the window opens on (pages/home.ts). */
+const HOME_PAGE: PageDef = { id: "home", icon: "home", title: () => t("Home") };
 
 export const FLOW_PAGES: PageDef[] = [
   { id: "dictation", icon: "mic", title: () => t("Dictation") },
@@ -45,7 +49,7 @@ export const NOTCH_PAGES: PageDef[] = [
   { id: "wallpaper", icon: "image", title: () => t("Wallpaper"), subtitle: () => t("Ciel's sky on your desktop and lock screen, in his mood.") },
 ];
 
-const ALL = [...FLOW_PAGES, ...NOTCH_PAGES];
+const ALL = [HOME_PAGE, ...FLOW_PAGES, ...NOTCH_PAGES];
 
 /** What a page gets to draw itself and reach the rest of the window. */
 export interface HubContext {
@@ -86,7 +90,7 @@ const DEFAULT_STATUS: FlowStatus = {
 
 export async function startHub(root: HTMLElement, opts: HubOptions) {
   document.body.classList.add("hub-window");
-  let current: PageId = "dictation";
+  let current: PageId = "home";
   let status: FlowStatus = (await FlowBridge.status()) ?? DEFAULT_STATUS;
   const items = new Map<PageId, HTMLElement>();
   const statusLine = h("div", { class: "hub-status" });
@@ -134,7 +138,7 @@ export async function startHub(root: HTMLElement, opts: HubOptions) {
   }
 
   async function show(page: PageId) {
-    const def = ALL.find((p) => p.id === page) ?? FLOW_PAGES[0];
+    const def = ALL.find((p) => p.id === page) ?? HOME_PAGE;
     ctx.onLeave?.();
     ctx.onLeave = undefined;
     current = def.id;
@@ -162,7 +166,7 @@ export async function startHub(root: HTMLElement, opts: HubOptions) {
   side.append(h("div", { class: "hub-brand" }, logo, h("span", { text: "Ciel" })));
   liveCloud(logo as HTMLCanvasElement);
   const group = (title: string, pages: PageDef[]) => {
-    side.append(h("div", { class: "hub-group", text: title }));
+    if (title) side.append(h("div", { class: "hub-group", text: title }));
     for (const p of pages) {
       const b = h("button", { class: "hub-item", onclick: () => void show(p.id) });
       b.append(icon(p.icon), h("span", { text: p.title() }));
@@ -170,6 +174,7 @@ export async function startHub(root: HTMLElement, opts: HubOptions) {
       side.append(b);
     }
   };
+  group("", [HOME_PAGE]);
   group("Flow", FLOW_PAGES);
   group(t("Notch"), NOTCH_PAGES);
   side.append(h("div", { class: "spacer" }), statusLine, h("div", { class: "hub-version", text: `Ciel ${opts.version}` }));

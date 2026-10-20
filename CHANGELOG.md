@@ -2,6 +2,15 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **Home**, the page the Ciel window opens on: your sky right now, the real
+  one with the sun and the moon where they are for you, and Ciel floating in
+  it, with the greeting of the hour, what the sky does next and a line from
+  sunrise to sunset. Under it, your day: words dictated today, time saved,
+  the streak, the last dictations and the to-dos your calls left.
+
 ## [0.2.6] - 2026-10-20
 
 ### Added
