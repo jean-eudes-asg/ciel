@@ -95,17 +95,18 @@ fn boot(app: AppHandle, shared: State<Shared>) -> BootInfo {
 
 #[tauri::command]
 fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
-    let (screen_changed, autostart_changed, shortcuts_changed, desktop_changed) = {
+    let (screen_changed, autostart_changed, shortcuts_changed, desktop_changed, panel_changed) = {
         let mut current = shared.settings.lock().unwrap();
         let screen_changed = current.screen != settings.screen;
         let autostart_changed = current.autostart != settings.autostart;
         let shortcuts_changed = current.shortcuts != settings.shortcuts;
         let desktop_changed = current.desktop_notifications != settings.desktop_notifications;
+        let panel_changed = current.hide_gnome_panel != settings.hide_gnome_panel;
         // Where Ciel sits on the desktop is desktop.rs's to say, not a webview's.
         let mut settings = settings.clone();
         settings.desktop_cloud = current.desktop_cloud.clone();
         *current = settings;
-        (screen_changed, autostart_changed, shortcuts_changed, desktop_changed)
+        (screen_changed, autostart_changed, shortcuts_changed, desktop_changed, panel_changed)
     };
     let settings = shared.settings.lock().unwrap().clone();
     if let Err(err) = settings::save(&settings) {
@@ -131,9 +132,25 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
         if desktop_changed {
             notify::desktop::quiet_desktop(settings.desktop_notifications);
         }
+        if panel_changed {
+            // The bar goes or comes back, then the island moves to the top or under it,
+            // once GNOME has given the windows their new room.
+            let (app, hidden, screen) = (app.clone(), settings.hide_gnome_panel, settings.screen.clone());
+            std::thread::spawn(move || {
+                if !gnome_ext::set_panel(hidden) {
+                    return;
+                }
+                std::thread::sleep(std::time::Duration::from_millis(400));
+                let handle = app.clone();
+                let _ = app.run_on_main_thread(move || {
+                    let collapsed = handle.state::<Shared>().gate.collapsed.load(Ordering::Relaxed);
+                    island::apply_geometry(&handle, &screen, collapsed);
+                });
+            });
+        }
     }
     #[cfg(not(target_os = "linux"))]
-    let _ = desktop_changed;
+    let _ = (desktop_changed, panel_changed);
     if shortcuts_changed {
         shortcuts::apply(&app, &settings.shortcuts);
     }

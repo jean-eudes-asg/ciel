@@ -5,9 +5,17 @@
 // Chrome to the very tab. This finds GNOME's own notification by the id GNOME
 // gave it and activates or dismisses it, exactly as a click in GNOME's list.
 //
-// Nothing else is exposed: two calls each way, by id, on the session bus.
+// It also hides GNOME's top bar when Ciel's settings say so (Settings →
+// General), so the island has the top of the screen: the bar's room goes to
+// the windows, and it still shows in the Activities overview. The choice is
+// read from Ciel's settings.json when GNOME starts the extension, so it holds
+// before Ciel runs; Ciel tells it at once when the switch moves. Locked, or
+// with the extension off, the bar is back.
+//
+// Nothing else is exposed: these calls, on the session bus.
 
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
@@ -19,6 +27,7 @@ const IFACE = `<node>
     <method name="Dismiss"><arg type="u" name="id" direction="in"/><arg type="b" direction="out"/></method>
     <method name="ActivateGtk"><arg type="s" name="app" direction="in"/><arg type="s" name="id" direction="in"/><arg type="b" direction="out"/></method>
     <method name="DismissGtk"><arg type="s" name="app" direction="in"/><arg type="s" name="id" direction="in"/><arg type="b" direction="out"/></method>
+    <method name="SetPanelHidden"><arg type="b" name="hidden" direction="in"/><arg type="b" direction="out"/></method>
     <property name="Version" type="u" access="read"/>
   </interface>
 </node>`;
@@ -27,6 +36,48 @@ const IFACE = `<node>
 const fdo = id => Main.notificationDaemon?._fdoNotificationDaemon?._notifications?.get(id) ?? null;
 /** One sent to org.gtk.Notifications, by its app and its own id. */
 const gtk = (app, id) => Main.notificationDaemon?._gtkNotificationDaemon?._sources?.[app]?._notifications?.[id] ?? null;
+
+/** Ciel's choice, as saved: settings.json under the user's config folder. */
+function panelWanted() {
+    try {
+        const path = GLib.build_filenamev([GLib.get_user_config_dir(), 'ciel', 'settings.json']);
+        const [, bytes] = GLib.file_get_contents(path);
+        return JSON.parse(new TextDecoder().decode(bytes)).hideGnomePanel === true;
+    } catch {
+        return false;
+    }
+}
+
+/** The top bar out of the way: no room kept for it, shown only in the overview. */
+class PanelHider {
+    constructor() {
+        this._hidden = false;
+        this._overview = [];
+    }
+
+    set(hidden) {
+        if (hidden === this._hidden)
+            return;
+        this._hidden = hidden;
+        const layout = Main.layoutManager;
+        const box = layout.panelBox;
+        // As layout.js adds it, but without the room kept for it when hidden.
+        layout.removeChrome(box);
+        layout.addChrome(box, {affectsStruts: !hidden, trackFullscreen: true});
+        if (hidden) {
+            this._overview = [
+                Main.overview.connect('showing', () => box.show()),
+                Main.overview.connect('hidden', () => box.hide()),
+            ];
+            if (!Main.overview.visible)
+                box.hide();
+        } else {
+            this._overview.forEach(id => Main.overview.disconnect(id));
+            this._overview = [];
+            box.show();
+        }
+    }
+}
 
 function activate(notification) {
     if (!notification)
@@ -44,12 +95,18 @@ function dismiss(notification) {
 
 export default class CielExtension extends Extension {
     enable() {
+        this._panel = new PanelHider();
+        this._panel.set(panelWanted());
         this._dbus = Gio.DBusExportedObject.wrapJSObject(IFACE, {
             Activate: id => activate(fdo(id)),
             Dismiss: id => dismiss(fdo(id)),
             ActivateGtk: (app, id) => activate(gtk(app, id)),
             DismissGtk: (app, id) => dismiss(gtk(app, id)),
-            Version: 1,
+            SetPanelHidden: hidden => {
+                this._panel.set(hidden);
+                return true;
+            },
+            Version: 2,
         });
         this._dbus.export(Gio.DBus.session, PATH);
     }
@@ -57,5 +114,7 @@ export default class CielExtension extends Extension {
     disable() {
         this._dbus?.unexport();
         this._dbus = null;
+        this._panel?.set(false);
+        this._panel = null;
     }
 }

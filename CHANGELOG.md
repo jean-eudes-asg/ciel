@@ -4,6 +4,12 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 
 ## [Unreleased]
 
+### Added
+- GNOME: **Hide GNOME's top bar** (Settings → General), so the island has the
+  top of the screen; the bar still shows in the Activities overview. Done by
+  Ciel's GNOME Shell extension: no other extension needed. The extension is
+  updated, so install it again from Integrations → Notifications.
+
 ### Fixed
 - Linux on GNOME: with Desktop apps on, quitting Ciel gives GNOME its
   notification banners back (Ciel turns them off again when it starts), so

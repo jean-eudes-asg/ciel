@@ -119,6 +119,11 @@ mod imp {
         Ok(status())
     }
 
+    /// The top bar hidden or back, at once; false when the extension isn't running.
+    pub fn set_panel(hidden: bool) -> bool {
+        call("SetPanelHidden", (hidden,)).unwrap_or(false)
+    }
+
     /// Open or dismiss GNOME's own notification; false when the extension
     /// isn't running or GNOME no longer has it.
     pub fn act(shell: &crate::notify::ShellRef, open: bool) -> bool {
@@ -132,7 +137,7 @@ mod imp {
 }
 
 #[cfg(target_os = "linux")]
-pub use imp::act;
+pub use imp::{act, set_panel};
 
 #[tauri::command]
 pub fn gnome_extension_status() -> ExtStatus {

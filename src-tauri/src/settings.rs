@@ -43,6 +43,8 @@ pub struct Settings {
     pub notification_seconds: u32,
     /// Linux: the other apps' notifications show in the island too (notify.rs).
     pub desktop_notifications: bool,
+    /// GNOME: Ciel's extension hides the top bar, the island has the top (gnome_ext.rs).
+    pub hide_gnome_panel: bool,
     /// Who the chat talks to: "anthropic", a cloud provider of
     /// openai_compat.rs ("openai", "google", "openrouter"), or a model server
     /// of local_chat.rs ("ollama", "lmstudio", "custom"). Picked in the chat view.
@@ -210,6 +212,7 @@ impl Default for Settings {
             show_codex_plan_in_notch: false,
             notification_seconds: 7,
             desktop_notifications: false,
+            hide_gnome_panel: false,
             chat_provider: crate::chat::ANTHROPIC.into(),
             chat_models: BTreeMap::new(),
             ollama_url: String::new(),
@@ -491,6 +494,7 @@ mod tests {
   "showCodexPlanInNotch": true,
   "notificationSeconds": 20,
   "desktopNotifications": true,
+  "hideGnomePanel": true,
   "chatProvider": "ollama",
   "chatModels": { "ollama": "llama3.2", "openai": "gpt-x" },
   "ollamaUrl": "http://127.0.0.1:11434",
@@ -933,6 +937,7 @@ mod tests {
                 "showCodexPlanInNotch",
                 "notificationSeconds",
                 "desktopNotifications",
+                "hideGnomePanel",
                 "chatProvider",
                 "chatModels",
                 "ollamaUrl",
