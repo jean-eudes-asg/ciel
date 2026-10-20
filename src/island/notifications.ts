@@ -3,16 +3,17 @@
 // card shows under it — the app, the title, the text, Open and Dismiss —
 // for a few seconds, longer while the pointer is on it. Several at once: the
 // newest shows, with how many more came, and they all fold away together (they
-// are still in their apps). Dictation goes first: a notification that arrives
-// meanwhile waits for it to end.
+// are still in Ciel's list, views/inbox.ts). Dictation goes first: a
+// notification that arrives meanwhile waits for it to end.
 //
 // Open goes back to where it came from (Rust: the tab in Chrome, the mail in
-// Gmail); Dismiss only takes it out of the island.
+// Gmail, the app); Dismiss only takes it out of the island and the list.
 
-import { Bridge, onEvent } from "../core/bridge";
-import { addNotification, parseNotification, SHOW_MS, type CielNotification } from "../core/notifications";
+import { onEvent } from "../core/bridge";
+import { addNotification, MAX_UNSEEN, parseNotification, SHOW_MS, type CielNotification } from "../core/notifications";
 import { State } from "../core/state";
 import { t } from "../i18n/i18n";
+import { noteIcon as appIcon, settle } from "../views/inbox";
 
 export interface NotificationCard {
   /** Its app and title, beside Ciel in the folded island. */
@@ -38,21 +39,6 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, cls = "", text = ""):
 function own(e: HTMLElement): HTMLElement {
   e.addEventListener("mousedown", (ev) => ev.stopPropagation());
   return e;
-}
-
-function appIcon(n: CielNotification, size: number): HTMLElement {
-  const box = el("span", "note-icon");
-  box.style.width = box.style.height = `${size}px`;
-  if (n.icon) {
-    const img = el("img");
-    img.src = n.icon;
-    img.alt = "";
-    img.draggable = false;
-    box.append(img);
-  } else {
-    box.textContent = (n.app.trim()[0] ?? "•").toUpperCase();
-  }
-  return box;
 }
 
 /** Where notifications come from: Rust's events, or a preview page. */
@@ -107,7 +93,7 @@ export function buildNotificationCard(
     queue = queue.filter((q) => q.id !== n.id);
     if (showing?.id === n.id) showing = null;
     stopTimer();
-    void Bridge.notificationAction(n.id, action);
+    settle(n.id, action);
     next();
   }
 
@@ -156,6 +142,7 @@ export function buildNotificationCard(
     // Paused from the tray: Ciel says nothing.
     if (!n || State.paused) return;
     queue = addNotification(queue, n);
+    State.notifications = addNotification(State.notifications, n, MAX_UNSEEN);
     // A newer one takes the place of the one showing.
     showing = null;
     onArrive(n);

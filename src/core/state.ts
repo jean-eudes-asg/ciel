@@ -9,6 +9,7 @@ import {
 import type { CodexPlanUsage, PlanUsage } from "./plan";
 import type { ProviderId } from "./providers";
 import type { FileDiff } from "./diff";
+import type { CielNotification } from "./notifications";
 import type { Bindings } from "./shortcuts";
 import type { AiEngine } from "./brain";
 import { pillColor } from "./pill-colors";
@@ -252,6 +253,10 @@ class AppState {
   codexPlanUsage: CodexPlanUsage | null = null;
   /** A plan card is open in place of the overview's left card. */
   showingPlanDetail = false;
+  /** The notifications kept until opened, dismissed or cleared, newest first (views/inbox.ts). */
+  notifications: CielNotification[] = [];
+  /** The island opens on that list: pressed from the folded island's icons. */
+  openOnNotifications = false;
   /** Which one: the Codex card rather than Claude's. */
   planDetailIsCodex = false;
   /** Per-pill file diffs, in order of reception. Steps carry their ids. */
@@ -531,6 +536,7 @@ class AppState {
    */
   defaultView(): IslandViewName {
     if (this.pendingApproval) return this.pendingApproval.questions ? "question" : "approval";
+    if (this.openOnNotifications) return "notifications";
     return this.tasks.length === 0 ? "empty" : "overview";
   }
 }

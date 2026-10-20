@@ -3,6 +3,9 @@
 
 import "../src/style.css";
 import { buildNotificationCard } from "../src/island/notifications";
+import { State } from "../src/core/state";
+import { buildInbox, buildNoteStack } from "../src/views/inbox";
+import type { ViewActions } from "../src/views/views";
 
 /** A small coloured square as a site's icon. */
 function icon(color: string): string {
@@ -52,3 +55,37 @@ for (const [label, items] of CASES) {
   send();
   setInterval(send, 5000);
 }
+
+// The notifications Ciel keeps (src/views/inbox.ts): the apps waiting beside
+// Ciel in the folded island, and their list in the open one.
+const minutesAgo = (m: number) => Date.now() - m * 60_000;
+State.notifications = [
+  n("i1", { source: "desktop", app: "Thunderbird", title: "Léa Martin", body: "Re: the website. Love the new sky! Can we ship it before Friday?", icon: icon("#0a84ff"), at: minutesAgo(0) }),
+  n("i2", { app: "WhatsApp", title: "Ana", body: "Are we still on for lunch at 1?", icon: icon("#25D366"), at: minutesAgo(4) }),
+  n("i3", { source: "desktop", app: "Slack", title: "#design", body: "Marc: the new island list looks great", icon: icon("#e01e5a"), at: minutesAgo(38) }),
+  n("i4", { source: "gmail", app: "Gmail", title: "GitHub", body: "[ciel] CI passed on main", at: minutesAgo(140) }),
+  n("i5", { source: "desktop", app: "Software Updater", title: "Updated software is available", body: "", at: minutesAgo(60 * 26) }),
+] as typeof State.notifications;
+
+const inboxRoot = document.getElementById("inbox")!;
+const folded = document.createElement("div");
+folded.className = "strip";
+const foldedCiel = document.createElement("i");
+foldedCiel.className = "ciel";
+const stack = buildNoteStack();
+folded.append(foldedCiel, stack.el);
+stack.sync(true);
+
+const actions = { blip() {}, setView() {} } as unknown as ViewActions;
+const inbox = buildInbox(actions);
+inbox.el.classList.add("on");
+const open = document.createElement("div");
+open.className = "open";
+open.innerHTML = '<div class="head"><span style="font:600 11px system-ui;color:#8e939c">header</span></div><div class="body"></div><i class="ciel"></i>';
+open.querySelector(".body")!.append(inbox.el);
+inbox.sync();
+State.subscribe(() => {
+  inbox.sync();
+  stack.sync(true);
+});
+inboxRoot.append(folded, open);

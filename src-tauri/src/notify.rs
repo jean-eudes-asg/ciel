@@ -190,7 +190,7 @@ pub mod desktop {
     use dbus::blocking::Connection;
     use dbus::message::MessageType;
     use dbus::Message;
-    use gtk::gio::prelude::AppInfoExt;
+    use gtk::gio::prelude::{AppInfoExt, IconExt};
     use gtk::gio::{AppLaunchContext, DesktopAppInfo};
     use tauri::AppHandle;
 
@@ -248,7 +248,8 @@ pub mod desktop {
         while current(generation) {
             match conn.channel().blocking_pop_message(Duration::from_secs(30)) {
                 Ok(Some(msg)) => {
-                    if let Some((n, target)) = from_bus(&msg) {
+                    if let Some((mut n, target, icons)) = from_bus(&msg) {
+                        n.icon = icon_url(app, icons);
                         if current(generation) {
                             show(app, n, target);
                         }
@@ -263,22 +264,40 @@ pub mod desktop {
         }
     }
 
-    /// A notification call seen on the bus, as the island's; None for anything else.
-    pub(super) fn from_bus(msg: &Message) -> Option<(Notification, Target)> {
+    /// Where a notification's picture may come from, best first.
+    #[derive(Debug, PartialEq)]
+    pub(super) enum IconFrom {
+        /// The spec's image-data: width, height, rowstride, alpha, bits, the bytes.
+        Pixels { width: i32, height: i32, rowstride: i32, alpha: bool, bits: i32, data: Vec<u8> },
+        /// A file (a path or a file:// URI) or an icon theme's name.
+        Named(String),
+    }
+
+    /// A notification call seen on the bus, as the island's, with where its
+    /// picture may come from; None for anything else.
+    pub(super) fn from_bus(msg: &Message) -> Option<(Notification, Target, Vec<IconFrom>)> {
         if msg.msg_type() != MessageType::MethodCall {
             return None;
         }
         let text = |map: &PropMap, k: &str| map.get(k).and_then(|v| v.as_str()).unwrap_or_default().to_string();
+        let mut icons = Vec::new();
         let (app, entry, title, body) = match &*msg.destination()? {
             FREEDESKTOP => {
                 let mut args = msg.iter_init();
                 let app: String = args.read().ok()?;
                 let _replaces: u32 = args.read().ok()?;
-                let _icon: String = args.read().ok()?;
+                let app_icon: String = args.read().ok()?;
                 let title: String = args.read().ok()?;
                 let body: String = args.read().ok()?;
                 let _actions: Vec<String> = args.read().ok()?;
                 let hints: PropMap = args.read().ok()?;
+                // The spec's names, then the older ones.
+                let hint = |keys: &[&str]| keys.iter().find_map(|k| hints.get(*k));
+                icons.extend(hint(&["image-data", "image_data", "icon_data"]).and_then(|v| pixels(&*v.0)));
+                icons.extend(hint(&["image-path", "image_path"]).and_then(|v| v.as_str()).map(|p| IconFrom::Named(p.to_string())));
+                if !app_icon.trim().is_empty() {
+                    icons.push(IconFrom::Named(app_icon.trim().to_string()));
+                }
                 (app, text(&hints, "desktop-entry"), title, plain(&body))
             }
             GTK => {
@@ -291,9 +310,14 @@ pub mod desktop {
         if title.is_empty() && body.is_empty() {
             return None;
         }
-        // Sandboxed apps come without a name: their desktop entry has one.
+        // Sandboxed apps come without a name: their desktop entry has one,
+        // and the app's own icon after the notification's.
+        // No desktop entry said: the app's name may be one ("discord").
+        let entry = if entry.is_empty() && app_info(&app.trim().to_lowercase()).is_some() { app.trim().to_lowercase() } else { entry };
+        let info = app_info(&entry);
+        icons.extend(info.as_ref().and_then(|i| i.icon()).and_then(|i| IconExt::to_string(&i)).map(|i| IconFrom::Named(i.to_string())));
         let app = match app.trim() {
-            "" => app_info(&entry).map(|i| i.name().to_string()).unwrap_or_else(|| entry.clone()),
+            "" => info.map(|i| i.name().to_string()).unwrap_or_else(|| entry.clone()),
             a => a.to_string(),
         };
         let id = if entry.is_empty() { app.to_lowercase() } else { entry };
@@ -307,7 +331,67 @@ pub mod desktop {
             at: now_ms(),
             tag: None,
         };
-        Some((notification, Target::App(id)))
+        Some((notification, Target::App(id), icons))
+    }
+
+    /// image-data, a (iiibiiay): checked before GdkPixbuf reads it.
+    fn pixels(v: &dyn RefArg) -> Option<IconFrom> {
+        let mut it = v.as_iter()?;
+        let width = it.next()?.as_i64()? as i32;
+        let height = it.next()?.as_i64()? as i32;
+        let rowstride = it.next()?.as_i64()? as i32;
+        let alpha = it.next()?.as_i64()? != 0;
+        let bits = it.next()?.as_i64()? as i32;
+        let channels = it.next()?.as_i64()? as i32;
+        let data: Vec<u8> = it.next()?.as_iter()?.filter_map(|b| b.as_u64()).map(|b| b as u8).collect();
+        let fits = (1..=1024).contains(&width)
+            && (1..=1024).contains(&height)
+            && bits == 8
+            && channels == if alpha { 4 } else { 3 }
+            && rowstride >= width * channels
+            && data.len() >= (rowstride * (height - 1) + width * channels) as usize;
+        fits.then_some(IconFrom::Pixels { width, height, rowstride, alpha, bits, data })
+    }
+
+    /// The pixel size icons are drawn at: crisp in the list's 28 px on a 2x screen.
+    const ICON_PX: i32 = 64;
+
+    /// The first picture that can be drawn, as a PNG data URL. GTK's icon theme
+    /// is the main thread's, so the drawing happens there.
+    fn icon_url(app: &AppHandle, icons: Vec<IconFrom>) -> Option<String> {
+        if icons.is_empty() {
+            return None;
+        }
+        let (tx, rx) = std::sync::mpsc::channel();
+        app.run_on_main_thread(move || {
+            let _ = tx.send(icons.iter().find_map(render));
+        })
+        .ok()?;
+        rx.recv_timeout(Duration::from_secs(2)).ok().flatten()
+    }
+
+    fn render(from: &IconFrom) -> Option<String> {
+        use base64::Engine as _;
+        use gtk::gdk_pixbuf::{Colorspace, InterpType, Pixbuf};
+        use gtk::prelude::IconThemeExt;
+        let pixbuf = match from {
+            IconFrom::Pixels { width, height, rowstride, alpha, bits, data } => {
+                let full = Pixbuf::from_bytes(&gtk::glib::Bytes::from(data.as_slice()), Colorspace::Rgb, *alpha, *bits, *width, *height, *rowstride);
+                let scale = ICON_PX as f64 / (*width).max(*height) as f64;
+                let (w, h) = (((*width as f64 * scale).round() as i32).max(1), ((*height as f64 * scale).round() as i32).max(1));
+                full.scale_simple(w, h, InterpType::Bilinear)?
+            }
+            IconFrom::Named(name) => {
+                let name = name.strip_prefix("file://").unwrap_or(name);
+                if name.starts_with('/') {
+                    Pixbuf::from_file_at_size(name, ICON_PX, ICON_PX).ok()?
+                } else {
+                    gtk::IconTheme::default()?.load_icon(name, ICON_PX, gtk::IconLookupFlags::FORCE_SIZE).ok()??
+                }
+            }
+        };
+        let png = pixbuf.save_to_bufferv("png", &[]).ok()?;
+        Some(format!("data:image/png;base64,{}", base64::engine::general_purpose::STANDARD.encode(png)))
     }
 
     /// The body's markup (the spec allows <b>, <i>, <a>...) as plain text.
@@ -329,7 +413,10 @@ pub mod desktop {
         if id.is_empty() {
             return None;
         }
-        DesktopAppInfo::new(&format!("{id}.desktop"))
+        // A snap is "snap.discord" to the portal, often just "discord" to
+        // itself, and discord_discord.desktop on disk.
+        let snap = id.strip_prefix("snap.").unwrap_or(id);
+        DesktopAppInfo::new(&format!("{id}.desktop")).or_else(|| DesktopAppInfo::new(&format!("{snap}_{snap}.desktop")))
     }
 
     const BANNERS: [&str; 2] = ["org.gnome.desktop.notifications", "show-banners"];
@@ -425,7 +512,7 @@ mod tests {
                 .append3("Ana", "Lunch <b>at 1</b> &amp; coffee?", Vec::<String>::new())
                 .append2(hints, -1i32)
         };
-        let (n, target) = desktop::from_bus(&call("org.freedesktop.Notifications")).unwrap();
+        let (n, target, _) = desktop::from_bus(&call("org.freedesktop.Notifications")).unwrap();
         assert_eq!((n.source.as_str(), n.app.as_str(), n.title.as_str()), ("desktop", "Thunderbird", "Ana"));
         assert_eq!(n.body, "Lunch at 1 & coffee?");
         assert!(n.id.starts_with("desktop-"));
@@ -438,9 +525,40 @@ mod tests {
         let gtk = Message::new_method_call("org.gtk.Notifications", "/org/gtk/Notifications", "org.gtk.Notifications", "AddNotification")
             .unwrap()
             .append3("org.example.NoSuchCalendar", "n1", fields);
-        let (n, target) = desktop::from_bus(&gtk).unwrap();
+        let (n, target, _) = desktop::from_bus(&gtk).unwrap();
         assert_eq!((n.app.as_str(), n.title.as_str(), n.body.as_str()), ("org.example.NoSuchCalendar", "Meeting", ""));
         assert_eq!(target, Target::App("org.example.NoSuchCalendar".into()));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn a_notifications_pictures_come_best_first_and_bad_pixels_are_refused() {
+        use desktop::IconFrom;
+        use dbus::arg::{PropMap, RefArg, Variant};
+        use dbus::Message;
+        let call = |data_len: usize| {
+            let mut hints = PropMap::new();
+            let image = (2i32, 1i32, 8i32, true, 8i32, 4i32, vec![7u8; data_len]);
+            hints.insert("image-data".into(), Variant(Box::new(image) as Box<dyn RefArg>));
+            hints.insert("image-path".into(), Variant(Box::new("/tmp/avatar.png".to_string()) as Box<dyn RefArg>));
+            Message::new_method_call("org.freedesktop.Notifications", "/org/freedesktop/Notifications", "org.freedesktop.Notifications", "Notify")
+                .unwrap()
+                .append3("Chat", 0u32, "chat-app")
+                .append3("Ana", "Hi", Vec::<String>::new())
+                .append2(hints, -1i32)
+        };
+        let (_, _, icons) = desktop::from_bus(&call(8)).unwrap();
+        assert_eq!(
+            icons,
+            [
+                IconFrom::Pixels { width: 2, height: 1, rowstride: 8, alpha: true, bits: 8, data: vec![7; 8] },
+                IconFrom::Named("/tmp/avatar.png".into()),
+                IconFrom::Named("chat-app".into()),
+            ]
+        );
+        // Fewer bytes than the picture says: never handed to GdkPixbuf.
+        let (_, _, icons) = desktop::from_bus(&call(3)).unwrap();
+        assert!(!icons.iter().any(|i| matches!(i, IconFrom::Pixels { .. })));
     }
 
     #[test]

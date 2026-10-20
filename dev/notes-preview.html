@@ -10,11 +10,17 @@
       .case { display: flex; flex-direction: column; align-items: center; gap: 8px; }
       .strip { position: relative; width: 288px; height: 32px; background: #000; border-radius: 0 0 14px 14px; }
       .strip .ciel { position: absolute; left: 30px; top: 6px; width: 20px; height: 20px; border-radius: 50%; background: #f5f6f8; }
+      .inbox-cases { display: flex; flex-direction: column; align-items: center; gap: 28px; margin-top: 220px; }
+      .open { position: relative; width: 640px; height: 280px; background: #000; border-radius: 0 0 22px 22px; box-sizing: border-box; padding: 8px 10px 10px; display: flex; flex-direction: column; }
+      .open .head { flex: 0 0 34px; display: flex; align-items: center; padding-left: 4px; }
+      .open .body { position: relative; flex: 1 1 auto; }
+      .open .ciel { position: absolute; left: 27px; top: 55px; width: 38px; height: 38px; border-radius: 50%; background: #f5f6f8; z-index: 2; }
     </style>
   </head>
   <body>
     <h1>Notifications in the folded island (src/island/notifications.ts)</h1>
     <div class="cases" id="cases"></div>
+    <div class="inbox-cases" id="inbox"></div>
     <script type="module" src="./notes-preview.ts"></script>
   </body>
 </html>

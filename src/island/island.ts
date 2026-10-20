@@ -21,6 +21,7 @@ import { UploadCanvas } from "../upload/canvas";
 import { USC, UploadSeq } from "../upload/sequence";
 import { closePlanCard, openPlanColor, planCardOpen } from "../views/usage";
 import { buildPlanRings, type PlanRings } from "../views/plan-rings";
+import { buildNoteStack, type NoteStack } from "../views/inbox";
 import { buildFlowStrip, type FlowStrip } from "./flow";
 import { buildNotificationCard, type NotificationCard } from "./notifications";
 import { buildHeader, buildViews, type ViewActions, type ViewHost } from "../views/views";
@@ -65,6 +66,7 @@ export class Island {
   private notes!: NotificationCard;
   private countdown!: HTMLElement;
   private clock!: HTMLElement;
+  private noteStack!: NoteStack;
   private clockTimer = 0;
   private wakeStrip!: HTMLElement;
 
@@ -270,6 +272,7 @@ export class Island {
     );
     this.countdown = h("div", { id: "countdown" });
     this.clock = h("div", { id: "island-clock" });
+    this.noteStack = buildNoteStack();
 
     this.header = buildHeader(actions);
     this.views = buildViews(actions, () => this.animateGeometry(false));
@@ -304,6 +307,7 @@ export class Island {
       this.botCanvas,
       this.miniGrid,
       this.clock,
+      this.noteStack.el,
       this.planRings.el,
       this.planRings.pop,
       this.flowStrip.el,
@@ -378,6 +382,7 @@ export class Island {
     }
     if (mode !== "expanded") {
       closePlanCard();
+      State.openOnNotifications = false;
       this.engine.resetMorph();
       // Nothing can be seen of the sequence once the island is shut, and leaving
       // it running would keep the frame loop awake — the island must cost
@@ -1172,6 +1177,8 @@ export class Island {
     // Open, it sits in the header row, between the tabs and the buttons.
     this.clock.classList.toggle("open", expanded);
     this.syncClock((State.mode === "compact" && !busy) || (live && State.view !== "confused"));
+    this.noteStack.sync(State.mode === "compact" && !busy);
+    this.fsm.hold(this.mustStay());
 
     // Plan usage rings: beside the mini grid, or at the end when it is empty.
     this.planRings.sync();
@@ -1192,11 +1199,16 @@ export class Island {
     this.clockTimer = window.setTimeout(() => this.syncClock(true), 60_000 - (now.getTime() % 60_000));
   }
 
+  /** Dictation, a notification showing, or some waiting in the list: the folded island stays on screen. */
+  private mustStay(): boolean {
+    return this.flowStrip.active || this.notes.active || State.notifications.length > 0;
+  }
+
   /** Dictation or a notification in the folded island: it shows them, and stays while they do. */
   private onOverlayChange() {
     const dictating = this.flowStrip.active;
     if (dictating && State.mode === "hidden") this.revealSilently();
-    this.fsm.hold(dictating || this.notes.active);
+    this.fsm.hold(this.mustStay());
     this.applyGeometry();
     State.notify();
   }

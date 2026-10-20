@@ -5552,6 +5552,17 @@
    "pt-BR": "As notificações dos seus outros apps (Thunderbird, Slack, mensagens do sistema...) aparecem na ilha. No GNOME, os avisos dele ficam desligados enquanto isto estiver ativado e voltam depois.",
    "ru": "Уведомления других приложений (Thunderbird, Slack, системные сообщения...) показываются на острове. В GNOME его собственные баннеры выключены, пока это включено, и возвращаются потом.",
    "id": "Notifikasi dari aplikasi lain (Thunderbird, Slack, pesan sistem...) muncul di pulau. Di GNOME, banner miliknya dimatikan selama ini aktif, lalu kembali setelahnya."
+  },
+  "You're all caught up.": {
+   "zh-Hans": "全部看完了。",
+   "hi": "सब देख लिया।",
+   "es": "Estás al día.",
+   "ar": "لا جديد لديك.",
+   "fr": "Vous êtes à jour.",
+   "bn": "সব দেখা হয়ে গেছে।",
+   "pt-BR": "Tudo em dia.",
+   "ru": "Всё просмотрено.",
+   "id": "Semua sudah dilihat."
   }
  }
 }

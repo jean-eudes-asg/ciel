@@ -28,6 +28,8 @@ export const SHOW_MS = 7000;
 export const SHOW_CHOICES = [5, 7, 10, 20, 0] as const;
 /** The most kept waiting. */
 export const MAX_QUEUED = 20;
+/** The most kept in Ciel's list until seen (Rust keeps what Open needs for 64). */
+export const MAX_UNSEEN = 50;
 
 /** Longest title and body shown: a page can send a book. */
 const MAX_TITLE = 160;

@@ -2,6 +2,15 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **Ciel keeps your notifications**: the ones you haven't opened stay, their
+  apps' icons beside Ciel in the folded island, which stays on screen while
+  any wait. A press there, or the bell in the header, opens the list; a press
+  on one opens it in its app, its ✕ dismisses it, Clear empties the list.
+- Linux: notifications show their app's icon, or the picture they came with.
+
 ## [0.2.5] - 2026-10-20
 
 ### Added

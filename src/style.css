@@ -495,6 +495,11 @@ body {
   object-fit: cover;
 }
 
+/* An app's own icon has its own shape: no tile behind it. */
+.note-icon:has(img) {
+  background: transparent;
+}
+
 .note-strip-title {
   flex: 1 1 auto;
   min-width: 0;
@@ -594,6 +599,253 @@ body {
 
 .note-dismiss:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* The notifications Ciel keeps (views/inbox.ts): the apps waiting, beside
+   Ciel in the folded island, and their list in the open one. */
+#note-stack {
+  position: absolute;
+  top: 0;
+  left: 58px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  transition: opacity 0.25s ease-in-out;
+}
+
+#note-stack.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.note-stack-icons {
+  display: flex;
+}
+
+.note-stack-icons .note-icon {
+  position: relative;
+  box-shadow: 0 0 0 1.5px #000;
+}
+
+.note-stack-icons .note-icon + .note-icon {
+  margin-left: -4px;
+}
+
+.note-stack-icons .note-icon:nth-child(1) {
+  z-index: 3;
+}
+
+.note-stack-icons .note-icon:nth-child(2) {
+  z-index: 2;
+}
+
+.note-count,
+.tab-badge {
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font: 700 9.5px/15px var(--font);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.tab-notes {
+  position: relative;
+}
+
+.tab-badge {
+  position: absolute;
+  top: -3px;
+  right: -2px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  font-size: 9px;
+  line-height: 14px;
+  box-shadow: 0 0 0 1.5px #000;
+}
+
+.inbox-body {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 8px 8px 74px;
+}
+
+.inbox-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px 8px 8px;
+}
+
+.inbox-title {
+  font: 600 13px var(--font);
+  color: var(--ink);
+}
+
+.inbox-count {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+  font: 600 10.5px var(--font);
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+}
+
+.inbox-count:empty {
+  display: none;
+}
+
+.inbox-clear {
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--dim-2);
+  font: 600 11.5px var(--font);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.inbox-clear:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--ink);
+}
+
+.inbox-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: none;
+  /* The last row fades out where the list goes on. */
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+  padding-bottom: 10px;
+}
+
+.inbox-list::-webkit-scrollbar {
+  display: none;
+}
+
+.inbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 8px 6px 8px 8px;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  animation: inbox-in 0.28s ease-out;
+}
+
+.inbox-row:hover {
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.inbox-row .note-icon {
+  margin-top: 1px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.inbox-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.inbox-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font: 500 10.5px var(--font);
+  color: var(--dim-3);
+  white-space: nowrap;
+}
+
+.inbox-app {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  color: var(--dim-2);
+}
+
+.inbox-when {
+  flex: 0 0 auto;
+}
+
+.inbox-when::before {
+  content: "·";
+  margin-right: 6px;
+}
+
+.inbox-row-title {
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 600 12.5px/1.35 var(--font);
+  color: var(--ink);
+}
+
+.inbox-row-body {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font: 400 11.5px/1.4 var(--font);
+  color: #aeb2b9;
+}
+
+.inbox-dismiss {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dim-3);
+  font: 600 10px var(--font);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.inbox-row:hover .inbox-dismiss {
+  opacity: 1;
+}
+
+.inbox-dismiss:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+}
+
+.inbox-empty {
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  font: 500 12px var(--font);
+  color: var(--dim-3);
+}
+
+@keyframes inbox-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
 }
 
 /* A mini Ciel: the slot is the body, the canvas is larger and overflows it so
