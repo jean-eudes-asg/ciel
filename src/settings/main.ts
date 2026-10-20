@@ -1465,6 +1465,11 @@ async function render() {
           settings.notificationSeconds = s;
           void save();
         },
+        desktop: settings.desktopNotifications,
+        setDesktop: (on) => {
+          settings.desktopNotifications = on;
+          void save();
+        },
       }),
       integrationsSection(present),
     ],

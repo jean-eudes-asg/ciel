@@ -123,6 +123,8 @@ export interface Settings {
   showCodexPlanInNotch: boolean;
   /** How long a notification shows in the island, in seconds; 0: until opened or dismissed. */
   notificationSeconds: number;
+  /** Linux: the other apps' notifications show in the island too. */
+  desktopNotifications: boolean;
   /** Who the chat talks to (see core/providers.ts); picked in the chat view. */
   chatProvider: ProviderId;
   /** The model picked for each provider other than Anthropic, by provider id. */
@@ -185,6 +187,7 @@ export const DEFAULT_SETTINGS: Settings = {
   planRelayInstalled: false,
   showCodexPlanInNotch: false,
   notificationSeconds: 7,
+  desktopNotifications: false,
   chatProvider: "anthropic",
   chatModels: {},
   ollamaUrl: "",

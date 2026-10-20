@@ -1,7 +1,8 @@
 // Notifications from other apps, to the island (island/notifications.ts):
 // what websites show in Chrome, Edge or Brave — the Ciel for Chrome extension
 // catches them in the page and its bridge (`ciel-hook --chrome`) hands them
-// over the pipe — and new mail in Gmail (gmail.rs).
+// over the pipe — new mail in Gmail (gmail.rs) and, on Linux, what the other
+// apps of the desktop notify (`desktop` below).
 //
 // The island shows each one; Open goes back where it came from: to the tab
 // in the browser (the bridge brings it forward and the page gets its click),
@@ -26,7 +27,7 @@ use tokio::sync::mpsc;
 #[serde(rename_all = "camelCase")]
 pub struct Notification {
     pub id: String,
-    /// "chrome" or "gmail".
+    /// "chrome", "gmail" or "desktop".
     pub source: String,
     /// The app or site: "Gmail", "WhatsApp"…
     pub app: String,
@@ -46,6 +47,9 @@ pub enum Target {
     Bridge { bridge: String, key: String },
     /// A page to open (a mail in Gmail).
     Url(String),
+    /// The app that notified, by its desktop entry id.
+    #[cfg(target_os = "linux")]
+    App(String),
 }
 
 /// The last notifications' targets, newest last.
@@ -138,6 +142,8 @@ pub fn notification_action(id: String, action: String) {
         (Target::Bridge { bridge, key }, "open") => tell_bridge(&bridge, json!({"type": "click", "key": key})),
         (Target::Bridge { bridge, key }, "dismiss") => tell_bridge(&bridge, json!({"type": "close", "key": key})),
         (Target::Url(url), "open") => crate::platform::open_url(&url),
+        #[cfg(target_os = "linux")]
+        (Target::App(id), "open") => desktop::open(&id),
         _ => {}
     }
 }
@@ -167,6 +173,200 @@ pub fn forget(bridge: &str) {
     let mut bridges = BRIDGES.lock().unwrap();
     bridges.retain(|(id, _)| id != bridge);
     crate::log::line(format!("notifications: browser bridge gone ({} left)", bridges.len()));
+}
+
+/// Linux: what the other apps of the desktop notify (Settings → Integrations →
+/// Notifications), read off the session bus as a monitor: the calls to the
+/// notification server (org.freedesktop.Notifications, where the portal sends
+/// sandboxed apps' too) and to GNOME's own (org.gtk.Notifications). The desktop
+/// keeps its own: the switch turns GNOME's banners off (Do Not Disturb), and
+/// these still come.
+#[cfg(target_os = "linux")]
+pub mod desktop {
+    use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+    use std::time::Duration;
+
+    use dbus::arg::{PropMap, RefArg};
+    use dbus::blocking::Connection;
+    use dbus::message::MessageType;
+    use dbus::Message;
+    use gtk::gio::prelude::AppInfoExt;
+    use gtk::gio::{AppLaunchContext, DesktopAppInfo};
+    use tauri::AppHandle;
+
+    use super::{clip, next_id, now_ms, show, Notification, Target, MAX_TEXT};
+
+    const FREEDESKTOP: &str = "org.freedesktop.Notifications";
+    const GTK: &str = "org.gtk.Notifications";
+    // No destination in the rules: GNOME's notification daemon passes each
+    // call on to the shell, and only the one to the well-known name is kept.
+    const RULES: [&str; 2] = [
+        "type='method_call',interface='org.freedesktop.Notifications',member='Notify'",
+        "type='method_call',interface='org.gtk.Notifications',member='AddNotification'",
+    ];
+
+    static ON: AtomicBool = AtomicBool::new(false);
+    static GENERATION: AtomicU64 = AtomicU64::new(0);
+
+    pub fn sync(app: &AppHandle, on: bool) {
+        if ON.swap(on, Ordering::SeqCst) == on {
+            return;
+        }
+        let generation = GENERATION.fetch_add(1, Ordering::SeqCst) + 1;
+        if !on {
+            return;
+        }
+        let app = app.clone();
+        let spawned = std::thread::Builder::new()
+            .name("ciel-notifications".into())
+            .spawn(move || listen(&app, generation));
+        if let Err(err) = spawned {
+            crate::log::line(format!("notifications: no desktop listener: {err}"));
+        }
+    }
+
+    fn current(generation: u64) -> bool {
+        ON.load(Ordering::SeqCst) && GENERATION.load(Ordering::SeqCst) == generation
+    }
+
+    fn listen(app: &AppHandle, generation: u64) {
+        let conn = match Connection::new_session() {
+            Ok(c) => c,
+            Err(err) => {
+                crate::log::line(format!("notifications: no session bus: {err}"));
+                return;
+            }
+        };
+        let bus = conn.with_proxy("org.freedesktop.DBus", "/org/freedesktop/DBus", Duration::from_secs(5));
+        let monitor: Result<(), _> = bus.method_call("org.freedesktop.DBus.Monitoring", "BecomeMonitor", (RULES.to_vec(), 0u32));
+        if let Err(err) = monitor {
+            crate::log::line(format!("notifications: the bus won't let Ciel listen: {err}"));
+            return;
+        }
+        crate::log::line("notifications: listening to the desktop's");
+        // ponytail: a monitor can't be woken, so once turned off the thread ends at its next wait (30 s at most).
+        while current(generation) {
+            match conn.channel().blocking_pop_message(Duration::from_secs(30)) {
+                Ok(Some(msg)) => {
+                    if let Some((n, target)) = from_bus(&msg) {
+                        if current(generation) {
+                            show(app, n, target);
+                        }
+                    }
+                }
+                Ok(None) => {}
+                Err(err) => {
+                    crate::log::line(format!("notifications: bus lost: {err}"));
+                    break;
+                }
+            }
+        }
+    }
+
+    /// A notification call seen on the bus, as the island's; None for anything else.
+    pub(super) fn from_bus(msg: &Message) -> Option<(Notification, Target)> {
+        if msg.msg_type() != MessageType::MethodCall {
+            return None;
+        }
+        let text = |map: &PropMap, k: &str| map.get(k).and_then(|v| v.as_str()).unwrap_or_default().to_string();
+        let (app, entry, title, body) = match &*msg.destination()? {
+            FREEDESKTOP => {
+                let mut args = msg.iter_init();
+                let app: String = args.read().ok()?;
+                let _replaces: u32 = args.read().ok()?;
+                let _icon: String = args.read().ok()?;
+                let title: String = args.read().ok()?;
+                let body: String = args.read().ok()?;
+                let _actions: Vec<String> = args.read().ok()?;
+                let hints: PropMap = args.read().ok()?;
+                (app, text(&hints, "desktop-entry"), title, plain(&body))
+            }
+            GTK => {
+                let (entry, _id, fields): (String, String, PropMap) = msg.read3().ok()?;
+                (String::new(), entry, text(&fields, "title"), text(&fields, "body"))
+            }
+            _ => return None,
+        };
+        let (title, body) = (clip(title.trim(), MAX_TEXT), clip(body.trim(), MAX_TEXT));
+        if title.is_empty() && body.is_empty() {
+            return None;
+        }
+        // Sandboxed apps come without a name: their desktop entry has one.
+        let app = match app.trim() {
+            "" => app_info(&entry).map(|i| i.name().to_string()).unwrap_or_else(|| entry.clone()),
+            a => a.to_string(),
+        };
+        let id = if entry.is_empty() { app.to_lowercase() } else { entry };
+        let notification = Notification {
+            id: next_id("desktop"),
+            source: "desktop".into(),
+            app: clip(&app, 80),
+            title,
+            body,
+            icon: None,
+            at: now_ms(),
+            tag: None,
+        };
+        Some((notification, Target::App(id)))
+    }
+
+    /// The body's markup (the spec allows <b>, <i>, <a>...) as plain text.
+    fn plain(body: &str) -> String {
+        let mut out = String::with_capacity(body.len());
+        let mut in_tag = false;
+        for c in body.chars() {
+            match c {
+                '<' => in_tag = true,
+                '>' if in_tag => in_tag = false,
+                _ if !in_tag => out.push(c),
+                _ => {}
+            }
+        }
+        out.replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&apos;", "'").replace("&amp;", "&")
+    }
+
+    fn app_info(id: &str) -> Option<DesktopAppInfo> {
+        if id.is_empty() {
+            return None;
+        }
+        DesktopAppInfo::new(&format!("{id}.desktop"))
+    }
+
+    const BANNERS: [&str; 2] = ["org.gnome.desktop.notifications", "show-banners"];
+
+    /// The switch, flipped: GNOME's banners go while Ciel shows the
+    /// notifications, and come back after, unless they were off already. A
+    /// file says Ciel was the one to turn them off. Elsewhere than GNOME,
+    /// nothing happens.
+    pub fn quiet_desktop(on: bool) {
+        let marker = crate::platform::config_dir().join("banners-off-by-ciel");
+        if on {
+            if gsettings(&["get", BANNERS[0], BANNERS[1]]).as_deref() == Some("true")
+                && gsettings(&["set", BANNERS[0], BANNERS[1], "false"]).is_some()
+            {
+                let _ = std::fs::write(&marker, "");
+            }
+        } else if marker.exists() {
+            gsettings(&["set", BANNERS[0], BANNERS[1], "true"]);
+            let _ = std::fs::remove_file(&marker);
+        }
+    }
+
+    fn gsettings(args: &[&str]) -> Option<String> {
+        let out = std::process::Command::new("gsettings").args(args).output().ok()?;
+        out.status.success().then(|| String::from_utf8_lossy(&out.stdout).trim().to_string())
+    }
+
+    /// Open: the app comes forward (a running one, started again, brings its window up).
+    pub fn open(id: &str) {
+        let Some(info) = app_info(id) else {
+            crate::log::line(format!("notifications: no app {id} to open"));
+            return;
+        };
+        if let Err(err) = info.launch(&[], None::<&AppLaunchContext>) {
+            crate::log::line(format!("notifications: could not open {id}: {err}"));
+        }
+    }
 }
 
 #[cfg(test)]
@@ -209,6 +409,38 @@ mod tests {
         assert_eq!(n.icon, None);
         assert_eq!(n.title.len(), MAX_TEXT);
         assert_eq!(n.app, "Chrome");
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn a_desktop_apps_notification_becomes_the_islands() {
+        use dbus::arg::{PropMap, RefArg, Variant};
+        use dbus::Message;
+        let call = |dest: &str| {
+            let mut hints = PropMap::new();
+            hints.insert("desktop-entry".into(), Variant(Box::new("thunderbird".to_string()) as Box<dyn RefArg>));
+            Message::new_method_call(dest, "/org/freedesktop/Notifications", "org.freedesktop.Notifications", "Notify")
+                .unwrap()
+                .append3("Thunderbird", 0u32, "")
+                .append3("Ana", "Lunch <b>at 1</b> &amp; coffee?", Vec::<String>::new())
+                .append2(hints, -1i32)
+        };
+        let (n, target) = desktop::from_bus(&call("org.freedesktop.Notifications")).unwrap();
+        assert_eq!((n.source.as_str(), n.app.as_str(), n.title.as_str()), ("desktop", "Thunderbird", "Ana"));
+        assert_eq!(n.body, "Lunch at 1 & coffee?");
+        assert!(n.id.starts_with("desktop-"));
+        assert_eq!(target, Target::App("thunderbird".into()));
+        // GNOME's daemon handing the same call to the shell is not a second one.
+        assert!(desktop::from_bus(&call(":1.42")).is_none());
+
+        let mut fields = PropMap::new();
+        fields.insert("title".into(), Variant(Box::new("Meeting".to_string()) as Box<dyn RefArg>));
+        let gtk = Message::new_method_call("org.gtk.Notifications", "/org/gtk/Notifications", "org.gtk.Notifications", "AddNotification")
+            .unwrap()
+            .append3("org.example.NoSuchCalendar", "n1", fields);
+        let (n, target) = desktop::from_bus(&gtk).unwrap();
+        assert_eq!((n.app.as_str(), n.title.as_str(), n.body.as_str()), ("org.example.NoSuchCalendar", "Meeting", ""));
+        assert_eq!(target, Target::App("org.example.NoSuchCalendar".into()));
     }
 
     #[test]

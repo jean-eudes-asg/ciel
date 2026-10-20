@@ -1,10 +1,12 @@
 // Settings → Integrations → Notifications: Ciel for Chrome. The bridge is made
 // known to the browsers only from here, after the user has seen every place
 // written (src-tauri/src/browser_bridge.rs); the extension itself is loaded by
-// hand from the release's Ciel-for-Chrome.zip. Gmail is a pill of its own.
+// hand from the release's Ciel-for-Chrome.zip. Gmail is a pill of its own. On
+// Linux, the other apps' notifications are a switch (src-tauri/src/notify.rs).
 
 import { Bridge } from "../core/bridge";
 import { SHOW_CHOICES } from "../core/notifications";
+import { toggle } from "../hub/ui";
 import { t } from "../i18n/i18n";
 import { clear, h } from "../views/dom";
 import { statusDot } from "./parts";
@@ -15,7 +17,11 @@ export interface NotificationPrefs {
   /** How long a notification shows, in seconds; 0 until opened or dismissed. */
   seconds: number;
   setSeconds(seconds: number): void;
+  desktop: boolean;
+  setDesktop(on: boolean): void;
 }
+
+const LINUX = !navigator.userAgent.includes("Windows");
 
 /** How long a notification shows in the island. */
 function durationRow(prefs: NotificationPrefs): HTMLElement {
@@ -37,8 +43,17 @@ export function notificationsSection(prefs: NotificationPrefs): HTMLElement {
     const status = await Bridge.browserBridgeStatus();
     const installed = status?.installed === true;
     clear(body);
+    body.append(durationRow(prefs));
+    if (LINUX) {
+      body.append(
+        h("div", { class: "row" }, h("label", { text: t("Desktop apps") }), toggle(prefs.desktop, prefs.setDesktop)),
+        h("div", {
+          class: "hint",
+          text: t("Your other apps' notifications (Thunderbird, Slack, system messages...) show in the island. On GNOME, its own banners are off while this is on, and come back after."),
+        }),
+      );
+    }
     body.append(
-      durationRow(prefs),
       h("div", {
         class: "hint",
         text: t("Websites' notifications from Chrome, Edge or Brave show in the island, through the Ciel for Chrome extension, instead of the browser's popups."),

@@ -2,6 +2,14 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- Linux: **your other apps' notifications in the island**: Thunderbird,
+  Slack, system messages... Open brings the app forward. Off until you turn it
+  on (Settings → Integrations → Notifications → Desktop apps). On GNOME the
+  switch turns the desktop's own banners off too, and back on after.
+
 ## [0.2.4] - 2026-10-20
 
 ### Added

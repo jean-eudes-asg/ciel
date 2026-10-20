@@ -41,6 +41,8 @@ pub struct Settings {
     /// How long a notification shows in the island, in seconds; 0 keeps it
     /// until it is opened or dismissed (Settings → Integrations → Notifications).
     pub notification_seconds: u32,
+    /// Linux: the other apps' notifications show in the island too (notify.rs).
+    pub desktop_notifications: bool,
     /// Who the chat talks to: "anthropic", a cloud provider of
     /// openai_compat.rs ("openai", "google", "openrouter"), or a model server
     /// of local_chat.rs ("ollama", "lmstudio", "custom"). Picked in the chat view.
@@ -207,6 +209,7 @@ impl Default for Settings {
             plan_relay_installed: false,
             show_codex_plan_in_notch: false,
             notification_seconds: 7,
+            desktop_notifications: false,
             chat_provider: crate::chat::ANTHROPIC.into(),
             chat_models: BTreeMap::new(),
             ollama_url: String::new(),
@@ -487,6 +490,7 @@ mod tests {
   "planRelayInstalled": true,
   "showCodexPlanInNotch": true,
   "notificationSeconds": 20,
+  "desktopNotifications": true,
   "chatProvider": "ollama",
   "chatModels": { "ollama": "llama3.2", "openai": "gpt-x" },
   "ollamaUrl": "http://127.0.0.1:11434",
@@ -928,6 +932,7 @@ mod tests {
                 "planRelayInstalled",
                 "showCodexPlanInNotch",
                 "notificationSeconds",
+                "desktopNotifications",
                 "chatProvider",
                 "chatModels",
                 "ollamaUrl",

@@ -94,16 +94,17 @@ fn boot(app: AppHandle, shared: State<Shared>) -> BootInfo {
 
 #[tauri::command]
 fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
-    let (screen_changed, autostart_changed, shortcuts_changed) = {
+    let (screen_changed, autostart_changed, shortcuts_changed, desktop_changed) = {
         let mut current = shared.settings.lock().unwrap();
         let screen_changed = current.screen != settings.screen;
         let autostart_changed = current.autostart != settings.autostart;
         let shortcuts_changed = current.shortcuts != settings.shortcuts;
+        let desktop_changed = current.desktop_notifications != settings.desktop_notifications;
         // Where Ciel sits on the desktop is desktop.rs's to say, not a webview's.
         let mut settings = settings.clone();
         settings.desktop_cloud = current.desktop_cloud.clone();
         *current = settings;
-        (screen_changed, autostart_changed, shortcuts_changed)
+        (screen_changed, autostart_changed, shortcuts_changed, desktop_changed)
     };
     let settings = shared.settings.lock().unwrap().clone();
     if let Err(err) = settings::save(&settings) {
@@ -123,6 +124,15 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     integrations::settings_saved(&app, &settings.active_integrations);
     spotify::sync(&app, &settings.active_integrations);
     gmail::sync(&app, &settings.active_integrations, false);
+    #[cfg(target_os = "linux")]
+    {
+        notify::desktop::sync(&app, settings.desktop_notifications);
+        if desktop_changed {
+            notify::desktop::quiet_desktop(settings.desktop_notifications);
+        }
+    }
+    #[cfg(not(target_os = "linux"))]
+    let _ = desktop_changed;
     if shortcuts_changed {
         shortcuts::apply(&app, &settings.shortcuts);
     }
@@ -903,6 +913,8 @@ pub fn run() {
             integrations::start(handle.clone());
             spotify::sync(&handle, &loaded.active_integrations);
             gmail::sync(&handle, &loaded.active_integrations, false);
+            #[cfg(target_os = "linux")]
+            notify::desktop::sync(&handle, loaded.desktop_notifications);
             shortcuts::apply(&handle, &loaded.shortcuts);
             wallpaper::sync(&handle, &loaded.wallpaper);
             if loaded.autostart {

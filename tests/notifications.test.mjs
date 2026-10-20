@@ -14,6 +14,7 @@ test("a notification from Rust is checked: its source, an id, something to show"
   assert.equal(n.app, "WhatsApp");
   assert.equal(n.title, "Ana");
   assert.equal(parseNotification(raw({ source: "fax" })), null);
+  assert.equal(parseNotification(raw({ source: "desktop", app: "Thunderbird" })).source, "desktop");
   assert.equal(parseNotification(raw({ id: "" })), null);
   assert.equal(parseNotification(raw({ title: " ", body: "" })), null);
   assert.equal(parseNotification(null), null);

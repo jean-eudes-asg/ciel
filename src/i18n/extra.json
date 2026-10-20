@@ -5530,6 +5530,28 @@
    "pt-BR": "{n} segundos",
    "ru": "{n} с",
    "id": "{n} detik"
+  },
+  "Desktop apps": {
+   "zh-Hans": "桌面应用",
+   "hi": "डेस्कटॉप ऐप्स",
+   "es": "Apps del escritorio",
+   "ar": "تطبيقات سطح المكتب",
+   "fr": "Applications du bureau",
+   "bn": "ডেস্কটপ অ্যাপ",
+   "pt-BR": "Apps da área de trabalho",
+   "ru": "Приложения рабочего стола",
+   "id": "Aplikasi desktop"
+  },
+  "Your other apps' notifications (Thunderbird, Slack, system messages...) show in the island. On GNOME, its own banners are off while this is on, and come back after.": {
+   "zh-Hans": "其他应用的通知（Thunderbird、Slack、系统消息……）会显示在岛中。在 GNOME 上，开启期间它自己的横幅会关闭，关闭后恢复。",
+   "hi": "आपके दूसरे ऐप्स की सूचनाएँ (Thunderbird, Slack, सिस्टम संदेश...) आइलैंड में दिखती हैं। GNOME पर, इसके चालू रहते उसके अपने बैनर बंद रहते हैं, और बाद में लौट आते हैं।",
+   "es": "Las notificaciones de tus otras apps (Thunderbird, Slack, mensajes del sistema...) aparecen en la isla. En GNOME, sus propios avisos se desactivan mientras esto está activado y vuelven después.",
+   "ar": "تظهر إشعارات تطبيقاتك الأخرى (Thunderbird وSlack ورسائل النظام...) في الشريط. على GNOME، تتوقف لافتاته الخاصة ما دام هذا مفعّلًا، وتعود بعد ذلك.",
+   "fr": "Les notifications de vos autres applications (Thunderbird, Slack, messages du système...) s'affichent dans l'île. Sous GNOME, ses propres bannières sont coupées tant que c'est activé, et reviennent après.",
+   "bn": "আপনার অন্য অ্যাপের বিজ্ঞপ্তি (Thunderbird, Slack, সিস্টেম বার্তা...) আইল্যান্ডে দেখায়। GNOME-এ, এটি চালু থাকা অবধি তার নিজের ব্যানার বন্ধ থাকে, পরে ফিরে আসে।",
+   "pt-BR": "As notificações dos seus outros apps (Thunderbird, Slack, mensagens do sistema...) aparecem na ilha. No GNOME, os avisos dele ficam desligados enquanto isto estiver ativado e voltam depois.",
+   "ru": "Уведомления других приложений (Thunderbird, Slack, системные сообщения...) показываются на острове. В GNOME его собственные баннеры выключены, пока это включено, и возвращаются потом.",
+   "id": "Notifikasi dari aplikasi lain (Thunderbird, Slack, pesan sistem...) muncul di pulau. Di GNOME, banner miliknya dimatikan selama ini aktif, lalu kembali setelahnya."
   }
  }
 }
