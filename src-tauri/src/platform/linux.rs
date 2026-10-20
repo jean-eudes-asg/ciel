@@ -370,6 +370,43 @@ fn layer_shell_wanted() -> bool {
 /// True once the island window is a layer-shell surface.
 static LAYER_SURFACE: AtomicBool = AtomicBool::new(false);
 
+/// X11: the work area moves when a panel comes or goes (GNOME's top bar hidden
+/// by Ciel's extension, or back while the screen is locked), and the island
+/// sits at its top: `on_change` places it again. Waits on the X server, so it
+/// costs nothing between changes. Nothing to do on Wayland's layer shell.
+pub fn watch_workarea(on_change: impl Fn() + Send + 'static) {
+    use x11rb::connection::Connection;
+    use x11rb::protocol::xproto::{ChangeWindowAttributesAux, ConnectionExt, EventMask};
+    use x11rb::protocol::Event;
+
+    let watch = move || -> Result<(), Box<dyn std::error::Error>> {
+        let (conn, screen) = x11rb::connect(None)?;
+        let root = conn.setup().roots.get(screen).ok_or("no screen")?.root;
+        let atom = |name: &str| conn.intern_atom(false, name.as_bytes()).ok()?.reply().ok().map(|r| r.atom);
+        let watched: Vec<u32> = ["_NET_WORKAREA", "_GTK_WORKAREAS_D0"].iter().filter_map(|n| atom(n)).collect();
+        conn.change_window_attributes(root, &ChangeWindowAttributesAux::new().event_mask(EventMask::PROPERTY_CHANGE))?;
+        conn.flush()?;
+        loop {
+            if let Event::PropertyNotify(e) = conn.wait_for_event()? {
+                if watched.contains(&e.atom) {
+                    // The window manager writes several at once: place once, after them.
+                    std::thread::sleep(std::time::Duration::from_millis(250));
+                    while conn.poll_for_event()?.is_some() {}
+                    on_change();
+                }
+            }
+        }
+    };
+    let spawned = std::thread::Builder::new().name("ciel-workarea".into()).spawn(move || {
+        if let Err(err) = watch() {
+            crate::log::line(format!("work area: not watched: {err}"));
+        }
+    });
+    if let Err(err) = spawned {
+        crate::log::line(format!("work area: no thread: {err}"));
+    }
+}
+
 pub fn is_layer_surface() -> bool {
     LAYER_SURFACE.load(Ordering::Relaxed)
 }

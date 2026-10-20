@@ -26,6 +26,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   to three quarters of the screen, and only scrolls beyond; it gives the room
   back as they are opened or dismissed.
 
+### Fixed
+- Linux on X11: the island no longer stays down where GNOME's top bar was
+  after the bar came back for a moment (the lock screen, GNOME starting the
+  extension): it follows the top of the screen as it moves.
+
 ## [0.2.5] - 2026-10-20
 
 ### Added
