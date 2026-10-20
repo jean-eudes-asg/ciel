@@ -917,7 +917,13 @@ pub fn run() {
             spotify::sync(&handle, &loaded.active_integrations);
             gmail::sync(&handle, &loaded.active_integrations, false);
             #[cfg(target_os = "linux")]
-            notify::desktop::sync(&handle, loaded.desktop_notifications);
+            {
+                notify::desktop::sync(&handle, loaded.desktop_notifications);
+                // Quitting gave GNOME its banners back: Ciel shows them again.
+                if loaded.desktop_notifications {
+                    notify::desktop::quiet_desktop(true);
+                }
+            }
             shortcuts::apply(&handle, &loaded.shortcuts);
             wallpaper::sync(&handle, &loaded.wallpaper);
             if loaded.autostart {
@@ -937,6 +943,10 @@ pub fn run() {
             if let tauri::RunEvent::Exit = event {
                 notes::shutdown(app);
                 wallpaper::shutdown(app);
+                // Nothing shows the desktop's notifications once Ciel is gone:
+                // GNOME's banners come back if Ciel turned them off.
+                #[cfg(target_os = "linux")]
+                notify::desktop::quiet_desktop(false);
             }
         });
 }

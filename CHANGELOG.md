@@ -2,6 +2,13 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+- Linux on GNOME: with Desktop apps on, quitting Ciel gives GNOME its
+  notification banners back (Ciel turns them off again when it starts), so
+  notifications still show while Ciel is closed.
+
 ## [0.2.5] - 2026-10-20
 
 ### Added

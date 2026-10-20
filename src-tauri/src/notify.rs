@@ -486,8 +486,9 @@ pub mod desktop {
 
     /// The switch, flipped: GNOME's banners go while Ciel shows the
     /// notifications, and come back after, unless they were off already. A
-    /// file says Ciel was the one to turn them off. Elsewhere than GNOME,
-    /// nothing happens.
+    /// file says Ciel was the one to turn them off. Also when Ciel quits
+    /// (back on at its next start), and after a crash the file still says so.
+    /// Elsewhere than GNOME, nothing happens.
     pub fn quiet_desktop(on: bool) {
         let marker = crate::platform::config_dir().join("banners-off-by-ciel");
         if on {
