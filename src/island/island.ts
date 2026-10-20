@@ -1219,7 +1219,29 @@ export class Island {
     Sound.setVolume(State.settings.soundVolume);
     this.fsm.homeToPetitDelay = State.settings.autoCloseInterval;
     this.fsm.openOnHover = State.settings.openOnHover;
+    // Where no click elsewhere can be seen (Wayland), leaving stands in for it.
+    this.fsm.quickLeave = State.settings.closeOnClickOutside && !this.clicksOutside;
     State.notify();
+  }
+
+  /** Rust sees a press anywhere on screen (Windows, X11); not on Wayland. */
+  private clicksOutside = true;
+
+  setClicksOutside(seen: boolean) {
+    this.clicksOutside = seen;
+    this.applySettings();
+  }
+
+  /**
+   * A press somewhere else on screen (Rust's cursor poll, X11's pointer watch):
+   * Close when I click outside folds the open island, as a popover. A card
+   * waiting for an answer stays (the state machine's pinned), and so does
+   * whatever the press may be part of: a file being dropped, Ciel carried out.
+   */
+  pressedOutside() {
+    if (!State.settings.closeOnClickOutside || State.mode !== "expanded") return;
+    if (UploadSeq.isActive || this.desktop.carrying) return;
+    this.fsm.pressedOutside();
   }
 
   get panelSize() {

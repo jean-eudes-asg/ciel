@@ -137,6 +137,10 @@ export const PILL_CATALOG: readonly PillDefinition[] = [
   // (src-tauri/src/spotify.rs).
   { id: "integration_spotify", name: "Spotify", color: "#1DB954", category: "service",
     subtitle: N_("Integration"), source: "n8n", support: "yes", connect: none },
+  // YouTube Music in a browser tab, read there by Ciel for Chrome
+  // (src-tauri/src/ytmusic.rs). Not on the Mac.
+  { id: "integration_youtube_music", name: "YouTube Music", color: "#FF0033", category: "service",
+    subtitle: N_("Integration"), source: "n8n", support: "yes", connect: none },
   // Personal spending in two local files, shared with the user's own
   // dashboard if they have one (src-tauri/src/finance.rs). Not on the Mac.
   { id: "integration_finance", name: "Finance", color: "#10B981", category: "service",

@@ -4,6 +4,25 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 
 ## [Unreleased]
 
+### Added
+- **YouTube Music**: a pill for what plays in a music.youtube.com tab, with
+  the cover, the progress and the controls, through Ciel for Chrome. Its
+  buttons do what the media keys do. On Windows the music pill leaves the
+  browser to it meanwhile, so a song doesn't show twice.
+- **Close when I click outside** (Settings → General, on by default): a click
+  anywhere else folds the open island, as a popover; a card waiting for your
+  answer stays. On Wayland, which shows no app the clicks in other windows,
+  the island folds a moment after the pointer leaves it instead. Auto-close
+  can now be Never, too.
+
+### Changed
+- **The open island makes room for what you have**: with one pill, it fills
+  the island in detail — an agent's feed with its plan and the files it
+  edited beside it, a card next to its detail list, a list in two columns, a
+  bigger cover. With two pills, both are in detail side by side, each in its
+  place (the main pill beside Ciel); a press on one gives it the keys.
+  From three on, as before.
+
 ### Fixed
 - Linux on GNOME: with Desktop apps on, quitting Ciel gives GNOME its
   notification banners back (Ciel turns them off again when it starts), so

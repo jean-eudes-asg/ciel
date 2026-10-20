@@ -321,6 +321,17 @@ pub fn left_button_down() -> bool {
     false
 }
 
+pub fn any_button_down() -> bool {
+    false
+}
+
+/// X11 tells any client the pointer's buttons, so the pointer watch sees a
+/// press anywhere; Wayland shows no app the clicks in other windows. Main
+/// thread only (GDK).
+pub fn sees_clicks_outside() -> bool {
+    gtk::gdk::Display::default().is_some_and(|d| d.type_().name() == "GdkX11Display")
+}
+
 // ── Island window ─────────────────────────────────────────────────────────────
 
 /// The few gtk-layer-shell calls we need, straight from the C library.
@@ -503,21 +514,35 @@ fn start_pointer_watch() {
     // across the screen, as on Windows. Wayland only tells us over the island.
     let x11 = gtk::gdk::Display::default().is_some_and(|d| d.type_().name() == "GdkX11Display");
     let last_outside = std::cell::Cell::new(None);
+    let held_before = std::cell::Cell::new(false);
     let period = if x11 { 33 } else { 100 };
     gtk::glib::timeout_add_local(std::time::Duration::from_millis(period), move || {
         if !WATCH_WANTED.load(Ordering::Relaxed) {
             WATCH_RUNNING.store(false, Ordering::Relaxed);
             return gtk::glib::ControlFlow::Break;
         }
-        let now_inside = ISLAND_GTK
+        let (now_inside, held) = ISLAND_GTK
             .with(|cell| {
                 let gw = cell.borrow().clone()?;
                 let ours = gw.window()?;
                 let pointer = gtk::gdk::Display::default()?.default_seat()?.pointer()?;
                 let (under, _, _) = pointer.window_at_position();
-                Some(under?.toplevel() == ours.toplevel())
+                let inside = under.is_some_and(|u| u.toplevel() == ours.toplevel());
+                // X11 gives the buttons wherever the pointer is; Wayland doesn't.
+                let held = x11 && {
+                    use gtk::gdk::ModifierType as M;
+                    ours.device_position(&pointer).3.intersects(M::BUTTON1_MASK | M::BUTTON2_MASK | M::BUTTON3_MASK)
+                };
+                Some((inside, held))
             })
-            .unwrap_or(false);
+            .unwrap_or((false, false));
+        // A press that starts outside the island: the page folds it if the
+        // user wants that (Settings → General → Close when I click outside).
+        let pressed = held && !held_before.get();
+        held_before.set(held);
+        if pressed && !now_inside {
+            let _ = win.emit("pressed-outside", ());
+        }
         if inside.replace(now_inside) != now_inside {
             // The page gates its own (late, sometimes stale) mouse events on
             // this state, so a mousemove queued before the pointer left cannot

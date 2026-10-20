@@ -3495,17 +3495,6 @@
    "ru": "выполняется",
    "id": "berjalan"
   },
-  "seconds after you leave the island": {
-   "zh-Hans": "鼠标离开岛后的秒数",
-   "hi": "आइलैंड छोड़ने के बाद सेकंड",
-   "es": "segundos después de salir de la isla",
-   "ar": "ثانية بعد مغادرة الشريط",
-   "fr": "secondes après avoir quitté l'île",
-   "bn": "আইল্যান্ড ছাড়ার পর সেকেন্ড",
-   "pt-BR": "segundos depois de sair da ilha",
-   "ru": "секунд после ухода с острова",
-   "id": "detik setelah Anda meninggalkan pulau"
-  },
   "settings.json: {what} has an unexpected type — Ciel has not touched it.": {
    "zh-Hans": "settings.json：{what} 的类型不符合预期 — Ciel 没有修改它。",
    "hi": "settings.json: {what} का प्रकार अपेक्षित नहीं है — Ciel ने इसे नहीं छुआ।",
@@ -5596,6 +5585,116 @@
    "pt-BR": "No GNOME, Abrir leva à conversa ou à página exata, como as notificações do próprio GNOME, por uma pequena extensão do Ciel para o GNOME Shell. Sem ela, Abrir traz a janela do app para a frente.",
    "ru": "В GNOME «Открыть» ведёт прямо в нужный чат или на нужную страницу, как собственные уведомления GNOME, через небольшое расширение Ciel для GNOME Shell. Без него «Открыть» выводит окно приложения на передний план.",
    "id": "Di GNOME, Buka langsung menuju obrolan atau halaman yang tepat, seperti notifikasi GNOME sendiri, melalui ekstensi kecil Ciel untuk GNOME Shell. Tanpanya, Buka menampilkan jendela aplikasi ke depan."
+  },
+  "Open YouTube Music": {
+   "zh-Hans": "打开 YouTube Music",
+   "hi": "YouTube Music खोलें",
+   "es": "Abrir YouTube Music",
+   "ar": "افتح YouTube Music",
+   "fr": "Ouvrir YouTube Music",
+   "bn": "YouTube Music খুলুন",
+   "pt-BR": "Abrir o YouTube Music",
+   "ru": "Открыть YouTube Music",
+   "id": "Buka YouTube Music"
+  },
+  "Not open": {
+   "zh-Hans": "未打开",
+   "hi": "खुला नहीं है",
+   "es": "No está abierto",
+   "ar": "غير مفتوح",
+   "fr": "Pas ouvert",
+   "bn": "খোলা নেই",
+   "pt-BR": "Não está aberto",
+   "ru": "Не открыт",
+   "id": "Tidak terbuka"
+  },
+  "Needs Ciel for Chrome": {
+   "zh-Hans": "需要 Ciel for Chrome",
+   "hi": "Ciel for Chrome चाहिए",
+   "es": "Necesita Ciel for Chrome",
+   "ar": "يتطلب Ciel for Chrome",
+   "fr": "Nécessite Ciel for Chrome",
+   "bn": "Ciel for Chrome প্রয়োজন",
+   "pt-BR": "Precisa do Ciel for Chrome",
+   "ru": "Нужен Ciel for Chrome",
+   "id": "Memerlukan Ciel for Chrome"
+  },
+  "Set it up": {
+   "zh-Hans": "去设置",
+   "hi": "सेट अप करें",
+   "es": "Configurar",
+   "ar": "إعداده",
+   "fr": "Le configurer",
+   "bn": "সেট আপ করুন",
+   "pt-BR": "Configurar",
+   "ru": "Настроить",
+   "id": "Siapkan"
+  },
+  "Never": {
+   "zh-Hans": "从不",
+   "hi": "कभी नहीं",
+   "es": "Nunca",
+   "ar": "أبدًا",
+   "fr": "Jamais",
+   "bn": "কখনো না",
+   "pt-BR": "Nunca",
+   "ru": "Никогда",
+   "id": "Tidak pernah"
+  },
+  "after you leave the island": {
+   "zh-Hans": "鼠标离开岛后",
+   "hi": "आइलैंड छोड़ने के बाद",
+   "es": "después de salir de la isla",
+   "ar": "بعد مغادرة الجزيرة",
+   "fr": "après avoir quitté l'île",
+   "bn": "আইল্যান্ড ছাড়ার পর",
+   "pt-BR": "depois de sair da ilha",
+   "ru": "после ухода с острова",
+   "id": "setelah Anda meninggalkan pulau"
+  },
+  "Close when I click outside": {
+   "zh-Hans": "点按外部时关闭",
+   "hi": "बाहर क्लिक करने पर बंद करें",
+   "es": "Cerrar al hacer clic fuera",
+   "ar": "أغلقها عند النقر خارجها",
+   "fr": "Fermer quand je clique ailleurs",
+   "bn": "বাইরে ক্লিক করলে বন্ধ করুন",
+   "pt-BR": "Fechar ao clicar fora",
+   "ru": "Закрывать при щелчке снаружи",
+   "id": "Tutup saat saya mengklik di luar"
+  },
+  "A click anywhere else folds the open island. A card waiting for your answer stays open.": {
+   "zh-Hans": "在其他任意位置点按即可收起打开的岛。等待你回答的卡片会保持打开。",
+   "hi": "कहीं और क्लिक करने से खुला आइलैंड सिमट जाता है। आपके जवाब का इंतज़ार कर रहा कार्ड खुला रहता है।",
+   "es": "Un clic en cualquier otro sitio pliega la isla abierta. Una tarjeta que espera tu respuesta sigue abierta.",
+   "ar": "النقر في أي مكان آخر يطوي الجزيرة المفتوحة. تبقى البطاقة التي تنتظر ردك مفتوحة.",
+   "fr": "Un clic n'importe où ailleurs replie l'île ouverte. Une carte qui attend votre réponse reste ouverte.",
+   "bn": "অন্য যেকোনো জায়গায় ক্লিক করলে খোলা আইল্যান্ড গুটিয়ে যায়। আপনার উত্তরের অপেক্ষায় থাকা কার্ড খোলা থাকে।",
+   "pt-BR": "Um clique em qualquer outro lugar fecha a ilha aberta. Um cartão que espera sua resposta continua aberto.",
+   "ru": "Щелчок в любом другом месте сворачивает открытый остров. Карточка, ожидающая вашего ответа, остаётся открытой.",
+   "id": "Klik di mana pun selain itu akan menutup pulau yang terbuka. Kartu yang menunggu jawaban Anda tetap terbuka."
+  },
+  "Wayland shows no app the clicks in other windows: the open island folds a moment after the pointer leaves it instead.": {
+   "zh-Hans": "Wayland 不会让应用看到其他窗口中的点按：因此打开的岛会在指针离开后片刻收起。",
+   "hi": "Wayland किसी ऐप को दूसरी विंडो के क्लिक नहीं दिखाता: इसलिए पॉइंटर हटने के कुछ ही पल बाद खुला आइलैंड सिमट जाता है।",
+   "es": "Wayland no muestra a ninguna app los clics en otras ventanas: en su lugar, la isla abierta se pliega un momento después de que el cursor salga.",
+   "ar": "لا يُطلع Wayland أي تطبيق على النقرات في النوافذ الأخرى: لذا تُطوى الجزيرة المفتوحة بعد لحظة من مغادرة المؤشر لها.",
+   "fr": "Wayland ne montre à aucune app les clics dans les autres fenêtres : l'île ouverte se replie donc un instant après que le pointeur l'a quittée.",
+   "bn": "Wayland কোনো অ্যাপকে অন্য উইন্ডোর ক্লিক দেখায় না: তাই পয়েন্টার সরে যাওয়ার কিছুক্ষণ পরেই খোলা আইল্যান্ড গুটিয়ে যায়।",
+   "pt-BR": "O Wayland não mostra a nenhum app os cliques em outras janelas: em vez disso, a ilha aberta se fecha um instante depois que o cursor sai dela.",
+   "ru": "Wayland не показывает приложениям щелчки в других окнах: поэтому открытый остров сворачивается через мгновение после того, как указатель его покинет.",
+   "id": "Wayland tidak memperlihatkan klik di jendela lain kepada aplikasi mana pun: sebagai gantinya, pulau yang terbuka menutup sesaat setelah kursor meninggalkannya."
+  },
+  "Auto-close · never": {
+   "zh-Hans": "自动关闭 · 从不",
+   "hi": "ऑटो-क्लोज़ · कभी नहीं",
+   "es": "Cierre automático · nunca",
+   "ar": "إغلاق تلقائي · أبدًا",
+   "fr": "Fermeture auto · jamais",
+   "bn": "স্বয়ংক্রিয়-বন্ধ · কখনো না",
+   "pt-BR": "Fechar auto · nunca",
+   "ru": "Автозакрытие · никогда",
+   "id": "Tutup otomatis · tidak pernah"
   }
  }
 }

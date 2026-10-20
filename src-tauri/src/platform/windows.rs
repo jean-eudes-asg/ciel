@@ -26,7 +26,7 @@ use ::windows::Win32::System::SystemInformation::GetLocalTime;
 use ::windows::Win32::System::Threading::{GetCurrentProcess, OpenProcessToken};
 use ::windows::Win32::UI::Input::KeyboardAndMouse::{
     GetAsyncKeyState, GetKeyboardLayoutList, MapVirtualKeyExW, ToUnicodeEx, HKL, MAPVK_VK_TO_VSC,
-    VK_CONTROL, VK_LBUTTON, VK_MENU, VK_SHIFT,
+    VK_CONTROL, VK_LBUTTON, VK_MBUTTON, VK_MENU, VK_RBUTTON, VK_SHIFT,
 };
 use ::windows::Win32::UI::Shell::{
     ShellExecuteExW, SHELLEXECUTEINFOW, SEE_MASK_FLAG_NO_UI, SEE_MASK_NOASYNC,
@@ -281,6 +281,20 @@ pub fn cursor_physical() -> Option<(f64, f64)> {
 /// drag might be in flight before it reaches the window.
 pub fn left_button_down() -> bool {
     unsafe { (GetAsyncKeyState(VK_LBUTTON.0 as i32) as u16 & 0x8000) != 0 }
+}
+
+/// True while any mouse button is held: a press anywhere counts as a click
+/// outside the island, whichever button (and these are the physical buttons,
+/// so a left-handed mouse is no different).
+pub fn any_button_down() -> bool {
+    [VK_LBUTTON, VK_RBUTTON, VK_MBUTTON]
+        .iter()
+        .any(|vk| unsafe { (GetAsyncKeyState(vk.0 as i32) as u16 & 0x8000) != 0 })
+}
+
+/// Ciel sees a press anywhere on screen (the cursor poll reads the buttons).
+pub fn sees_clicks_outside() -> bool {
+    true
 }
 
 // ── Island window ─────────────────────────────────────────────────────────────

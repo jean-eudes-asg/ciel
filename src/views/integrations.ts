@@ -164,7 +164,7 @@ function idleCard(task: AgentTask, openSettings: () => void): HTMLElement {
 function vercelCard(onDetail: () => void): HTMLElement {
   const deployments = arr("integration_vercel", "deployments");
   const rows = h("div", { class: "int-rows" });
-  deployments.slice(0, 3).forEach((d, i) => {
+  deployments.slice(0, rowsShown()).forEach((d, i) => {
     const accent = d.state === "READY" ? "#22C55E" : "#F4505E";
     const name = h("span", { class: "int-name", text: String(d.projectName ?? "") });
     const ago = h("span", { class: "int-ago", text: timeAgo(d.createdAt) });
@@ -227,7 +227,7 @@ function resendCard(): HTMLElement {
       ? h("span", { class: "int-total" }, h("i", { class: "pulse" }), h("span", { text: String(total) }))
       : undefined;
   const rows = h("div", { class: "int-rows" });
-  emails.slice(0, 3).forEach((e, i) => {
+  emails.slice(0, rowsShown()).forEach((e, i) => {
     const delivered = e.lastEvent === "delivered";
     const accent = delivered ? "#22C55E" : "#F4505E";
     const to = Array.isArray(e.to) ? String(e.to[0] ?? "?") : "?";
@@ -249,7 +249,7 @@ function gmailCard(): HTMLElement {
   const unread = get("integration_gmail").unread;
   const extra = h("span", { class: "int-total" }, h("i", { class: "pulse" }), h("span", { text: String(unread ?? 0) }));
   const rows = h("div", { class: "int-rows" });
-  arr("integration_gmail", "mails").slice(0, 3).forEach((m, i) => {
+  arr("integration_gmail", "mails").slice(0, rowsShown()).forEach((m, i) => {
     const row = listRow("#EA4335", i === 0,
       h("span", { class: "int-name", text: String(m.from ?? "") }),
       h("span", { class: "int-sub", text: String(m.subject ?? "") }),
@@ -330,7 +330,7 @@ function stripeCard(): HTMLElement {
 
 function notionCard(): HTMLElement {
   const rows = h("div", { class: "int-rows tight" });
-  for (const p of arr("integration_notion", "pages").slice(0, 3)) {
+  for (const p of arr("integration_notion", "pages").slice(0, rowsShown())) {
     rows.append(
       h(
         "button",
@@ -361,7 +361,7 @@ function calcomCard(): HTMLElement {
   if (bookings.length === 0) {
     rows.append(h("div", { class: "int-empty", text: t("No calls scheduled") }));
   }
-  for (const b of bookings.slice(0, 3)) {
+  for (const b of bookings.slice(0, rowsShown())) {
     const when = new Date(String(b.start));
     const day = when.toLocaleDateString(language(), { day: "2-digit", month: "2-digit" });
     const time = when.toLocaleTimeString(language(), { hour: "2-digit", minute: "2-digit" });
@@ -437,8 +437,19 @@ function n8nDetail(task: AgentTask, onBack: () => void): HTMLElement {
 
 // ── Dispatch ──────────────────────────────────────────────────────────────────
 
+/** Set while a card that has the island to itself is drawn: its lists show twice the rows, in two columns. */
+let roomy = false;
+const rowsShown = () => (roomy ? 6 : 3);
+
+/** A card and its detail side by side, when the card has the island to itself. */
+function split(card: HTMLElement, detail: HTMLElement): HTMLElement {
+  return h("div", { class: "int-split" }, card, detail);
+}
+
 export interface IntegrationCardHooks {
   detailOpen: boolean;
+  /** The card has the island to itself: its detail beside it, or more rows. */
+  wide?: boolean;
   openDetail(): void;
   closeDetail(): void;
   openSettings(): void;
@@ -469,13 +480,18 @@ export function hasIntegrationData(id: string): boolean {
 }
 
 export function renderIntegrationCard(task: AgentTask, hooks: IntegrationCardHooks): HTMLElement {
+  // With the island to itself, a card with a detail shows both side by side
+  // (its stats still pick what the detail lists, GitHub's for one).
+  const wide = hooks.wide === true;
   if (task.id === "integration_n8n") {
     const hasActivity = task.steps.length > 0 && (task.state === "finished" || task.state === "error");
+    if (wide && hasActivity) return split(n8nCard(task, hooks.openDetail, hooks.openSettings), n8nDetail(task, hooks.closeDetail));
     return hooks.detailOpen && hasActivity
       ? n8nDetail(task, hooks.closeDetail)
       : n8nCard(task, hooks.openDetail, hooks.openSettings);
   }
   if (task.id === "integration_vercel" && hasIntegrationData(task.id)) {
+    if (wide) return split(vercelCard(hooks.openDetail), vercelDetail(hooks.closeDetail));
     return hooks.detailOpen ? vercelDetail(hooks.closeDetail) : vercelCard(hooks.openDetail);
   }
   if (!hasIntegrationData(task.id)) return idleCard(task, hooks.openSettings);
@@ -485,12 +501,23 @@ export function renderIntegrationCard(task: AgentTask, hooks: IntegrationCardHoo
     const d = get(task.id);
     const pulse = readPulse(d);
     if (pulse) {
-      return hooks.detailOpen
-        ? githubDetail(pulse, readStats(d), readActivity(d), hooks.closeDetail)
-        : githubPulseCard(pulse, readStats(d), readActivity(d), hooks.openDetail);
+      const card = () => githubPulseCard(pulse, readStats(d), readActivity(d), hooks.openDetail);
+      const detail = () => githubDetail(pulse, readStats(d), readActivity(d), hooks.closeDetail);
+      if (wide) return split(card(), detail());
+      return hooks.detailOpen ? detail() : card();
     }
   }
 
+  roomy = wide;
+  try {
+    return listCard(task, hooks);
+  } finally {
+    roomy = false;
+  }
+}
+
+/** The cards that are a list and nothing more. */
+function listCard(task: AgentTask, hooks: IntegrationCardHooks): HTMLElement {
   switch (task.id) {
     case "integration_resend":
       return resendCard();

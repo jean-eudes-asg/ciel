@@ -15,6 +15,7 @@ mod flow;
 mod github;
 mod gnome_ext;
 mod gmail;
+mod ytmusic;
 mod hooks;
 mod i18n;
 mod identity;
@@ -74,6 +75,10 @@ pub struct BootInfo {
     /// False where the OS has no global cursor (Wayland): the page then reports
     /// the cursor from its own mouse events.
     cursor_poll: bool,
+    /// Ciel sees a press anywhere on screen (Windows, X11), not on Wayland:
+    /// there "Close when I click outside" folds the island once the pointer
+    /// has left it instead.
+    clicks_outside: bool,
 }
 
 #[tauri::command]
@@ -90,6 +95,7 @@ fn boot(app: AppHandle, shared: State<Shared>) -> BootInfo {
         version: env!("CARGO_PKG_VERSION").to_string(),
         hook_path: settings::hook_exe_path().to_string_lossy().to_string(),
         cursor_poll: platform::CURSOR_POLL,
+        clicks_outside: platform::sees_clicks_outside(),
     }
 }
 
@@ -124,6 +130,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     }
     integrations::settings_saved(&app, &settings.active_integrations);
     spotify::sync(&app, &settings.active_integrations);
+    ytmusic::sync(&settings.active_integrations);
     gmail::sync(&app, &settings.active_integrations, false);
     #[cfg(target_os = "linux")]
     {
@@ -826,6 +833,8 @@ pub fn run() {
             sounds::reveal_sounds_folder,
             sounds::reload_sounds,
             spotify::spotify_refresh,
+            ytmusic::ytmusic_state,
+            ytmusic::ytmusic_control,
             spotify::spotify_control,
             spotify::spotify_open,
             spotify::spotify_installed,
@@ -915,6 +924,7 @@ pub fn run() {
             pipe::start(handle.clone());
             integrations::start(handle.clone());
             spotify::sync(&handle, &loaded.active_integrations);
+            ytmusic::sync(&loaded.active_integrations);
             gmail::sync(&handle, &loaded.active_integrations, false);
             #[cfg(target_os = "linux")]
             {

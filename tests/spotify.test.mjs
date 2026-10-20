@@ -13,7 +13,8 @@ import {
 } from "../src/core/spotify.ts";
 import { BotEngine, danceTransform, stepDanceLevel } from "../src/cloud/engine.ts";
 import { registerSpotifyHandlers } from "../src/island/spotify.ts";
-import { buildSpotifyCard, buildSpotifyPill } from "../src/views/spotify.ts";
+import { buildPlayerCard, buildPlayerPill } from "../src/views/spotify.ts";
+import { SPOTIFY_PLAYER } from "../src/core/player.ts";
 import { DEFAULT_SETTINGS, State } from "../src/core/state.ts";
 import { lookup, setLanguage } from "../src/i18n/i18n.ts";
 
@@ -243,7 +244,7 @@ test("the card reads the player again each time it comes on screen", () => {
 // ── Views ─────────────────────────────────────────────────────────────────────
 
 test("the idle card: not playing, or not installed with a way to get it", () => {
-  const card = buildSpotifyCard();
+  const card = buildPlayerCard(SPOTIFY_PLAYER);
   Spotify.state = { ...IDLE_SPOTIFY, installed: true };
   card.sync();
   assert.match(card.el.textContent, /Spotify.*Integration.*Not playing.*Open Spotify/);
@@ -259,7 +260,7 @@ test("the idle card: not playing, or not installed with a way to get it", () => 
 });
 
 test("the playing card: title, artist · album, times, and the controls", () => {
-  const card = buildSpotifyCard();
+  const card = buildPlayerCard(SPOTIFY_PLAYER);
   Spotify.state = playing({ playing: false, shuffle: true });
   card.sync();
   const text = card.el.textContent;
@@ -296,7 +297,7 @@ test("the playing card: title, artist · album, times, and the controls", () => 
 
 test("the pill shows play/pause and next on hover, only with a track", () => {
   const task = spotifyTask();
-  const pill = buildSpotifyPill(task, () => {});
+  const pill = buildPlayerPill(task, SPOTIFY_PLAYER, () => {});
   pill.el.fire("mouseenter");
   assert.ok(!pill.el.classList.contains("controls"), "nothing loaded: no controls");
   Spotify.state = playing();
@@ -315,7 +316,7 @@ test("the pill shows play/pause and next on hover, only with a track", () => {
 // ── Another player than Spotify (Windows) ─────────────────────────────────────
 
 test("another player: its name under the title and on the pill, only the controls it takes", () => {
-  const card = buildSpotifyCard();
+  const card = buildPlayerCard(SPOTIFY_PLAYER);
   Spotify.state = elsewhere();
   card.sync();
   assert.ok(card.el.textContent.includes("Artist - Song"));
@@ -332,7 +333,7 @@ test("another player: its name under the title and on the pill, only the control
   shuffle.fire("click");
   assert.equal(Spotify.state.shuffle, false);
 
-  const pill = buildSpotifyPill(spotifyTask(), () => {});
+  const pill = buildPlayerPill(spotifyTask(), SPOTIFY_PLAYER, () => {});
   pill.sync();
   assert.equal(pill.el.querySelector("lbl").textContent, "Microsoft Edge");
   // Spotify playing, or nothing: the pill's own name.
@@ -342,7 +343,7 @@ test("another player: its name under the title and on the pill, only the control
 });
 
 test("a live stream has no progress bar; a video that can't seek shows its bar still", () => {
-  const card = buildSpotifyCard();
+  const card = buildPlayerCard(SPOTIFY_PLAYER);
   Spotify.state = elsewhere({ track: track({ id: "media:track:2", duration: 0 }) });
   card.sync();
   assert.equal(card.el.querySelector("np-progress").style.display, "none");

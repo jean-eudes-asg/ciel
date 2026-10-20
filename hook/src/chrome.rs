@@ -55,16 +55,19 @@ pub fn write_message(out: &mut impl Write, message: &Value) -> std::io::Result<(
 /// What Ciel gets for a page's notification: its fields as the extension sent
 /// them, and which bridge to answer through. None for anything else.
 pub fn to_ciel(message: &Value, bridge: &str) -> Option<String> {
-    if message.get("type")?.as_str()? != "notification" {
-        return None;
-    }
+    let (kind, fields): (&str, &[&str]) = match message.get("type")?.as_str()? {
+        "notification" => ("ciel_notification", &["key", "app", "title", "body", "icon", "tag"]),
+        // YouTube Music's player, for its pill (src-tauri/src/ytmusic.rs).
+        "media" => ("ciel_media", &["key", "gone", "title", "artist", "album", "art", "duration", "position", "playing"]),
+        _ => return None,
+    };
     let mut n = serde_json::Map::new();
-    for key in ["key", "app", "title", "body", "icon", "tag"] {
-        if let Some(v) = message.get(key).filter(|v| v.is_string()) {
-            n.insert(key.into(), v.clone());
+    for key in fields {
+        if let Some(v) = message.get(*key).filter(|v| v.is_string() || v.is_number() || v.is_boolean()) {
+            n.insert((*key).into(), v.clone());
         }
     }
-    Some(format!("{}\n", json!({"ciel_notification": n, "ciel_bridge": bridge})))
+    Some(format!("{}\n", json!({kind: n, "ciel_bridge": bridge})))
 }
 
 pub fn run() -> ! {
@@ -153,5 +156,18 @@ mod tests {
         assert!(v["ciel_notification"].get("icon").is_none(), "only strings pass");
         assert!(v["ciel_notification"].get("extra").is_none());
         assert!(to_ciel(&json!({"type": "hello"}), "b7").is_none());
+    }
+
+    #[test]
+    fn youtube_musics_player_goes_to_ciel_as_media() {
+        let m = json!({"type": "media", "key": "12", "title": "Song", "artist": "Ana", "duration": 213.5,
+            "position": 4.2, "playing": true, "art": null, "cookie": "dropped"});
+        let v: Value = serde_json::from_str(to_ciel(&m, "b7").unwrap().trim()).unwrap();
+        assert_eq!(v["ciel_bridge"], "b7");
+        let media = &v["ciel_media"];
+        assert_eq!((media["title"].as_str(), media["duration"].as_f64(), media["playing"].as_bool()), (Some("Song"), Some(213.5), Some(true)));
+        assert!(media.get("art").is_none() && media.get("cookie").is_none());
+        let gone: Value = serde_json::from_str(to_ciel(&json!({"type": "media", "key": "12", "gone": true}), "b7").unwrap().trim()).unwrap();
+        assert_eq!(gone["ciel_media"]["gone"], true);
     }
 }

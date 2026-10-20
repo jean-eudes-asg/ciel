@@ -214,9 +214,16 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
         pipe.finish();
         return;
     }
+    // YouTube Music's player, from the same bridge (ytmusic.rs). Not logged:
+    // it comes with every track, play and pause.
+    if let Some(report) = crate::ytmusic::from_bridge(&payload) {
+        crate::ytmusic::update(&app, report);
+        pipe.finish();
+        return;
+    }
     if payload.get("ciel_listen").and_then(Value::as_str) == Some("chrome") {
         if let Some(bridge) = payload.get("ciel_bridge").and_then(Value::as_str).filter(|b| !b.is_empty()) {
-            bridge_connection(pipe, bridge.to_string()).await;
+            bridge_connection(&app, pipe, bridge.to_string()).await;
         }
         return;
     }
@@ -266,8 +273,9 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
 
 /// A browser bridge's own connection: it hears that Ciel is there, then gets
 /// Ciel's answers (a click, a close) until it goes away. It says nothing on it.
-async fn bridge_connection(mut pipe: impl Relay, bridge: String) {
+async fn bridge_connection(app: &AppHandle, mut pipe: impl Relay, bridge: String) {
     let mut rx = crate::notify::listen(&bridge);
+    crate::ytmusic::bridges_changed(app, None);
     let mut scratch = [0u8; 256];
     loop {
         tokio::select! {
@@ -285,6 +293,7 @@ async fn bridge_connection(mut pipe: impl Relay, bridge: String) {
         }
     }
     crate::notify::forget(&bridge);
+    crate::ytmusic::bridges_changed(app, Some(&bridge));
     pipe.finish();
 }
 

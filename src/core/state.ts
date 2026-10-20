@@ -14,6 +14,7 @@ import type { Bindings } from "./shortcuts";
 import type { AiEngine } from "./brain";
 import { pillColor } from "./pill-colors";
 import { Spotify, musicPlaying } from "./spotify";
+import { YTMUSIC_ID, YtMusic } from "./ytmusic";
 import { DEFAULT_WALLPAPER, type WallpaperPrefs } from "../sky/prefs";
 
 export type AgentSource = "claudeCode" | "n8n" | "agent";
@@ -105,6 +106,8 @@ export interface Settings {
   autoCloseInterval: number;
   /** Hovering the island opens it all the way (off: hovering only peeks). */
   openOnHover: boolean;
+  /** A press outside the open island folds it (on Wayland: the pointer leaving). */
+  closeOnClickOutside: boolean;
   absenceInterval: number;
   /** Declared pills next to the main one (at most 4), in the order they were added. */
   activeIntegrations: string[];
@@ -175,6 +178,7 @@ export const DEFAULT_SETTINGS: Settings = {
   soundVolume: 0.12,
   autoCloseInterval: 15,
   openOnHover: false,
+  closeOnClickOutside: true,
   absenceInterval: 180,
   activeIntegrations: [
     "integration_resend", "integration_n8n", "integration_vercel", "integration_github",
@@ -301,9 +305,11 @@ class AppState {
     return this.stateOverride ?? this.focusTask?.state ?? "idle";
   }
 
-  /** Spotify plays on a declared pill: Ciel dances (Linux; never on Windows yet). */
+  /** Music plays on a declared music pill (Spotify, YouTube Music): Ciel dances. */
   get spotifyPlaying(): boolean {
-    return musicPlaying(Spotify.state, sanitizeDeclared(this.settings, this.os).activeIntegrations);
+    const active = sanitizeDeclared(this.settings, this.os).activeIntegrations;
+    const yt = YtMusic.state;
+    return musicPlaying(Spotify.state, active) || (yt.playing && yt.track != null && active.includes(YTMUSIC_ID));
   }
 
   get otherTasks(): AgentTask[] {

@@ -47,6 +47,7 @@ test("the catalog holds the Mac's pills with the Claude Code label for Windows a
     ["integration_stripe", "Stripe", "#0570DE", "service", "Integration"],
     ["integration_music", "Apple Music", "#FA2D48", "service", "Integration"],
     ["integration_spotify", "Spotify", "#1DB954", "service", "Integration"],
+    ["integration_youtube_music", "YouTube Music", "#FF0033", "service", "Integration"],
     // Not the Mac's: Windows and Linux only, after every pill of its.
     ["integration_finance", "Finance", "#10B981", "service", "Spending"],
   ];

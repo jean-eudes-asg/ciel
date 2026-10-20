@@ -538,6 +538,22 @@ pub fn spotify_installed() -> bool {
     }
 }
 
+/// The players the YouTube Music pill took over changed (ytmusic.rs): Windows
+/// picks its session again, leaving the browsers to that pill or taking them
+/// back. Nothing elsewhere, where the pill follows Spotify alone.
+pub fn players_changed() {
+    #[cfg(windows)]
+    win::repick();
+}
+
+/// A browser Ciel for Chrome runs in: its media session is the YouTube Music
+/// pill's while that pill has a player (ytmusic.rs), not this one's.
+#[cfg_attr(not(windows), allow(dead_code))]
+pub fn is_bridged_browser(app_id: &str) -> bool {
+    let lower = app_id.to_ascii_lowercase();
+    ["chrome", "msedge", "brave", "chromium"].iter().any(|b| lower.contains(b))
+}
+
 /// Starts the listener when the pill is declared, stops it when it is not.
 /// Called at launch and after every settings save.
 pub fn sync(app: &AppHandle, active_integrations: &[String]) {
@@ -1746,9 +1762,21 @@ mod win {
         (0..list.Size().unwrap_or(0)).filter_map(|i| list.GetAt(i).ok()).collect()
     }
 
-    /// The session to show (pick_session): what is playing first.
+    /// Picks the session again (ytmusic.rs took the browsers, or gave them back).
+    pub fn repick() {
+        if let Some(wake) = SHARED.lock().unwrap().wake.as_ref() {
+            let _ = wake.send(Wake::Sessions);
+        }
+    }
+
+    /// The session to show (pick_session): what is playing first. A browser's
+    /// is left to the YouTube Music pill while that has a player.
     fn find_session(manager: &Manager) -> Option<Session> {
-        let all = sessions(manager);
+        let browsers_taken = crate::ytmusic::claims_browsers();
+        let all: Vec<Session> = sessions(manager)
+            .into_iter()
+            .filter(|s| !(browsers_taken && is_bridged_browser(&app_id(s))))
+            .collect();
         let current = manager.GetCurrentSession().ok().map(|s| app_id(&s));
         let candidates: Vec<Candidate> = all
             .iter()
@@ -2279,6 +2307,9 @@ mod tests {
         assert!(is_spotify_app("SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"));
         assert!(!is_spotify_app("Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic"));
         assert!(!is_spotify_app("chrome.exe"));
+        // The browsers Ciel for Chrome runs in, whose sessions YouTube Music's pill takes.
+        assert!(is_bridged_browser("chrome.exe") && is_bridged_browser("MSEdge") && is_bridged_browser("brave.exe"));
+        assert!(!is_bridged_browser("Spotify.exe") && !is_bridged_browser("firefox.exe") && !is_bridged_browser("vlc.exe"));
     }
 
     #[test]

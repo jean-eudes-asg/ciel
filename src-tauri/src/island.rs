@@ -296,6 +296,21 @@ pub fn calculate_zoom_correction(current_zoom: f64, scale: f64, dpr: f64) -> Opt
 }
 
 #[cfg(test)]
+mod click_tests {
+    use super::*;
+
+    #[test]
+    fn a_press_on_the_island_or_its_margin_is_no_click_outside() {
+        let r = IslandRect { x: 40.0, y: 0.0, w: 640.0, h: 160.0 };
+        assert!(over_island(r, 50.0, 10.0));
+        assert!(over_island(r, 40.0 - HIT_MARGIN, 0.0));
+        assert!(!over_island(r, 40.0 - HIT_MARGIN - 1.0, 10.0));
+        assert!(!over_island(r, 300.0, 160.0 + HIT_MARGIN + 1.0));
+        assert!(!over_island(IslandRect::default(), 0.0, 0.0), "nothing drawn yet: all is outside");
+    }
+}
+
+#[cfg(test)]
 mod zoom_tests {
     use super::*;
 
@@ -411,6 +426,13 @@ fn current_screen_key(app: &AppHandle) -> Option<(i32, i32, u32, u32, u64)> {
     Some((p.x, p.y, size.width, size.height, m.scale_factor().to_bits()))
 }
 
+/// Click-through: the window only takes the mouse over the island shape. A
+/// small entry margin means the flag is already off by the time a moving
+/// cursor reaches a button, and a press in it is no click outside.
+fn over_island(r: IslandRect, x: f64, y: f64) -> bool {
+    r.w > 0.0 && x >= r.x - HIT_MARGIN && x <= r.x + r.w + HIT_MARGIN && y >= r.y - HIT_MARGIN && y <= r.y + r.h + HIT_MARGIN
+}
+
 /// Emits `cursor` (window-logical coordinates) at ~60 Hz while the island is
 /// visible. Parked on a condvar the rest of the time.
 pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
@@ -427,6 +449,9 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
             gate.wait_until_active();
             let mut last = (f64::MIN, f64::MIN);
             let mut ticks: u32 = 0;
+            // A button already held as the poll wakes is no new press: it must
+            // be let go first.
+            let mut held_before = true;
             while gate.is_active() {
                 std::thread::sleep(Duration::from_millis(period));
 
@@ -457,20 +482,23 @@ pub fn spawn_cursor_poll(app: AppHandle, gate: Arc<PollGate>) {
                     Ok(s) => (s.width as f64 / scale, s.height as f64 / scale),
                     Err(_) => (PANEL_W, PANEL_H),
                 };
+                let r = *gate.rect.lock().unwrap();
+                let on_island = over_island(r, x, y);
+
+                // A press anywhere else, with any button: the page folds the
+                // open island if the user wants that (Settings → General →
+                // Close when I click outside). Read before the "cursor still"
+                // skip below, as a click without moving is a click all the same.
+                let held = platform::any_button_down();
+                if held && !held_before && !on_island {
+                    let _ = win.emit("pressed-outside", ());
+                }
+                held_before = held;
+
                 if (x - last.0).abs() < 1.0 && (y - last.1).abs() < 1.0 {
                     continue;
                 }
                 last = (x, y);
-
-                // Click-through: the window only takes the mouse over the island
-                // shape. A small entry margin means the flag is already off by the
-                // time a moving cursor reaches a button.
-                let r = *gate.rect.lock().unwrap();
-                let on_island = r.w > 0.0
-                    && x >= r.x - HIT_MARGIN
-                    && x <= r.x + r.w + HIT_MARGIN
-                    && y >= r.y - HIT_MARGIN
-                    && y <= r.y + r.h + HIT_MARGIN;
 
                 // A file being dragged has to be able to find us. WS_EX_TRANSPARENT
                 // — what click-through is on Windows — hides the window from

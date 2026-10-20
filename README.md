@@ -67,7 +67,7 @@ runs the real island in demo mode, under a sky that follows his mood. In the app
 - **Notetaker.** Record a call (your microphone and what your PC plays), get the
   transcript, a summary and the to-dos.
 - **Integrations**, each with its own coloured mini cloud: GitHub, Vercel,
-  Stripe, n8n, Resend, Notion, Cal.com, Gmail, Spotify and Finance.
+  Stripe, n8n, Resend, Notion, Cal.com, Gmail, Spotify, YouTube Music and Finance.
 - **Notifications in the island**: new mail in Gmail, and what websites in
   Chrome, Edge or Brave notify (WhatsApp, Calendar, Slack…) through the Ciel for
   Chrome extension, instead of the browser's popups.

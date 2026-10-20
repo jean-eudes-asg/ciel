@@ -172,7 +172,7 @@ pub fn notification_action(id: String, action: String) {
     }
 }
 
-fn tell_bridge(bridge: &str, message: Value) {
+pub(crate) fn tell_bridge(bridge: &str, message: Value) {
     let line = format!("{message}\n");
     if let Some((_, tx)) = BRIDGES.lock().unwrap().iter().find(|(id, _)| id == bridge) {
         let _ = tx.send(line);
@@ -191,6 +191,11 @@ pub fn listen(bridge: &str) -> mpsc::UnboundedReceiver<String> {
     bridges.push((bridge.to_string(), tx));
     crate::log::line(format!("notifications: browser bridge connected ({} now)", bridges.len()));
     rx
+}
+
+/// How many browsers have their bridge connected (YouTube Music's idle card).
+pub fn bridge_count() -> usize {
+    BRIDGES.lock().unwrap().len()
 }
 
 pub fn forget(bridge: &str) {

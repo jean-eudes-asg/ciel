@@ -13,11 +13,15 @@
     const { type, key, title, body, icon, tag } = e.data;
     if (type === "notification" || type === "close") {
       chrome.runtime.sendMessage({ type, key, title, body, icon, tag }).catch(() => {});
+    } else if (type === "media" && location.hostname === "music.youtube.com") {
+      // YouTube Music's player (media.js), for Ciel's YouTube Music pill.
+      const { gone, artist, album, art, duration, position, playing } = e.data;
+      chrome.runtime.sendMessage({ type, gone, title, artist, album, art, duration, position, playing }).catch(() => {});
     }
   });
 
   chrome.runtime.onMessage.addListener((m) => {
-    if (m && (m.type === "status" || m.type === "click" || m.type === "close")) toPage(m);
+    if (m && (m.type === "status" || m.type === "click" || m.type === "close" || m.type === "media-control")) toPage(m);
   });
 
   // Is Ciel there? Asked as the page starts; the worker tells every tab when it changes.

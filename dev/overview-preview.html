@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel — the open island's home</title>
+    <style>
+      body { margin: 0; padding: 24px 0 60px; background: #1b1b1f; font: 12px system-ui; color: #ddd; }
+      h1 { font: 600 14px system-ui; text-align: center; margin: 0 0 18px; }
+      .cases { display: flex; flex-direction: column; align-items: center; gap: 26px; }
+      .case { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      .open { position: relative; width: 640px; height: 160px; background: #000; border-radius: 0 0 22px 22px; box-sizing: border-box; padding: 8px 10px 10px; display: flex; flex-direction: column; }
+      .open .head { flex: 0 0 34px; }
+      .open .body { position: relative; flex: 1 1 auto; }
+      .open .ciel { position: absolute; left: 39px; top: 67px; width: 58px; height: 58px; border-radius: 50%; background: #f5f6f8; z-index: 2; }
+    </style>
+  </head>
+  <body>
+    <h1>The open island's home (src/core/overview.ts, src/views/views.ts)</h1>
+    <div class="cases" id="cases"></div>
+    <script type="module" src="./overview-preview.ts"></script>
+  </body>
+</html>

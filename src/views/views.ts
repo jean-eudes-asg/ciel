@@ -20,8 +20,9 @@ import { buildDiffCard } from "./diff";
 import { lastTextStep } from "../core/diff";
 import { Bridge } from "../core/bridge";
 import { buildRecap } from "./recap";
-import { buildSpotifyCard, buildSpotifyPill, type SpotifyPillHost } from "./spotify";
-import { SPOTIFY_ID } from "../core/spotify";
+import { buildPlayerCard, buildPlayerPill, type SpotifyCardHost, type SpotifyPillHost } from "./spotify";
+import { playerFor } from "../core/player";
+import { pillPlan, planOverview, recentEdits, type OverviewLayout } from "../core/overview";
 import { buildFinanceCard } from "./finance";
 import { FINANCE_ID } from "../core/finance";
 import { language, t, tl, type Msg } from "../i18n/i18n";
@@ -173,74 +174,65 @@ export function buildHeader(actions: ViewActions): ViewHost {
 
 // ── Overview ──────────────────────────────────────────────────────────────────
 
-function buildOverview(actions: ViewActions): ViewHost {
-  /** The diff open in the left card (a FileDiff id), as activeDiffId on macOS. */
+/**
+ * One pill in detail, on either side of the overview: its live feed, a diff
+ * from it, or its own card. `wide`: it has the island to itself, and shows
+ * more — the files the session edited and its plan's usage, a card's detail
+ * beside it, longer lists.
+ */
+interface DetailPane {
+  el: HTMLElement;
+  readonly taskId: string | null;
+  /** Its ↗ makes sense: no diff and no detail open over the card. */
+  readonly jumpable: boolean;
+  /** It shows a plan's usage, whose countdowns move every 30 s. */
+  readonly showsPlan: boolean;
+  sync(task: AgentTask | null, wide: boolean): void;
+  tick(nowMs: number): boolean;
+  /** Ctrl+O on the highlighted row, Ctrl+E on the latest diff. */
+  command(command: ViewCommand): void;
+  /** Closes the diff it shows; `quiet` skips the redraw. True when there was one. */
+  closeDiff(quiet?: boolean): boolean;
+  /** Ctrl+↓ Ctrl+↑ walk the focused pane's list (cardItemCount / cardSelection). */
+  syncSelection(focused: boolean): void;
+}
+
+function buildDetailPane(actions: ViewActions): DetailPane {
+  /** The diff open here (a FileDiff id), as activeDiffId on macOS. */
   let activeDiffId: number | null = null;
-  const closeDiff = () => {
-    if (activeDiffId == null) return;
-    activeDiffId = null;
-    State.notify();
-  };
-  const ticker = new Ticker((diffId) => {
-    actions.blip();
-    activeDiffId = diffId;
-    State.notify();
-  });
-  const who = h("div", { class: "who" });
-  const tickerBody = h("div", { class: "card-body" }, who, ticker.el);
-  const leftBody = h("div", { class: "left-body" });
-  const jump = h(
-    "button",
-    { class: "icon-btn jump", title: tl("Open"), onclick: () => actions.openTarget() },
-    svg(ICONS.arrowUpRight, 8),
-  );
-  const left = card(null, leftBody, jump);
-  const pills = h("div", { class: "pills" });
-  const right = card(null, pills);
-  // Opened from a plan pill in the header: stands in for the left card.
-  const plan = new PlanCard();
-  let planTimer: number | null = null;
-  // Spotify's card and pill are kept and updated in place: the progress bar
-  // runs on, and a slider being dragged must not be rebuilt under the pointer.
-  const spotifyCard = buildSpotifyCard();
-  let spotifyPill: SpotifyPillHost | null = null;
-  // Finance's card holds a form: kept too, so a poll never rebuilds it mid-typing.
-  const financeCard = buildFinanceCard();
-
-  const el = h("div", { class: "view overview" },
-    h("div", { class: "left" }, left),
-    h("div", { class: "right" }, right),
-  );
-
-  let pillIds = "";
+  let taskId: string | null = null;
   let detailOpen = false;
-  let lastFocus: string | null = null;
-  let mode: "ticker" | "card" | "plan" | "diff" | "spotify" | "finance" | null = null;
+  let mode: "ticker" | "card" | "diff" | "player" | "finance" | null = null;
   let cardKey = "";
+  let editsKey = "";
+  let showsPlan = false;
   /** The list row highlighted at the last sync, to scroll only when it moves. */
   let shownSelection: number | null = null;
 
-  // Leaving the overview or folding the island closes the diff, as on macOS.
-  State.subscribe(() => {
-    if (activeDiffId != null && (State.view !== "overview" || State.mode !== "expanded")) {
-      activeDiffId = null;
-    }
-  });
-  // Escape steps back out of the diff before it closes the island.
-  window.addEventListener(
-    "keydown",
-    (e) => {
-      if (e.key !== "Escape" || activeDiffId == null || State.view !== "overview") return;
-      e.stopImmediatePropagation();
-      closeDiff();
-    },
-    true,
-  );
+  const openDiff = (diffId: number) => {
+    actions.blip();
+    activeDiffId = diffId;
+    State.notify();
+  };
+  const ticker = new Ticker(openDiff);
+  const who = h("div", { class: "who" });
+  // With the room for them, beside the feed: its plan's usage, and the files
+  // the session edited.
+  const edits = h("div", { class: "edits" });
+  const plan = new PlanCard("side");
+  const side = h("div", { class: "side" }, plan.el, edits);
+  const tickerBody = h("div", { class: "card-body" }, h("div", { class: "feed" }, who, ticker.el), side);
+  const el = h("div", { class: "left-body" });
+  // The players' cards and Finance's are kept and updated in place: the progress
+  // bar runs on, and a slider or a form must not be rebuilt under the pointer.
+  const playerCards = new Map<string, SpotifyCardHost>();
+  let financeCard: ReturnType<typeof buildFinanceCard> | null = null;
 
   const hooks: IntegrationCardHooks = {
     get detailOpen() {
       return detailOpen;
     },
+    wide: false,
     openDetail() {
       detailOpen = true;
       cardKey = "";
@@ -254,23 +246,54 @@ function buildOverview(actions: ViewActions): ViewHost {
     openSettings: () => actions.openSettingsWindow(),
   };
 
-  /** The countdowns move every 30 s while a card is open, and only then. */
-  function syncPlanTimer(open: boolean) {
-    const stop = () => {
-      if (planTimer != null) window.clearInterval(planTimer);
-      planTimer = null;
-    };
-    if (!open) return stop();
-    if (planTimer != null) return;
-    planTimer = window.setInterval(() => {
-      if (planCardOpen() && State.mode === "expanded") State.notify();
-      else stop();
-    }, 30_000);
+  /** Puts `child` in the pane, unless it is there already. */
+  const showOnly = (next: typeof mode, child: HTMLElement) => {
+    if (mode === next && child.parentElement === el) return;
+    clear(el);
+    el.append(child);
+    mode = next;
+    cardKey = "";
+  };
+
+  /** The files the session edited, newest first: a press opens the diff. How many shown. */
+  function syncEdits(task: AgentTask, wide: boolean, max: number): number {
+    const list = wide ? recentEdits(State.sessionDiffs.get(task.id) ?? [], max) : [];
+    const key = list.map((d) => `${d.id}:${d.added}:${d.removed}`).join("|");
+    if (key === editsKey) return list.length;
+    editsKey = key;
+    clear(edits);
+    for (const d of list) {
+      edits.append(h(
+        "button",
+        { class: "edit-row", title: d.path, onclick: () => openDiff(d.id) },
+        svg(ICONS.doc, 9),
+        h("span", { class: "edit-name", text: d.path.split(/[\\/]/).pop() || d.path }),
+        h("span", { class: "plus", text: `+${d.added}` }),
+        h("span", { class: "minus", text: `−${d.removed}` }),
+      ));
+    }
+    return list.length;
   }
+
+  const closeDiff = (quiet = false) => {
+    if (activeDiffId == null) return false;
+    activeDiffId = null;
+    if (!quiet) State.notify();
+    return true;
+  };
 
   return {
     el,
-    tick(nowMs: number) {
+    get taskId() {
+      return taskId;
+    },
+    get jumpable() {
+      return taskId != null && !detailOpen && mode !== "diff";
+    },
+    get showsPlan() {
+      return showsPlan;
+    },
+    tick(nowMs) {
       if (mode !== "ticker") return false;
       ticker.tick(nowMs);
       return ticker.animating;
@@ -279,75 +302,70 @@ function buildOverview(actions: ViewActions): ViewHost {
       if (command === "openSelection") {
         // Ctrl+O: what a click on the highlighted row does.
         if (mode !== "card" || State.cardSelection == null) return;
-        openRow(listRows(leftBody)[State.cardSelection]);
+        openRow(listRows(el)[State.cardSelection]);
         return;
       }
       // Ctrl+E (⌘E, islandToggleDiff): closes the diff that is open, else
-      // opens the focused pill's latest edit.
-      if (activeDiffId != null) {
-        closeDiff();
-        return;
-      }
-      const task = State.focusTask;
-      const diffs = task ? State.sessionDiffs.get(task.id) : undefined;
+      // opens the pill's latest edit.
+      if (closeDiff()) return;
+      const diffs = taskId ? State.sessionDiffs.get(taskId) : undefined;
       const last = diffs?.[diffs.length - 1];
       if (last?.id == null) return;
       activeDiffId = last.id;
       State.notify();
     },
-    sync() {
-      const task = State.focusTask;
-      if (task?.id !== lastFocus) {
-        lastFocus = task?.id ?? null;
+    closeDiff,
+    syncSelection(focused) {
+      const rows = mode === "card" ? listRows(el) : [];
+      if (!focused) {
+        highlightRow(rows, null, false);
+        return;
+      }
+      State.cardItemCount = rows.length;
+      if (State.cardSelection != null && State.cardSelection >= rows.length) State.cardSelection = null;
+      highlightRow(rows, State.cardSelection, State.cardSelection !== shownSelection);
+      shownSelection = State.cardSelection;
+    },
+    sync(task, wide) {
+      if ((task?.id ?? null) !== taskId) {
+        taskId = task?.id ?? null;
         detailOpen = false;
         activeDiffId = null;
         cardKey = "";
+        editsKey = "";
         mode = null;
       }
-
-      // A workspace or agent pill with a live session keeps the ticker; every
-      // other pill shows its own card, exactly like IntegrationCardView.
-      const sessionActive = task != null && hasSessionTicker(task);
-
-      const planOpen = planCardOpen();
-      if (mode === "plan" && !planOpen) {
+      el.classList.toggle("wide", wide);
+      hooks.wide = wide;
+      showsPlan = false;
+      if (!task) {
+        clear(el);
         mode = null;
-        cardKey = "";
+        return;
       }
-      syncPlanTimer(planOpen);
 
       // A diff that has since been dropped (cap, expiry, session end) just closes.
-      const diff = task && activeDiffId != null ? State.findDiff(task.id, activeDiffId) : null;
+      const diff = activeDiffId != null ? State.findDiff(task.id, activeDiffId) : null;
       if (!diff) activeDiffId = null;
 
-      if (planOpen) {
-        if (mode !== "plan") {
-          clear(leftBody);
-          leftBody.append(plan.el);
-          mode = "plan";
-        }
-        plan.sync();
-      } else if (task && diff) {
+      if (diff) {
         const key = `diff~${task.id}~${diff.id}`;
         if (key !== cardKey) {
-          cardKey = key;
-          mode = "diff";
-          clear(leftBody);
-          leftBody.append(buildDiffCard(diff, {
+          clear(el);
+          el.append(buildDiffCard(diff, {
             dismiss: () => {
               actions.blip();
               closeDiff();
             },
             open: (path) => void Bridge.openFileInVSCode(path),
           }));
+          mode = "diff";
+          cardKey = key;
         }
-      } else if (task && sessionActive) {
-        if (mode !== "ticker") {
-          clear(leftBody);
-          leftBody.append(tickerBody);
-          mode = "ticker";
-          cardKey = "";
-        }
+      } else if (hasSessionTicker(task)) {
+        // A workspace or agent pill with a live session keeps the ticker; every
+        // other pill shows its own card, exactly like IntegrationCardView.
+        showOnly("ticker", tickerBody);
         clear(who);
         // The agent's name is already the pill's: the label says what kind of
         // pill it is, as on the Mac (PillDefinition.sessionSubtitle).
@@ -363,68 +381,207 @@ function buildOverview(actions: ViewActions): ViewHost {
           }));
         }
         ticker.sync(task);
-      } else if (task && task.id === SPOTIFY_ID) {
-        // Its own card for every state: playing, idle, not installed.
-        if (mode !== "spotify") {
-          clear(leftBody);
-          leftBody.append(spotifyCard.el);
-          mode = "spotify";
-          cardKey = "";
+        const which = wide ? pillPlan(task.id) : null;
+        const usage = which === "codex" ? State.codexPlanUsage : which === "claude" ? State.planUsage : null;
+        showsPlan = usage != null;
+        plan.el.style.display = showsPlan ? "" : "none";
+        if (showsPlan) plan.sync(Date.now(), which === "codex");
+        // Under the plan's two gauges there is room for three files; alone, four.
+        const shown = syncEdits(task, wide, showsPlan ? 3 : 4);
+        tickerBody.classList.toggle("with-side", showsPlan || shown > 0);
+      } else if (playerFor(task.id)) {
+        // A music pill (Spotify, YouTube Music): its own card for every
+        // state — playing, idle, not there.
+        const source = playerFor(task.id)!;
+        let player = playerCards.get(source.id);
+        if (!player) {
+          player = buildPlayerCard(source);
+          playerCards.set(source.id, player);
         }
-        spotifyCard.sync();
-      } else if (task && task.id === FINANCE_ID) {
+        showOnly("player", player.el);
+        player.sync();
+      } else if (task.id === FINANCE_ID) {
+        financeCard ??= buildFinanceCard();
         if (mode !== "finance") {
-          clear(leftBody);
-          leftBody.append(financeCard.el);
-          mode = "finance";
-          cardKey = "";
+          showOnly("finance", financeCard.el);
           financeCard.reset();
         }
         financeCard.sync();
-      } else if (task) {
+      } else {
         const info = State.integrations[task.id];
         const key = [
-          language(), task.id, task.color, detailOpen, task.state, task.steps.join("|"),
+          language(), task.id, task.color, detailOpen, wide, task.state, task.steps.join("|"),
           info?.loaded, info?.error, info?.configured,
           JSON.stringify(info?.data ?? {}),
         ].join("~");
         if (key !== cardKey) {
-          cardKey = key;
+          clear(el);
+          el.append(renderIntegrationCard(task, hooks));
           mode = "card";
-          clear(leftBody);
-          leftBody.append(renderIntegrationCard(task, hooks));
+          cardKey = key;
         }
       }
+    },
+  };
+}
 
-      jump.style.display = detailOpen || mode === "plan" || mode === "diff" ? "none" : "";
+/**
+ * The open island's home (core/overview.ts decides the layout): one pill has
+ * it all, in detail; two are both in detail, each in its own place (the main
+ * pill beside Ciel); from three on, the focused pill is in detail and the
+ * others are listed on the right, a press on one bringing it over.
+ */
+function buildOverview(actions: ViewActions): ViewHost {
+  const main = buildDetailPane(actions);
+  const second = buildDetailPane(actions);
+  // Opened from a plan pill in the header: stands in for the left card.
+  const plan = new PlanCard();
+  let planTimer: number | null = null;
+  let planShown = false;
+  let layout: OverviewLayout = "list";
 
-      // Ctrl+↓ Ctrl+↑ walk the open GitHub list (cardItemCount / cardSelection).
-      const rows = mode === "card" ? listRows(leftBody) : [];
-      State.cardItemCount = rows.length;
-      if (State.cardSelection != null && State.cardSelection >= rows.length) State.cardSelection = null;
-      highlightRow(rows, State.cardSelection, State.cardSelection !== shownSelection);
-      shownSelection = State.cardSelection;
+  /** A pane's ↗: whatever its pill points at (the focused pill's, so it gets the focus). */
+  const openPane = (pane: DetailPane) => {
+    if (pane.taskId && State.focusId !== pane.taskId) State.setFocus(pane.taskId);
+    actions.openTarget();
+  };
+  const jumpButton = (pane: DetailPane) => h(
+    "button",
+    { class: "icon-btn jump", title: tl("Open"), onclick: () => openPane(pane) },
+    svg(ICONS.arrowUpRight, 8),
+  );
+  const leftHolder = h("div", { class: "pane-holder" }, main.el);
+  const jump = jumpButton(main);
+  const left = card(null, leftHolder, jump);
+  const pills = h("div", { class: "pills" });
+  const rightHolder = h("div", { class: "pane-holder" }, pills);
+  const jumpRight = jumpButton(second);
+  const right = card(null, rightHolder, jumpRight);
+  // The music pills in the list are kept and updated in place, like their cards.
+  let playerPills: SpotifyPillHost[] = [];
 
-      const others = State.otherTasks.slice(0, 4);
+  const el = h("div", { class: "view overview" },
+    h("div", { class: "left" }, left),
+    h("div", { class: "right" }, right),
+  );
+
+  let pillIds = "";
+
+  /** The pane the keys go to: the one showing the focused pill. */
+  const focusedPane = () => (layout === "duo" && second.taskId != null && second.taskId === State.focusTask?.id ? second : main);
+
+  // Two in detail: a press in one gives its pill the focus, silently — the
+  // keys, the ↗ and Ciel's mood follow it.
+  for (const [cardEl, pane] of [[left, main], [right, second]] as const) {
+    cardEl.addEventListener("mousedown", () => {
+      if (layout !== "duo" || !pane.taskId || State.focusId === pane.taskId) return;
+      State.setFocus(pane.taskId);
+      State.notify();
+    }, true);
+  }
+
+  // Leaving the overview or folding the island closes the diffs, as on macOS.
+  State.subscribe(() => {
+    if (State.view !== "overview" || State.mode !== "expanded") {
+      main.closeDiff(true);
+      second.closeDiff(true);
+    }
+  });
+  // Escape steps back out of a diff before it closes the island.
+  window.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key !== "Escape" || State.view !== "overview") return;
+      const pane = focusedPane();
+      if (pane.closeDiff() || (pane === main ? second : main).closeDiff()) e.stopImmediatePropagation();
+    },
+    true,
+  );
+
+  /** The countdowns move every 30 s while a plan shows, and only then. */
+  function syncPlanTimer(open: boolean) {
+    const stop = () => {
+      if (planTimer != null) window.clearInterval(planTimer);
+      planTimer = null;
+    };
+    if (!open) return stop();
+    if (planTimer != null) return;
+    planTimer = window.setInterval(() => {
+      if ((planCardOpen() || main.showsPlan) && State.mode === "expanded") State.notify();
+      else stop();
+    }, 30_000);
+  }
+
+  /** A duo's pane wears a hairline of its pill's colour while it has the focus. */
+  const ring = (cardEl: HTMLElement, task: AgentTask | null, on: boolean) => {
+    cardEl.style.borderColor = on && task ? `${task.color}59` : "";
+  };
+
+  return {
+    el,
+    tick(nowMs: number) {
+      const a = main.tick(nowMs);
+      const b = layout === "duo" ? second.tick(nowMs) : false;
+      return a || b;
+    },
+    command(command) {
+      focusedPane().command(command);
+    },
+    sync() {
+      const p = planOverview(State.tasks, State.focusId);
+      layout = p.layout;
+      el.classList.toggle("solo", layout === "solo");
+      el.classList.toggle("duo", layout === "duo");
+
+      const planOpen = planCardOpen();
+      if (planOpen !== planShown) {
+        planShown = planOpen;
+        clear(leftHolder);
+        leftHolder.append(planOpen ? plan.el : main.el);
+      }
+      if (planOpen) plan.sync();
+      main.sync(p.left, layout === "solo");
+      second.sync(p.right, false);
+      syncPlanTimer(planOpen || main.showsPlan);
+
+      // The right card: the second pill of a duo in detail, else the list.
+      const rightChild = layout === "duo" ? second.el : pills;
+      if (rightChild.parentElement !== rightHolder) {
+        clear(rightHolder);
+        rightHolder.append(rightChild);
+      }
+      jump.style.display = planShown || !main.jumpable ? "none" : "";
+      jumpRight.style.display = layout === "duo" && second.jumpable ? "" : "none";
+
+      const focusId = State.focusTask?.id ?? null;
+      ring(left, p.left, layout === "duo" && main.taskId === focusId);
+      ring(right, p.right, layout === "duo" && second.taskId === focusId);
+      const keys = focusedPane();
+      main.syncSelection(keys === main && !planShown);
+      second.syncSelection(keys === second);
+
+      if (layout !== "list") return;
       // Finance's pill says how the month goes: its label is part of the key.
-      const pillKey = others
+      const pillKey = p.list
         .map((t) => `${t.id}:${t.color}:${t.pillBadge ?? ""}${t.id === FINANCE_ID ? `:${t.name}` : ""}`)
         .join("|");
       if (pillKey !== pillIds) {
         pillIds = pillKey;
         clear(pills);
-        spotifyPill = null;
-        for (const t of others) {
-          if (t.id === SPOTIFY_ID) {
-            spotifyPill = buildSpotifyPill(t, () => actions.setFocus(t.id));
-            pills.append(spotifyPill.el);
+        playerPills = [];
+        for (const t of p.list) {
+          const source = playerFor(t.id);
+          if (source) {
+            const pill = buildPlayerPill(t, source, () => actions.setFocus(t.id));
+            playerPills.push(pill);
+            pills.append(pill.el);
           } else {
             pills.append(buildPill(t, actions));
           }
         }
         pruneMiniBots();
       }
-      spotifyPill?.sync();
+      for (const pill of playerPills) pill.sync();
     },
   };
 }
@@ -751,8 +908,10 @@ function buildSettings(actions: ViewActions): ViewHost {
     oninput: (e: Event) => actions.setVolume(Number((e.target as HTMLInputElement).value)),
   }) as HTMLInputElement;
   const autoLabel = h("span", {});
-  const segButtons = [10, 15, 30].map((s) =>
-    h("button", { onclick: () => actions.setAutoClose(s) }, `${s}s`),
+  // 0: never closes by itself.
+  const segChoices = [10, 15, 30, 0];
+  const segButtons = segChoices.map((s) =>
+    h("button", { onclick: () => actions.setAutoClose(s), title: s === 0 ? tl("Never") : "" }, s === 0 ? "∞" : `${s}s`),
   );
   const claudeBadge = h("span", { class: "status-badge" });
   const apiBadge = h("span", { class: "status-badge" });
@@ -793,8 +952,10 @@ function buildSettings(actions: ViewActions): ViewHost {
       soundSwitch.classList.toggle("on", s.soundEnabled);
       volume.value = String(s.soundVolume);
       volume.style.opacity = s.soundEnabled ? "1" : "0.4";
-      autoLabel.textContent = t("Auto-close · {seconds}s", { seconds: Math.round(s.autoCloseInterval) });
-      segButtons.forEach((b, i) => b.classList.toggle("on", s.autoCloseInterval === [10, 15, 30][i]));
+      autoLabel.textContent = s.autoCloseInterval > 0
+        ? t("Auto-close · {seconds}s", { seconds: Math.round(s.autoCloseInterval) })
+        : t("Auto-close · never");
+      segButtons.forEach((b, i) => b.classList.toggle("on", s.autoCloseInterval === segChoices[i]));
       clear(claudeBadge);
       claudeBadge.append(
         dot(s.hooksInstalled ? "#22C55E" : "#F4505E", 6),

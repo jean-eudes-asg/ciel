@@ -61,6 +61,8 @@ export interface BootInfo {
   hookPath: string;
   /** False where the OS has no global cursor (Wayland): see Island.followPageCursor. */
   cursorPoll: boolean;
+  /** Ciel sees a press anywhere on screen (Windows, X11), not on Wayland. */
+  clicksOutside: boolean;
 }
 
 export const Bridge = {
@@ -251,6 +253,12 @@ export const Bridge = {
     call<boolean>("spotify_control", { action, value: value ?? null }),
   /** Brings Spotify forward or starts it; without it, its download page. */
   spotifyOpen: () => call<boolean>("spotify_open"),
+  // ── YouTube Music, through Ciel for Chrome (src-tauri/src/ytmusic.rs) ─────
+  /** The player in a YouTube Music tab, in Spotify's shape. */
+  ytMusicState: () => call<SpotifyState>("ytmusic_state"),
+  /** To that tab: what the media keys do; `seek` to `value` seconds; `focus` brings the tab forward. */
+  ytMusicControl: (action: "playPause" | "next" | "previous" | "seek" | "focus", value?: number) =>
+    call<void>("ytmusic_control", { action, value: value ?? null }),
   /** Whether the browsers know Ciel for Chrome's bridge, and the places involved (browser_bridge.rs). */
   browserBridgeStatus: () => call<{ installed: boolean; places: string[] }>("browser_bridge_status"),
   /** Makes the bridge known to the browsers, or takes it out. */

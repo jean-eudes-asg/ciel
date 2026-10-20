@@ -7,6 +7,7 @@
 import { Bridge, onEvent } from "../core/bridge";
 import { pillDefinition } from "../core/pills";
 import { SPOTIFY_ID, Spotify, isAd, type SpotifyState } from "../core/spotify";
+import { YTMUSIC_ID, YtMusic } from "../core/ytmusic";
 import { State } from "../core/state";
 import { t } from "../i18n/i18n";
 
@@ -20,6 +21,11 @@ export function registerSpotifyHandlers(island: SpotifyHost) {
   void onEvent<{ artUrl: string; dataUrl: string }>("spotify-artwork", (art) => {
     Spotify.artwork = art;
     State.notify();
+  });
+  // YouTube Music, from a browser tab through Ciel for Chrome (ytmusic.rs).
+  void onEvent<SpotifyState>("ytmusic", (s) => applyYtMusic(island, s));
+  void Bridge.ytMusicState().then((s) => {
+    if (s) applyYtMusic(island, s);
   });
   State.subscribe(() => {
     syncPillName();
@@ -39,14 +45,27 @@ export function applySpotify(island: SpotifyHost, next: SpotifyState) {
   State.notify();
 }
 
-/** SpotifyController.syncTaskName: the track's title, else the pill's name. */
+/** YouTube Music's player: as Spotify's, music starting shows the compact island silently. */
+export function applyYtMusic(island: SpotifyHost, next: SpotifyState) {
+  const wasPlaying = State.spotifyPlaying;
+  YtMusic.state = next;
+  syncPillName();
+  if (!wasPlaying && State.spotifyPlaying && !State.paused && State.mode === "hidden") {
+    island.revealSilently();
+  }
+  State.notify();
+}
+
+/** SpotifyController.syncTaskName: each music pill wears its track's title, else its own name. */
 export function syncPillName() {
-  const task = State.tasks.find((x) => x.id === SPOTIFY_ID);
-  if (!task) return;
-  const track = Spotify.state.track;
-  const title = isAd(track) ? t("Advertisement") : (track?.title ?? "");
-  const name = title || (pillDefinition(SPOTIFY_ID)?.name ?? "Spotify");
-  if (task.name !== name) task.name = name;
+  const players: [string, SpotifyState][] = [[SPOTIFY_ID, Spotify.state], [YTMUSIC_ID, YtMusic.state]];
+  for (const [id, s] of players) {
+    const task = State.tasks.find((x) => x.id === id);
+    if (!task) continue;
+    const title = isAd(s.track) ? t("Advertisement") : (s.track?.title ?? "");
+    const name = title || (pillDefinition(id)?.name ?? task.name);
+    if (task.name !== name) task.name = name;
+  }
 }
 
 let shown = false;

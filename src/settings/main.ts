@@ -38,6 +38,8 @@ const KEY_STORE = navigator.userAgent.includes("Windows")
 
 let settings: Settings = { ...DEFAULT_SETTINGS };
 let version = "";
+/** Ciel sees a press anywhere on screen (Windows, X11); Wayland shows it none. */
+let clicksOutside = true;
 
 const windowRoot = document.getElementById("hub")!;
 /** Where the Notch page being shown draws its sections. */
@@ -994,14 +996,16 @@ function generalSection(): HTMLElement {
     onclick: () => void Bridge.reloadSounds().then(() => window.setTimeout(countCustom, 300)),
   });
 
-  const autoClose = h("input", {
-    type: "number", min: "5", max: "120", step: "1",
-    value: String(Math.round(settings.autoCloseInterval)),
-    style: "width:72px",
-  }) as HTMLInputElement;
+  // Seconds after the pointer leaves the open island, or 0: never. A value set
+  // before (any 5…120) stays on the list.
+  const autoClose = h("select", {}) as HTMLSelectElement;
+  const current = Math.round(settings.autoCloseInterval);
+  const choices = [...new Set([5, 10, 15, 30, 60, 120, current])].filter((s) => s > 0).sort((a, b) => a - b);
+  for (const s of choices) autoClose.append(h("option", { value: String(s), text: t("{n} seconds", { n: s }) }));
+  autoClose.append(h("option", { value: "0", text: t("Never") }));
+  autoClose.value = String(current);
   autoClose.addEventListener("change", () => {
-    settings.autoCloseInterval = Math.max(5, Math.min(120, Number(autoClose.value) || 15));
-    autoClose.value = String(settings.autoCloseInterval);
+    settings.autoCloseInterval = Number(autoClose.value);
     void save();
   });
 
@@ -1050,8 +1054,18 @@ function generalSection(): HTMLElement {
     h("div", { class: "row" },
       h("label", { text: t("Auto-close") }),
       autoClose,
-      h("span", { class: "hint", text: t("seconds after you leave the island") }),
+      h("span", { class: "hint", text: t("after you leave the island") }),
     ),
+    h("div", { class: "row" },
+      h("label", { text: t("Close when I click outside") }),
+      toggle(settings.closeOnClickOutside, (v) => { settings.closeOnClickOutside = v; void save(); }),
+    ),
+    h("div", {
+      class: "hint",
+      text: clicksOutside
+        ? t("A click anywhere else folds the open island. A card waiting for your answer stays open.")
+        : t("Wayland shows no app the clicks in other windows: the open island folds a moment after the pointer leaves it instead."),
+    }),
     h("div", { class: "row" },
       h("label", { text: t("Island lives on") }),
       screen,
@@ -1369,6 +1383,7 @@ async function main() {
   if (boot) {
     settings = { ...settings, ...boot.settings };
     version = boot.version;
+    clicksOutside = boot.clicksOutside;
   }
   setLanguage(resolveLanguage(settings.language, systemLanguages()));
   applyDirection();

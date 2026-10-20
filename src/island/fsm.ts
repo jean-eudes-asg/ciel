@@ -38,6 +38,12 @@ export class IslandStateMachine {
   openOnHover = false;
   /** Grace period after the pointer leaves a hover-opened island, seconds. */
   hoverCloseDelay = 0.6;
+  /**
+   * Close when I click outside, where clicks in other windows can't be seen
+   * (Wayland): the open island folds this soon after the pointer leaves it.
+   */
+  quickLeave = false;
+  quickLeaveDelay = 1.5;
   /** Open because of a hover, until the user clicks inside it. */
   get openedByHover(): boolean {
     return this.byHover;
@@ -111,6 +117,17 @@ export class IslandStateMachine {
     this.transition("home");
   }
 
+  /**
+   * A press somewhere else on screen (Close when I click outside): the open
+   * island folds at once, unless a card waits for an answer.
+   */
+  pressedOutside() {
+    if (this.state !== "home" || this.pinned) return;
+    this.byHover = false;
+    this.cancelTimers();
+    this.transition("petit");
+  }
+
   /** Greeting animation finished (T.end). Doesn't override a running hover timer. */
   greetComplete() {
     if (this.state !== "ciel") return;
@@ -180,7 +197,10 @@ export class IslandStateMachine {
   private scheduleHomeCollapse() {
     this.clear("homeCollapse");
     if (this.pinned) return;
-    const ms = (this.byHover ? this.hoverCloseDelay : this.homeDelay) * 1000;
+    const seconds = this.byHover ? this.hoverCloseDelay : this.quickLeave ? this.quickLeaveDelay : this.homeDelay;
+    // Auto-close: Never. It stays open until closed, or clicked away.
+    if (seconds <= 0) return;
+    const ms = seconds * 1000;
     this.homeCollapseDueAt = performance.now() + ms;
     this.homeCollapse = window.setTimeout(() => {
       this.homeCollapse = null;

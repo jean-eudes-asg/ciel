@@ -399,3 +399,52 @@ test("a hold taken while the hide is already counting stops it", () => {
   assert.equal(fsm.state, "petit");
 });
 
+
+test("a click outside folds the open island at once, never a waiting card", () => {
+  fsm.forceHome();
+  fsm.pressedOutside();
+  assert.equal(fsm.state, "petit");
+  fsm.forceHome();
+  fsm.pinned = true;
+  fsm.pressedOutside();
+  assert.equal(fsm.state, "home", "an approval waits: it stays");
+  fsm.pinned = false;
+  fsm.forcePetit();
+  fsm.pressedOutside();
+  assert.equal(fsm.state, "petit", "only the open island is concerned");
+});
+
+test("auto-close Never: leaving starts no countdown, a click outside still folds it", () => {
+  fsm.homeToPetitDelay = 0;
+  fsm.forceHome();
+  fsm.mouseLeft();
+  assert.equal(fsm.homeCollapseDueAt, null);
+  seconds(600);
+  assert.equal(fsm.state, "home");
+  fsm.pressedOutside();
+  assert.equal(fsm.state, "petit");
+});
+
+test("Never set while the countdown runs stops it", () => {
+  fsm.forceHome();
+  fsm.mouseLeft();
+  seconds(5);
+  fsm.homeToPetitDelay = 0;
+  seconds(60);
+  assert.equal(fsm.state, "home");
+});
+
+test("Wayland: with Close when I click outside, leaving folds it 1.5 s later", () => {
+  fsm.quickLeave = true;
+  fsm.homeToPetitDelay = 0;
+  fsm.forceHome();
+  fsm.mouseLeft();
+  seconds(1.4);
+  assert.equal(fsm.state, "home");
+  fsm.mouseEntered();
+  seconds(5);
+  assert.equal(fsm.state, "home", "back on it in time: it stays");
+  fsm.mouseLeft();
+  seconds(1.5);
+  assert.equal(fsm.state, "petit");
+});

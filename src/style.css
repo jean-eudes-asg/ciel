@@ -1079,6 +1079,171 @@ body {
   flex: 1 1 auto;
 }
 
+.pane-holder {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+}
+
+/* One pill: it has the island to itself, in detail (core/overview.ts). */
+.overview.solo > .left {
+  flex: 1 1 auto;
+  width: auto;
+}
+
+.overview.solo > .right {
+  display: none;
+}
+
+/* Two pills, both in detail. The right one has no Ciel beside it: no room
+   kept for him. The focused card wears its pill's colour (views.ts). */
+.overview.duo .card {
+  transition: border-color 0.2s;
+}
+
+.overview.duo > .right .who {
+  padding-left: 14px;
+}
+
+.overview.duo > .right .ticker {
+  margin-left: 14px;
+}
+
+.overview.duo > .right .int-card,
+.overview.duo > .right .np-card,
+.overview.duo > .right .diff-card {
+  padding-left: 14px;
+}
+
+/* A lone agent: its feed, and beside it its plan's two gauges over the files
+   it edited. The feed's header already says whose plan it is. */
+.card-body.with-side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 224px;
+  column-gap: 8px;
+}
+
+.card-body .feed {
+  min-width: 0;
+}
+
+.card-body > .side {
+  display: none;
+}
+
+.card-body.with-side > .side {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  padding-right: 30px;
+}
+
+.plan-card.side {
+  padding-top: 0;
+}
+
+.plan-card.side .plan-head {
+  display: none;
+}
+
+.plan-card.side .plan-rows {
+  padding: 0;
+}
+
+.edits {
+  display: flex;
+  flex-direction: column;
+  margin-left: -6px;
+}
+
+.edits:empty {
+  display: none;
+}
+
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 18px;
+  min-width: 0;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--dim-2);
+  font: 400 11px var(--font);
+  text-align: left;
+  cursor: default;
+}
+
+.edit-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+}
+
+.edit-row svg {
+  flex: 0 0 auto;
+  color: var(--dim-3);
+}
+
+.edit-row .edit-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-row .plus,
+.edit-row .minus {
+  flex: 0 0 auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.edit-row .plus {
+  color: var(--green);
+}
+
+.edit-row .minus {
+  color: var(--red);
+}
+
+/* A lone card: its detail beside it, or its list in two columns. */
+.int-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  height: 100%;
+}
+
+.int-split > :last-child {
+  padding-left: 14px;
+  border-left: 1px solid var(--hairline);
+}
+
+.int-split .int-back,
+.int-split .gh-back,
+.int-split .int-more {
+  display: none;
+}
+
+.left-body.wide > .int-card .int-rows {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 18px;
+}
+
+/* A lone player: the cover bigger. */
+.left-body.wide .np-art {
+  width: 52px;
+  height: 52px;
+  border-radius: 9px;
+}
+
+.left-body.wide .np-title {
+  font-size: 13.5px;
+}
+
 .card-body {
   position: relative;
   z-index: 1;
