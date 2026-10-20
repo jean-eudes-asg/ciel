@@ -2,7 +2,7 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.2.5] - 2026-10-20
 
 ### Added
 - **Ciel keeps your notifications**: the ones you haven't opened stay, their
@@ -10,10 +10,6 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   any wait. A press there, or the bell in the header, opens the list; a press
   on one opens it in its app, its ✕ dismisses it, Clear empties the list.
 - Linux: notifications show their app's icon, or the picture they came with.
-
-## [0.2.5] - 2026-10-20
-
-### Added
 - Linux: **your other apps' notifications in the island**: Thunderbird,
   Slack, system messages... Open brings the app forward. Off until you turn it
   on (Settings → Integrations → Notifications → Desktop apps). On GNOME the
