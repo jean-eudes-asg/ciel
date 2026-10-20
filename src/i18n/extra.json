@@ -5563,6 +5563,39 @@
    "pt-BR": "Tudo em dia.",
    "ru": "Всё просмотрено.",
    "id": "Semua sudah dilihat."
+  },
+  "Open in the app": {
+   "zh-Hans": "在应用中打开",
+   "hi": "ऐप में खोलें",
+   "es": "Abrir en la app",
+   "ar": "الفتح في التطبيق",
+   "fr": "Ouvrir dans l'application",
+   "bn": "অ্যাপে খুলুন",
+   "pt-BR": "Abrir no app",
+   "ru": "Открывать в приложении",
+   "id": "Buka di aplikasi"
+  },
+  "Restart GNOME Shell to turn it on: Alt+F2, then r (or log out and back in).": {
+   "zh-Hans": "重启 GNOME Shell 以启用：按 Alt+F2，再输入 r（或注销后重新登录）。",
+   "hi": "चालू करने के लिए GNOME Shell फिर से शुरू करें: Alt+F2, फिर r (या लॉग आउट करके फिर लॉग इन करें)।",
+   "es": "Reinicia GNOME Shell para activarla: Alt+F2 y luego r (o cierra la sesión y vuelve a entrar).",
+   "ar": "أعد تشغيل GNOME Shell لتفعيلها: Alt+F2 ثم r (أو سجّل الخروج ثم الدخول).",
+   "fr": "Redémarrez GNOME Shell pour l'activer : Alt+F2, puis r (ou déconnectez-vous et reconnectez-vous).",
+   "bn": "চালু করতে GNOME Shell আবার শুরু করুন: Alt+F2, তারপর r (অথবা লগ আউট করে আবার লগ ইন করুন)।",
+   "pt-BR": "Reinicie o GNOME Shell para ativar: Alt+F2 e depois r (ou saia e entre de novo).",
+   "ru": "Перезапустите GNOME Shell, чтобы включить: Alt+F2, затем r (или выйдите и войдите снова).",
+   "id": "Mulai ulang GNOME Shell untuk mengaktifkannya: Alt+F2, lalu r (atau keluar lalu masuk lagi)."
+  },
+  "On GNOME, Open goes to the very chat or page, as GNOME's own notifications do, through a small Ciel extension for GNOME Shell. Without it, Open brings the app's window forward.": {
+   "zh-Hans": "在 GNOME 上，“打开”会像 GNOME 自己的通知一样直接进入对应的聊天或页面，这通过一个小小的 Ciel GNOME Shell 扩展实现。没有它，“打开”只会把应用窗口调到前面。",
+   "hi": "GNOME पर, Open सीधे उसी चैट या पेज पर ले जाता है, जैसे GNOME की अपनी सूचनाएँ करती हैं, GNOME Shell के लिए Ciel के एक छोटे एक्सटेंशन के ज़रिए। इसके बिना, Open ऐप की विंडो को आगे लाता है।",
+   "es": "En GNOME, Abrir lleva al chat o a la página exactos, como las notificaciones del propio GNOME, mediante una pequeña extensión de Ciel para GNOME Shell. Sin ella, Abrir trae al frente la ventana de la app.",
+   "ar": "على GNOME، يأخذك «فتح» إلى المحادثة أو الصفحة نفسها، كما تفعل إشعارات GNOME، عبر إضافة صغيرة من Ciel لـ GNOME Shell. بدونها، يُظهر «فتح» نافذة التطبيق في المقدمة.",
+   "fr": "Sous GNOME, Ouvrir mène à la conversation ou à la page même, comme les notifications de GNOME, grâce à une petite extension Ciel pour GNOME Shell. Sans elle, Ouvrir ramène la fenêtre de l'application au premier plan.",
+   "bn": "GNOME-এ, Open ঠিক সেই চ্যাট বা পেজে নিয়ে যায়, GNOME-এর নিজের বিজ্ঞপ্তির মতো, GNOME Shell-এর জন্য Ciel-এর একটি ছোট এক্সটেনশনের মাধ্যমে। এটি ছাড়া, Open অ্যাপের উইন্ডো সামনে আনে।",
+   "pt-BR": "No GNOME, Abrir leva à conversa ou à página exata, como as notificações do próprio GNOME, por uma pequena extensão do Ciel para o GNOME Shell. Sem ela, Abrir traz a janela do app para a frente.",
+   "ru": "В GNOME «Открыть» ведёт прямо в нужный чат или на нужную страницу, как собственные уведомления GNOME, через небольшое расширение Ciel для GNOME Shell. Без него «Открыть» выводит окно приложения на передний план.",
+   "id": "Di GNOME, Buka langsung menuju obrolan atau halaman yang tepat, seperti notifikasi GNOME sendiri, melalui ekstensi kecil Ciel untuk GNOME Shell. Tanpanya, Buka menampilkan jendela aplikasi ke depan."
   }
  }
 }

@@ -47,9 +47,21 @@ pub enum Target {
     Bridge { bridge: String, key: String },
     /// A page to open (a mail in Gmail).
     Url(String),
-    /// The app that notified, by its desktop entry id.
+    /// The app that notified: its desktop entry id, the process that sent it
+    /// (whose window comes forward), and GNOME's own copy of it once known.
     #[cfg(target_os = "linux")]
-    App(String),
+    App { entry: String, pid: Option<u32>, shell: Option<ShellRef> },
+}
+
+/// GNOME Shell's copy of a notification, which its extension can open or
+/// dismiss (gnome_ext.rs).
+#[cfg(target_os = "linux")]
+#[derive(Clone, Debug, PartialEq)]
+pub enum ShellRef {
+    /// Sent to org.freedesktop.Notifications: the id the server answered.
+    Fdo(u32),
+    /// Sent to org.gtk.Notifications: the app's id and its own.
+    Gtk { app: String, id: String },
 }
 
 /// The last notifications' targets, newest last.
@@ -98,6 +110,14 @@ pub fn show(app: &AppHandle, n: Notification, target: Target) {
     let _ = app.emit_to(crate::island::WINDOW_LABEL, "notification", &n);
 }
 
+/// GNOME's id for a notification already shown, once the server has answered.
+#[cfg(target_os = "linux")]
+fn set_shell(id: &str, server: ShellRef) {
+    if let Some((_, Target::App { shell, .. })) = TARGETS.lock().unwrap().iter_mut().find(|(i, _)| i == id) {
+        *shell = Some(server);
+    }
+}
+
 /// A notification from a browser bridge, as the pipe received it:
 /// `{"ciel_notification": {key, app, title, body, icon, tag}, "ciel_bridge": "<id>"}`.
 /// None when it is not one, or has nothing to show.
@@ -142,8 +162,12 @@ pub fn notification_action(id: String, action: String) {
         (Target::Bridge { bridge, key }, "open") => tell_bridge(&bridge, json!({"type": "click", "key": key})),
         (Target::Bridge { bridge, key }, "dismiss") => tell_bridge(&bridge, json!({"type": "close", "key": key})),
         (Target::Url(url), "open") => crate::platform::open_url(&url),
+        // D-Bus, X11 and a launch: off the UI thread.
         #[cfg(target_os = "linux")]
-        (Target::App(id), "open") => desktop::open(&id),
+        (Target::App { entry, pid, shell }, action) => {
+            let open = action == "open";
+            std::thread::spawn(move || desktop::act(&entry, pid, shell.as_ref(), open));
+        }
         _ => {}
     }
 }
@@ -194,16 +218,23 @@ pub mod desktop {
     use gtk::gio::{AppLaunchContext, DesktopAppInfo};
     use tauri::AppHandle;
 
-    use super::{clip, next_id, now_ms, show, Notification, Target, MAX_TEXT};
+    use super::{clip, next_id, now_ms, show, Notification, ShellRef, Target, MAX_TEXT};
 
     const FREEDESKTOP: &str = "org.freedesktop.Notifications";
     const GTK: &str = "org.gtk.Notifications";
-    // No destination in the rules: GNOME's notification daemon passes each
-    // call on to the shell, and only the one to the well-known name is kept.
-    const RULES: [&str; 2] = [
+    // Matched by interface, whoever the call is addressed to: apps like Discord
+    // send to the server's unique name, not the well-known one. GNOME's
+    // notification daemon passes each call on to the shell, marked with
+    // x-shell-sender: that copy is not a second notification.
+    // The server's answers give the id GNOME's extension knows the
+    // notification by.
+    const RULES: [&str; 3] = [
         "type='method_call',interface='org.freedesktop.Notifications',member='Notify'",
         "type='method_call',interface='org.gtk.Notifications',member='AddNotification'",
+        "type='method_return',sender='org.freedesktop.Notifications'",
     ];
+    /// Calls waiting for the server's answer: the caller, the call's serial, our id.
+    const PENDING: usize = 32;
 
     static ON: AtomicBool = AtomicBool::new(false);
     static GENERATION: AtomicU64 = AtomicU64::new(0);
@@ -244,12 +275,33 @@ pub mod desktop {
             return;
         }
         crate::log::line("notifications: listening to the desktop's");
+        // A monitor can't ask anything: who sent a notification is asked on a second connection.
+        let ask = Connection::new_session().ok();
+        let mut pending: std::collections::VecDeque<(String, u32, String)> = std::collections::VecDeque::new();
         // ponytail: a monitor can't be woken, so once turned off the thread ends at its next wait (30 s at most).
         while current(generation) {
             match conn.channel().blocking_pop_message(Duration::from_secs(30)) {
+                Ok(Some(msg)) if msg.msg_type() == MessageType::MethodReturn => {
+                    let (Some(to), Some(serial)) = (msg.destination(), msg.get_reply_serial()) else { continue };
+                    let Some(at) = pending.iter().position(|(d, s, _)| **d == *to && *s == serial) else { continue };
+                    let (_, _, id) = pending.remove(at).unwrap();
+                    if let Ok(server) = msg.read1::<u32>() {
+                        super::set_shell(&id, ShellRef::Fdo(server));
+                    }
+                }
                 Ok(Some(msg)) => {
-                    if let Some((mut n, target, icons)) = from_bus(&msg) {
+                    if let Some((mut n, mut target, icons)) = from_bus(&msg) {
                         n.icon = icon_url(app, icons);
+                        let sender = msg.sender().map(|s| s.to_string()).unwrap_or_default();
+                        if let Target::App { pid, .. } = &mut target {
+                            *pid = ask.as_ref().and_then(|c| pid_of(c, &sender));
+                        }
+                        if msg.interface().is_some_and(|i| &*i == FREEDESKTOP) {
+                            pending.push_back((sender, msg.get_serial().unwrap_or_default(), n.id.clone()));
+                            if pending.len() > PENDING {
+                                pending.pop_front();
+                            }
+                        }
                         if current(generation) {
                             show(app, n, target);
                         }
@@ -262,6 +314,12 @@ pub mod desktop {
                 }
             }
         }
+    }
+
+    fn pid_of(conn: &Connection, name: &str) -> Option<u32> {
+        let bus = conn.with_proxy("org.freedesktop.DBus", "/org/freedesktop/DBus", Duration::from_secs(1));
+        let (pid,): (u32,) = bus.method_call("org.freedesktop.DBus", "GetConnectionUnixProcessID", (name,)).ok()?;
+        Some(pid)
     }
 
     /// Where a notification's picture may come from, best first.
@@ -281,7 +339,8 @@ pub mod desktop {
         }
         let text = |map: &PropMap, k: &str| map.get(k).and_then(|v| v.as_str()).unwrap_or_default().to_string();
         let mut icons = Vec::new();
-        let (app, entry, title, body) = match &*msg.destination()? {
+        let mut shell = None;
+        let (app, entry, title, body) = match &*msg.interface()? {
             FREEDESKTOP => {
                 let mut args = msg.iter_init();
                 let app: String = args.read().ok()?;
@@ -291,6 +350,9 @@ pub mod desktop {
                 let body: String = args.read().ok()?;
                 let _actions: Vec<String> = args.read().ok()?;
                 let hints: PropMap = args.read().ok()?;
+                if hints.contains_key("x-shell-sender") {
+                    return None;
+                }
                 // The spec's names, then the older ones.
                 let hint = |keys: &[&str]| keys.iter().find_map(|k| hints.get(*k));
                 icons.extend(hint(&["image-data", "image_data", "icon_data"]).and_then(|v| pixels(&*v.0)));
@@ -301,7 +363,8 @@ pub mod desktop {
                 (app, text(&hints, "desktop-entry"), title, plain(&body))
             }
             GTK => {
-                let (entry, _id, fields): (String, String, PropMap) = msg.read3().ok()?;
+                let (entry, id, fields): (String, String, PropMap) = msg.read3().ok()?;
+                shell = Some(ShellRef::Gtk { app: entry.clone(), id });
                 (String::new(), entry, text(&fields, "title"), text(&fields, "body"))
             }
             _ => return None,
@@ -331,7 +394,7 @@ pub mod desktop {
             at: now_ms(),
             tag: None,
         };
-        Some((notification, Target::App(id), icons))
+        Some((notification, Target::App { entry: id, pid: None, shell }, icons))
     }
 
     /// image-data, a (iiibiiay): checked before GdkPixbuf reads it.
@@ -444,8 +507,20 @@ pub mod desktop {
         out.status.success().then(|| String::from_utf8_lossy(&out.stdout).trim().to_string())
     }
 
-    /// Open: the app comes forward (a running one, started again, brings its window up).
-    pub fn open(id: &str) {
+    /// Open, as GNOME's list does through Ciel's extension: the app goes to
+    /// the very chat or page. Without it, the app's window comes forward, or
+    /// the app starts. Dismiss takes GNOME's copy away too.
+    pub fn act(entry: &str, pid: Option<u32>, shell: Option<&ShellRef>, open: bool) {
+        if shell.is_some_and(|s| crate::gnome_ext::act(s, open)) || !open {
+            return;
+        }
+        if pid.is_some_and(|p| crate::platform::focus_session_window(&[p], "")) {
+            return;
+        }
+        launch(entry);
+    }
+
+    fn launch(id: &str) {
         let Some(info) = app_info(id) else {
             crate::log::line(format!("notifications: no app {id} to open"));
             return;
@@ -506,6 +581,9 @@ mod tests {
         let call = |dest: &str| {
             let mut hints = PropMap::new();
             hints.insert("desktop-entry".into(), Variant(Box::new("thunderbird".to_string()) as Box<dyn RefArg>));
+            if dest == ":1.9" {
+                hints.insert("x-shell-sender".into(), Variant(Box::new(":1.42".to_string()) as Box<dyn RefArg>));
+            }
             Message::new_method_call(dest, "/org/freedesktop/Notifications", "org.freedesktop.Notifications", "Notify")
                 .unwrap()
                 .append3("Thunderbird", 0u32, "")
@@ -516,9 +594,11 @@ mod tests {
         assert_eq!((n.source.as_str(), n.app.as_str(), n.title.as_str()), ("desktop", "Thunderbird", "Ana"));
         assert_eq!(n.body, "Lunch at 1 & coffee?");
         assert!(n.id.starts_with("desktop-"));
-        assert_eq!(target, Target::App("thunderbird".into()));
-        // GNOME's daemon handing the same call to the shell is not a second one.
-        assert!(desktop::from_bus(&call(":1.42")).is_none());
+        assert_eq!(target, Target::App { entry: "thunderbird".into(), pid: None, shell: None });
+        // Sent to the server's unique name, as Discord does: the same notification.
+        assert_eq!(desktop::from_bus(&call(":1.42")).unwrap().0.title, "Ana");
+        // GNOME's daemon handing it on to the shell is not a second one.
+        assert!(desktop::from_bus(&call(":1.9")).is_none());
 
         let mut fields = PropMap::new();
         fields.insert("title".into(), Variant(Box::new("Meeting".to_string()) as Box<dyn RefArg>));
@@ -527,7 +607,8 @@ mod tests {
             .append3("org.example.NoSuchCalendar", "n1", fields);
         let (n, target, _) = desktop::from_bus(&gtk).unwrap();
         assert_eq!((n.app.as_str(), n.title.as_str(), n.body.as_str()), ("org.example.NoSuchCalendar", "Meeting", ""));
-        assert_eq!(target, Target::App("org.example.NoSuchCalendar".into()));
+        let shell = Some(ShellRef::Gtk { app: "org.example.NoSuchCalendar".into(), id: "n1".into() });
+        assert_eq!(target, Target::App { entry: "org.example.NoSuchCalendar".into(), pid: None, shell });
     }
 
     #[cfg(target_os = "linux")]

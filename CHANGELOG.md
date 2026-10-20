@@ -2,6 +2,21 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- Linux, GNOME: **Open goes to the very chat or page**, as GNOME's own
+  notifications do, through a small Ciel extension for GNOME Shell (Settings →
+  Integrations → Notifications → Open in the app; Ciel shows what it writes
+  first). Dismiss takes GNOME's copy away too.
+
+### Fixed
+- Linux: Discord's notifications, and other apps' that address GNOME's
+  notification server by its unique name, reach the island.
+- Linux: Open no longer starts a second copy of the app (Discord's showed an
+  error, Chrome opened a new window): without the extension, the app's own
+  window comes forward.
+
 ## [0.2.5] - 2026-10-20
 
 ### Added

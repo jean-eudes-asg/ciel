@@ -13,6 +13,7 @@ mod files;
 mod finance;
 mod flow;
 mod github;
+mod gnome_ext;
 mod gmail;
 mod hooks;
 mod i18n;
@@ -754,6 +755,8 @@ pub fn run() {
             boot,
             notify::notification_action,
             browser_bridge::browser_bridge_status,
+            gnome_ext::gnome_extension_status,
+            gnome_ext::gnome_extension_set,
             browser_bridge::browser_bridge_set,
             save_settings,
             set_system_languages,

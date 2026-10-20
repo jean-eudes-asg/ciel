@@ -42,6 +42,7 @@ export function notificationsSection(prefs: NotificationPrefs): HTMLElement {
   async function draw() {
     const status = await Bridge.browserBridgeStatus();
     const installed = status?.installed === true;
+    const gnome = LINUX ? await gnomeRows() : [];
     clear(body);
     body.append(durationRow(prefs));
     if (LINUX) {
@@ -51,6 +52,7 @@ export function notificationsSection(prefs: NotificationPrefs): HTMLElement {
           class: "hint",
           text: t("Your other apps' notifications (Thunderbird, Slack, system messages...) show in the island. On GNOME, its own banners are off while this is on, and come back after."),
         }),
+        ...gnome,
       );
     }
     body.append(
@@ -76,8 +78,34 @@ export function notificationsSection(prefs: NotificationPrefs): HTMLElement {
     );
   }
 
+  /** GNOME: Ciel's extension, so Open goes to the very chat or page. */
+  async function gnomeRows(): Promise<HTMLElement[]> {
+    const ext = await Bridge.gnomeExtensionStatus();
+    if (!ext?.available) return [];
+    const state = ext.active ? t("installed") : ext.installed ? t("Restart GNOME Shell to turn it on: Alt+F2, then r (or log out and back in).") : t("not installed");
+    return [
+      h("div", { class: "row" },
+        h("label", { text: t("Open in the app") }),
+        statusDot(ext.active),
+        h("span", { class: "hint", text: state }),
+        ext.installed
+          ? h("button", { class: "danger", text: t("Remove"), onclick: () => review(false, ext.places, (on) => Bridge.gnomeExtensionSet(on), [t("Install"), t("Remove")]) })
+          : h("button", { class: "primary", text: t("Install"), onclick: () => review(true, ext.places, (on) => Bridge.gnomeExtensionSet(on), [t("Install"), t("Remove")]) }),
+      ),
+      h("div", {
+        class: "hint",
+        text: t("On GNOME, Open goes to the very chat or page, as GNOME's own notifications do, through a small Ciel extension for GNOME Shell. Without it, Open brings the app's window forward."),
+      }),
+    ];
+  }
+
   /** Every place, before anything is written or removed. */
-  function review(on: boolean, places: string[]) {
+  function review(
+    on: boolean,
+    places: string[],
+    apply: (on: boolean) => Promise<unknown> = (o) => Bridge.browserBridgeSet(o),
+    [yes, no] = [t("Connect"), t("Disconnect")],
+  ) {
     clear(body);
     const list = h("div", { class: "path", style: "display:flex;flex-direction:column;gap:4px;white-space:pre-wrap" });
     for (const place of places) list.append(h("span", { text: place }));
@@ -88,9 +116,13 @@ export function notificationsSection(prefs: NotificationPrefs): HTMLElement {
         h("button", { text: t("Back"), onclick: () => void draw() }),
         h("button", {
           class: on ? "primary" : "danger",
-          text: on ? t("Connect") : t("Disconnect"),
+          text: on ? yes : no,
           onclick: async () => {
-            await Bridge.browserBridgeSet(on);
+            try {
+              await apply(on);
+            } catch (e) {
+              console.warn("notifications: could not apply", e);
+            }
             await draw();
           },
         }),
