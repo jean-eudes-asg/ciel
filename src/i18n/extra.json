@@ -6058,6 +6058,204 @@
    "pt-BR": "Início",
    "ru": "Главная",
    "id": "Beranda"
+  },
+  "Monitoring": {
+   "zh-Hans": "监控",
+   "hi": "निगरानी",
+   "es": "Monitorización",
+   "ar": "المراقبة",
+   "fr": "Supervision",
+   "bn": "পর্যবেক্ষণ",
+   "pt-BR": "Monitoramento",
+   "ru": "Мониторинг",
+   "id": "Pemantauan"
+  },
+  "All clear": {
+   "zh-Hans": "一切正常",
+   "hi": "सब ठीक है",
+   "es": "Todo en orden",
+   "ar": "كل شيء على ما يرام",
+   "fr": "Tout va bien",
+   "bn": "সব ঠিক আছে",
+   "pt-BR": "Tudo certo",
+   "ru": "Всё в порядке",
+   "id": "Semua aman"
+  },
+  "Listening on port {port}": {
+   "zh-Hans": "正在监听端口 {port}",
+   "hi": "पोर्ट {port} पर सुन रहा है",
+   "es": "Escuchando en el puerto {port}",
+   "ar": "يستمع على المنفذ {port}",
+   "fr": "À l'écoute sur le port {port}",
+   "bn": "পোর্ট {port}-এ শুনছে",
+   "pt-BR": "Escutando na porta {port}",
+   "ru": "Слушает порт {port}",
+   "id": "Mendengarkan di port {port}"
+  },
+  "Port": {
+   "zh-Hans": "端口",
+   "hi": "पोर्ट",
+   "es": "Puerto",
+   "ar": "المنفذ",
+   "fr": "Port",
+   "bn": "পোর্ট",
+   "pt-BR": "Porta",
+   "ru": "Порт",
+   "id": "Port"
+  },
+  "Accept alerts from other computers": {
+   "zh-Hans": "接收来自其他电脑的警报",
+   "hi": "दूसरे कंप्यूटरों से अलर्ट लें",
+   "es": "Aceptar alertas de otros equipos",
+   "ar": "قبول التنبيهات من أجهزة كمبيوتر أخرى",
+   "fr": "Accepter les alertes d'autres ordinateurs",
+   "bn": "অন্য কম্পিউটার থেকে সতর্কতা নিন",
+   "pt-BR": "Aceitar alertas de outros computadores",
+   "ru": "Принимать оповещения с других компьютеров",
+   "id": "Terima peringatan dari komputer lain"
+  },
+  "Off, only this computer can send. On, alerts and their token travel unencrypted on your network: keep it to a network you trust.": {
+   "zh-Hans": "关闭时，只有本机可以发送。开启时，警报及其令牌会在你的网络上以未加密方式传输：请只在你信任的网络中开启。",
+   "hi": "बंद होने पर केवल यही कंप्यूटर भेज सकता है। चालू होने पर अलर्ट और उनका टोकन आपके नेटवर्क पर बिना एन्क्रिप्शन के जाते हैं: इसे केवल भरोसेमंद नेटवर्क पर चालू करें।",
+   "es": "Desactivado, solo este equipo puede enviar. Activado, las alertas y su token viajan sin cifrar por tu red: actívalo solo en una red de confianza.",
+   "ar": "عند الإيقاف، يمكن لهذا الكمبيوتر وحده الإرسال. عند التشغيل، تنتقل التنبيهات ورمزها دون تشفير عبر شبكتك: فعّله فقط على شبكة تثق بها.",
+   "fr": "Désactivé, seul cet ordinateur peut envoyer. Activé, les alertes et leur jeton circulent en clair sur votre réseau : réservez-le à un réseau de confiance.",
+   "bn": "বন্ধ থাকলে শুধু এই কম্পিউটার পাঠাতে পারে। চালু থাকলে সতর্কতা ও তাদের টোকেন আপনার নেটওয়ার্কে এনক্রিপশন ছাড়া যায়: শুধু বিশ্বস্ত নেটওয়ার্কে চালু করুন।",
+   "pt-BR": "Desligado, só este computador pode enviar. Ligado, os alertas e o token viajam sem criptografia pela sua rede: ligue só numa rede de confiança.",
+   "ru": "Выключено — отправлять может только этот компьютер. Включено — оповещения и их токен идут по сети без шифрования: включайте только в доверенной сети.",
+   "id": "Mati, hanya komputer ini yang bisa mengirim. Nyala, peringatan dan tokennya dikirim tanpa enkripsi di jaringan Anda: nyalakan hanya di jaringan tepercaya."
+  },
+  "Address": {
+   "zh-Hans": "地址",
+   "hi": "पता",
+   "es": "Dirección",
+   "ar": "العنوان",
+   "fr": "Adresse",
+   "bn": "ঠিকানা",
+   "pt-BR": "Endereço",
+   "ru": "Адрес",
+   "id": "Alamat"
+  },
+  "Copy address": {
+   "zh-Hans": "复制地址",
+   "hi": "पता कॉपी करें",
+   "es": "Copiar dirección",
+   "ar": "نسخ العنوان",
+   "fr": "Copier l'adresse",
+   "bn": "ঠিকানা কপি করুন",
+   "pt-BR": "Copiar endereço",
+   "ru": "Скопировать адрес",
+   "id": "Salin alamat"
+  },
+  "New address": {
+   "zh-Hans": "新地址",
+   "hi": "नया पता",
+   "es": "Nueva dirección",
+   "ar": "عنوان جديد",
+   "fr": "Nouvelle adresse",
+   "bn": "নতুন ঠিকানা",
+   "pt-BR": "Novo endereço",
+   "ru": "Новый адрес",
+   "id": "Alamat baru"
+  },
+  "Click again to replace it": {
+   "zh-Hans": "再次点击以替换",
+   "hi": "बदलने के लिए फिर से क्लिक करें",
+   "es": "Haz clic otra vez para reemplazarla",
+   "ar": "انقر مرة أخرى لاستبداله",
+   "fr": "Cliquez à nouveau pour la remplacer",
+   "bn": "বদলাতে আবার ক্লিক করুন",
+   "pt-BR": "Clique de novo para substituí-lo",
+   "ru": "Нажмите ещё раз, чтобы заменить",
+   "id": "Klik lagi untuk menggantinya"
+  },
+  "Turn the pill on to listen.": {
+   "zh-Hans": "打开这个胶囊即可开始监听。",
+   "hi": "सुनना शुरू करने के लिए पिल चालू करें।",
+   "es": "Activa la píldora para empezar a escuchar.",
+   "ar": "شغّل الحبة لبدء الاستماع.",
+   "fr": "Activez la pill pour qu'elle écoute.",
+   "bn": "শোনা শুরু করতে পিলটি চালু করুন।",
+   "pt-BR": "Ative a pílula para começar a escutar.",
+   "ru": "Включите пилюлю, чтобы начать приём.",
+   "id": "Nyalakan pil untuk mulai mendengarkan."
+  },
+  "Pick a port from 1024 to 65535.": {
+   "zh-Hans": "请选择 1024 到 65535 之间的端口。",
+   "hi": "1024 से 65535 के बीच कोई पोर्ट चुनें।",
+   "es": "Elige un puerto entre 1024 y 65535.",
+   "ar": "اختر منفذًا بين 1024 و65535.",
+   "fr": "Choisissez un port entre 1024 et 65535.",
+   "bn": "1024 থেকে 65535-এর মধ্যে একটি পোর্ট বেছে নিন।",
+   "pt-BR": "Escolha uma porta entre 1024 e 65535.",
+   "ru": "Выберите порт от 1024 до 65535.",
+   "id": "Pilih port antara 1024 dan 65535."
+  },
+  "Paste the address in Grafana (Contact points → Webhook), Alertmanager (webhook_configs), Uptime Kuma (Notifications → Webhook, application/json) or any tool that can POST JSON. The token at its end is the pill's password: New address replaces it.": {
+   "zh-Hans": "把地址粘贴到 Grafana（Contact points → Webhook）、Alertmanager（webhook_configs）、Uptime Kuma（Notifications → Webhook，application/json）或任何能以 POST 发送 JSON 的工具中。地址末尾的令牌就是这个胶囊的密码：“新地址”会替换它。",
+   "hi": "पता Grafana (Contact points → Webhook), Alertmanager (webhook_configs), Uptime Kuma (Notifications → Webhook, application/json) या JSON को POST कर सकने वाले किसी भी टूल में चिपकाएँ। इसके अंत का टोकन पिल का पासवर्ड है: “नया पता” उसे बदल देता है।",
+   "es": "Pega la dirección en Grafana (Contact points → Webhook), Alertmanager (webhook_configs), Uptime Kuma (Notifications → Webhook, application/json) o cualquier herramienta que pueda enviar JSON por POST. El token del final es la contraseña de la píldora: «Nueva dirección» lo reemplaza.",
+   "ar": "الصق العنوان في Grafana (Contact points → Webhook) أو Alertmanager (webhook_configs) أو Uptime Kuma (Notifications → Webhook، application/json) أو أي أداة يمكنها إرسال JSON عبر POST. الرمز في نهايته هو كلمة مرور الحبة: «عنوان جديد» يستبدله.",
+   "fr": "Collez l'adresse dans Grafana (Contact points → Webhook), Alertmanager (webhook_configs), Uptime Kuma (Notifications → Webhook, application/json) ou tout outil capable d'envoyer du JSON en POST. Le jeton à la fin est le mot de passe de la pill : « Nouvelle adresse » le remplace.",
+   "bn": "ঠিকানাটি Grafana (Contact points → Webhook), Alertmanager (webhook_configs), Uptime Kuma (Notifications → Webhook, application/json) বা JSON POST করতে পারে এমন যেকোনো টুলে পেস্ট করুন। এর শেষের টোকেনটি পিলের পাসওয়ার্ড: “নতুন ঠিকানা” সেটি বদলে দেয়।",
+   "pt-BR": "Cole o endereço no Grafana (Contact points → Webhook), no Alertmanager (webhook_configs), no Uptime Kuma (Notifications → Webhook, application/json) ou em qualquer ferramenta que envie JSON por POST. O token no final é a senha da pílula: “Novo endereço” o substitui.",
+   "ru": "Вставьте адрес в Grafana (Contact points → Webhook), Alertmanager (webhook_configs), Uptime Kuma (Notifications → Webhook, application/json) или любой инструмент, умеющий отправлять JSON через POST. Токен в конце — пароль пилюли: «Новый адрес» заменяет его.",
+   "id": "Tempel alamat ini di Grafana (Contact points → Webhook), Alertmanager (webhook_configs), Uptime Kuma (Notifications → Webhook, application/json), atau alat apa pun yang bisa mengirim JSON lewat POST. Token di ujungnya adalah sandi pil: “Alamat baru” menggantinya."
+  },
+  "Copy Zabbix script": {
+   "zh-Hans": "复制 Zabbix 脚本",
+   "hi": "Zabbix स्क्रिप्ट कॉपी करें",
+   "es": "Copiar script de Zabbix",
+   "ar": "نسخ سكربت Zabbix",
+   "fr": "Copier le script Zabbix",
+   "bn": "Zabbix স্ক্রিপ্ট কপি করুন",
+   "pt-BR": "Copiar script do Zabbix",
+   "ru": "Скопировать скрипт Zabbix",
+   "id": "Salin skrip Zabbix"
+  },
+  "Zabbix: Alerts → Media types → Create media type, type Webhook, and paste the script. Its first lines list the parameters to add.": {
+   "zh-Hans": "Zabbix：Alerts → Media types → Create media type，类型选 Webhook，然后粘贴脚本。脚本开头几行列出了要添加的参数。",
+   "hi": "Zabbix: Alerts → Media types → Create media type, प्रकार Webhook, और स्क्रिप्ट चिपकाएँ। इसकी शुरुआती पंक्तियों में जोड़ने वाले पैरामीटर लिखे हैं।",
+   "es": "Zabbix: Alerts → Media types → Create media type, tipo Webhook, y pega el script. Sus primeras líneas indican los parámetros que hay que añadir.",
+   "ar": "Zabbix: Alerts → Media types → Create media type، النوع Webhook، ثم الصق السكربت. تذكر أسطره الأولى المعاملات التي يجب إضافتها.",
+   "fr": "Zabbix : Alerts → Media types → Create media type, type Webhook, puis collez le script. Ses premières lignes listent les paramètres à ajouter.",
+   "bn": "Zabbix: Alerts → Media types → Create media type, ধরন Webhook, তারপর স্ক্রিপ্টটি পেস্ট করুন। এর প্রথম লাইনগুলোতে কোন প্যারামিটার যোগ করতে হবে তা লেখা আছে।",
+   "pt-BR": "Zabbix: Alerts → Media types → Create media type, tipo Webhook, e cole o script. As primeiras linhas dele listam os parâmetros a adicionar.",
+   "ru": "Zabbix: Alerts → Media types → Create media type, тип Webhook, затем вставьте скрипт. В его первых строках перечислены параметры, которые нужно добавить.",
+   "id": "Zabbix: Alerts → Media types → Create media type, tipe Webhook, lalu tempel skripnya. Baris-baris pertamanya mencantumkan parameter yang perlu ditambahkan."
+  },
+  "Resolved": {
+   "zh-Hans": "已解决",
+   "hi": "हल हो गया",
+   "es": "Resuelto",
+   "ar": "تم الحل",
+   "fr": "Résolu",
+   "bn": "সমাধান হয়েছে",
+   "pt-BR": "Resolvido",
+   "ru": "Решено",
+   "id": "Teratasi"
+  },
+  "Port {port} is already in use": {
+   "zh-Hans": "端口 {port} 已被占用",
+   "hi": "पोर्ट {port} पहले से इस्तेमाल में है",
+   "es": "El puerto {port} ya está en uso",
+   "ar": "المنفذ {port} مستخدم بالفعل",
+   "fr": "Le port {port} est déjà utilisé",
+   "bn": "পোর্ট {port} ইতিমধ্যে ব্যবহৃত হচ্ছে",
+   "pt-BR": "A porta {port} já está em uso",
+   "ru": "Порт {port} уже занят",
+   "id": "Port {port} sudah dipakai"
+  },
+  "Can't listen on port {port}: {error}": {
+   "zh-Hans": "无法监听端口 {port}：{error}",
+   "hi": "पोर्ट {port} पर नहीं सुन सकता: {error}",
+   "es": "No se puede escuchar en el puerto {port}: {error}",
+   "ar": "تعذّر الاستماع على المنفذ {port}: {error}",
+   "fr": "Impossible d'écouter sur le port {port} : {error}",
+   "bn": "পোর্ট {port}-এ শোনা যাচ্ছে না: {error}",
+   "pt-BR": "Não foi possível escutar na porta {port}: {error}",
+   "ru": "Не удалось открыть порт {port}: {error}",
+   "id": "Tidak bisa mendengarkan di port {port}: {error}"
   }
  }
 }

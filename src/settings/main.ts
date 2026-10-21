@@ -4,7 +4,7 @@
 // island's settings are drawn here, one Notch page at a time.
 
 import "./settings.css";
-import { Bridge, onEvent, type HookPreview, type HookStatus, type ShortcutsReport } from "../core/bridge";
+import { Bridge, onEvent, type AlertsInfo, type HookPreview, type HookStatus, type ShortcutsReport } from "../core/bridge";
 import { CUSTOM_SERVER_KEY, providerDef, urlExposure } from "../core/providers";
 import {
   ISLAND_SHORTCUTS, SHORTCUTS, SHORTCUT_TEXT, activeKeys, displayKeys, duplicates, effective,
@@ -814,7 +814,110 @@ const INTEGRATIONS: IntegrationDef[] = [
   { id: "integration_spotify", name: "Spotify", color: "#1DB954", fields: [] },
   // No key either: a folder on this computer (src-tauri/src/finance.rs).
   { id: "integration_finance", name: "Finance", color: "#10B981", fields: [] },
+  // An address to give monitoring tools; its token is made by Ciel (src-tauri/src/alerts.rs).
+  { id: "integration_alerts", name: "Alerts", color: "#F97316", fields: [] },
 ];
+
+/**
+ * The Alerts pill: its port, whether other computers may send, and its
+ * address, shown with the token hidden and copied whole by Rust, so the token
+ * never comes to this page.
+ */
+function alertsRows(): HTMLElement[] {
+  const port = h("input", {
+    type: "number", min: "1024", max: "65535", value: String(settings.alertsPort), style: "width:96px",
+  }) as HTMLInputElement;
+  const savePort = h("button", { text: t("Save") });
+  const dotEl = statusDot(false);
+  const address = h("code", {
+    style: "flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px",
+  });
+  const status = h("div", { class: "hint", style: "padding-top:5px" });
+  const copy = h("button", { text: t("Copy address") }) as HTMLButtonElement;
+  const renew = h("button", { text: t("New address") }) as HTMLButtonElement;
+  const zabbix = h("button", { text: t("Copy Zabbix script") }) as HTMLButtonElement;
+
+  const describe = (info: AlertsInfo | null) => {
+    if (!info) return;
+    address.textContent = info.address;
+    dotEl.style.background = info.listening ? "#22c55e" : info.error ? "#f4505e" : "#6b7079";
+    status.textContent = info.error
+      ?? (info.listening ? t("Listening on port {port}", { port: settings.alertsPort }) : t("Turn the pill on to listen."));
+  };
+  const refresh = () => void Bridge.alertsInfo().then(describe);
+  // Ciel starts listening, or finds the port taken, a moment after a save.
+  const refreshSoon = () => {
+    refresh();
+    window.setTimeout(refresh, 600);
+    window.setTimeout(refresh, 2500);
+  };
+  declaredViews.push(refreshSoon);
+
+  /** "Copied" on the button for a moment; the dot says when it failed. */
+  const copied = (button: HTMLButtonElement, label: string, ok: boolean | null) => {
+    if (!ok) {
+      dotEl.style.background = "#f5a524";
+      return;
+    }
+    button.textContent = t("Copied");
+    window.setTimeout(() => (button.textContent = label), 1500);
+  };
+
+  savePort.addEventListener("click", async () => {
+    const value = Number(port.value);
+    if (!Number.isInteger(value) || value < 1024 || value > 65535) {
+      dotEl.style.background = "#f4505e";
+      status.textContent = t("Pick a port from 1024 to 65535.");
+      return;
+    }
+    settings.alertsPort = value;
+    await save();
+    refreshSoon();
+  });
+  copy.addEventListener("click", async () => copied(copy, t("Copy address"), await Bridge.alertsCopyAddress()));
+  // Two clicks: the tools still sending to the old address will be refused.
+  let armed = 0;
+  renew.addEventListener("click", async () => {
+    if (!armed) {
+      renew.textContent = t("Click again to replace it");
+      armed = window.setTimeout(() => {
+        armed = 0;
+        renew.textContent = t("New address");
+      }, 4000);
+      return;
+    }
+    window.clearTimeout(armed);
+    armed = 0;
+    renew.textContent = t("New address");
+    copied(renew, t("New address"), await Bridge.alertsNewAddress());
+  });
+  zabbix.addEventListener("click", async () => copied(zabbix, t("Copy Zabbix script"), await Bridge.alertsCopyZabbixScript()));
+
+  refresh();
+  return [
+    h("div", { class: "row" },
+      h("label", { style: "min-width:104px", text: t("Port") }),
+      port, savePort, dotEl,
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Accept alerts from other computers") }),
+      toggle(settings.alertsLan, (v) => {
+        settings.alertsLan = v;
+        void save().then(refreshSoon);
+      }),
+    ),
+    h("div", { class: "hint", text: t("Off, only this computer can send. On, alerts and their token travel unencrypted on your network: keep it to a network you trust.") }),
+    h("div", { class: "row" },
+      h("label", { style: "min-width:104px", text: t("Address") }),
+      address,
+    ),
+    h("div", { class: "row" }, copy, renew),
+    status,
+    h("div", { class: "hint", text: t("Paste the address in Grafana (Contact points → Webhook), Alertmanager (webhook_configs), Uptime Kuma (Notifications → Webhook, application/json) or any tool that can POST JSON. The token at its end is the pill's password: New address replaces it.") }),
+    h("div", { class: "row" }, zabbix),
+    h("div", { class: "hint", text: t("Zabbix: Alerts → Media types → Create media type, type Webhook, and paste the script. Its first lines list the parameters to add.") }),
+  ];
+}
 
 /**
  * The Finance pill's folder: where it is, what is in it, and Open folder.
@@ -939,6 +1042,7 @@ function integrationsSection(present: Record<string, boolean>): HTMLElement {
 
     if (def.hint) rows.append(h("div", { class: "hint", text: t(def.hint) }));
     if (def.id === "integration_finance") rows.append(...financeFolderRows());
+    if (def.id === "integration_alerts") rows.append(...alertsRows());
     if (def.id === "integration_spotify" && HOST_OS === "windows") {
       // Windows: the pill follows whatever plays, not Spotify alone.
       rows.append(h("div", {

@@ -25,6 +25,8 @@ pub const KNOWN_KEYS: &[&str] = &[
     // The Gmail pill (gmail.rs): the address, and an app password.
     "gmail-address",
     "gmail-app-password",
+    // The Alerts pill (alerts.rs): the token monitoring tools send with each alert.
+    "alerts-token",
 ];
 
 fn entry(key: &str) -> Option<Entry> {

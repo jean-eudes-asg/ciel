@@ -2,6 +2,7 @@
 
 mod agent_hooks;
 mod agents;
+mod alerts;
 mod browser_bridge;
 mod ai;
 mod chat;
@@ -135,6 +136,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     ytmusic::sync(&settings.active_integrations);
     updates::sync(&app, settings.check_updates);
     gmail::sync(&app, &settings.active_integrations, false);
+    alerts::sync(&app, &settings);
     #[cfg(target_os = "linux")]
     {
         notify::desktop::sync(&app, settings.desktop_notifications);
@@ -372,9 +374,10 @@ fn quit_app(app: AppHandle) {
 #[tauri::command]
 fn set_paused(app: AppHandle, shared: State<Shared>, paused: bool) {
     integrations::set_paused(paused);
-    // Gmail holds a connection: paused, it lets it go.
-    let active = shared.settings.lock().unwrap().active_integrations.clone();
-    gmail::sync(&app, &active, false);
+    // Gmail holds a connection and the Alerts pill listens: paused, they let go.
+    let settings = shared.settings.lock().unwrap().clone();
+    gmail::sync(&app, &settings.active_integrations, false);
+    alerts::sync(&app, &settings);
 }
 
 // ── Claude Code hooks ─────────────────────────────────────────────────────────
@@ -884,6 +887,11 @@ pub fn run() {
             finance::finance_add_expense,
             finance::finance_folder_info,
             finance::finance_open_folder,
+            alerts::alerts_info,
+            alerts::alerts_copy_address,
+            alerts::alerts_new_address,
+            alerts::alerts_copy_zabbix_script,
+            alerts::alerts_dismiss,
             flow::flow_status,
             flow::flow_set_prefs,
             flow::flow_history,
@@ -983,6 +991,7 @@ pub fn run() {
             ytmusic::sync(&loaded.active_integrations);
             updates::sync(&handle, loaded.check_updates);
             gmail::sync(&handle, &loaded.active_integrations, false);
+            alerts::sync(&handle, &loaded);
             #[cfg(target_os = "linux")]
             {
                 notify::desktop::sync(&handle, loaded.desktop_notifications);

@@ -61,3 +61,10 @@ test("the list grows to hold them all, up to three quarters of the display", asy
   assert.equal(panelHeightFor(160), PANEL_H);
   assert.equal(panelHeightFor(520), 528);
 });
+
+test("an alert from a monitoring tool comes as a notification of its own source", () => {
+  const n = parseNotification(raw({ source: "alerts", app: "Grafana", title: "Disk almost full", tag: "grafana:a1b2" }));
+  assert.equal(n.source, "alerts");
+  assert.equal(n.app, "Grafana");
+  assert.equal(parseNotification(raw({ source: "alerts", app: "" })).app, "Alerts");
+});

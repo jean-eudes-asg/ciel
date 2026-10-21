@@ -145,6 +145,10 @@ export const PILL_CATALOG: readonly PillDefinition[] = [
   // dashboard if they have one (src-tauri/src/finance.rs). Not on the Mac.
   { id: "integration_finance", name: "Finance", color: "#10B981", category: "service",
     subtitle: N_("Spending"), source: "n8n", support: "yes", connect: none },
+  // What Grafana, Alertmanager, Uptime Kuma or Zabbix send to Ciel's address
+  // (src-tauri/src/alerts.rs). Not on the Mac.
+  { id: "integration_alerts", name: "Alerts", color: "#F97316", category: "service",
+    subtitle: N_("Monitoring"), source: "n8n", support: "yes", connect: none },
 ];
 
 /** The always-on pill unless the user picks another workspace tool. */

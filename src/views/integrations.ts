@@ -262,6 +262,54 @@ function gmailCard(): HTMLElement {
   return h("div", { class: "int-card" }, header("#EA4335", "Gmail", t("Inbox"), extra), rows);
 }
 
+// ── Alerts ────────────────────────────────────────────────────────────────────
+
+const SEVERITY_COLORS: Record<string, string> = { critical: "#F4505E", warning: "#F5A524", info: "#7FB4EA" };
+
+/**
+ * What monitoring tools say is still wrong, the worst first (src-tauri/src/alerts.rs):
+ * a click opens the page its tool sent, ✕ takes it off the list. Nothing wrong: all clear.
+ */
+function alertsCard(): HTMLElement {
+  const id = "integration_alerts";
+  const active = arr(id, "active");
+  const extra = h("span", { class: "int-total" }, h("i", { class: "pulse" }), h("span", { text: String(active.length) }));
+  const rows = h("div", { class: "int-rows" });
+  if (active.length === 0) {
+    const port = get(id).port;
+    rows.append(listRow("#22C55E", true,
+      h("span", { class: "int-name", text: t("All clear") }),
+      h("span", { class: "int-sub", text: typeof port === "number" ? t("Listening on port {port}", { port }) : "" }),
+    ));
+  }
+  active.slice(0, rowsShown()).forEach((a, i) => {
+    const color = SEVERITY_COLORS[String(a.severity)] ?? SEVERITY_COLORS.warning;
+    const sub = [a.source, a.detail].filter((s) => typeof s === "string" && s).join(" · ");
+    const dismiss = h("button", {
+      class: "int-dismiss",
+      title: t("Dismiss"),
+      text: "✕",
+      onclick: (e: Event) => {
+        e.stopPropagation();
+        void Bridge.alertsDismiss(String(a.key));
+      },
+    });
+    const row = listRow(color, i === 0,
+      h("span", { class: "int-name", text: String(a.title ?? "") }),
+      h("span", { class: "int-sub", text: sub }),
+      h("span", { class: "int-ago", text: timeAgo(a.at) }),
+      dismiss,
+    );
+    if (typeof a.url === "string" && /^https?:\/\//.test(a.url)) {
+      const url = a.url;
+      row.style.cursor = "pointer";
+      row.addEventListener("click", () => void Bridge.openUrl(url));
+    }
+    rows.append(row);
+  });
+  return h("div", { class: "int-card" }, header("#F97316", "Alerts", t("Monitoring"), extra), rows);
+}
+
 // ── GitHub ────────────────────────────────────────────────────────────────────
 
 function statRow(icon: string, color: string, label: string, value: string): HTMLElement {
@@ -466,6 +514,8 @@ export function hasIntegrationData(id: string): boolean {
       return arr(id, "emails").length > 0;
     case "integration_gmail":
       return typeof get(id).unread === "number";
+    case "integration_alerts":
+      return Array.isArray(get(id).active);
     case "integration_github":
       return get(id).totalRepos != null || readPulse(get(id)) != null;
     case "integration_stripe":
@@ -523,6 +573,8 @@ function listCard(task: AgentTask, hooks: IntegrationCardHooks): HTMLElement {
       return resendCard();
     case "integration_gmail":
       return gmailCard();
+    case "integration_alerts":
+      return alertsCard();
     case "integration_github":
       return githubCard();
     case "integration_stripe":

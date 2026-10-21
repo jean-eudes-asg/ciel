@@ -27,7 +27,7 @@ use tokio::sync::mpsc;
 #[serde(rename_all = "camelCase")]
 pub struct Notification {
     pub id: String,
-    /// "chrome", "gmail" or "desktop".
+    /// "chrome", "gmail", "desktop" or "alerts".
     pub source: String,
     /// The app or site: "Gmail", "WhatsApp"…
     pub app: String,
@@ -49,6 +49,8 @@ pub enum Target {
     Url(String),
     /// A page of Ciel's settings (a new version of Ciel: General).
     Settings(String),
+    /// Nothing to open: an alert that came without a page (alerts.rs).
+    None,
     /// The app that notified: its desktop entry id, the process that sent it
     /// (whose window comes forward), and GNOME's own copy of it once known.
     #[cfg(target_os = "linux")]

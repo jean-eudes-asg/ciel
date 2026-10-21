@@ -50,6 +50,7 @@ test("the catalog holds the Mac's pills with the Claude Code label for Windows a
     ["integration_youtube_music", "YouTube Music", "#FF0033", "service", "Integration"],
     // Not the Mac's: Windows and Linux only, after every pill of its.
     ["integration_finance", "Finance", "#10B981", "service", "Spending"],
+    ["integration_alerts", "Alerts", "#F97316", "service", "Monitoring"],
   ];
   assert.deepEqual(
     PILL_CATALOG.map((p) => [p.id, p.name, p.color, p.category, p.subtitle]),
@@ -344,4 +345,42 @@ test("the Claude Code idle card keeps the agent title when the task has a projec
   assert.ok(card.textContent.includes("Claude Code"));
   assert.ok(!card.textContent.includes("my-project"));
   assert.ok(card.textContent.includes("Open Visual Studio Code"));
+});
+
+test("the Alerts card lists what is still wrong: a click opens its page, ✕ takes it off", async () => {
+  const { sent } = await import("./tauri.mjs");
+  const id = "integration_alerts";
+  const task = { id, name: "Alerts", color: "#F97316", steps: [], state: "idle" };
+  const alerts = [
+    { key: "zabbix:4012", source: "Zabbix", title: "Unavailable by ICMP ping", detail: "SW-CORE-01",
+      severity: "critical", firing: true, url: "https://zabbix.example.com/zabbix.php?action=problem.view", at: Date.now() },
+    { key: "webhook:/Backup late", source: "Webhook", title: "Backup late", detail: "",
+      severity: "warning", firing: true, url: "javascript:alert(1)", at: Date.now() },
+  ];
+  State.integrations[id] = { data: { active: alerts, resolved: [], port: 9797 }, error: null, loaded: true, configured: true };
+  const card = renderIntegrationCard(task, { openSettings() {} });
+  assert.ok(card.textContent.includes("Unavailable by ICMP ping"));
+  assert.ok(card.textContent.includes("Zabbix · SW-CORE-01"));
+  assert.ok(card.textContent.includes("Monitoring"));
+
+  const [first, second] = card.find(".int-row");
+  first.fire("click");
+  assert.deepEqual(sent("open_url").at(-1), { url: "https://zabbix.example.com/zabbix.php?action=problem.view" });
+  const opened = sent("open_url").length;
+  second.fire("click");
+  assert.equal(sent("open_url").length, opened, "only a web page opens");
+
+  second.find(".int-dismiss")[0].fire("click");
+  assert.deepEqual(sent("alerts_dismiss").at(-1), { key: "webhook:/Backup late" });
+
+  // Nothing wrong: all clear, and where Ciel listens.
+  State.integrations[id] = { data: { active: [], resolved: [], port: 9797 }, error: null, loaded: true, configured: true };
+  const clear = renderIntegrationCard(task, { openSettings() {} });
+  assert.ok(clear.textContent.includes("All clear"));
+  assert.ok(clear.textContent.includes("Listening on port 9797"));
+
+  // The port taken: the idle card says so.
+  State.integrations[id] = { data: {}, error: "Port 9797 is already in use", loaded: false, configured: true };
+  assert.ok(renderIntegrationCard(task, { openSettings() {} }).textContent.includes("Port 9797 is already in use"));
+  delete State.integrations[id];
 });
