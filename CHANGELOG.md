@@ -2,6 +2,12 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+- Linux on X11: out on the desktop, Ciel's eyes follow the pointer across the
+  whole screen, not only over him.
+
 ## [0.2.7] - 2026-10-20
 
 ### Added

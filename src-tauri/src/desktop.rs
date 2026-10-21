@@ -11,7 +11,8 @@
 //     only while he is awake on the desktop — makes the window click-through
 //     except over his body, feeds his eyes, and carries him during a drag.
 //   * Linux X11: the same coordinates; the input region is his body, and the
-//     page drives the drag.
+//     page drives the drag. X11 tells any client where the pointer is, so a
+//     watch feeds his eyes while he is awake, as the poll does on Windows.
 //   * Linux layer-shell: a layer surface on the island's display, placed with
 //     margins in logical pixels.
 //   * GNOME on Wayland: off, nothing is created.
@@ -261,6 +262,9 @@ pub struct DesktopInfo {
     mode: &'static str,
     /// He was on the desktop when the app last quit.
     on_desktop: bool,
+    /// The pointer reaches him anywhere on screen (Windows' poll, X11's watch),
+    /// not only over his window.
+    global_cursor: bool,
 }
 
 pub fn window(app: &AppHandle) -> Option<WebviewWindow> {
@@ -295,7 +299,38 @@ pub fn setup(app: &AppHandle) {
     refresh(app, &desktop);
     if mode == DesktopMode::Poll {
         spawn_poll(app.clone(), desktop);
+    } else if mode == DesktopMode::Window {
+        #[cfg(target_os = "linux")]
+        spawn_eyes(app.clone(), desktop);
     }
+}
+
+/// Linux X11: where the pointer is, anywhere on screen, for his eyes; only
+/// while he is awake on the desktop (the poll gate), a wait otherwise.
+#[cfg(target_os = "linux")]
+fn spawn_eyes(app: AppHandle, d: Arc<Desktop>) {
+    use x11rb::connection::Connection;
+    use x11rb::protocol::xproto::ConnectionExt;
+    std::thread::spawn(move || {
+        let Ok((conn, screen)) = x11rb::connect(None) else { return };
+        let Some(root) = conn.setup().roots.get(screen).map(|s| s.root) else { return };
+        let mut last = (f64::MIN, f64::MIN);
+        loop {
+            d.gate.wait_until_active();
+            while d.gate.is_active() {
+                std::thread::sleep(Duration::from_millis(33));
+                let Some(win) = window(&app) else { continue };
+                let Some(p) = conn.query_pointer(root).ok().and_then(|c| c.reply().ok()) else { continue };
+                let Ok(origin) = win.outer_position() else { continue };
+                let scale = win.scale_factor().unwrap_or(1.0);
+                let local = ((p.root_x as f64 - origin.x as f64) / scale, (p.root_y as f64 - origin.y as f64) / scale);
+                if (local.0 - last.0).abs() >= 1.0 || (local.1 - last.1).abs() >= 1.0 {
+                    last = local;
+                    let _ = win.emit("desktop-cursor", Cursor { x: local.0, y: local.1 });
+                }
+            }
+        }
+    });
 }
 
 fn page_url(app: &AppHandle) -> WebviewUrl {
@@ -523,6 +558,8 @@ fn refresh(app: &AppHandle, d: &Desktop) {
             d.gate.set_active(active);
         }
         DesktopMode::Window | DesktopMode::Layer => {
+            // X11: the gate also runs his eyes' watch (spawn_eyes).
+            d.gate.set_active(active && d.mode == DesktopMode::Window);
             let _ = app.run_on_main_thread(move || platform::set_desktop_shape(&win, shape));
         }
         DesktopMode::Off => {}
@@ -690,7 +727,11 @@ pub fn desktop_cloud_info(app: AppHandle, desktop: State<Arc<Desktop>>) -> Deskt
         .try_state::<crate::Shared>()
         .map(|s| s.settings.lock().unwrap().desktop_cloud.on_desktop)
         .unwrap_or(false);
-    DesktopInfo { mode: desktop.mode.as_str(), on_desktop: on_desktop && desktop.mode != DesktopMode::Off }
+    DesktopInfo {
+        mode: desktop.mode.as_str(),
+        on_desktop: on_desktop && desktop.mode != DesktopMode::Off,
+        global_cursor: matches!(desktop.mode, DesktopMode::Poll | DesktopMode::Window),
+    }
 }
 
 /// Dragging Ciel out of the island: the window appears under the pointer

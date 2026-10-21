@@ -421,6 +421,8 @@ export interface DesktopInfo {
   mode: DesktopMode;
   /** He was on the desktop when the app last quit. */
   onDesktop: boolean;
+  /** The pointer reaches him anywhere on screen (Windows, X11), not only over his window. */
+  globalCursor: boolean;
 }
 
 /** An event for one window only (island ⇄ desktop Ciel). Never throws. */

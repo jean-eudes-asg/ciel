@@ -34,6 +34,8 @@ class DesktopCloud {
   private engine = new BotEngine();
   private canvas: HTMLCanvasElement;
   private mode: DesktopMode = "off";
+  /** Rust sends the pointer wherever it is (Windows' poll, X11's watch). */
+  private globalCursor = false;
 
   private snap: DesktopSnapshot = {
     state: "idle", soundEnabled: true, soundVolume: 0.12, paused: false, dancing: false,
@@ -76,7 +78,10 @@ class DesktopCloud {
   async start() {
     void Sound.preload(Bridge);
     const info = await Bridge.desktopInfo();
-    if (info) this.mode = info.mode;
+    if (info) {
+      this.mode = info.mode;
+      this.globalCursor = info.globalCursor === true;
+    }
 
     await onEvent<DesktopSnapshot>(DESKTOP_EVENTS.state, (s) => this.onSnapshot(s));
     await onEvent<{ emote: BotEmoteName; duration: number }>(DESKTOP_EVENTS.emote, (e) => {
@@ -137,7 +142,7 @@ class DesktopCloud {
     if (!this.visible) return;
     // Dancing keeps him up: asleep he would bounce at a few frames a second.
     if (this.snap.dancing && !this.snap.paused) this.lastAgentActive = now;
-    const distance = pointerDistance(this.mode === "poll", this.cursor, now - this.lastPointer);
+    const distance = pointerDistance(this.globalCursor, this.cursor, now - this.lastPointer);
     const sleep =
       !this.dragging &&
       (this.snap.paused || shouldSleep((now - this.lastAgentActive) / 1000, distance));
@@ -198,8 +203,8 @@ class DesktopCloud {
     if (!ctx) return;
     const engine = this.engine;
     if (!this.asleep) {
-      // Windows: the global cursor. Linux: only while the pointer is over him.
-      const fresh = this.mode === "poll" || now - this.lastPointer < 1500;
+      // Windows and X11: the cursor anywhere. Wayland: only while it is over him.
+      const fresh = this.globalCursor || now - this.lastPointer < 1500;
       const g = this.cursor && fresh ? gaze(lookOrigin(0, 0), this.cursor) : { lookX: 0, lookY: 0 };
       engine.lookX = g.lookX;
       engine.lookY = g.lookY;
