@@ -659,6 +659,7 @@ dependencies = [
 name = "ciel"
 version = "0.2.7"
 dependencies = [
+ "aes",
  "arboard",
  "async-imap",
  "base64 0.22.1",

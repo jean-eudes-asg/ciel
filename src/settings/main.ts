@@ -28,6 +28,7 @@ import { notificationsSection } from "./notifications";
 import { updatesSection } from "./updates";
 import { renderDiff, statusDot } from "./parts";
 import { wallpaperSections } from "./wallpaper";
+import { printersSection } from "./printers";
 import {
   LANGUAGES, N_, isRtl, onLanguageChange, resolveLanguage, setLanguage, systemLanguages, t, tn,
 } from "../i18n/i18n";
@@ -816,6 +817,9 @@ const INTEGRATIONS: IntegrationDef[] = [
   { id: "integration_finance", name: "Finance", color: "#10B981", fields: [] },
   // An address to give monitoring tools; its token is made by Ciel (src-tauri/src/alerts.rs).
   { id: "integration_alerts", name: "Alerts", color: "#F97316", fields: [] },
+  // Its printers and how they're asked: the Printers section below (./printers.ts).
+  { id: "integration_printers", name: "Printers", color: "#06B6D4", fields: [],
+    hint: N_("Add the printers and choose how they're checked in the Printers section below.") },
 ];
 
 /**
@@ -1557,6 +1561,7 @@ async function render() {
   const keys = [
     "stripe-api-key", "github-token", "vercel-token",
     "n8n-url", "n8n-api-key", "resend-api-key", "notion-api-key", "calcom-api-key",
+    "printers-community", "printers-auth-password", "printers-priv-password",
   ];
   const present: Record<string, boolean> = {};
   for (const k of keys) present[k] = (await Bridge.secretPresent(k)) ?? false;
@@ -1624,6 +1629,7 @@ async function render() {
         },
       }),
       integrationsSection(present),
+      printersSection({ prefs: settings.printers, save, present, store: KEY_STORE }),
     ],
     shortcuts: () => [shortcutsSection(shortcutReport)],
     wallpaper: () => wallpaper,

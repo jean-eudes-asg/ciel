@@ -27,6 +27,10 @@ pub const KNOWN_KEYS: &[&str] = &[
     "gmail-app-password",
     // The Alerts pill (alerts.rs): the token monitoring tools send with each alert.
     "alerts-token",
+    // The Printers pill (printers/): SNMP v1/v2c's community, v3's two passwords.
+    "printers-community",
+    "printers-auth-password",
+    "printers-priv-password",
 ];
 
 fn entry(key: &str) -> Option<Entry> {

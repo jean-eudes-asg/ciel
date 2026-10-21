@@ -427,3 +427,19 @@ select option {
 html[dir="rtl"] :is(.diff, .path, .keycap, input[type="password"], input[type="text"]) {
   direction: ltr;
 }
+
+/* Settings → Printers (./printers.ts): one block per printer, and what Find printers found. */
+.pr-set-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pr-set-printer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+}

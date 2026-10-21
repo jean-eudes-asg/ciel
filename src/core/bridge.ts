@@ -302,6 +302,18 @@ export const Bridge = {
   /** Takes an alert off the list, until its tool sends it again. */
   alertsDismiss: (key: string) => call<void>("alerts_dismiss", { key }),
 
+  // ── Printers (src-tauri/src/printers/) ────────────────────────────────────
+  /** Every printer as the island's card has it: { printers, intervalMinutes, checkedAt }. */
+  printersState: () => call<Record<string, unknown>>("printers_state"),
+  /** A round of checks now. */
+  printersCheckNow: () => call<void>("printers_check_now"),
+  /** This computer's printers and the announced ones; with `sweep`, a range asked over SNMP. Throws why it can't. */
+  printersDiscover: (sweep: boolean) => callOrThrow<DiscoverAnswer>("printers_discover", { sweep }),
+  /** Copies the text report. */
+  printersCopyReport: () => call<boolean>("printers_copy_report"),
+  /** Writes the two CSV files and shows their folder, which it answers. */
+  printersExport: () => callOrThrow<string>("printers_export"),
+
   // ── Wallpapers (the Rust side of src/sky; island/wallpaper.ts drives it) ──
   /** The displays, in physical pixels; `id` is what wallpaperSetDesktop takes. */
   wallpaperMonitors: () => call<WallpaperMonitor[]>("wallpaper_monitors"),
@@ -391,6 +403,23 @@ async function sendBytes(cmd: string, png: Uint8Array, headers: Record<string, s
 }
 
 export type SpotifyAction = "playPause" | "next" | "previous" | "seek" | "shuffle" | "repeat" | "volume";
+
+/** A printer found by Find printers (src-tauri/src/printers/discover.rs). */
+export interface FoundPrinter {
+  host: string;
+  name: string;
+  model: string;
+  location: string;
+  /** "system", "mdns", "snmp". */
+  sources: string[];
+}
+
+export interface DiscoverAnswer {
+  found: FoundPrinter[];
+  /** The range swept, "" without a sweep. */
+  range: string;
+  swept: number;
+}
 
 /** The Alerts pill, as Settings shows it (src-tauri/src/alerts.rs AlertsInfo). */
 export interface AlertsInfo {

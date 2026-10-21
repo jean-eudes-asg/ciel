@@ -12,6 +12,7 @@ import { isComingSoon, pillDefinition } from "../core/pills";
 import { refreshHookPills } from "../island/integrations";
 import { readActivity, readPulse, readStats } from "../core/github";
 import { githubDetail, githubPulseCard } from "./github";
+import { printersCard, printersDetail } from "./printers";
 import { N_, language, t } from "../i18n/i18n";
 
 /** Same shape as the Swift `timeAgo` computed properties. */
@@ -516,6 +517,8 @@ export function hasIntegrationData(id: string): boolean {
       return typeof get(id).unread === "number";
     case "integration_alerts":
       return Array.isArray(get(id).active);
+    case "integration_printers":
+      return Array.isArray(get(id).printers);
     case "integration_github":
       return get(id).totalRepos != null || readPulse(get(id)) != null;
     case "integration_stripe":
@@ -539,6 +542,13 @@ export function renderIntegrationCard(task: AgentTask, hooks: IntegrationCardHoo
     return hooks.detailOpen && hasActivity
       ? n8nDetail(task, hooks.closeDetail)
       : n8nCard(task, hooks.openDetail, hooks.openSettings);
+  }
+  if (task.id === "integration_printers" && hasIntegrationData(task.id)) {
+    const data = get(task.id);
+    const rows = wide ? 6 : 3;
+    const card = () => printersCard(data, rows, hooks.openDetail, hooks.openSettings);
+    if (wide) return split(card(), printersDetail(data, hooks.closeDetail));
+    return hooks.detailOpen ? printersDetail(data, hooks.closeDetail) : card();
   }
   if (task.id === "integration_vercel" && hasIntegrationData(task.id)) {
     if (wide) return split(vercelCard(hooks.openDetail), vercelDetail(hooks.closeDetail));

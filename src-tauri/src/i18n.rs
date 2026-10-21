@@ -212,7 +212,6 @@ pub fn tf(key: &str, vars: &[(&str, &str)]) -> String {
 }
 
 /// A count with its words: `tn("{count} file", "{count} files", n, &[])`.
-#[allow(dead_code)]
 pub fn tn(one: &str, other: &str, count: u64, vars: &[(&str, &str)]) -> String {
     let lang = current();
     let n = count.to_string();

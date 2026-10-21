@@ -51,6 +51,7 @@ test("the catalog holds the Mac's pills with the Claude Code label for Windows a
     // Not the Mac's: Windows and Linux only, after every pill of its.
     ["integration_finance", "Finance", "#10B981", "service", "Spending"],
     ["integration_alerts", "Alerts", "#F97316", "service", "Monitoring"],
+    ["integration_printers", "Printers", "#06B6D4", "service", "Building"],
   ];
   assert.deepEqual(
     PILL_CATALOG.map((p) => [p.id, p.name, p.color, p.category, p.subtitle]),

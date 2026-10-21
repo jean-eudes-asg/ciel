@@ -34,6 +34,9 @@ futures-util = "0.3"
 # SHA-256 of the speech models as they download (speech/mod.rs). Already in the
 # tree through reqwest's rustls.
 ring = "0.17"
+# SNMPv3 privacy for the Printers pill (printers/usm.rs): AES-128. Already in
+# the tree through the keyring's Secret Service and the updater's zip.
+aes = "0.8"
 # Flow dictation and the Notetaker (flow/, notes/, speech/). Speech to text runs
 # on this computer: sherpa-onnx (Apache-2.0) with NVIDIA's Parakeet, linked
 # statically (onnxruntime included), the models downloaded on the user's click.

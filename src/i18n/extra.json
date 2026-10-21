@@ -6256,6 +6256,1222 @@
    "pt-BR": "Não foi possível escutar na porta {port}: {error}",
    "ru": "Не удалось открыть порт {port}: {error}",
    "id": "Tidak bisa mendengarkan di port {port}: {error}"
+  },
+  "Paper jam": {
+   "zh-Hans": "卡纸",
+   "hi": "पेपर जाम",
+   "es": "Atasco de papel",
+   "ar": "انحشار الورق",
+   "fr": "Bourrage papier",
+   "bn": "কাগজ আটকে গেছে",
+   "pt-BR": "Atolamento de papel",
+   "ru": "Замятие бумаги",
+   "id": "Kertas macet"
+  },
+  "Door open": {
+   "zh-Hans": "机门打开",
+   "hi": "दरवाज़ा खुला है",
+   "es": "Puerta abierta",
+   "ar": "الباب مفتوح",
+   "fr": "Porte ouverte",
+   "bn": "দরজা খোলা",
+   "pt-BR": "Porta aberta",
+   "ru": "Открыта дверца",
+   "id": "Pintu terbuka"
+  },
+  "Out of paper": {
+   "zh-Hans": "缺纸",
+   "hi": "कागज़ खत्म",
+   "es": "Sin papel",
+   "ar": "نفد الورق",
+   "fr": "Plus de papier",
+   "bn": "কাগজ শেষ",
+   "pt-BR": "Sem papel",
+   "ru": "Нет бумаги",
+   "id": "Kertas habis"
+  },
+  "Toner empty": {
+   "zh-Hans": "碳粉已空",
+   "hi": "टोनर खत्म",
+   "es": "Tóner vacío",
+   "ar": "الحبر فارغ",
+   "fr": "Toner vide",
+   "bn": "টোনার শেষ",
+   "pt-BR": "Toner vazio",
+   "ru": "Тонер закончился",
+   "id": "Toner habis"
+  },
+  "Offline": {
+   "zh-Hans": "脱机",
+   "hi": "ऑफ़लाइन",
+   "es": "Sin conexión",
+   "ar": "غير متصل",
+   "fr": "Hors ligne",
+   "bn": "অফলাইন",
+   "pt-BR": "Offline",
+   "ru": "Не в сети",
+   "id": "Offline"
+  },
+  "Not responding": {
+   "zh-Hans": "无响应",
+   "hi": "जवाब नहीं दे रहा",
+   "es": "No responde",
+   "ar": "لا يستجيب",
+   "fr": "Ne répond pas",
+   "bn": "সাড়া দিচ্ছে না",
+   "pt-BR": "Não responde",
+   "ru": "Не отвечает",
+   "id": "Tidak merespons"
+  },
+  "Service requested": {
+   "zh-Hans": "需要维修",
+   "hi": "सर्विस की ज़रूरत",
+   "es": "Requiere servicio técnico",
+   "ar": "يتطلب صيانة",
+   "fr": "Intervention requise",
+   "bn": "সার্ভিস প্রয়োজন",
+   "pt-BR": "Requer assistência técnica",
+   "ru": "Требуется обслуживание",
+   "id": "Perlu servis"
+  },
+  "Cartridge missing": {
+   "zh-Hans": "缺少墨盒",
+   "hi": "कार्ट्रिज नहीं है",
+   "es": "Falta el cartucho",
+   "ar": "الخرطوشة مفقودة",
+   "fr": "Cartouche absente",
+   "bn": "কার্টিজ নেই",
+   "pt-BR": "Cartucho ausente",
+   "ru": "Нет картриджа",
+   "id": "Kartrid tidak ada"
+  },
+  "Output tray full": {
+   "zh-Hans": "出纸盘已满",
+   "hi": "आउटपुट ट्रे भरी है",
+   "es": "Bandeja de salida llena",
+   "ar": "درج الإخراج ممتلئ",
+   "fr": "Bac de sortie plein",
+   "bn": "আউটপুট ট্রে ভর্তি",
+   "pt-BR": "Bandeja de saída cheia",
+   "ru": "Выходной лоток заполнен",
+   "id": "Baki keluaran penuh"
+  },
+  "Output tray missing": {
+   "zh-Hans": "缺少出纸盘",
+   "hi": "आउटपुट ट्रे नहीं है",
+   "es": "Falta la bandeja de salida",
+   "ar": "درج الإخراج مفقود",
+   "fr": "Bac de sortie absent",
+   "bn": "আউটপুট ট্রে নেই",
+   "pt-BR": "Bandeja de saída ausente",
+   "ru": "Нет выходного лотка",
+   "id": "Baki keluaran tidak ada"
+  },
+  "Waste toner box full": {
+   "zh-Hans": "废粉盒已满",
+   "hi": "वेस्ट टोनर बॉक्स भरा है",
+   "es": "Depósito de tóner residual lleno",
+   "ar": "علبة الحبر المستهلك ممتلئة",
+   "fr": "Bac de toner usagé plein",
+   "bn": "বর্জ্য টোনার বাক্স ভর্তি",
+   "pt-BR": "Coletor de toner residual cheio",
+   "ru": "Бункер отработанного тонера заполнен",
+   "id": "Kotak toner bekas penuh"
+  },
+  "Stopped": {
+   "zh-Hans": "已停止",
+   "hi": "रुका हुआ",
+   "es": "Detenida",
+   "ar": "متوقفة",
+   "fr": "Arrêtée",
+   "bn": "থেমে আছে",
+   "pt-BR": "Parada",
+   "ru": "Остановлен",
+   "id": "Berhenti"
+  },
+  "Paper low": {
+   "zh-Hans": "纸张不足",
+   "hi": "कागज़ कम है",
+   "es": "Poco papel",
+   "ar": "الورق منخفض",
+   "fr": "Papier bas",
+   "bn": "কাগজ কম",
+   "pt-BR": "Pouco papel",
+   "ru": "Мало бумаги",
+   "id": "Kertas hampir habis"
+  },
+  "Paper tray empty": {
+   "zh-Hans": "纸盒已空",
+   "hi": "पेपर ट्रे खाली है",
+   "es": "Bandeja de papel vacía",
+   "ar": "درج الورق فارغ",
+   "fr": "Bac à papier vide",
+   "bn": "কাগজের ট্রে খালি",
+   "pt-BR": "Bandeja de papel vazia",
+   "ru": "Лоток для бумаги пуст",
+   "id": "Baki kertas kosong"
+  },
+  "Paper tray missing": {
+   "zh-Hans": "缺少纸盒",
+   "hi": "पेपर ट्रे नहीं है",
+   "es": "Falta la bandeja de papel",
+   "ar": "درج الورق مفقود",
+   "fr": "Bac à papier absent",
+   "bn": "কাগজের ট্রে নেই",
+   "pt-BR": "Bandeja de papel ausente",
+   "ru": "Нет лотка для бумаги",
+   "id": "Baki kertas tidak ada"
+  },
+  "Toner low": {
+   "zh-Hans": "碳粉不足",
+   "hi": "टोनर कम है",
+   "es": "Poco tóner",
+   "ar": "الحبر منخفض",
+   "fr": "Toner bas",
+   "bn": "টোনার কম",
+   "pt-BR": "Pouco toner",
+   "ru": "Мало тонера",
+   "id": "Toner hampir habis"
+  },
+  "Output tray almost full": {
+   "zh-Hans": "出纸盘快满了",
+   "hi": "आउटपुट ट्रे लगभग भरी है",
+   "es": "Bandeja de salida casi llena",
+   "ar": "درج الإخراج شبه ممتلئ",
+   "fr": "Bac de sortie presque plein",
+   "bn": "আউটপুট ট্রে প্রায় ভর্তি",
+   "pt-BR": "Bandeja de saída quase cheia",
+   "ru": "Выходной лоток почти заполнен",
+   "id": "Baki keluaran hampir penuh"
+  },
+  "Waste toner box almost full": {
+   "zh-Hans": "废粉盒快满了",
+   "hi": "वेस्ट टोनर बॉक्स लगभग भरा है",
+   "es": "Depósito de tóner residual casi lleno",
+   "ar": "علبة الحبر المستهلك شبه ممتلئة",
+   "fr": "Bac de toner usagé presque plein",
+   "bn": "বর্জ্য টোনার বাক্স প্রায় ভর্তি",
+   "pt-BR": "Coletor de toner residual quase cheio",
+   "ru": "Бункер отработанного тонера почти заполнен",
+   "id": "Kotak toner bekas hampir penuh"
+  },
+  "Maintenance due": {
+   "zh-Hans": "需要保养",
+   "hi": "रखरखाव का समय",
+   "es": "Mantenimiento pendiente",
+   "ar": "الصيانة مستحقة",
+   "fr": "Entretien à prévoir",
+   "bn": "রক্ষণাবেক্ষণের সময় হয়েছে",
+   "pt-BR": "Manutenção pendente",
+   "ru": "Требуется ТО",
+   "id": "Perlu perawatan"
+  },
+  "Running low": {
+   "zh-Hans": "即将用完",
+   "hi": "कम हो रहा है",
+   "es": "Se está agotando",
+   "ar": "على وشك النفاد",
+   "fr": "Bientôt épuisé",
+   "bn": "ফুরিয়ে আসছে",
+   "pt-BR": "Acabando",
+   "ru": "Заканчивается",
+   "id": "Hampir habis"
+  },
+  "Credentials refused": {
+   "zh-Hans": "凭据被拒绝",
+   "hi": "क्रेडेंशियल अस्वीकृत",
+   "es": "Credenciales rechazadas",
+   "ar": "رُفضت بيانات الاعتماد",
+   "fr": "Identifiants refusés",
+   "bn": "ক্রেডেনশিয়াল প্রত্যাখ্যাত",
+   "pt-BR": "Credenciais recusadas",
+   "ru": "Учётные данные отклонены",
+   "id": "Kredensial ditolak"
+  },
+  "Printer alert": {
+   "zh-Hans": "打印机警告",
+   "hi": "प्रिंटर अलर्ट",
+   "es": "Alerta de la impresora",
+   "ar": "تنبيه الطابعة",
+   "fr": "Alerte de l'imprimante",
+   "bn": "প্রিন্টার সতর্কতা",
+   "pt-BR": "Alerta da impressora",
+   "ru": "Предупреждение принтера",
+   "id": "Peringatan printer"
+  },
+  "Printing": {
+   "zh-Hans": "正在打印",
+   "hi": "प्रिंट हो रहा है",
+   "es": "Imprimiendo",
+   "ar": "تطبع",
+   "fr": "Impression en cours",
+   "bn": "প্রিন্ট হচ্ছে",
+   "pt-BR": "Imprimindo",
+   "ru": "Печатает",
+   "id": "Mencetak"
+  },
+  "Warming up": {
+   "zh-Hans": "预热中",
+   "hi": "गर्म हो रहा है",
+   "es": "Calentando",
+   "ar": "قيد الإحماء",
+   "fr": "Préchauffage",
+   "bn": "গরম হচ্ছে",
+   "pt-BR": "Aquecendo",
+   "ru": "Прогревается",
+   "id": "Memanaskan"
+  },
+  "Not checked yet": {
+   "zh-Hans": "尚未检查",
+   "hi": "अभी जाँचा नहीं गया",
+   "es": "Aún sin comprobar",
+   "ar": "لم تُفحص بعد",
+   "fr": "Pas encore vérifiée",
+   "bn": "এখনো যাচাই হয়নি",
+   "pt-BR": "Ainda não verificada",
+   "ru": "Ещё не проверен",
+   "id": "Belum diperiksa"
+  },
+  "Building": {
+   "zh-Hans": "大楼",
+   "hi": "इमारत",
+   "es": "Edificio",
+   "ar": "المبنى",
+   "fr": "Bâtiment",
+   "bn": "ভবন",
+   "pt-BR": "Prédio",
+   "ru": "Здание",
+   "id": "Gedung"
+  },
+  "Add printers in Settings": {
+   "zh-Hans": "在设置中添加打印机",
+   "hi": "सेटिंग्स में प्रिंटर जोड़ें",
+   "es": "Añade impresoras en Ajustes",
+   "ar": "أضف الطابعات من الإعدادات",
+   "fr": "Ajoutez des imprimantes dans les Réglages",
+   "bn": "সেটিংসে প্রিন্টার যোগ করুন",
+   "pt-BR": "Adicione impressoras nos Ajustes",
+   "ru": "Добавьте принтеры в настройках",
+   "id": "Tambahkan printer di Pengaturan"
+  },
+  "+{n} more": {
+   "zh-Hans": "还有 {n} 台",
+   "hi": "+{n} और",
+   "es": "+{n} más",
+   "ar": "+{n} أخرى",
+   "fr": "+{n} de plus",
+   "bn": "আরও {n}টি",
+   "pt-BR": "+{n} mais",
+   "ru": "ещё {n}",
+   "id": "+{n} lainnya"
+  },
+  "Open its web page": {
+   "zh-Hans": "打开它的网页",
+   "hi": "इसका वेब पेज खोलें",
+   "es": "Abrir su página web",
+   "ar": "افتح صفحتها على الويب",
+   "fr": "Ouvrir sa page web",
+   "bn": "এর ওয়েব পেজ খুলুন",
+   "pt-BR": "Abrir a página web",
+   "ru": "Открыть веб-страницу",
+   "id": "Buka halaman webnya"
+  },
+  "Add the printers and choose how they're checked in the Printers section below.": {
+   "zh-Hans": "在下方的 Printers 部分添加打印机，并选择检查方式。",
+   "hi": "नीचे Printers सेक्शन में प्रिंटर जोड़ें और चुनें कि उन्हें कैसे जाँचा जाए।",
+   "es": "Añade las impresoras y elige cómo se comprueban en la sección Printers, más abajo.",
+   "ar": "أضف الطابعات واختر طريقة فحصها في قسم Printers أدناه.",
+   "fr": "Ajoutez les imprimantes et choisissez comment elles sont vérifiées dans la section Printers ci-dessous.",
+   "bn": "নিচের Printers অংশে প্রিন্টার যোগ করুন এবং কীভাবে যাচাই হবে তা বেছে নিন।",
+   "pt-BR": "Adicione as impressoras e escolha como são verificadas na seção Printers, abaixo.",
+   "ru": "Добавьте принтеры и выберите способ проверки в разделе Printers ниже.",
+   "id": "Tambahkan printer dan pilih cara memeriksanya di bagian Printers di bawah."
+  },
+  "8 characters or more": {
+   "zh-Hans": "至少 8 个字符",
+   "hi": "कम से कम 8 अक्षर",
+   "es": "8 caracteres o más",
+   "ar": "8 أحرف أو أكثر",
+   "fr": "8 caractères ou plus",
+   "bn": "8 বা তার বেশি অক্ষর",
+   "pt-BR": "8 caracteres ou mais",
+   "ru": "Не меньше 8 символов",
+   "id": "8 karakter atau lebih"
+  },
+  "Add by address": {
+   "zh-Hans": "按地址添加",
+   "hi": "पते से जोड़ें",
+   "es": "Añadir por dirección",
+   "ar": "إضافة بالعنوان",
+   "fr": "Ajouter par adresse",
+   "bn": "ঠিকানা দিয়ে যোগ করুন",
+   "pt-BR": "Adicionar pelo endereço",
+   "ru": "Добавить по адресу",
+   "id": "Tambah lewat alamat"
+  },
+  "Added": {
+   "zh-Hans": "已添加",
+   "hi": "जोड़ा गया",
+   "es": "Añadida",
+   "ar": "أُضيفت",
+   "fr": "Ajoutée",
+   "bn": "যোগ হয়েছে",
+   "pt-BR": "Adicionada",
+   "ru": "Добавлен",
+   "id": "Ditambahkan"
+  },
+  "Also in the Alerts pill": {
+   "zh-Hans": "也显示在 Alerts 胶囊中",
+   "hi": "Alerts पिल में भी",
+   "es": "También en la píldora Alerts",
+   "ar": "في حبة Alerts أيضًا",
+   "fr": "Aussi dans la pill Alerts",
+   "bn": "Alerts পিলেও",
+   "pt-BR": "Também na pílula Alerts",
+   "ru": "Также в пилюле Alerts",
+   "id": "Juga di pil Alerts"
+  },
+  "A notification each day at this time with how every printer is. Leave it empty for none.": {
+   "zh-Hans": "每天在这个时间发一条通知，说明每台打印机的状况。留空则不发送。",
+   "hi": "हर दिन इस समय एक सूचना, जिसमें हर प्रिंटर का हाल हो। कोई सूचना न चाहिए तो खाली छोड़ें।",
+   "es": "Una notificación cada día a esta hora con el estado de cada impresora. Déjalo vacío para no recibirla.",
+   "ar": "إشعار يوميًا في هذا الوقت بحالة كل طابعة. اتركه فارغًا لإيقافه.",
+   "fr": "Une notification chaque jour à cette heure avec l'état de chaque imprimante. Laissez vide pour n'en recevoir aucune.",
+   "bn": "প্রতিদিন এই সময়ে প্রতিটি প্রিন্টারের অবস্থা নিয়ে একটি বিজ্ঞপ্তি। না চাইলে খালি রাখুন।",
+   "pt-BR": "Uma notificação por dia neste horário com o estado de cada impressora. Deixe vazio para nenhuma.",
+   "ru": "Уведомление каждый день в это время о состоянии всех принтеров. Оставьте пустым, чтобы не получать его.",
+   "id": "Notifikasi setiap hari pada jam ini tentang keadaan setiap printer. Kosongkan jika tidak perlu."
+  },
+  "Asking every address in the range…": {
+   "zh-Hans": "正在询问范围内的每个地址…",
+   "hi": "रेंज के हर पते से पूछा जा रहा है…",
+   "es": "Preguntando a cada dirección del rango…",
+   "ar": "جارٍ سؤال كل عنوان في النطاق…",
+   "fr": "Interrogation de chaque adresse de la plage…",
+   "bn": "রেঞ্জের প্রতিটি ঠিকানায় জিজ্ঞেস করা হচ্ছে…",
+   "pt-BR": "Consultando cada endereço do intervalo…",
+   "ru": "Опрашиваем каждый адрес диапазона…",
+   "id": "Menanyai setiap alamat dalam rentang…"
+  },
+  "Authentication": {
+   "zh-Hans": "身份验证",
+   "hi": "प्रमाणीकरण",
+   "es": "Autenticación",
+   "ar": "المصادقة",
+   "fr": "Authentification",
+   "bn": "প্রমাণীকরণ",
+   "pt-BR": "Autenticação",
+   "ru": "Аутентификация",
+   "id": "Autentikasi"
+  },
+  "Authentication password": {
+   "zh-Hans": "身份验证密码",
+   "hi": "प्रमाणीकरण पासवर्ड",
+   "es": "Contraseña de autenticación",
+   "ar": "كلمة مرور المصادقة",
+   "fr": "Mot de passe d'authentification",
+   "bn": "প্রমাণীকরণ পাসওয়ার্ড",
+   "pt-BR": "Senha de autenticação",
+   "ru": "Пароль аутентификации",
+   "id": "Kata sandi autentikasi"
+  },
+  "Check": {
+   "zh-Hans": "检查",
+   "hi": "जाँच",
+   "es": "Comprobar",
+   "ar": "الفحص",
+   "fr": "Vérifier",
+   "bn": "যাচাই",
+   "pt-BR": "Verificar",
+   "ru": "Проверка",
+   "id": "Periksa"
+  },
+  "Community": {
+   "zh-Hans": "团体名",
+   "hi": "कम्युनिटी",
+   "es": "Comunidad",
+   "ar": "المجتمع",
+   "fr": "Communauté",
+   "bn": "কমিউনিটি",
+   "pt-BR": "Comunidade",
+   "ru": "Сообщество",
+   "id": "Komunitas"
+  },
+  "Copy report": {
+   "zh-Hans": "复制报告",
+   "hi": "रिपोर्ट कॉपी करें",
+   "es": "Copiar informe",
+   "ar": "نسخ التقرير",
+   "fr": "Copier le rapport",
+   "bn": "রিপোর্ট কপি করুন",
+   "pt-BR": "Copiar relatório",
+   "ru": "Скопировать отчёт",
+   "id": "Salin laporan"
+  },
+  "Daily summary": {
+   "zh-Hans": "每日摘要",
+   "hi": "दैनिक सारांश",
+   "es": "Resumen diario",
+   "ar": "الملخص اليومي",
+   "fr": "Résumé quotidien",
+   "bn": "দৈনিক সারাংশ",
+   "pt-BR": "Resumo diário",
+   "ru": "Ежедневная сводка",
+   "id": "Ringkasan harian"
+  },
+  "Encryption (AES-128)": {
+   "zh-Hans": "加密 (AES-128)",
+   "hi": "एन्क्रिप्शन (AES-128)",
+   "es": "Cifrado (AES-128)",
+   "ar": "التشفير (AES-128)",
+   "fr": "Chiffrement (AES-128)",
+   "bn": "এনক্রিপশন (AES-128)",
+   "pt-BR": "Criptografia (AES-128)",
+   "ru": "Шифрование (AES-128)",
+   "id": "Enkripsi (AES-128)"
+  },
+  "Encryption password": {
+   "zh-Hans": "加密密码",
+   "hi": "एन्क्रिप्शन पासवर्ड",
+   "es": "Contraseña de cifrado",
+   "ar": "كلمة مرور التشفير",
+   "fr": "Mot de passe de chiffrement",
+   "bn": "এনক্রিপশন পাসওয়ার্ড",
+   "pt-BR": "Senha de criptografia",
+   "ru": "Пароль шифрования",
+   "id": "Kata sandi enkripsi"
+  },
+  "Every {n} min": {
+   "zh-Hans": "每 {n} 分钟",
+   "hi": "हर {n} मिनट",
+   "es": "Cada {n} min",
+   "ar": "كل {n} دقيقة",
+   "fr": "Toutes les {n} min",
+   "bn": "প্রতি {n} মিনিটে",
+   "pt-BR": "A cada {n} min",
+   "ru": "Каждые {n} мин",
+   "id": "Setiap {n} menit"
+  },
+  "Export CSV": {
+   "zh-Hans": "导出 CSV",
+   "hi": "CSV एक्सपोर्ट करें",
+   "es": "Exportar CSV",
+   "ar": "تصدير CSV",
+   "fr": "Exporter en CSV",
+   "bn": "CSV এক্সপোর্ট করুন",
+   "pt-BR": "Exportar CSV",
+   "ru": "Экспорт в CSV",
+   "id": "Ekspor CSV"
+  },
+  "Find printers": {
+   "zh-Hans": "查找打印机",
+   "hi": "प्रिंटर खोजें",
+   "es": "Buscar impresoras",
+   "ar": "البحث عن الطابعات",
+   "fr": "Trouver les imprimantes",
+   "bn": "প্রিন্টার খুঁজুন",
+   "pt-BR": "Procurar impressoras",
+   "ru": "Найти принтеры",
+   "id": "Cari printer"
+  },
+  "Find printers looks at the ones this computer knows and the ones that announce themselves. A sweep asks every address of the range over SNMP: some security tools take that for an attack, so tell your network admin first.": {
+   "zh-Hans": "“查找打印机”会查看本机已知的打印机，以及在网络上自我通告的打印机。“扫描网络”会通过 SNMP 询问范围内的每个地址：有些安全工具会把它当作攻击，请先告知网络管理员。",
+   "hi": "“प्रिंटर खोजें” इस कंप्यूटर के जाने-पहचाने प्रिंटर और खुद की घोषणा करने वाले प्रिंटर देखता है। स्वीप रेंज के हर पते से SNMP पर पूछता है: कुछ सुरक्षा टूल इसे हमला समझते हैं, इसलिए पहले अपने नेटवर्क एडमिन को बताएँ।",
+   "es": "Buscar impresoras mira las que este equipo conoce y las que se anuncian en la red. Un barrido pregunta por SNMP a cada dirección del rango: algunas herramientas de seguridad lo toman por un ataque, así que avisa antes al administrador de red.",
+   "ar": "يبحث «البحث عن الطابعات» في الطابعات التي يعرفها هذا الكمبيوتر وتلك التي تعلن عن نفسها. أما المسح فيسأل كل عنوان في النطاق عبر SNMP: بعض أدوات الأمان تعدّ ذلك هجومًا، لذا أبلغ مسؤول الشبكة أولًا.",
+   "fr": "Trouver les imprimantes regarde celles que cet ordinateur connaît et celles qui s'annoncent sur le réseau. Un balayage interroge chaque adresse de la plage en SNMP : certains outils de sécurité y voient une attaque, prévenez d'abord votre administrateur réseau.",
+   "bn": "“প্রিন্টার খুঁজুন” এই কম্পিউটারের চেনা প্রিন্টার আর নিজেদের ঘোষণা করা প্রিন্টারগুলো দেখে। সুইপ রেঞ্জের প্রতিটি ঠিকানায় SNMP দিয়ে জিজ্ঞেস করে: কিছু নিরাপত্তা টুল এটাকে আক্রমণ মনে করে, তাই আগে নেটওয়ার্ক অ্যাডমিনকে জানান।",
+   "pt-BR": "Procurar impressoras olha as que este computador conhece e as que se anunciam na rede. Uma varredura consulta por SNMP cada endereço do intervalo: algumas ferramentas de segurança tomam isso por um ataque, então avise antes o administrador da rede.",
+   "ru": "«Найти принтеры» смотрит принтеры, известные этому компьютеру, и те, что сами объявляют о себе. Сканирование опрашивает по SNMP каждый адрес диапазона: некоторые средства защиты принимают это за атаку, поэтому сначала предупредите сетевого администратора.",
+   "id": "Cari printer melihat printer yang dikenal komputer ini dan yang mengumumkan dirinya. Penyisiran menanyai setiap alamat dalam rentang lewat SNMP: beberapa alat keamanan menganggapnya serangan, jadi beri tahu admin jaringan terlebih dahulu."
+  },
+  "Looking for printers…": {
+   "zh-Hans": "正在查找打印机…",
+   "hi": "प्रिंटर खोजे जा रहे हैं…",
+   "es": "Buscando impresoras…",
+   "ar": "جارٍ البحث عن الطابعات…",
+   "fr": "Recherche des imprimantes…",
+   "bn": "প্রিন্টার খোঁজা হচ্ছে…",
+   "pt-BR": "Procurando impressoras…",
+   "ru": "Ищем принтеры…",
+   "id": "Mencari printer…"
+  },
+  "Low at": {
+   "zh-Hans": "偏低阈值",
+   "hi": "कम माना जाए",
+   "es": "Bajo al",
+   "ar": "منخفض عند",
+   "fr": "Bas à",
+   "bn": "কম ধরা হবে",
+   "pt-BR": "Baixo em",
+   "ru": "Мало при",
+   "id": "Rendah pada"
+  },
+  "Most printers answer SNMP v2c with the community \"public\"; the ones that don't are read over IPP. Passwords are kept in the {store}.": {
+   "zh-Hans": "大多数打印机以团体名“public”响应 SNMP v2c；不响应的打印机会通过 IPP 读取。密码保存在 {store} 中。",
+   "hi": "ज़्यादातर प्रिंटर कम्युनिटी \"public\" के साथ SNMP v2c का जवाब देते हैं; जो नहीं देते, उन्हें IPP से पढ़ा जाता है। पासवर्ड {store} में रखे जाते हैं।",
+   "es": "La mayoría de las impresoras responden a SNMP v2c con la comunidad \"public\"; las que no, se leen por IPP. Las contraseñas se guardan en {store}.",
+   "ar": "تستجيب معظم الطابعات لـ SNMP v2c مع المجتمع \"public\"؛ أما التي لا تستجيب فتُقرأ عبر IPP. تُحفظ كلمات المرور في {store}.",
+   "fr": "La plupart des imprimantes répondent en SNMP v2c avec la communauté « public » ; les autres sont lues en IPP. Les mots de passe sont gardés dans {store}.",
+   "bn": "বেশিরভাগ প্রিন্টার \"public\" কমিউনিটি দিয়ে SNMP v2c-তে সাড়া দেয়; যেগুলো দেয় না, সেগুলো IPP দিয়ে পড়া হয়। পাসওয়ার্ড {store}-এ রাখা থাকে।",
+   "pt-BR": "A maioria das impressoras responde ao SNMP v2c com a comunidade \"public\"; as que não respondem são lidas por IPP. As senhas ficam no {store}.",
+   "ru": "Большинство принтеров отвечают по SNMP v2c с сообществом «public»; остальные читаются по IPP. Пароли хранятся в {store}.",
+   "id": "Sebagian besar printer menjawab SNMP v2c dengan komunitas \"public\"; yang tidak, dibaca lewat IPP. Kata sandi disimpan di {store}."
+  },
+  "Nearly empty at": {
+   "zh-Hans": "将空阈值",
+   "hi": "लगभग खाली माना जाए",
+   "es": "Casi vacío al",
+   "ar": "شبه فارغ عند",
+   "fr": "Presque vide à",
+   "bn": "প্রায় খালি ধরা হবে",
+   "pt-BR": "Quase vazio em",
+   "ru": "Почти пусто при",
+   "id": "Hampir habis pada"
+  },
+  "No printers yet: find them below, or add one by its address.": {
+   "zh-Hans": "还没有打印机：在下面查找，或按地址添加。",
+   "hi": "अभी कोई प्रिंटर नहीं: नीचे खोजें, या पते से एक जोड़ें।",
+   "es": "Aún no hay impresoras: búscalas abajo o añade una por su dirección.",
+   "ar": "لا توجد طابعات بعد: ابحث عنها أدناه، أو أضف واحدة بعنوانها.",
+   "fr": "Pas encore d'imprimante : trouvez-les ci-dessous, ou ajoutez-en une par son adresse.",
+   "bn": "এখনো কোনো প্রিন্টার নেই: নিচে খুঁজুন, অথবা ঠিকানা দিয়ে একটি যোগ করুন।",
+   "pt-BR": "Nenhuma impressora ainda: procure abaixo ou adicione uma pelo endereço.",
+   "ru": "Принтеров пока нет: найдите их ниже или добавьте по адресу.",
+   "id": "Belum ada printer: cari di bawah, atau tambahkan lewat alamatnya."
+  },
+  "Saved in {folder}": {
+   "zh-Hans": "已保存到 {folder}",
+   "hi": "{folder} में सहेजा गया",
+   "es": "Guardado en {folder}",
+   "ar": "حُفظ في {folder}",
+   "fr": "Enregistré dans {folder}",
+   "bn": "{folder}-এ সংরক্ষিত",
+   "pt-BR": "Salvo em {folder}",
+   "ru": "Сохранено в {folder}",
+   "id": "Disimpan di {folder}"
+  },
+  "SNMP, then IPP": {
+   "zh-Hans": "先 SNMP，再 IPP",
+   "hi": "पहले SNMP, फिर IPP",
+   "es": "SNMP y luego IPP",
+   "ar": "SNMP ثم IPP",
+   "fr": "SNMP, puis IPP",
+   "bn": "প্রথমে SNMP, তারপর IPP",
+   "pt-BR": "SNMP, depois IPP",
+   "ru": "Сначала SNMP, затем IPP",
+   "id": "SNMP, lalu IPP"
+  },
+  "Sweep the network": {
+   "zh-Hans": "扫描网络",
+   "hi": "नेटवर्क स्वीप करें",
+   "es": "Barrer la red",
+   "ar": "مسح الشبكة",
+   "fr": "Balayer le réseau",
+   "bn": "নেটওয়ার্ক সুইপ করুন",
+   "pt-BR": "Varrer a rede",
+   "ru": "Сканировать сеть",
+   "id": "Sisir jaringan"
+  },
+  "The report has every printer now and the last 30 days of problems. Export CSV writes two files for a spreadsheet.": {
+   "zh-Hans": "报告包含每台打印机的当前状况和最近 30 天的问题。“导出 CSV”会写入两个可用电子表格打开的文件。",
+   "hi": "रिपोर्ट में हर प्रिंटर की अभी की स्थिति और पिछले 30 दिनों की समस्याएँ होती हैं। CSV एक्सपोर्ट स्प्रेडशीट के लिए दो फ़ाइलें लिखता है।",
+   "es": "El informe incluye cada impresora ahora y los problemas de los últimos 30 días. Exportar CSV escribe dos archivos para una hoja de cálculo.",
+   "ar": "يتضمن التقرير حالة كل طابعة الآن ومشكلات آخر 30 يومًا. يكتب «تصدير CSV» ملفين لجدول بيانات.",
+   "fr": "Le rapport donne chaque imprimante maintenant et les problèmes des 30 derniers jours. Exporter en CSV écrit deux fichiers pour un tableur.",
+   "bn": "রিপোর্টে প্রতিটি প্রিন্টারের এখনকার অবস্থা আর গত 30 দিনের সমস্যা থাকে। CSV এক্সপোর্ট স্প্রেডশিটের জন্য দুটি ফাইল লেখে।",
+   "pt-BR": "O relatório traz cada impressora agora e os problemas dos últimos 30 dias. Exportar CSV grava dois arquivos para uma planilha.",
+   "ru": "В отчёте — состояние каждого принтера сейчас и проблемы за последние 30 дней. «Экспорт в CSV» записывает два файла для таблицы.",
+   "id": "Laporan berisi setiap printer saat ini dan masalah 30 hari terakhir. Ekspor CSV menulis dua file untuk spreadsheet."
+  },
+  "this computer": {
+   "zh-Hans": "本机",
+   "hi": "यह कंप्यूटर",
+   "es": "este equipo",
+   "ar": "هذا الكمبيوتر",
+   "fr": "cet ordinateur",
+   "bn": "এই কম্পিউটার",
+   "pt-BR": "este computador",
+   "ru": "этот компьютер",
+   "id": "komputer ini"
+  },
+  "This computer's network (/24)": {
+   "zh-Hans": "本机所在网络 (/24)",
+   "hi": "इस कंप्यूटर का नेटवर्क (/24)",
+   "es": "La red de este equipo (/24)",
+   "ar": "شبكة هذا الكمبيوتر (/24)",
+   "fr": "Le réseau de cet ordinateur (/24)",
+   "bn": "এই কম্পিউটারের নেটওয়ার্ক (/24)",
+   "pt-BR": "A rede deste computador (/24)",
+   "ru": "Сеть этого компьютера (/24)",
+   "id": "Jaringan komputer ini (/24)"
+  },
+  "Toner low at": {
+   "zh-Hans": "碳粉偏低阈值",
+   "hi": "टोनर कम माना जाए",
+   "es": "Tóner bajo al",
+   "ar": "الحبر منخفض عند",
+   "fr": "Toner bas à",
+   "bn": "টোনার কম ধরা হবে",
+   "pt-BR": "Toner baixo em",
+   "ru": "Мало тонера при",
+   "id": "Toner rendah pada"
+  },
+  "User name": {
+   "zh-Hans": "用户名",
+   "hi": "उपयोगकर्ता नाम",
+   "es": "Nombre de usuario",
+   "ar": "اسم المستخدم",
+   "fr": "Nom d'utilisateur",
+   "bn": "ব্যবহারকারীর নাম",
+   "pt-BR": "Nome de usuário",
+   "ru": "Имя пользователя",
+   "id": "Nama pengguna"
+  },
+  "While the Printers pill is on, Ciel asks each printer below how it is, over SNMP or IPP, and tells you when one has a problem and when it's fixed.": {
+   "zh-Hans": "Printers 胶囊打开时，Ciel 会通过 SNMP 或 IPP 询问下面每台打印机的状况，在出现问题和问题解决时告诉你。",
+   "hi": "Printers पिल चालू रहने पर Ciel नीचे के हर प्रिंटर से SNMP या IPP पर उसका हाल पूछता है, और बताता है कि कब किसी में समस्या आई और कब ठीक हुई।",
+   "es": "Mientras la píldora Printers está activada, Ciel pregunta a cada impresora de abajo cómo está, por SNMP o IPP, y te avisa cuando una tiene un problema y cuando se soluciona.",
+   "ar": "ما دامت حبة Printers مفعّلة، يسأل Ciel كل طابعة أدناه عن حالها عبر SNMP أو IPP، ويخبرك حين تواجه إحداها مشكلة وحين تُحل.",
+   "fr": "Tant que la pill Printers est activée, Ciel demande à chaque imprimante ci-dessous comment elle va, en SNMP ou en IPP, et vous dit quand l'une a un problème et quand il est réglé.",
+   "bn": "Printers পিল চালু থাকলে Ciel নিচের প্রতিটি প্রিন্টারকে SNMP বা IPP দিয়ে তার অবস্থা জিজ্ঞেস করে, আর কোনোটির সমস্যা হলে ও ঠিক হলে আপনাকে জানায়।",
+   "pt-BR": "Enquanto a pílula Printers estiver ligada, o Ciel pergunta a cada impressora abaixo como ela está, por SNMP ou IPP, e avisa quando uma tem um problema e quando ele é resolvido.",
+   "ru": "Пока пилюля Printers включена, Ciel спрашивает каждый принтер ниже о его состоянии по SNMP или IPP и сообщает, когда у одного из них проблема и когда она устранена.",
+   "id": "Selama pil Printers menyala, Ciel menanyai setiap printer di bawah tentang keadaannya lewat SNMP atau IPP, dan memberi tahu saat ada masalah dan saat sudah beres."
+  },
+  "Not a range Ciel can sweep: {range}": {
+   "zh-Hans": "Ciel 无法扫描这个范围：{range}",
+   "hi": "यह रेंज Ciel स्वीप नहीं कर सकता: {range}",
+   "es": "No es un rango que Ciel pueda barrer: {range}",
+   "ar": "ليس نطاقًا يستطيع Ciel مسحه: {range}",
+   "fr": "Ciel ne peut pas balayer cette plage : {range}",
+   "bn": "Ciel এই রেঞ্জ সুইপ করতে পারে না: {range}",
+   "pt-BR": "Não é um intervalo que o Ciel possa varrer: {range}",
+   "ru": "Ciel не может сканировать этот диапазон: {range}",
+   "id": "Bukan rentang yang bisa disisir Ciel: {range}"
+  },
+  "Printers, {date}": {
+   "zh-Hans": "打印机，{date}",
+   "hi": "प्रिंटर, {date}",
+   "es": "Impresoras, {date}",
+   "ar": "الطابعات، {date}",
+   "fr": "Imprimantes, {date}",
+   "bn": "প্রিন্টার, {date}",
+   "pt-BR": "Impressoras, {date}",
+   "ru": "Принтеры, {date}",
+   "id": "Printer, {date}"
+  },
+  "This computer's network address isn't known: enter a range.": {
+   "zh-Hans": "不知道本机的网络地址：请输入一个范围。",
+   "hi": "इस कंप्यूटर का नेटवर्क पता मालूम नहीं: कोई रेंज डालें।",
+   "es": "No se conoce la dirección de red de este equipo: escribe un rango.",
+   "ar": "عنوان الشبكة لهذا الكمبيوتر غير معروف: أدخل نطاقًا.",
+   "fr": "L'adresse réseau de cet ordinateur est inconnue : saisissez une plage.",
+   "bn": "এই কম্পিউটারের নেটওয়ার্ক ঠিকানা জানা নেই: একটি রেঞ্জ লিখুন।",
+   "pt-BR": "O endereço de rede deste computador não é conhecido: informe um intervalo.",
+   "ru": "Сетевой адрес этого компьютера неизвестен: укажите диапазон.",
+   "id": "Alamat jaringan komputer ini tidak diketahui: masukkan rentang."
+  },
+  "No problems": {
+   "zh-Hans": "没有问题",
+   "hi": "कोई समस्या नहीं",
+   "es": "Sin problemas",
+   "ar": "لا مشكلات",
+   "fr": "Aucun problème",
+   "bn": "কোনো সমস্যা নেই",
+   "pt-BR": "Sem problemas",
+   "ru": "Проблем нет",
+   "id": "Tidak ada masalah"
+  },
+  "Printer": {
+   "zh-Hans": "打印机",
+   "hi": "प्रिंटर",
+   "es": "Impresora",
+   "ar": "الطابعة",
+   "fr": "Imprimante",
+   "bn": "প্রিন্টার",
+   "pt-BR": "Impressora",
+   "ru": "Принтер",
+   "id": "Printer"
+  },
+  "Serial number": {
+   "zh-Hans": "序列号",
+   "hi": "सीरियल नंबर",
+   "es": "Número de serie",
+   "ar": "الرقم التسلسلي",
+   "fr": "Numéro de série",
+   "bn": "সিরিয়াল নম্বর",
+   "pt-BR": "Número de série",
+   "ru": "Серийный номер",
+   "id": "Nomor seri"
+  },
+  "State": {
+   "zh-Hans": "状态",
+   "hi": "स्थिति",
+   "es": "Estado",
+   "ar": "الحالة",
+   "fr": "État",
+   "bn": "অবস্থা",
+   "pt-BR": "Estado",
+   "ru": "Состояние",
+   "id": "Status"
+  },
+  "Problems": {
+   "zh-Hans": "问题",
+   "hi": "समस्याएँ",
+   "es": "Problemas",
+   "ar": "المشكلات",
+   "fr": "Problèmes",
+   "bn": "সমস্যা",
+   "pt-BR": "Problemas",
+   "ru": "Проблемы",
+   "id": "Masalah"
+  },
+  "Supplies": {
+   "zh-Hans": "耗材",
+   "hi": "सप्लाई",
+   "es": "Consumibles",
+   "ar": "المستهلكات",
+   "fr": "Consommables",
+   "bn": "সরবরাহ",
+   "pt-BR": "Suprimentos",
+   "ru": "Расходные материалы",
+   "id": "Persediaan"
+  },
+  "Pages": {
+   "zh-Hans": "页数",
+   "hi": "पेज",
+   "es": "Páginas",
+   "ar": "الصفحات",
+   "fr": "Pages",
+   "bn": "পৃষ্ঠা",
+   "pt-BR": "Páginas",
+   "ru": "Страницы",
+   "id": "Halaman"
+  },
+  "Checked": {
+   "zh-Hans": "检查时间",
+   "hi": "जाँचा गया",
+   "es": "Comprobado",
+   "ar": "وقت الفحص",
+   "fr": "Vérifié",
+   "bn": "যাচাইয়ের সময়",
+   "pt-BR": "Verificado",
+   "ru": "Проверено",
+   "id": "Diperiksa"
+  },
+  "Problem": {
+   "zh-Hans": "问题",
+   "hi": "समस्या",
+   "es": "Problema",
+   "ar": "المشكلة",
+   "fr": "Problème",
+   "bn": "সমস্যা",
+   "pt-BR": "Problema",
+   "ru": "Проблема",
+   "id": "Masalah"
+  },
+  "Severity": {
+   "zh-Hans": "严重程度",
+   "hi": "गंभीरता",
+   "es": "Gravedad",
+   "ar": "الخطورة",
+   "fr": "Gravité",
+   "bn": "তীব্রতা",
+   "pt-BR": "Gravidade",
+   "ru": "Важность",
+   "id": "Tingkat"
+  },
+  "Started": {
+   "zh-Hans": "开始",
+   "hi": "शुरू",
+   "es": "Inicio",
+   "ar": "البداية",
+   "fr": "Début",
+   "bn": "শুরু",
+   "pt-BR": "Início",
+   "ru": "Начало",
+   "id": "Mulai"
+  },
+  "Ended": {
+   "zh-Hans": "结束",
+   "hi": "समाप्त",
+   "es": "Fin",
+   "ar": "النهاية",
+   "fr": "Fin",
+   "bn": "শেষ",
+   "pt-BR": "Fim",
+   "ru": "Конец",
+   "id": "Selesai"
+  },
+  "Critical": {
+   "zh-Hans": "严重",
+   "hi": "गंभीर",
+   "es": "Crítico",
+   "ar": "حرج",
+   "fr": "Critique",
+   "bn": "গুরুতর",
+   "pt-BR": "Crítico",
+   "ru": "Критично",
+   "id": "Kritis"
+  },
+  "Warning": {
+   "zh-Hans": "警告",
+   "hi": "चेतावनी",
+   "es": "Aviso",
+   "ar": "تحذير",
+   "fr": "Avertissement",
+   "bn": "সতর্কতা",
+   "pt-BR": "Aviso",
+   "ru": "Предупреждение",
+   "id": "Peringatan"
+  },
+  "Info": {
+   "zh-Hans": "信息",
+   "hi": "जानकारी",
+   "es": "Info",
+   "ar": "معلومة",
+   "fr": "Info",
+   "bn": "তথ্য",
+   "pt-BR": "Info",
+   "ru": "Инфо",
+   "id": "Info"
+  },
+  "{count} pages": {
+   "zh-Hans": {
+    "other": "{count} 页"
+   },
+   "hi": {
+    "one": "{count} पेज",
+    "other": "{count} पेज"
+   },
+   "es": {
+    "one": "{count} página",
+    "other": "{count} páginas"
+   },
+   "ar": {
+    "zero": "لا صفحات",
+    "one": "صفحة واحدة",
+    "two": "صفحتان",
+    "few": "{count} صفحات",
+    "many": "{count} صفحة",
+    "other": "{count} صفحة"
+   },
+   "fr": {
+    "one": "{count} page",
+    "other": "{count} pages"
+   },
+   "bn": {
+    "one": "{count} পৃষ্ঠা",
+    "other": "{count} পৃষ্ঠা"
+   },
+   "pt-BR": {
+    "one": "{count} página",
+    "other": "{count} páginas"
+   },
+   "ru": {
+    "one": "{count} страница",
+    "few": "{count} страницы",
+    "many": "{count} страниц",
+    "other": "{count} страницы"
+   },
+   "id": {
+    "other": "{count} halaman"
+   }
+  },
+  "{count} problems in 30 days": {
+   "zh-Hans": {
+    "other": "30 天内 {count} 个问题"
+   },
+   "hi": {
+    "one": "30 दिनों में {count} समस्या",
+    "other": "30 दिनों में {count} समस्याएँ"
+   },
+   "es": {
+    "one": "{count} problema en 30 días",
+    "other": "{count} problemas en 30 días"
+   },
+   "ar": {
+    "zero": "لا مشكلات خلال 30 يومًا",
+    "one": "مشكلة واحدة خلال 30 يومًا",
+    "two": "مشكلتان خلال 30 يومًا",
+    "few": "{count} مشكلات خلال 30 يومًا",
+    "many": "{count} مشكلة خلال 30 يومًا",
+    "other": "{count} مشكلة خلال 30 يومًا"
+   },
+   "fr": {
+    "one": "{count} problème en 30 jours",
+    "other": "{count} problèmes en 30 jours"
+   },
+   "bn": {
+    "one": "30 দিনে {count}টি সমস্যা",
+    "other": "30 দিনে {count}টি সমস্যা"
+   },
+   "pt-BR": {
+    "one": "{count} problema em 30 dias",
+    "other": "{count} problemas em 30 dias"
+   },
+   "ru": {
+    "one": "{count} проблема за 30 дней",
+    "few": "{count} проблемы за 30 дней",
+    "many": "{count} проблем за 30 дней",
+    "other": "{count} проблемы за 30 дней"
+   },
+   "id": {
+    "other": "{count} masalah dalam 30 hari"
+   }
+  },
+  "{count} printers found.": {
+   "zh-Hans": {
+    "other": "找到 {count} 台打印机。"
+   },
+   "hi": {
+    "one": "{count} प्रिंटर मिला।",
+    "other": "{count} प्रिंटर मिले।"
+   },
+   "es": {
+    "one": "{count} impresora encontrada.",
+    "other": "{count} impresoras encontradas."
+   },
+   "ar": {
+    "zero": "لم يُعثر على أي طابعة.",
+    "one": "عُثر على طابعة واحدة.",
+    "two": "عُثر على طابعتين.",
+    "few": "عُثر على {count} طابعات.",
+    "many": "عُثر على {count} طابعة.",
+    "other": "عُثر على {count} طابعة."
+   },
+   "fr": {
+    "one": "{count} imprimante trouvée.",
+    "other": "{count} imprimantes trouvées."
+   },
+   "bn": {
+    "one": "{count}টি প্রিন্টার পাওয়া গেছে।",
+    "other": "{count}টি প্রিন্টার পাওয়া গেছে।"
+   },
+   "pt-BR": {
+    "one": "{count} impressora encontrada.",
+    "other": "{count} impressoras encontradas."
+   },
+   "ru": {
+    "one": "Найден {count} принтер.",
+    "few": "Найдено {count} принтера.",
+    "many": "Найдено {count} принтеров.",
+    "other": "Найдено {count} принтера."
+   },
+   "id": {
+    "other": "{count} printer ditemukan."
+   }
+  },
+  "{count} printers found, {swept} addresses asked in {range}.": {
+   "zh-Hans": {
+    "other": "找到 {count} 台打印机，已询问 {range} 中的 {swept} 个地址。"
+   },
+   "hi": {
+    "one": "{count} प्रिंटर मिला, {range} में {swept} पतों से पूछा गया।",
+    "other": "{count} प्रिंटर मिले, {range} में {swept} पतों से पूछा गया।"
+   },
+   "es": {
+    "one": "{count} impresora encontrada; {swept} direcciones consultadas en {range}.",
+    "other": "{count} impresoras encontradas; {swept} direcciones consultadas en {range}."
+   },
+   "ar": {
+    "zero": "لم يُعثر على أي طابعة، وسُئل {swept} عنوانًا في {range}.",
+    "one": "عُثر على طابعة واحدة، وسُئل {swept} عنوانًا في {range}.",
+    "two": "عُثر على طابعتين، وسُئل {swept} عنوانًا في {range}.",
+    "few": "عُثر على {count} طابعات، وسُئل {swept} عنوانًا في {range}.",
+    "many": "عُثر على {count} طابعة، وسُئل {swept} عنوانًا في {range}.",
+    "other": "عُثر على {count} طابعة، وسُئل {swept} عنوانًا في {range}."
+   },
+   "fr": {
+    "one": "{count} imprimante trouvée, {swept} adresses interrogées dans {range}.",
+    "other": "{count} imprimantes trouvées, {swept} adresses interrogées dans {range}."
+   },
+   "bn": {
+    "one": "{count}টি প্রিন্টার পাওয়া গেছে, {range}-এ {swept}টি ঠিকানায় জিজ্ঞেস করা হয়েছে।",
+    "other": "{count}টি প্রিন্টার পাওয়া গেছে, {range}-এ {swept}টি ঠিকানায় জিজ্ঞেস করা হয়েছে।"
+   },
+   "pt-BR": {
+    "one": "{count} impressora encontrada, {swept} endereços consultados em {range}.",
+    "other": "{count} impressoras encontradas, {swept} endereços consultados em {range}."
+   },
+   "ru": {
+    "one": "Найден {count} принтер; опрошено адресов в {range}: {swept}.",
+    "few": "Найдено {count} принтера; опрошено адресов в {range}: {swept}.",
+    "many": "Найдено {count} принтеров; опрошено адресов в {range}: {swept}.",
+    "other": "Найдено {count} принтера; опрошено адресов в {range}: {swept}."
+   },
+   "id": {
+    "other": "{count} printer ditemukan, {swept} alamat ditanyai di {range}."
+   }
+  },
+  "All {count} printers are fine": {
+   "zh-Hans": {
+    "other": "全部 {count} 台打印机正常"
+   },
+   "hi": {
+    "one": "{count} प्रिंटर ठीक है",
+    "other": "सभी {count} प्रिंटर ठीक हैं"
+   },
+   "es": {
+    "one": "{count} impresora está bien",
+    "other": "Las {count} impresoras están bien"
+   },
+   "ar": {
+    "zero": "لا توجد طابعات",
+    "one": "الطابعة بخير",
+    "two": "الطابعتان بخير",
+    "few": "الطابعات الـ{count} كلها بخير",
+    "many": "الطابعات الـ{count} كلها بخير",
+    "other": "الطابعات الـ{count} كلها بخير"
+   },
+   "fr": {
+    "one": "{count} imprimante va bien",
+    "other": "Les {count} imprimantes vont bien"
+   },
+   "bn": {
+    "one": "{count}টি প্রিন্টার ঠিক আছে",
+    "other": "সব {count}টি প্রিন্টার ঠিক আছে"
+   },
+   "pt-BR": {
+    "one": "{count} impressora está bem",
+    "other": "As {count} impressoras estão bem"
+   },
+   "ru": {
+    "one": "{count} принтер в порядке",
+    "few": "Все {count} принтера в порядке",
+    "many": "Все {count} принтеров в порядке",
+    "other": "Все {count} принтера в порядке"
+   },
+   "id": {
+    "other": "Semua {count} printer baik-baik saja"
+   }
+  },
+  "{count} of {total} printers need attention": {
+   "zh-Hans": {
+    "other": "{total} 台打印机中有 {count} 台需要处理"
+   },
+   "hi": {
+    "one": "{total} में से {count} प्रिंटर पर ध्यान देना है",
+    "other": "{total} में से {count} प्रिंटरों पर ध्यान देना है"
+   },
+   "es": {
+    "one": "{count} de {total} impresoras necesita atención",
+    "other": "{count} de {total} impresoras necesitan atención"
+   },
+   "ar": {
+    "zero": "لا تحتاج أي طابعة من {total} إلى اهتمام",
+    "one": "طابعة واحدة من {total} تحتاج إلى اهتمام",
+    "two": "طابعتان من {total} تحتاجان إلى اهتمام",
+    "few": "{count} طابعات من {total} تحتاج إلى اهتمام",
+    "many": "{count} طابعة من {total} تحتاج إلى اهتمام",
+    "other": "{count} طابعة من {total} تحتاج إلى اهتمام"
+   },
+   "fr": {
+    "one": "{count} imprimante sur {total} demande votre attention",
+    "other": "{count} imprimantes sur {total} demandent votre attention"
+   },
+   "bn": {
+    "one": "{total}টির মধ্যে {count}টি প্রিন্টারে মনোযোগ দরকার",
+    "other": "{total}টির মধ্যে {count}টি প্রিন্টারে মনোযোগ দরকার"
+   },
+   "pt-BR": {
+    "one": "{count} de {total} impressoras precisa de atenção",
+    "other": "{count} de {total} impressoras precisam de atenção"
+   },
+   "ru": {
+    "one": "{count} из {total} принтеров требует внимания",
+    "few": "{count} из {total} принтеров требуют внимания",
+    "many": "{count} из {total} принтеров требуют внимания",
+    "other": "{count} из {total} принтеров требуют внимания"
+   },
+   "id": {
+    "other": "{count} dari {total} printer perlu perhatian"
+   }
+  },
+  "{count} pages printed": {
+   "zh-Hans": {
+    "other": "已打印 {count} 页"
+   },
+   "hi": {
+    "one": "{count} पेज छपा",
+    "other": "{count} पेज छपे"
+   },
+   "es": {
+    "one": "{count} página impresa",
+    "other": "{count} páginas impresas"
+   },
+   "ar": {
+    "zero": "لم تُطبع أي صفحة",
+    "one": "طُبعت صفحة واحدة",
+    "two": "طُبعت صفحتان",
+    "few": "طُبعت {count} صفحات",
+    "many": "طُبعت {count} صفحة",
+    "other": "طُبعت {count} صفحة"
+   },
+   "fr": {
+    "one": "{count} page imprimée",
+    "other": "{count} pages imprimées"
+   },
+   "bn": {
+    "one": "{count} পৃষ্ঠা ছাপা হয়েছে",
+    "other": "{count} পৃষ্ঠা ছাপা হয়েছে"
+   },
+   "pt-BR": {
+    "one": "{count} página impressa",
+    "other": "{count} páginas impressas"
+   },
+   "ru": {
+    "one": "Напечатана {count} страница",
+    "few": "Напечатано {count} страницы",
+    "many": "Напечатано {count} страниц",
+    "other": "Напечатано {count} страницы"
+   },
+   "id": {
+    "other": "{count} halaman dicetak"
+   }
+  },
+  "Last 30 days: {count} problems": {
+   "zh-Hans": {
+    "other": "最近 30 天：{count} 个问题"
+   },
+   "hi": {
+    "one": "पिछले 30 दिन: {count} समस्या",
+    "other": "पिछले 30 दिन: {count} समस्याएँ"
+   },
+   "es": {
+    "one": "Últimos 30 días: {count} problema",
+    "other": "Últimos 30 días: {count} problemas"
+   },
+   "ar": {
+    "zero": "آخر 30 يومًا: لا مشكلات",
+    "one": "آخر 30 يومًا: مشكلة واحدة",
+    "two": "آخر 30 يومًا: مشكلتان",
+    "few": "آخر 30 يومًا: {count} مشكلات",
+    "many": "آخر 30 يومًا: {count} مشكلة",
+    "other": "آخر 30 يومًا: {count} مشكلة"
+   },
+   "fr": {
+    "one": "30 derniers jours : {count} problème",
+    "other": "30 derniers jours : {count} problèmes"
+   },
+   "bn": {
+    "one": "গত 30 দিন: {count}টি সমস্যা",
+    "other": "গত 30 দিন: {count}টি সমস্যা"
+   },
+   "pt-BR": {
+    "one": "Últimos 30 dias: {count} problema",
+    "other": "Últimos 30 dias: {count} problemas"
+   },
+   "ru": {
+    "one": "За 30 дней: {count} проблема",
+    "few": "За 30 дней: {count} проблемы",
+    "many": "За 30 дней: {count} проблем",
+    "other": "За 30 дней: {count} проблемы"
+   },
+   "id": {
+    "other": "30 hari terakhir: {count} masalah"
+   }
   }
  }
 }

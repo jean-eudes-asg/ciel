@@ -3813,3 +3813,105 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   unicode-bidi: plaintext;
   text-align: start;
 }
+
+/* The Printers pill (views/printers.ts): its card's count and ⋯ together, the
+   detail's list of printers with their cartridges and trays as bars. */
+.pr-head-extra {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.pr-more {
+  font: 400 10px var(--font);
+  color: var(--dim-3);
+  padding: 2px 8px;
+}
+
+.pr-check {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+.pr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 12px 10px 0;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.pr-printer {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pr-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pr-title b {
+  font: 600 11px var(--font);
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.pr-place,
+.pr-facts {
+  font: 400 10px var(--font);
+  color: var(--dim-3);
+}
+
+.pr-problem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font: 500 10.5px var(--font);
+  color: #c5c8cd;
+}
+
+.pr-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 32px;
+  align-items: center;
+  gap: 6px;
+  font: 400 10px var(--font);
+  color: #9398a1;
+}
+
+.pr-bar-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pr-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--hairline);
+  overflow: hidden;
+}
+
+.pr-fill {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+}
+
+.pr-bar-level {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pr-bar-level.low {
+  color: var(--red, #f4505e);
+}

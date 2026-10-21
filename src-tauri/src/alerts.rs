@@ -20,7 +20,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, LazyLock, Mutex};
 use std::time::Duration;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
 use tauri::{AppHandle, Emitter};
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
@@ -54,7 +54,7 @@ const MAX_TEXT: usize = 300;
 
 // ── Alerts ────────────────────────────────────────────────────────────────────
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Severity {
     Info,
@@ -763,7 +763,7 @@ fn address(settings: &Settings, token: &str) -> String {
 
 /// This computer's address on the network it reaches the rest through. A UDP
 /// "connection" only picks the route: nothing is sent.
-fn lan_ip() -> Option<IpAddr> {
+pub(crate) fn lan_ip() -> Option<IpAddr> {
     let socket = std::net::UdpSocket::bind((Ipv4Addr::UNSPECIFIED, 0)).ok()?;
     socket.connect((Ipv4Addr::new(192, 0, 2, 1), 9)).ok()?;
     let ip = socket.local_addr().ok()?.ip();
@@ -799,6 +799,30 @@ pub fn alerts_new_address(shared: tauri::State<crate::Shared>) -> bool {
 #[tauri::command]
 pub fn alerts_copy_zabbix_script() -> bool {
     crate::flow::paste::copy(ZABBIX_SCRIPT)
+}
+
+/// Another pill's problems, listed here too (the Printers pill's, when asked):
+/// on the list and off it as they come and go, told by their own pill.
+pub fn merge(app: &AppHandle, alerts: Vec<Alert>) {
+    if alerts.is_empty() {
+        return;
+    }
+    BOARD.lock().unwrap().apply(alerts);
+    report(app, None);
+}
+
+/// Takes every alert whose key starts with `prefix` off the list.
+pub fn forget(app: &AppHandle, prefix: &str) {
+    let gone = {
+        let mut board = BOARD.lock().unwrap();
+        let before = board.active.len();
+        board.active.retain(|a| !a.key.starts_with(prefix));
+        board.resolved.retain(|a| !a.key.starts_with(prefix));
+        board.active.len() != before
+    };
+    if gone {
+        report(app, None);
+    }
 }
 
 /// The ✕ on an alert in the island: off the list, until its tool sends it again.

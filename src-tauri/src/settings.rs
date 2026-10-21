@@ -93,6 +93,8 @@ pub struct Settings {
     /// The Alerts pill takes alerts from other computers, not only this one.
     /// Off by default: Ciel listens on 127.0.0.1 until the user allows it.
     pub alerts_lan: bool,
+    /// The Printers pill: its printers and how they are checked.
+    pub printers: PrintersPrefs,
     /// Ciel's wallpapers (wallpaper/): what they go on and how they look.
     /// Written by the webviews, keys this build doesn't know included.
     pub wallpaper: WallpaperPrefs,
@@ -105,6 +107,67 @@ pub struct DesktopCloudPref {
     pub on_desktop: bool,
     /// Top-left corner of his window where the user last left him.
     pub spot: Option<DesktopSpot>,
+}
+
+/// The Printers pill (printers/): which printers, how often they are checked,
+/// and how to speak to them. The SNMP community and v3 passwords are in the
+/// keychain, not here.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct PrintersPrefs {
+    pub list: Vec<PrinterEntry>,
+    pub interval_minutes: u32,
+    /// "v1", "v2c" or "v3".
+    pub snmp_version: String,
+    pub snmp_user: String,
+    /// v3: "md5", "sha", "sha256" or "none".
+    pub snmp_auth: String,
+    /// v3: AES-128 on top of the authentication.
+    pub snmp_privacy: bool,
+    /// A cartridge at or under this percent is low…
+    pub toner_warn: u8,
+    /// …and at or under this one nearly empty.
+    pub toner_critical: u8,
+    /// "HH:MM" for a summary each day, or "" for none.
+    pub daily_summary: String,
+    /// Their problems are listed in the Alerts pill too.
+    pub to_alerts: bool,
+    /// What a network sweep covers ("10.0.2.0/24"); "" for this computer's /24.
+    pub sweep_range: String,
+}
+
+impl Default for PrintersPrefs {
+    fn default() -> Self {
+        Self {
+            list: Vec::new(),
+            interval_minutes: 5,
+            snmp_version: "v2c".into(),
+            snmp_user: String::new(),
+            snmp_auth: "sha".into(),
+            snmp_privacy: false,
+            toner_warn: 15,
+            toner_critical: 5,
+            daily_summary: String::new(),
+            to_alerts: false,
+            sweep_range: String::new(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct PrinterEntry {
+    /// Made when it is added; the key of its problems and its history.
+    pub id: String,
+    pub name: String,
+    /// An address or a host name.
+    pub host: String,
+    pub location: String,
+    /// "auto" (SNMP, then IPP), "snmp" or "ipp".
+    pub protocol: String,
+    /// Its own thresholds; 0 for the pill's.
+    pub toner_warn: u8,
+    pub toner_critical: u8,
 }
 
 /// Settings → Wallpapers. Off by default: nothing on the user's desktop or lock
@@ -242,6 +305,7 @@ impl Default for Settings {
             finance_folder: String::new(),
             alerts_port: crate::alerts::DEFAULT_PORT,
             alerts_lan: false,
+            printers: PrintersPrefs::default(),
             wallpaper: WallpaperPrefs::default(),
         }
     }
@@ -528,6 +592,11 @@ mod tests {
   "financeFolder": "/srv/dashboard/data",
   "alertsPort": 8080,
   "alertsLan": true,
+  "printers": {
+    "list": [{ "id": "p-1", "name": "Canon 2F", "host": "10.0.2.40", "location": "2nd floor", "protocol": "ipp", "tonerWarn": 20, "tonerCritical": 8 }],
+    "intervalMinutes": 15, "snmpVersion": "v3", "snmpUser": "ciel", "snmpAuth": "sha256", "snmpPrivacy": true,
+    "tonerWarn": 25, "tonerCritical": 10, "dailySummary": "08:30", "toAlerts": true, "sweepRange": "10.0.2.0/24"
+  },
   "wallpaper": {
     "desktop": true, "lockScreen": true, "live": false, "pauseOnBattery": false,
     "lat": 48.85, "lon": 2.35, "cielSize": 0.3, "cielX": 0.25, "cielY": 0.5,
@@ -975,6 +1044,7 @@ mod tests {
                 "financeFolder",
                 "alertsPort",
                 "alertsLan",
+                "printers",
                 "wallpaper",
             ]
         );

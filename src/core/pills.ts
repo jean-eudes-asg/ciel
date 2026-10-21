@@ -149,6 +149,9 @@ export const PILL_CATALOG: readonly PillDefinition[] = [
   // (src-tauri/src/alerts.rs). Not on the Mac.
   { id: "integration_alerts", name: "Alerts", color: "#F97316", category: "service",
     subtitle: N_("Monitoring"), source: "n8n", support: "yes", connect: none },
+  // The building's printers over SNMP or IPP (src-tauri/src/printers/). Not on the Mac.
+  { id: "integration_printers", name: "Printers", color: "#06B6D4", category: "service",
+    subtitle: N_("Building"), source: "n8n", support: "yes", connect: none },
 ];
 
 /** The always-on pill unless the user picks another workspace tool. */

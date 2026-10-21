@@ -173,6 +173,8 @@ export interface Settings {
   alertsPort: number;
   /** The Alerts pill takes alerts from other computers; off, only from this one. */
   alertsLan: boolean;
+  /** The Printers pill: its printers and how they're checked (src-tauri/src/printers/). */
+  printers: PrintersPrefs;
   /**
    * Ciel's wallpapers (src/sky, island/wallpaper.ts): off until the user turns
    * them on. Rust (settings.rs) keeps the same defaults; read it through
@@ -180,6 +182,51 @@ export interface Settings {
    */
   wallpaper: WallpaperPrefs;
 }
+
+export interface PrinterEntry {
+  /** Made when it's added; its problems and history are filed under it. */
+  id: string;
+  name: string;
+  host: string;
+  location: string;
+  /** "auto" is SNMP, then IPP. */
+  protocol: "auto" | "snmp" | "ipp";
+  /** Its own thresholds in percent; 0 for the pill's. */
+  tonerWarn: number;
+  tonerCritical: number;
+}
+
+/** settings.rs PrintersPrefs, the same defaults. */
+export interface PrintersPrefs {
+  list: PrinterEntry[];
+  intervalMinutes: number;
+  snmpVersion: "v1" | "v2c" | "v3";
+  snmpUser: string;
+  /** v3: "none", "md5", "sha" or "sha256". */
+  snmpAuth: string;
+  snmpPrivacy: boolean;
+  tonerWarn: number;
+  tonerCritical: number;
+  /** "HH:MM", or "" for no daily summary. */
+  dailySummary: string;
+  toAlerts: boolean;
+  /** "" for this computer's /24. */
+  sweepRange: string;
+}
+
+export const DEFAULT_PRINTERS: PrintersPrefs = {
+  list: [],
+  intervalMinutes: 5,
+  snmpVersion: "v2c",
+  snmpUser: "",
+  snmpAuth: "sha",
+  snmpPrivacy: false,
+  tonerWarn: 15,
+  tonerCritical: 5,
+  dailySummary: "",
+  toAlerts: false,
+  sweepRange: "",
+};
 
 export const DEFAULT_SETTINGS: Settings = {
   soundEnabled: true,
@@ -215,6 +262,7 @@ export const DEFAULT_SETTINGS: Settings = {
   financeFolder: "",
   alertsPort: 9797,
   alertsLan: false,
+  printers: { ...DEFAULT_PRINTERS, list: [] },
   wallpaper: { ...DEFAULT_WALLPAPER },
 };
 

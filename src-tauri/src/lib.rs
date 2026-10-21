@@ -31,6 +31,7 @@ mod notify;
 mod openai_compat;
 mod pipe;
 mod platform;
+mod printers;
 #[cfg(target_os = "linux")]
 mod portal;
 mod recap;
@@ -137,6 +138,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     updates::sync(&app, settings.check_updates);
     gmail::sync(&app, &settings.active_integrations, false);
     alerts::sync(&app, &settings);
+    printers::sync(&app, &settings);
     #[cfg(target_os = "linux")]
     {
         notify::desktop::sync(&app, settings.desktop_notifications);
@@ -374,10 +376,12 @@ fn quit_app(app: AppHandle) {
 #[tauri::command]
 fn set_paused(app: AppHandle, shared: State<Shared>, paused: bool) {
     integrations::set_paused(paused);
-    // Gmail holds a connection and the Alerts pill listens: paused, they let go.
+    // Gmail holds a connection, the Alerts pill listens and the Printers pill
+    // checks: paused, they let go.
     let settings = shared.settings.lock().unwrap().clone();
     gmail::sync(&app, &settings.active_integrations, false);
     alerts::sync(&app, &settings);
+    printers::sync(&app, &settings);
 }
 
 // ── Claude Code hooks ─────────────────────────────────────────────────────────
@@ -594,11 +598,15 @@ fn secret_set(app: AppHandle, shared: State<Shared>, key: String, value: String)
     Ok(())
 }
 
-/// The Gmail address or app password changed: its watcher starts again with them.
+/// The Gmail address or app password changed: its watcher starts again with
+/// them. The printers' SNMP community or passwords: they're checked again.
 fn gmail_credentials(app: &AppHandle, shared: &Shared, key: &str) {
     if key == gmail::ADDRESS_KEY || key == gmail::PASSWORD_KEY {
         let active = shared.settings.lock().unwrap().active_integrations.clone();
         gmail::sync(app, &active, true);
+    }
+    if [printers::COMMUNITY_KEY, printers::AUTH_KEY, printers::PRIV_KEY].contains(&key) {
+        printers::check_now();
     }
 }
 
@@ -892,6 +900,11 @@ pub fn run() {
             alerts::alerts_new_address,
             alerts::alerts_copy_zabbix_script,
             alerts::alerts_dismiss,
+            printers::printers_state,
+            printers::printers_check_now,
+            printers::printers_discover,
+            printers::printers_copy_report,
+            printers::printers_export,
             flow::flow_status,
             flow::flow_set_prefs,
             flow::flow_history,
@@ -992,6 +1005,7 @@ pub fn run() {
             updates::sync(&handle, loaded.check_updates);
             gmail::sync(&handle, &loaded.active_integrations, false);
             alerts::sync(&handle, &loaded);
+            printers::sync(&handle, &loaded);
             #[cfg(target_os = "linux")]
             {
                 notify::desktop::sync(&handle, loaded.desktop_notifications);
