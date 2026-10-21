@@ -6476,6 +6476,116 @@
    "pt-BR": "Este link não é uma agenda iCal",
    "ru": "Эта ссылка не ведёт на календарь iCal",
    "id": "Tautan ini bukan kalender iCal"
+  },
+  "What Claude may read": {
+   "zh-Hans": "Claude 可以读取的内容",
+   "hi": "Claude क्या पढ़ सकता है",
+   "es": "Lo que Claude puede leer",
+   "ar": "ما يمكن لـ Claude قراءته",
+   "fr": "Ce que Claude peut lire",
+   "bn": "Claude কী পড়তে পারে",
+   "pt-BR": "O que o Claude pode ler",
+   "ru": "Что может читать Claude",
+   "id": "Yang boleh dibaca Claude"
+  },
+  "Call notes": {
+   "zh-Hans": "会议笔记",
+   "hi": "कॉल नोट्स",
+   "es": "Notas de llamadas",
+   "ar": "ملاحظات المكالمات",
+   "fr": "Notes d'appels",
+   "bn": "কলের নোট",
+   "pt-BR": "Notas de chamadas",
+   "ru": "Заметки звонков",
+   "id": "Catatan panggilan"
+  },
+  "With Claude, what « OK Ciel » reads to answer you goes to Anthropic. A local model reads all of it, on this computer. A pill's data also needs its pill on.": {
+   "zh-Hans": "使用 Claude 时，« OK Ciel » 为回答你而读取的内容会发送给 Anthropic。本地模型可以读取全部内容，且都在这台电脑上。某个标签的数据还需要该标签已开启。",
+   "hi": "Claude के साथ, « OK Ciel » आपको जवाब देने के लिए जो पढ़ता है वह Anthropic को जाता है। लोकल मॉडल सब कुछ पढ़ता है, इसी कंप्यूटर पर। किसी टैब का डेटा तभी मिलता है जब वह टैब चालू हो।",
+   "es": "Con Claude, lo que « OK Ciel » lee para responderte va a Anthropic. Un modelo local lo lee todo, en este ordenador. Los datos de una pestaña también necesitan esa pestaña activa.",
+   "ar": "مع Claude، ما يقرؤه « OK Ciel » ليجيبك يذهب إلى Anthropic. النموذج المحلي يقرأ كل شيء، على هذا الكمبيوتر. وبيانات أي تبويب تحتاج أيضًا إلى تشغيل ذلك التبويب.",
+   "fr": "Avec Claude, ce que « OK Ciel » lit pour te répondre part chez Anthropic. Un modèle local lit tout, sur cet ordinateur. Les données d'un onglet demandent aussi que l'onglet soit activé.",
+   "bn": "Claude-এর সঙ্গে, « OK Ciel » আপনাকে উত্তর দিতে যা পড়ে তা Anthropic-এ যায়। লোকাল মডেল সবকিছু পড়ে, এই কম্পিউটারেই। কোনো ট্যাবের ডেটার জন্য সেই ট্যাবটিও চালু থাকতে হবে।",
+   "pt-BR": "Com o Claude, o que o « OK Ciel » lê para te responder vai para a Anthropic. Um modelo local lê tudo, neste computador. Os dados de uma aba também precisam dela ativada.",
+   "ru": "С Claude то, что « OK Ciel » читает, чтобы ответить, уходит в Anthropic. Локальная модель читает всё, на этом компьютере. Данные вкладки доступны, только когда сама вкладка включена.",
+   "id": "Dengan Claude, yang dibaca « OK Ciel » untuk menjawab Anda dikirim ke Anthropic. Model lokal membaca semuanya, di komputer ini. Data sebuah tab juga perlu tab itu aktif."
+  },
+  "Talk through your Claude Code": {
+   "zh-Hans": "通过你的 Claude Code 对话",
+   "hi": "अपने Claude Code से बात करें",
+   "es": "Hablar a través de tu Claude Code",
+   "ar": "التحدث عبر Claude Code الخاص بك",
+   "fr": "Parler via ton Claude Code",
+   "bn": "আপনার Claude Code দিয়ে কথা বলুন",
+   "pt-BR": "Conversar pelo seu Claude Code",
+   "ru": "Говорить через ваш Claude Code",
+   "id": "Bicara lewat Claude Code Anda"
+  },
+  "« OK Ciel » becomes a conversation with Claude, on your own Claude Code and its plan. What acts asks for your OK in the island.": {
+   "zh-Hans": "« OK Ciel » 变成与 Claude 的对话，使用你自己的 Claude Code 和它的套餐。会执行操作的步骤会在岛中请求你的同意。",
+   "hi": "« OK Ciel » Claude के साथ बातचीत बन जाता है, आपके अपने Claude Code और उसके प्लान पर। जो कुछ करता है, वह आइलैंड में आपकी मंज़ूरी माँगता है।",
+   "es": "« OK Ciel » se convierte en una conversación con Claude, en tu propio Claude Code y su plan. Lo que actúa pide tu OK en la isla.",
+   "ar": "يصبح « OK Ciel » محادثة مع Claude، على Claude Code الخاص بك وخطته. وما يقوم بفعل شيء يطلب موافقتك في الشريط.",
+   "fr": "« OK Ciel » devient une conversation avec Claude, sur ton propre Claude Code et son abonnement. Ce qui agit te demande ton accord dans l'île.",
+   "bn": "« OK Ciel » Claude-এর সঙ্গে কথোপকথন হয়ে যায়, আপনার নিজের Claude Code ও তার প্ল্যানে। যা কিছু কাজ করে, তা আইল্যান্ডে আপনার সম্মতি চায়।",
+   "pt-BR": "O « OK Ciel » vira uma conversa com o Claude, no seu próprio Claude Code e no plano dele. O que age pede o seu OK na ilha.",
+   "ru": "« OK Ciel » становится разговором с Claude — в вашем собственном Claude Code и по его тарифу. Всё, что действует, просит вашего согласия в острове.",
+   "id": "« OK Ciel » menjadi percakapan dengan Claude, di Claude Code Anda sendiri dan paketnya. Yang bertindak meminta persetujuan Anda di pulau."
+  },
+  "Ciel can't find claude: install Claude Code's command line.": {
+   "zh-Hans": "Ciel 找不到 claude：请安装 Claude Code 的命令行工具。",
+   "hi": "Ciel को claude नहीं मिल रहा: Claude Code की कमांड लाइन इंस्टॉल करें।",
+   "es": "Ciel no encuentra claude: instala la línea de comandos de Claude Code.",
+   "ar": "لا يجد Ciel الأمر claude: ثبّت سطر أوامر Claude Code.",
+   "fr": "Ciel ne trouve pas claude : installe la ligne de commande de Claude Code.",
+   "bn": "Ciel claude খুঁজে পাচ্ছে না: Claude Code-এর কমান্ড লাইন ইনস্টল করুন।",
+   "pt-BR": "O Ciel não encontra o claude: instale a linha de comando do Claude Code.",
+   "ru": "Ciel не находит claude: установите командную строку Claude Code.",
+   "id": "Ciel tidak menemukan claude: instal baris perintah Claude Code."
+  },
+  "Sign in to Claude Code first: run claude once in a terminal.": {
+   "zh-Hans": "请先登录 Claude Code：在终端中运行一次 claude。",
+   "hi": "पहले Claude Code में साइन इन करें: टर्मिनल में एक बार claude चलाएँ।",
+   "es": "Primero inicia sesión en Claude Code: ejecuta claude una vez en una terminal.",
+   "ar": "سجّل الدخول إلى Claude Code أولًا: شغّل claude مرة واحدة في الطرفية.",
+   "fr": "Connecte-toi d'abord à Claude Code : lance claude une fois dans un terminal.",
+   "bn": "আগে Claude Code-এ সাইন ইন করুন: টার্মিনালে একবার claude চালান।",
+   "pt-BR": "Entre no Claude Code primeiro: rode claude uma vez num terminal.",
+   "ru": "Сначала войдите в Claude Code: запустите claude один раз в терминале.",
+   "id": "Masuk ke Claude Code dulu: jalankan claude sekali di terminal."
+  },
+  "Found: {version}.": {
+   "zh-Hans": "已找到：{version}。",
+   "hi": "मिला: {version}।",
+   "es": "Encontrado: {version}.",
+   "ar": "تم العثور عليه: {version}.",
+   "fr": "Trouvé : {version}.",
+   "bn": "পাওয়া গেছে: {version}।",
+   "pt-BR": "Encontrado: {version}.",
+   "ru": "Найден: {version}.",
+   "id": "Ditemukan: {version}."
+  },
+  "What Claude reads to answer you goes to Anthropic, as in Claude Code. Ciel never sees your sign-in.": {
+   "zh-Hans": "Claude 为回答你而读取的内容会发送给 Anthropic，和在 Claude Code 中一样。Ciel 永远看不到你的登录信息。",
+   "hi": "Claude आपको जवाब देने के लिए जो पढ़ता है वह Anthropic को जाता है, जैसे Claude Code में। Ciel आपका साइन-इन कभी नहीं देखता।",
+   "es": "Lo que Claude lee para responderte va a Anthropic, como en Claude Code. Ciel nunca ve tu inicio de sesión.",
+   "ar": "ما يقرؤه Claude ليجيبك يذهب إلى Anthropic، كما في Claude Code. لا يرى Ciel بيانات تسجيل دخولك أبدًا.",
+   "fr": "Ce que Claude lit pour te répondre part chez Anthropic, comme dans Claude Code. Ciel ne voit jamais ta connexion.",
+   "bn": "Claude আপনাকে উত্তর দিতে যা পড়ে তা Anthropic-এ যায়, Claude Code-এর মতোই। Ciel কখনো আপনার সাইন-ইন দেখে না।",
+   "pt-BR": "O que o Claude lê para te responder vai para a Anthropic, como no Claude Code. O Ciel nunca vê o seu login.",
+   "ru": "То, что Claude читает, чтобы ответить, уходит в Anthropic, как в Claude Code. Ciel никогда не видит ваш вход.",
+   "id": "Yang dibaca Claude untuk menjawab Anda dikirim ke Anthropic, seperti di Claude Code. Ciel tidak pernah melihat info masuk Anda."
+  },
+  "Your OK is needed in the island.": {
+   "zh-Hans": "需要你在岛中同意。",
+   "hi": "आइलैंड में आपकी मंज़ूरी चाहिए।",
+   "es": "Se necesita tu OK en la isla.",
+   "ar": "موافقتك مطلوبة في الشريط.",
+   "fr": "Ton accord est attendu dans l'île.",
+   "bn": "আইল্যান্ডে আপনার সম্মতি দরকার।",
+   "pt-BR": "Seu OK é necessário na ilha.",
+   "ru": "Нужно ваше согласие в острове.",
+   "id": "Persetujuan Anda diperlukan di pulau."
   }
  }
 }

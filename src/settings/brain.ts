@@ -8,12 +8,18 @@ import { onEvent } from "../core/bridge";
 import { FlowBridge } from "../core/flow";
 import { NO_BRAIN, aiEngine, brainPrivacy, brainState, engineChoices, staysHere, type AiEngine } from "../core/brain";
 import { statusDot } from "./parts";
+import { toggle } from "../hub/ui";
+import type { BrainReads } from "../core/state";
 
 /**
  * The section, and `refresh` to call when something it depends on changed
  * here (the Claude key). Settings saved anywhere refresh it on their own.
  */
-export function brainSection(current: unknown, pick: (engine: AiEngine) => Promise<void>): { section: HTMLElement; refresh: () => void } {
+export function brainSection(
+  current: unknown,
+  pick: (engine: AiEngine) => Promise<void>,
+  reads: { get(): BrainReads; set(reads: BrainReads): void },
+): { section: HTMLElement; refresh: () => void } {
   const dot = statusDot(false);
   const select = h("select", {}) as HTMLSelectElement;
   for (const [id, label] of engineChoices()) select.append(h("option", { value: id, text: label }));
@@ -48,10 +54,28 @@ export function brainSection(current: unknown, pick: (engine: AiEngine) => Promi
     explain,
     state,
     where,
+    readsBlock(reads),
   );
   void onEvent("settings-changed", () => {
     if (section.isConnected) void refresh();
   });
   void refresh();
   return { section, refresh: () => void refresh() };
+}
+
+/** What Claude may read to answer « OK Ciel »: a switch per kind of data, Finance off until turned on. */
+function readsBlock(reads: { get(): BrainReads; set(reads: BrainReads): void }): HTMLElement {
+  const row = (label: string, key: keyof BrainReads) =>
+    h("div", { class: "row" },
+      h("label", { text: label }),
+      toggle(reads.get()[key], (on) => reads.set({ ...reads.get(), [key]: on })),
+    );
+  return h("div", { style: "display:flex;flex-direction:column;gap:8px;margin-top:6px" },
+    h("div", { class: "hint", style: "font-weight:600", text: t("What Claude may read") }),
+    // The pills' own names.
+    row("Calendar", "calendar"),
+    row(t("Call notes"), "notes"),
+    row("Finance", "finance"),
+    h("div", { class: "hint", text: t("With Claude, what « OK Ciel » reads to answer you goes to Anthropic. A local model reads all of it, on this computer. A pill's data also needs its pill on.") }),
+  );
 }

@@ -41,6 +41,8 @@ export interface FlowPrefs {
   voice: boolean;
   voiceOutput: VoiceOutput;
   voiceGender: "female" | "male";
+  /** « OK Ciel » through the user's own Claude Code (src-tauri/src/agent/), in a build that has it. */
+  voiceAgent?: boolean;
   /** Rust moved dictation into the island once (store.rs); kept as it came. */
   movedToIsland?: boolean;
 }
@@ -260,8 +262,19 @@ export function islandFlowActive(s: PillState): boolean {
   return s.edge === "island" && (s.announcement != null || pillLook(s) !== "resting");
 }
 
+/** What Ciel found of the user's Claude Code (src-tauri/src/agent/mod.rs `Status`). */
+export interface AgentStatus {
+  /** This build has the engine (the `claude-code` feature). */
+  built: boolean;
+  path: string | null;
+  version: string | null;
+  signedIn: boolean;
+}
+
 export const FlowBridge = {
   status: () => call<FlowStatus>("flow_status"),
+  /** Runs `claude --version` and `claude auth status` at most once a minute. */
+  agentStatus: () => call<AgentStatus>("agent_status"),
   setPrefs: (prefs: FlowPrefs) => call<void>("flow_set_prefs", { prefs }),
   history: () => call<FlowEntry[]>("flow_history"),
   deleteEntry: (id: string) => call<void>("flow_delete", { id }),

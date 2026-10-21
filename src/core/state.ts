@@ -53,6 +53,8 @@ export interface ApprovalInfo {
   command: string;
   /** Set when Claude Code is asking a question rather than for a permission. */
   questions?: AskedQuestion[];
+  /** The pill was made for this card alone (Ciel's own brain on Claude Code): it goes with it. */
+  transient?: boolean;
 }
 
 /** One question of an AskUserQuestion call. */
@@ -98,6 +100,17 @@ export interface IntegrationInfo {
   error: string | null;
   loaded: boolean;
   configured: boolean;
+}
+
+/**
+ * What « OK Ciel » may read when its brain is Claude: what it reads then
+ * leaves the computer, so the user picks. A local model reads it all.
+ */
+export interface BrainReads {
+  calendar: boolean;
+  notes: boolean;
+  /** Off until the user turns it on. */
+  finance: boolean;
 }
 
 export interface Settings {
@@ -190,6 +203,8 @@ export interface Settings {
    * sky/prefs.ts wallpaperPrefs(), which fills in anything missing.
    */
   wallpaper: WallpaperPrefs;
+  /** What « OK Ciel » may read when its brain is Claude (src-tauri/src/voice/mod.rs `may_read`). */
+  brainReads: BrainReads;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -234,6 +249,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: "",
   financeFolder: "",
   wallpaper: { ...DEFAULT_WALLPAPER },
+  brainReads: { calendar: true, notes: true, finance: false },
 };
 
 type Listener = () => void;
@@ -382,6 +398,7 @@ class AppState {
     if (previous && this.focusId === req.pillId && this.tasks.some((t) => t.id === previous)) {
       this.focusId = previous;
     }
+    if (req.transient) this.removeTask(req.pillId);
     this.notify();
   }
 

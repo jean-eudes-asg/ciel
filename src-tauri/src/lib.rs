@@ -16,6 +16,7 @@ mod github;
 mod gnome_ext;
 mod gmail;
 mod calendar;
+mod agent;
 mod ytmusic;
 mod updates;
 mod hooks;
@@ -765,6 +766,7 @@ pub(crate) fn open_settings(app: &AppHandle, page: &str) {
 /// closes it (updates.rs).
 pub(crate) fn before_exit(app: &AppHandle) {
     notes::shutdown(app);
+    agent::shutdown();
     wallpaper::shutdown(app);
     // Nothing shows the desktop's notifications once Ciel is gone:
     // GNOME's banners come back if Ciel turned them off.
@@ -808,6 +810,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             boot,
             notify::notification_action,
+            agent::agent_status,
             browser_bridge::browser_bridge_status,
             gnome_ext::gnome_extension_status,
             screensaver::screensaver_dismiss,

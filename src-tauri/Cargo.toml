@@ -10,6 +10,12 @@ license.workspace = true
 name = "ciel_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+[features]
+# « OK Ciel » through the user's own Claude Code (src/agent/). Not in the
+# releases (release.yml builds without it) until Anthropic says an app may run
+# the user's Claude Code: `npm run tauri dev -- --features claude-code`.
+claude-code = []
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 

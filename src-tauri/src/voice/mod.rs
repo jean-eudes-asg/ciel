@@ -57,7 +57,7 @@ static NEXT_ID: AtomicU64 = AtomicU64::new(1);
 /// Whether « OK Ciel » can run: the voice model, and a brain to answer — a
 /// Claude key or a connected local model (ai.rs).
 pub fn requirements_met(app: &AppHandle) -> bool {
-    speech::is_ready() && crate::ai::current(app).is_some()
+    speech::is_ready() && (crate::ai::current(app).is_some() || crate::agent::wanted(app))
 }
 
 /// What the pill says when no answer came.
@@ -181,8 +181,9 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
                 Mode::Wake => match wake::after_wake(&heard) {
                     Some(rest) => {
                         crate::log::line("voice: « OK Ciel » heard");
-                        // A local model loads while the question comes.
+                        // A local model loads, or Claude Code starts, while the question comes.
                         crate::ai::warm_up(&app);
+                        crate::agent::warm_up(&app);
                         hide_at = None;
                         if crate::flow::text::word_count(&rest) >= 2 {
                             Some(rest)
@@ -206,6 +207,7 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
             mode = Mode::Wake;
             vad.hangover = 25;
             show(&app, Some(VoiceView { phase: "thinking".into(), heard: question.clone(), answer: String::new() }));
+            *HEARD.lock().unwrap() = question.clone();
             let reply = brain.respond(&app, &question);
             let answer = reply.as_ref().map(|r| r.text.clone()).unwrap_or_default();
             if answer.is_empty() {
@@ -234,6 +236,16 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
     }
     capture.stop();
     show(&app, None);
+}
+
+/// The question being answered, for `waiting_for_ok`.
+static HEARD: Mutex<String> = Mutex::new(String::new());
+
+/// The brain on Claude Code asked for a click in the island (pipe.rs): the
+/// pill says so under the question, until the answer comes.
+pub fn waiting_for_ok(app: &AppHandle) {
+    let heard = HEARD.lock().unwrap().clone();
+    show(app, Some(VoiceView { phase: "thinking".into(), heard, answer: crate::i18n::t("Your OK is needed in the island.") }));
 }
 
 // ── Speaking ──────────────────────────────────────────────────────────────────
@@ -385,17 +397,32 @@ pub fn ask_island(app: &AppHandle, kind: &str, input: Value) -> Option<String> {
 }
 
 /// Runs one of the tools, for Claude or a local model alike: what goes back to
-/// the model, and whether something changed.
-pub fn run_tool(app: &AppHandle, name: &str, input: &Value) -> (String, bool) {
+/// the model, and whether something changed. `cloud`: the brain is Claude,
+/// and reads only what the user let it (`may_read`), whatever it asks for.
+pub fn run_tool(app: &AppHandle, name: &str, input: &Value, cloud: bool) -> (String, bool) {
+    let allowed = |what: &str| current_settings(app).is_some_and(|s| may_read(&s, cloud, what));
+    const NOT_ALLOWED: &str = "The user hasn't let this brain read that (Settings → Ciel's brain).";
     match name {
         "pills" => {
             let answer = ask_island(app, "pills", input.clone()).unwrap_or_else(|| "the island did not answer".into());
             let acted = input["action"].as_str() != Some("list") && !answer.contains("unknown");
             (answer, acted)
         }
-        "service_info" => (ask_island(app, "info", json!({})).unwrap_or_else(|| "no data".into()), false),
+        "service_info" => {
+            let info = ask_island(app, "info", json!({})).unwrap_or_else(|| "no data".into());
+            // The Calendar's card is there too: it goes with the calendar's own switch.
+            (if allowed("calendar") { info } else { without_service(&info, "Calendar") }, false)
+        }
         "music" => music(app, input),
+        "finance" if !allowed("finance") => (NOT_ALLOWED.into(), false),
         "finance" => finance(app, input),
+        "calendar" if !allowed("calendar") => (NOT_ALLOWED.into(), false),
+        "calendar" => (crate::calendar::for_brain(input["day"].as_str()), false),
+        "notes" if !allowed("notes") => (NOT_ALLOWED.into(), false),
+        "notes" => {
+            let limit = input["limit"].as_u64().unwrap_or(3) as usize;
+            (crate::notes::for_brain(app, input["query"].as_str().unwrap_or(""), limit), false)
+        }
         "open_app" => open_app(input["name"].as_str().unwrap_or("")),
         "prepare_email" => {
             let to = input["recipient"].as_str().unwrap_or("").trim().to_string();
@@ -423,18 +450,38 @@ pub fn run_tool(app: &AppHandle, name: &str, input: &Value) -> (String, bool) {
     }
 }
 
-// ── Finance (the Finance pill's folder) ──────────────────────────────────────
+// ── What the brain may read ───────────────────────────────────────────────────
 
-/// Whether « OK Ciel » may use the Finance pill: only once the pill is declared,
-/// and only with a local brain, so the user's spending never leaves the computer.
-pub fn finance_on(app: &AppHandle) -> bool {
+fn current_settings(app: &AppHandle) -> Option<crate::settings::Settings> {
     use tauri::Manager;
-    let Some(shared) = app.try_state::<crate::Shared>() else { return false };
-    let settings = shared.settings.lock().unwrap().clone();
-    let declared = settings.main_pill == crate::finance::PILL_ID
-        || settings.active_integrations.iter().any(|id| id == crate::finance::PILL_ID);
-    declared && matches!(crate::ai::engine_for(&settings), Some(crate::ai::Engine::Local(_)))
+    app.try_state::<crate::Shared>().map(|s| s.settings.lock().unwrap().clone())
 }
+
+/// What « OK Ciel » may read: a pill's data once its pill is on; then with a
+/// local model all of it, as it stays on this computer, and with Claude
+/// (`cloud`) only what the user turned on in Settings → Ciel's brain, since
+/// it then leaves the computer. Finance is off there until they do.
+pub fn may_read(settings: &crate::settings::Settings, cloud: bool, what: &str) -> bool {
+    let on = |id: &str| settings.main_pill == id || settings.active_integrations.iter().any(|x| x == id);
+    let reads = &settings.brain_reads;
+    match what {
+        "finance" => on(crate::finance::PILL_ID) && (!cloud || reads.finance),
+        "calendar" => on(crate::calendar::PILL_ID) && (!cloud || reads.calendar),
+        "notes" => !cloud || reads.notes,
+        _ => true,
+    }
+}
+
+/// The island's data (`service_info`) without one service's card.
+fn without_service(info: &str, service: &str) -> String {
+    let Ok(mut v) = serde_json::from_str::<Value>(info) else { return info.to_string() };
+    if let Some(list) = v.get_mut("services").and_then(Value::as_array_mut) {
+        list.retain(|s| s["service"] != service);
+    }
+    v.to_string()
+}
+
+// ── Finance (the Finance pill's folder) ──────────────────────────────────────
 
 fn finance_folder(app: &AppHandle) -> Option<std::path::PathBuf> {
     use tauri::Manager;
@@ -618,6 +665,34 @@ fn find_app(wanted: &str) -> Option<(String, Box<dyn FnOnce()>)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn claude_reads_only_what_the_user_let_it_and_a_local_model_reads_it_all() {
+        let mut s = crate::settings::Settings::default();
+        // A pill's data needs its pill, whatever the brain.
+        for cloud in [false, true] {
+            assert!(!may_read(&s, cloud, "finance"));
+            assert!(!may_read(&s, cloud, "calendar"));
+        }
+        s.active_integrations.push(crate::finance::PILL_ID.into());
+        s.active_integrations.push(crate::calendar::PILL_ID.into());
+        assert!(may_read(&s, false, "finance"), "a local model: the spending stays here");
+        assert!(!may_read(&s, true, "finance"), "Claude: off until the user turns it on");
+        assert!(may_read(&s, true, "calendar") && may_read(&s, true, "notes"));
+        s.brain_reads = crate::settings::BrainReads { calendar: false, notes: false, finance: true };
+        assert!(may_read(&s, true, "finance"));
+        assert!(!may_read(&s, true, "calendar") && !may_read(&s, true, "notes"));
+        assert!(may_read(&s, false, "calendar") && may_read(&s, false, "notes"));
+        assert!(may_read(&s, true, "music"), "the other tools are not data");
+    }
+
+    #[test]
+    fn a_service_card_can_be_left_out_of_the_islands_data() {
+        let info = r#"{"pills":[],"services":[{"service":"Stripe","headline":"1"},{"service":"Calendar","headline":"20/10 14:00"}]}"#;
+        let out: Value = serde_json::from_str(&without_service(info, "Calendar")).unwrap();
+        assert_eq!(out["services"], json!([{"service":"Stripe","headline":"1"}]));
+        assert_eq!(without_service("not json", "Calendar"), "not json");
+    }
 
     #[test]
     fn base64_matches_the_standard() {

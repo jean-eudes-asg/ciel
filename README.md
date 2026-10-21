@@ -60,8 +60,9 @@ runs the real island in demo mode, under a sky that follows his mood. In the app
   running, your agent simply asks in its own terminal: it never allows anything
   on its own.
 - **Chat** with Claude, OpenAI, Google AI, OpenRouter or a local model.
-- **« OK Ciel ».** Say it, then ask: your pills, music, your numbers, open an app,
-  "I spent 250 lira on groceries". With Claude, or with a model on your computer.
+- **« OK Ciel ».** Say it, then ask: your pills, music, your numbers, your next
+  meetings, what was decided in a call, open an app, "I spent 250 lira on
+  groceries". With Claude, or with a model on your computer.
 - **Flow dictation.** Hold **Right Ctrl** anywhere, speak, let go: your words are
   pasted where you type. Offline, with [Parakeet](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3).
 - **Notetaker.** Record a call (your microphone and what your PC plays), get the
@@ -139,8 +140,10 @@ less, try `qwen3.5:4b`.
 
 No telemetry, no account. Keys live in Windows Credential Manager or the Linux
 Secret Service. Your voice never leaves the computer; only text goes to the AI
-providers you choose, and with a local model nothing goes anywhere. Ciel talks
-only to the services you connect.
+providers you choose, and with a local model nothing goes anywhere. With Claude,
+« OK Ciel » reads only what you allow in **Settings → Chat → Ciel's brain**: your
+calendar and your call notes (their summaries, never what was said), and your
+spending only once you turn it on. Ciel talks only to the services you connect.
 
 ## Connecting your agents
 

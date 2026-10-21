@@ -265,7 +265,8 @@ impl Agent {
     }
 
     /// Whether the island can answer this agent's permission requests. Must
-    /// match `takes_decisions` in the relay (hook/src/reply.rs).
+    /// match `takes_decisions` in the relay (hook/src/reply.rs), which also
+    /// answers for Ciel's own brain on Claude Code (`ciel`, not installed here).
     fn approvals(self) -> bool {
         matches!(self, Agent::Codex | Agent::Copilot | Agent::Muse)
     }

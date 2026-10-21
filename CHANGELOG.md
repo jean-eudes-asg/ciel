@@ -25,7 +25,13 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 - **Notes that know the meeting**: started from the card, the Notetaker
   names the call after the meeting, its summary is told who was invited
   and the agenda, and renaming a speaker offers the guests' names.
-- « OK Ciel » can answer what your next meetings are.
+- **« OK Ciel » knows your meetings and your calls**: what's next, who is
+  invited, when you're free; what was decided in a call and what's left to
+  do from it (from its summary, never from what was said).
+- **What Claude may read** (Settings → Chat → Ciel's brain): a switch each
+  for your calendar, your call notes and your spending. With Claude, the
+  first two are on and spending is off until you turn it on. A local model
+  reads all of it, as before; spending used to be for a local model only.
 
 ### Fixed
 - Linux on X11: out on the desktop, Ciel's eyes follow the pointer across the

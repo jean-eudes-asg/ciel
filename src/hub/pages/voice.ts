@@ -4,7 +4,7 @@
 import { h, clear } from "../../views/dom";
 import { t } from "../../i18n/i18n";
 import { Bridge } from "../../core/bridge";
-import type { VoiceOutput } from "../../core/flow";
+import { FlowBridge, type AgentStatus, type VoiceOutput } from "../../core/flow";
 import { localName, staysHere, type AiStatus } from "../../core/brain";
 import type { HubContext } from "../shell";
 import { button, card, divider, label, row, segmented, toggle } from "../ui";
@@ -47,6 +47,8 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
   page.append(ctx.hero("voice", "OK Ciel", t("Say « OK Ciel », then ask anything: add a pill, play music, the weather, an email to prepare.")));
 
   const ready = status.models.parakeet.state === "ready";
+  const agent = await FlowBridge.agentStatus();
+  const agentReady = !!agent?.built && !!agent.path && agent.signedIn && prefs.voiceAgent === true;
   page.append(label(t("Listening")));
   const main = card(
     row(t("Listen for « OK Ciel »"), t("The microphone stays open; only what follows « OK Ciel » goes further."),
@@ -54,7 +56,7 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
     divider(),
     row(t("Parakeet, on your computer"), t("Hears « OK Ciel » here, without the internet."), modelsControl(ctx, () => ctx.navigate("voice"))),
   );
-  if (prefs.voice && status.ai.engine === "off") {
+  if (prefs.voice && status.ai.engine === "off" && !agentReady) {
     main.append(h("div", {
       class: "hub-warn",
       text: status.ai.pref === "claude"
@@ -65,6 +67,12 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
     main.append(h("div", { class: "hub-warn", text: t("Download the voice model so Ciel can hear you.") }));
   }
   page.append(main);
+
+  // Only in a build that has it (the `claude-code` feature): off by default.
+  if (agent?.built) {
+    page.append(label("Claude Code"));
+    page.append(claudeCodeCard(agent, prefs.voiceAgent === true, (on) => void ctx.setPrefs((p) => (p.voiceAgent = on)).then(() => ctx.navigate("voice"))));
+  }
 
   page.append(label(t("Answers")));
   const outputs: [VoiceOutput, string][] = [["system", t("System voice")], ["elevenlabs", "ElevenLabs"], ["off", t("Text only")]];
@@ -87,6 +95,22 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
     divider(),
     h("div", { class: "hub-note", text: t("An email is never sent by Ciel: your mail app opens with it written, and you send it.") }),
   ));
+}
+
+/** « OK Ciel » through the user's own Claude Code: the switch, and what Ciel found of it. */
+function claudeCodeCard(agent: AgentStatus, on: boolean, set: (on: boolean) => void): HTMLElement {
+  const found = !!agent.path;
+  const state = !found
+    ? t("Ciel can't find claude: install Claude Code's command line.")
+    : !agent.signedIn
+      ? t("Sign in to Claude Code first: run claude once in a terminal.")
+      : t("Found: {version}.", { version: agent.version ?? "claude" });
+  return card(
+    row(t("Talk through your Claude Code"), t("« OK Ciel » becomes a conversation with Claude, on your own Claude Code and its plan. What acts asks for your OK in the island."), toggle(on, set)),
+    divider(),
+    h("div", { class: found && agent.signedIn ? "hub-note" : "hub-warn", text: state }),
+    h("div", { class: "hub-note", text: t("What Claude reads to answer you goes to Anthropic, as in Claude Code. Ciel never sees your sign-in.") }),
+  );
 }
 
 /** Where the words after « OK Ciel » go, with Claude or with a local model. */

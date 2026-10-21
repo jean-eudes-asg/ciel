@@ -114,6 +114,9 @@ pub struct Prefs {
     pub voice_output: String,
     /// The ElevenLabs voice: "female" or "male".
     pub voice_gender: String,
+    /// « OK Ciel » through the user's own Claude Code (agent/), in a build
+    /// that has it. Off until they turn it on.
+    pub voice_agent: bool,
     /// Dictation moved into the island once: the pill at the bottom, the old
     /// default, went there. Missing from older files, so false for them.
     #[serde(default)]
@@ -149,6 +152,7 @@ impl Default for Prefs {
             voice: false,
             voice_output: "system".into(),
             voice_gender: "female".into(),
+            voice_agent: false,
             moved_to_island: true,
         }
     }

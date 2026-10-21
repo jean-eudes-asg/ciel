@@ -15,6 +15,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 use tauri::{AppHandle, Emitter, Manager, State};
 
 use crate::flow::{pill, store::SummaryEngine};
@@ -678,6 +679,62 @@ pub fn markdown(note: &Note) -> String {
     out
 }
 
+// ── For « OK Ciel » ───────────────────────────────────────────────────────────
+
+/// The calls « OK Ciel » is told of (voice/mod.rs, once the user lets its
+/// brain read them), newest first: the ones whose title, people, summary, key
+/// points or to-dos hold every word of `query`, or the latest, at most
+/// `limit` (1 to 5). Never the transcript. JSON text.
+pub fn for_brain(app: &AppHandle, query: &str, limit: usize) -> String {
+    let notes = get(app).map(|t| t.notes.lock().unwrap().clone()).unwrap_or_default();
+    brain_text(&notes, query, limit)
+}
+
+fn brain_text(notes: &[Note], query: &str, limit: usize) -> String {
+    let words: Vec<String> = query.split_whitespace().map(str::to_lowercase).collect();
+    let found: Vec<Value> = notes
+        .iter()
+        .filter(|n| n.status == Status::Ready)
+        .filter(|n| {
+            let text = searchable(n);
+            words.iter().all(|w| text.contains(w.as_str()))
+        })
+        .take(limit.clamp(1, 5))
+        .map(|n| {
+            let minutes = (n.end.unwrap_or(n.start).saturating_sub(n.start) as f64 / 60_000.0).round() as u64;
+            json!({
+                "title": n.title,
+                "date": n.start_local,
+                "minutes": minutes.max(1),
+                "people": n.speakers.iter().map(|s| s.name.as_str()).collect::<Vec<_>>(),
+                "invited": n.meeting.as_ref().map(|m| m.attendees.clone()).unwrap_or_default(),
+                "summary": n.summary,
+                "keyPoints": n.key_points,
+                "todos": n.todos.iter().map(|t| json!({ "text": t.text, "owner": t.owner, "due": t.due, "done": t.done })).collect::<Vec<_>>(),
+            })
+        })
+        .collect();
+    if found.is_empty() {
+        return if words.is_empty() { "No call noted yet." } else { "No call matches." }.into();
+    }
+    json!({ "calls": found }).to_string()
+}
+
+/// What a search looks through: everything but the words said.
+fn searchable(n: &Note) -> String {
+    let mut parts: Vec<&str> = vec![n.title.as_str(), n.summary.as_deref().unwrap_or("")];
+    parts.extend(n.speakers.iter().map(|s| s.name.as_str()));
+    parts.extend(n.key_points.iter().map(String::as_str));
+    for t in &n.todos {
+        parts.push(&t.text);
+        parts.extend(t.owner.as_deref());
+    }
+    if let Some(m) = &n.meeting {
+        parts.extend(m.attendees.iter().map(String::as_str));
+    }
+    parts.join(" ").to_lowercase()
+}
+
 // ── Commands ──────────────────────────────────────────────────────────────────
 
 #[derive(Serialize)]
@@ -798,6 +855,45 @@ pub fn notes_export(taker: State<Arc<NoteTaker>>, id: String) -> Result<String, 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn note(title: &str, status: Status, people: &[&str], summary: &str, todo: &str) -> Note {
+        Note {
+            id: title.into(),
+            title: title.into(),
+            title_edited: false,
+            start: 0,
+            end: Some(30 * 60_000),
+            app: None,
+            status,
+            speakers: people.iter().enumerate().map(|(i, p)| Speaker { id: i.to_string(), name: p.to_string(), color: i, is_me: i == 0 }).collect(),
+            lines: vec![Line { id: "l".into(), speaker: "0".into(), start: 0.0, end: 1.0, text: "the secret words said".into() }],
+            summary: Some(summary.into()),
+            key_points: vec!["Hire in Q1".into()],
+            todos: vec![Todo { id: "t".into(), text: todo.into(), owner: Some("Paul".into()), due: None, done: false }],
+            error: None,
+            start_local: "2026-10-20 14:00".into(),
+            meeting: None,
+        }
+    }
+
+    #[test]
+    fn ok_ciel_finds_calls_by_their_words_or_people_but_never_hears_the_transcript() {
+        let notes = vec![
+            note("Q4 budget", Status::Ready, &["Me", "Marie Dupont"], "We cut the tools budget.", "Send the figures"),
+            note("Hiring", Status::Ready, &["Me", "Ana"], "Two hires.", "Post the job"),
+            note("Still recording", Status::Recording, &["Me"], "", ""),
+        ];
+        let latest: Value = serde_json::from_str(&brain_text(&notes, "", 3)).unwrap();
+        assert_eq!(latest["calls"].as_array().unwrap().len(), 2, "only calls whose notes are ready");
+        let marie: Value = serde_json::from_str(&brain_text(&notes, "marie BUDGET", 3)).unwrap();
+        assert_eq!(marie["calls"][0]["title"], "Q4 budget");
+        assert_eq!(marie["calls"][0]["minutes"], 30);
+        assert_eq!(marie["calls"][0]["todos"][0], json!({ "text": "Send the figures", "owner": "Paul", "due": null, "done": false }));
+        assert!(!brain_text(&notes, "", 5).contains("secret words"));
+        assert_eq!(brain_text(&notes, "nobody", 3), "No call matches.");
+        assert_eq!(brain_text(&[], "", 3), "No call noted yet.");
+        assert_eq!(serde_json::from_str::<Value>(&brain_text(&notes, "", 0)).unwrap()["calls"].as_array().unwrap().len(), 1);
+    }
 
     #[test]
     fn a_long_call_keeps_its_start_and_its_end_for_a_local_model() {

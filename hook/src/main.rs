@@ -22,7 +22,9 @@
 //! `ciel-hook --statusline` as Claude Code's status line command (plan usage,
 //! see statusline.rs): it passes the plan limits on and runs the status line the
 //! user had before, so that keeps working. Started by a browser with an
-//! extension's origin, it is the bridge of Ciel for Chrome (chrome.rs).
+//! extension's origin, it is the bridge of Ciel for Chrome (chrome.rs). With
+//! `--mcp`, it is the server of Ciel's own tools for « OK Ciel » on the user's
+//! Claude Code (mcp.rs).
 
 use std::io::{Read, Write};
 use std::sync::mpsc;
@@ -31,6 +33,7 @@ use std::time::Duration;
 use serde_json::{Map, Value};
 
 mod chrome;
+mod mcp;
 mod normalize;
 mod reply;
 
@@ -108,6 +111,10 @@ fn main() {
     // Started by a browser for Ciel for Chrome (native messaging): the bridge.
     if chrome::is_bridge(&std::env::args().skip(1).collect::<Vec<_>>()) {
         chrome::run();
+    }
+    // Started by the Claude Code Ciel runs for « OK Ciel »: Ciel's tools.
+    if mcp::is_mcp(&std::env::args().skip(1).collect::<Vec<_>>()) {
+        mcp::run();
     }
     let args = args();
     let mut raw = Vec::new();

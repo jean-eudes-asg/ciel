@@ -17,7 +17,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{LazyLock, Mutex};
 use std::time::Duration;
 
-use chrono::{Local, LocalResult, NaiveDateTime, NaiveTime, TimeZone};
+use chrono::{DateTime, Local, LocalResult, NaiveDate, NaiveDateTime, NaiveTime, TimeZone};
 use serde_json::{json, Value};
 use tauri::{AppHandle, Manager};
 use tokio::sync::Notify;
@@ -319,9 +319,97 @@ fn card(app: &AppHandle, o: &Occurrence) {
     notify::show(app, n, Target::Meeting { join: o.join.clone(), meeting });
 }
 
+// ── For « OK Ciel » ───────────────────────────────────────────────────────────
+
+/// The most meetings « OK Ciel » is told of at once.
+const BRAIN_MAX: usize = 20;
+
+/// The meetings « OK Ciel » is told of (voice/mod.rs, once the user lets its
+/// brain read them): those not over yet, or those of one day ("YYYY-MM-DD"),
+/// with who is invited and the agenda, but no address and no link. JSON text.
+pub fn for_brain(day: Option<&str>) -> String {
+    let events = KNOWN.lock().unwrap().events.clone();
+    let clock = |ms: i64| DateTime::from_timestamp_millis(ms).map(|d| d.with_timezone(&Local).naive_local()).unwrap_or_default();
+    brain_text(&events, day, now_ms(), &clock)
+}
+
+fn brain_text(events: &[Occurrence], day: Option<&str>, now: i64, clock: &dyn Fn(i64) -> NaiveDateTime) -> String {
+    let day = day.and_then(|d| NaiveDate::parse_from_str(d.trim(), "%Y-%m-%d").ok());
+    let when = |o: &Occurrence, ms: i64| clock(ms).format(if o.all_day { "%Y-%m-%d" } else { "%Y-%m-%d %H:%M" }).to_string();
+    let meetings: Vec<Value> = events
+        .iter()
+        .filter(|o| match day {
+            // An all-day meeting ends at the next midnight: its last day is the one before.
+            Some(d) => clock(o.start).date() <= d && d <= clock((o.end - 1).max(o.start)).date(),
+            None => o.end > now || o.start >= now,
+        })
+        .take(BRAIN_MAX)
+        .map(|o| {
+            json!({
+                "title": if o.title.is_empty() { "(untitled)" } else { o.title.as_str() },
+                "start": when(o, o.start),
+                "end": when(o, if o.all_day { o.end - 1 } else { o.end }),
+                "allDay": o.all_day,
+                "underWay": !o.all_day && o.start <= now && now < o.end,
+                "where": o.location.as_deref().filter(|l| !l.contains("://")),
+                "invited": o.attendees.iter().map(|a| a.name.as_str()).filter(|n| !n.is_empty()).collect::<Vec<_>>(),
+                "videoRoom": o.join.is_some(),
+                "agenda": o.description.as_deref().and_then(ics::agenda).map(|a| match a.char_indices().nth(600) {
+                    Some((cut, _)) => format!("{}…", &a[..cut]),
+                    None => a,
+                }),
+            })
+        })
+        .collect();
+    if meetings.is_empty() {
+        return "No meetings.".into();
+    }
+    json!({ "now": clock(now).format("%Y-%m-%d %H:%M").to_string(), "meetings": meetings }).to_string()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn ok_ciel_is_told_whats_next_or_one_days_meetings_without_links_or_addresses() {
+        // The computer's clock in this test: UTC+1.
+        let clock = |ms: i64| DateTime::from_timestamp_millis(ms + 3_600_000).unwrap().naive_utc();
+        let at = |s: &str| DateTime::parse_from_rfc3339(s).unwrap().timestamp_millis();
+        let meeting = |title: &str, start: &str, end: &str, all_day: bool| Occurrence {
+            uid: title.into(),
+            title: title.into(),
+            start: at(start),
+            end: at(end),
+            all_day,
+            location: Some("https://zoom.us/j/1".into()),
+            description: Some("Budget\n-::~:~::~:\nJoin with Google Meet: https://meet.google.com/abc".into()),
+            join: Some("https://zoom.us/j/1".into()),
+            attendees: vec![ics::Attendee { name: "Ana".into(), email: Some("ana@x.io".into()), declined: false, resource: false }],
+            declined: false,
+        };
+        let events = vec![
+            meeting("Done", "2026-10-20T08:00:00Z", "2026-10-20T09:00:00Z", false),
+            meeting("Standup", "2026-10-20T09:50:00Z", "2026-10-20T10:15:00Z", false),
+            meeting("Offsite", "2026-10-20T23:00:00Z", "2026-10-22T23:00:00Z", true),
+        ];
+        let now = at("2026-10-20T10:00:00Z");
+        let next: Value = serde_json::from_str(&brain_text(&events, None, now, &clock)).unwrap();
+        assert_eq!(next["now"], "2026-10-20 11:00");
+        let titles: Vec<&str> = next["meetings"].as_array().unwrap().iter().map(|m| m["title"].as_str().unwrap()).collect();
+        assert_eq!(titles, ["Standup", "Offsite"]);
+        assert_eq!(next["meetings"][0]["start"], "2026-10-20 10:50");
+        assert_eq!(next["meetings"][0]["underWay"], true);
+        assert_eq!(next["meetings"][0]["invited"], json!(["Ana"]));
+        assert_eq!(next["meetings"][0]["videoRoom"], true);
+        assert_eq!(next["meetings"][1]["end"], "2026-10-22", "an all-day meeting's last day");
+        let text = next.to_string();
+        assert!(!text.contains("https://") && !text.contains("ana@x.io"));
+
+        let thursday: Value = serde_json::from_str(&brain_text(&events, Some("2026-10-22"), now, &clock)).unwrap();
+        assert_eq!(thursday["meetings"].as_array().unwrap().len(), 1, "the Offsite's second day");
+        assert_eq!(brain_text(&events, Some("2026-10-25"), now, &clock), "No meetings.");
+    }
 
     #[test]
     fn webcal_links_are_read_over_https_and_nothing_else_is_read() {

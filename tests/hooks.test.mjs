@@ -280,6 +280,22 @@ test("Codex, Copilot CLI and Muse Code get the card on their own pill", () => {
   }
 });
 
+test("Ciel's own brain on Claude Code gets the card on a pill that goes with it", () => {
+  State.focusId = CLAUDE;
+  hook({
+    hook_event_name: "PermissionRequest", request_id: "r-ciel", session_id: "s9",
+    ciel_agent: "ciel", tool_name: "WebFetch", tool_input: { url: "https://example.com" },
+  });
+  assert.equal(State.pendingApproval.pillId, "agent_ciel");
+  assert.equal(State.pendingApproval.transient, true);
+  assert.equal(task("agent_ciel").name, "Ciel");
+  assert.deepEqual(sent("approval_ack"), [{ requestId: "r-ciel" }]);
+  assert.deepEqual(sent("approval_decline"), []);
+  State.endApproval();
+  assert.equal(task("agent_ciel"), undefined, "nothing else of it comes: its pill goes");
+  assert.equal(State.focusId, CLAUDE);
+});
+
 test("an agent's turn ending takes its card down and gives the front back", () => {
   State.setFocus("integration_n8n");
   hook({ hook_event_name: "PermissionRequest", request_id: "r1", session_id: "s1", ciel_agent: "codex", tool_name: "Bash" });

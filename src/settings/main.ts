@@ -423,10 +423,20 @@ function apiSection(hasKey: boolean): HTMLElement {
 let brainRefresh: (() => void) | null = null;
 
 function brain(): HTMLElement {
-  const { section, refresh } = brainSection(settings.aiEngine, async (engine) => {
-    settings.aiEngine = engine;
-    await save();
-  });
+  const { section, refresh } = brainSection(
+    settings.aiEngine,
+    async (engine) => {
+      settings.aiEngine = engine;
+      await save();
+    },
+    {
+      get: () => settings.brainReads,
+      set: (reads) => {
+        settings.brainReads = reads;
+        void save();
+      },
+    },
+  );
   brainRefresh = refresh;
   return section;
 }

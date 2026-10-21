@@ -41,5 +41,9 @@ npx tsc --noEmit && npm test && cargo test --workspace
   merge only Ciel's entries, show the diff, write only after the user confirms.
 - 0 % CPU when the island is hidden.
 - Pill IDs are stable contract values (keychain, settings, hook routing): never rename one.
+- « OK Ciel » on the user's own Claude Code (`src-tauri/src/agent/`) is behind the
+  `claude-code` Cargo feature, off by default: never enable it in release.yml or
+  say it in the changelog until the user says Anthropic agreed. Ciel never reads
+  Claude credentials, never signs anyone in, and names no feature "Claude Code".
 - Ciel's name, character, icon and sounds are original. Do not bring in Coucou's
   Mochi, icon, sounds or artwork (they are not MIT-licensed).

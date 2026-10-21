@@ -9,10 +9,11 @@
 use serde_json::{json, Map, Value};
 
 /// The agents whose permission requests the island can answer: Claude Code
-/// (no `--agent`), Codex, Copilot CLI and Muse Code. Any decision for another
+/// (no `--agent`), Codex, Copilot CLI, Muse Code, and Ciel's own brain on the
+/// user's Claude Code (`ciel`, src-tauri/src/agent/). Any decision for another
 /// agent is ignored here too, whatever the app sent.
 pub fn takes_decisions(agent: &str) -> bool {
-    matches!(agent, "" | "codex" | "copilot" | "muse")
+    matches!(agent, "" | "codex" | "copilot" | "muse" | "ciel")
 }
 
 /// Agents that read a JSON object on stdout after every hook and get `{}` —
@@ -134,7 +135,7 @@ mod tests {
 
     const AGENTS: &[&str] = &[
         "", "gemini", "antigravity", "cursor", "codex", "copilot", "muse", "opencode", "amp",
-        "hermes", "claude-desktop", "my-tool",
+        "hermes", "claude-desktop", "ciel", "my-tool",
     ];
     const EVENTS: &[&str] = &[
         "SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse", "PostToolUseFailure",

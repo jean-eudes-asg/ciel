@@ -63,6 +63,86 @@ fn finance_tool() -> Value {
     })
 }
 
+fn calendar_tool() -> Value {
+    json!({
+        "name": "calendar",
+        "description": "The user's meetings from the Calendar pill, under way and to come over the next 7 days, or those of one day: title, start and end in local time, where, who is invited, whether it has a video room, and its agenda.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "day": { "type": "string", "description": "YYYY-MM-DD for one day. Leave out for what is next." }
+            }
+        }
+    })
+}
+
+const CALENDAR_PROMPT: &str = "
+Calendar: for the user's meetings (what is next, who is invited, when they are free), call calendar. Say times the way people say them; never read out an address or a link.";
+
+fn notes_tool() -> Value {
+    json!({
+        "name": "notes",
+        "description": "The calls the Notetaker noted, newest first: title, date, who spoke or was invited, summary, key points and to-dos (done or not). Never the words themselves.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": { "type": "string", "description": "Words or a person's name to look for. Leave out for the latest calls." },
+                "limit": { "type": "integer", "description": "How many calls, 1 to 5. 3 by default." }
+            }
+        }
+    })
+}
+
+const NOTES_PROMPT: &str = "
+Notes: for what was said or decided in a call, or what is left to do from one, call notes with a few words or a person's name.";
+
+/// The tools that read the user's own data, as far as this brain may
+/// (`super::may_read`), and what the instructions say of them.
+fn reading_tools(settings: &crate::settings::Settings, cloud: bool) -> (Vec<Value>, String) {
+    let mut tools = Vec::new();
+    let mut prompt = String::new();
+    for (what, tool, said) in [
+        ("calendar", calendar_tool as fn() -> Value, CALENDAR_PROMPT),
+        ("notes", notes_tool, NOTES_PROMPT),
+        ("finance", finance_tool, FINANCE_PROMPT),
+    ] {
+        if super::may_read(settings, cloud, what) {
+            tools.push(tool());
+            prompt.push_str(said);
+        }
+    }
+    (tools, prompt)
+}
+
+/// Ciel's tools for the brain on Claude Code (agent/mod.rs): these, but the
+/// web search, which Claude Code has of its own, and what Claude may read.
+pub(crate) fn agent_tools(settings: &crate::settings::Settings) -> Vec<Value> {
+    let mut all: Vec<Value> = tools().into_iter().filter(|t| t.get("type").is_none()).collect();
+    all.extend(reading_tools(settings, true).0);
+    all
+}
+
+#[cfg_attr(not(feature = "claude-code"), allow(dead_code))]
+const AGENT_PROMPT: &str = "
+You run on the user's computer through Claude Code. Ciel's own tools are the mcp__ciel__ ones (pills, music, service_info, open_app, \
+prepare_email, and what the user lets you read). You may also search the web and read files. Fetching a page, running a command \
+or writing a file waits for the user to click Allow in the island at the top of the screen: before such a step, say in a few \
+words what you are about to do. When something is refused, say so and stop; never look for a way around it.";
+
+/// The instructions for the brain on Claude Code, added to Claude Code's own.
+#[cfg_attr(not(feature = "claude-code"), allow(dead_code))]
+pub(crate) fn agent_prompt(app: &AppHandle) -> String {
+    let pills = super::ask_island(app, "pills", json!({ "action": "list" })).unwrap_or_default();
+    let mut prompt = system_prompt(&pills, true);
+    prompt.push_str(&reading_tools(&current_settings(app), true).1);
+    prompt.push_str(AGENT_PROMPT);
+    prompt
+}
+
+fn current_settings(app: &AppHandle) -> crate::settings::Settings {
+    app.try_state::<crate::Shared>().map(|s| s.settings.lock().unwrap().clone()).unwrap_or_default()
+}
+
 const FINANCE_PROMPT: &str = "
 Finance: when the user says they spent or paid something, call finance with action add right away (amount, currency if they said one, the closest category); when they ask about their spending or budget, call finance with action summary. Read amounts back with their currency.";
 
@@ -152,6 +232,13 @@ Pills: {pills}",
 
 impl Brain {
     pub fn respond(&mut self, app: &AppHandle, transcript: &str) -> Option<Reply> {
+        // Through the user's own Claude Code, when they turned it on in a build
+        // that has it (agent/). If it can't answer, the usual brain does.
+        if crate::agent::wanted(app) {
+            if let Some(reply) = crate::agent::ask(app, transcript) {
+                return Some(reply);
+            }
+        }
         let engine = ai::current(app)?;
         let with = match &engine {
             Engine::Claude => "claude".to_string(),
@@ -172,8 +259,11 @@ impl Brain {
     }
 
     fn respond_claude(&mut self, app: &AppHandle, pills: &str) -> Option<Reply> {
-        let system = system_prompt(pills, true);
-        let tools = tools();
+        let mut system = system_prompt(pills, true);
+        let mut tools = tools();
+        let (reading, said) = reading_tools(&current_settings(app), true);
+        tools.extend(reading);
+        system.push_str(&said);
         let chat_model = app
             .try_state::<crate::Shared>()
             .map(|s| s.settings.lock().unwrap().model.clone())
@@ -217,7 +307,7 @@ impl Brain {
             }
             let mut results = Vec::new();
             for u in uses {
-                let (result, did) = super::run_tool(app, u["name"].as_str().unwrap_or(""), &u["input"]);
+                let (result, did) = super::run_tool(app, u["name"].as_str().unwrap_or(""), &u["input"], true);
                 acted |= did;
                 results.push(json!({ "type": "tool_result", "tool_use_id": u["id"], "content": result }));
             }
@@ -231,11 +321,10 @@ impl Brain {
     fn respond_local(&mut self, app: &AppHandle, local: &ai::Local, pills: &str) -> Option<Reply> {
         let mut system = system_prompt(pills, false);
         let mut all = tools();
-        // The user's spending, with a local brain only: it stays on this computer.
-        if super::finance_on(app) {
-            all.push(finance_tool());
-            system.push_str(FINANCE_PROMPT);
-        }
+        // A local model reads all the user's data: it stays on this computer.
+        let (reading, said) = reading_tools(&current_settings(app), false);
+        all.extend(reading);
+        system.push_str(&said);
         let tools = ai::function_tools(&all);
         let names: Vec<String> = tools.iter().filter_map(|t| t["function"]["name"].as_str().map(String::from)).collect();
         let ask = |messages: &[Value], with_tools: bool| {
@@ -249,7 +338,7 @@ impl Brain {
             };
             tauri::async_runtime::block_on(ai::ask(local, &req, LOCAL_TIMEOUT))
         };
-        local_loop(&mut self.messages, local.dialect(), &names, ask, |name, input| super::run_tool(app, name, input))
+        local_loop(&mut self.messages, local.dialect(), &names, ask, |name, input| super::run_tool(app, name, input, false))
     }
 
     /// Keeps the last `keep` messages, never cutting between a tool call and its result.

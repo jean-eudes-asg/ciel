@@ -10,7 +10,7 @@ import { buildFileDiff, fileName, makeDiffStep, toOneLine } from "../core/diff";
 import { Sound } from "../core/sound";
 import { State, type AskedQuestion } from "../core/state";
 import { pillDefinition } from "../core/pills";
-import { APPROVAL_AGENTS, agentColor, agentName, validateAgent } from "./agents";
+import { APPROVAL_AGENTS, CIEL_AGENT, agentColor, agentName, validateAgent } from "./agents";
 import type { Island } from "./island";
 import { parseClaudePlan, restorePlanUsage } from "../core/plan";
 import { setClaudePlanUsage, storedClaudePlanUsage } from "../views/usage";
@@ -511,6 +511,7 @@ export function handleHook(island: Island, payload: HookPayload) {
         tool,
         command: approvalTarget(tool, input),
         ...(questions ? { questions } : {}),
+        ...(validAgent === CIEL_AGENT ? { transient: true } : {}),
       });
       // The relay's short ack window closes in 800 ms; everything below this
       // line is synchronous, so the card really is up by the time it lands.

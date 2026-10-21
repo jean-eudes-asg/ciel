@@ -108,6 +108,28 @@ pub struct Settings {
     /// Ciel's wallpapers (wallpaper/): what they go on and how they look.
     /// Written by the webviews, keys this build doesn't know included.
     pub wallpaper: WallpaperPrefs,
+    /// What Ciel's brain may read when it is Claude (Settings → Ciel's brain).
+    pub brain_reads: BrainReads,
+}
+
+/// What « OK Ciel » may read when its brain is Claude, with a key: what it
+/// reads then leaves the computer, so the user picks. A local model reads
+/// everything Ciel has, as before (voice/mod.rs `may_read`).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct BrainReads {
+    /// The Calendar pill's meetings: titles, times, who is invited, agendas.
+    pub calendar: bool,
+    /// The Notetaker's calls: summaries, key points, to-dos (never the words).
+    pub notes: bool,
+    /// The Finance pill's spending. Off until the user turns it on.
+    pub finance: bool,
+}
+
+impl Default for BrainReads {
+    fn default() -> Self {
+        Self { calendar: true, notes: true, finance: false }
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -262,6 +284,7 @@ impl Default for Settings {
             desktop_cloud: DesktopCloudPref::default(),
             finance_folder: String::new(),
             wallpaper: WallpaperPrefs::default(),
+            brain_reads: BrainReads::default(),
         }
     }
 }
@@ -559,7 +582,8 @@ mod tests {
     "lat": 48.85, "lon": 2.35, "cielSize": 0.3, "cielX": 0.25, "cielY": 0.5,
     "refreshMinutes": 30, "moods": { "error": "storm", "idle": "auto" },
     "sources": { "space": "photos" }, "aKeyFromALaterVersion": [1, 2]
-  }
+  },
+  "brainReads": { "calendar": false, "notes": true, "finance": true }
 }"##;
 
     fn custom() -> Value {
@@ -1009,6 +1033,7 @@ mod tests {
                 "desktopCloud",
                 "financeFolder",
                 "wallpaper",
+                "brainReads",
             ]
         );
         let _ = std::fs::remove_dir_all(&dir);

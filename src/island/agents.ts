@@ -18,14 +18,20 @@ export const KNOWN_AGENTS: Record<string, KnownAgent> = {
   amp: { name: "Amp", color: "#F59E0B" },
   hermes: { name: "Hermes", color: "#C084FC" },
   "claude-desktop": { name: "Claude Desktop", color: "#D97757" },
+  // Ciel's own brain on the user's Claude Code (src-tauri/src/agent/): only
+  // its permission requests come, each on a pill of its own for the card.
+  ciel: { name: "Ciel", color: "#9BD3FF" },
 };
+
+/** Ciel's own brain, as the relay tags it (`ciel-hook --agent ciel`). */
+export const CIEL_AGENT = "ciel";
 
 /**
  * Agents whose permission requests get an Allow / Deny card, as on the Mac.
  * Must match `takes_decisions` in the relay (hook/src/reply.rs): any other
  * agent's request is handed straight back to its terminal.
  */
-export const APPROVAL_AGENTS = new Set(["codex", "copilot", "muse"]);
+export const APPROVAL_AGENTS = new Set(["codex", "copilot", "muse", CIEL_AGENT]);
 
 /** Same rule as HookServer.validateAgent on macOS. "claude" is reserved. */
 export function validateAgent(raw: string | undefined): string | null {

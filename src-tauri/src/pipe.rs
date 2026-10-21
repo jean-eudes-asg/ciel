@@ -221,6 +221,18 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
         pipe.finish();
         return;
     }
+    // Ciel's tools, for the brain on the user's Claude Code (agent/mod.rs):
+    // they may take a moment (the island answers some), so off the async threads.
+    if payload.get("ciel_mcp").is_some() {
+        let asker = app.clone();
+        let reply = tauri::async_runtime::spawn_blocking(move || crate::agent::mcp_reply(&asker, &payload)).await.ok().flatten();
+        if let Some(reply) = reply {
+            let _ = pipe.write_all(format!("{reply}\n").as_bytes()).await;
+            let _ = pipe.flush().await;
+        }
+        pipe.finish();
+        return;
+    }
     if payload.get("ciel_listen").and_then(Value::as_str) == Some("chrome") {
         if let Some(bridge) = payload.get("ciel_bridge").and_then(Value::as_str).filter(|b| !b.is_empty()) {
             bridge_connection(&app, pipe, bridge.to_string()).await;
@@ -255,6 +267,9 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
         pending.0.lock().unwrap().insert(id.clone(), tx);
     }
     crate::recap::note_request(&app, &id, &payload);
+    if payload.get("ciel_agent").and_then(Value::as_str) == Some("ciel") {
+        crate::voice::waiting_for_ok(&app);
+    }
     payload["request_id"] = json!(id);
     log::line(format!("hook PermissionRequest id={id}"));
     let _ = app.emit_to(WINDOW_LABEL, "hook", payload);
