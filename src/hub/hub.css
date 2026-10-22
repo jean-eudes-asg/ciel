@@ -1058,6 +1058,19 @@ button.hub-icon svg {
   stroke-linejoin: round;
 }
 
+/* The flip clock (views/flipclock.ts), in the sky's top right corner. Two
+   classes: over the clock's own defaults, loaded after. */
+.flip-clock.home-flip {
+  position: absolute;
+  top: 30px;
+  right: 32px;
+  --flip-size: clamp(26px, 3.4vw, 40px);
+  --flip-card: rgba(14, 16, 22, 0.78);
+  --flip-ink: #e9eaee;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.35));
+  animation: home-rise 0.8s 0.24s ease-out both;
+}
+
 /* Sunrise, the sun now, sunset. */
 .home-day {
   flex: 0 1 300px;

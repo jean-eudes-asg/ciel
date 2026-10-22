@@ -6058,6 +6058,193 @@
    "pt-BR": "Início",
    "ru": "Главная",
    "id": "Beranda"
+  },
+  "Right away": {
+   "zh-Hans": "立即",
+   "hi": "तुरंत",
+   "es": "Enseguida",
+   "ar": "فورًا",
+   "fr": "Tout de suite",
+   "bn": "সঙ্গে সঙ্গে",
+   "pt-BR": "Na hora",
+   "ru": "Сразу",
+   "id": "Langsung"
+  },
+  "{0} h": {
+   "zh-Hans": "{0} 小时",
+   "hi": "{0} घं",
+   "es": "{0} h",
+   "ar": "{0} س",
+   "fr": "{0} h",
+   "bn": "{0} ঘ",
+   "pt-BR": "{0} h",
+   "ru": "{0} ч",
+   "id": "{0} jam"
+  },
+  "Screensaver": {
+   "zh-Hans": "屏幕保护",
+   "hi": "स्क्रीनसेवर",
+   "es": "Salvapantallas",
+   "ar": "شاشة التوقف",
+   "fr": "Économiseur d'écran",
+   "bn": "স্ক্রিনসেভার",
+   "pt-BR": "Protetor de tela",
+   "ru": "Заставка",
+   "id": "Screensaver"
+  },
+  "Flip clock after": {
+   "zh-Hans": "翻页时钟出现于",
+   "hi": "फ़्लिप घड़ी इतने बाद",
+   "es": "Reloj de paletas tras",
+   "ar": "الساعة القلّابة بعد",
+   "fr": "Horloge à palettes après",
+   "bn": "ফ্লিপ ঘড়ি এর পরে",
+   "pt-BR": "Relógio de flip após",
+   "ru": "Перекидные часы через",
+   "id": "Jam flip setelah"
+  },
+  "Preview": {
+   "zh-Hans": "预览",
+   "hi": "पूर्वावलोकन",
+   "es": "Vista previa",
+   "ar": "معاينة",
+   "fr": "Aperçu",
+   "bn": "প্রিভিউ",
+   "pt-BR": "Pré-visualizar",
+   "ru": "Просмотр",
+   "id": "Pratinjau"
+  },
+  "A flip clock on black, on the main display only, after these minutes without the mouse or a key. Keep it shorter than your system's own blank screen delay.": {
+   "zh-Hans": "在这么多分钟没有鼠标或按键操作后，仅在主显示器上于黑色背景显示翻页时钟。请让它短于系统自身的黑屏延迟。",
+   "hi": "इतने मिनट तक माउस या कुंजी न छूने पर, केवल मुख्य डिस्प्ले पर काले पर्दे पर एक फ़्लिप घड़ी। इसे अपने सिस्टम की स्क्रीन बंद होने की देरी से कम रखें।",
+   "es": "Un reloj de paletas sobre negro, solo en la pantalla principal, tras estos minutos sin ratón ni teclado. Que sea menos que el tiempo de apagado de pantalla de tu sistema.",
+   "ar": "ساعة قلّابة على خلفية سوداء، على الشاشة الرئيسية فقط، بعد هذه الدقائق دون فأرة أو مفتاح. اجعلها أقصر من مهلة إطفاء الشاشة في نظامك.",
+   "fr": "Une horloge à palettes sur fond noir, sur l'écran principal seulement, après ces minutes sans souris ni clavier. Gardez-la plus courte que le délai d'extinction de l'écran de votre système.",
+   "bn": "এত মিনিট মাউস বা কী না চাপলে, শুধু মূল ডিসপ্লেতে কালোর উপর একটি ফ্লিপ ঘড়ি। এটি আপনার সিস্টেমের স্ক্রিন বন্ধের সময়ের চেয়ে কম রাখুন।",
+   "pt-BR": "Um relógio de flip sobre preto, só na tela principal, após estes minutos sem mouse nem teclado. Mantenha menor que o tempo para apagar a tela do seu sistema.",
+   "ru": "Перекидные часы на чёрном фоне, только на главном экране, после стольких минут без мыши и клавиатуры. Сделайте это меньше, чем задержка гашения экрана в системе.",
+   "id": "Jam flip di atas hitam, hanya di layar utama, setelah sekian menit tanpa mouse atau tombol. Buat lebih singkat dari jeda layar mati sistem Anda."
+  },
+  "Screens off at night": {
+   "zh-Hans": "夜间关闭屏幕",
+   "hi": "रात में स्क्रीन बंद",
+   "es": "Pantallas apagadas de noche",
+   "ar": "إطفاء الشاشات ليلًا",
+   "fr": "Écrans éteints la nuit",
+   "bn": "রাতে স্ক্রিন বন্ধ",
+   "pt-BR": "Telas desligadas à noite",
+   "ru": "Выключать экраны ночью",
+   "id": "Layar mati di malam hari"
+  },
+  "Once the clock has shown": {
+   "zh-Hans": "时钟显示多久后",
+   "hi": "घड़ी इतनी देर दिखने के बाद",
+   "es": "Cuando el reloj lleve",
+   "ar": "بعد ظهور الساعة لمدة",
+   "fr": "Une fois l'horloge affichée depuis",
+   "bn": "ঘড়ি এতক্ষণ দেখানোর পর",
+   "pt-BR": "Depois do relógio aparecer por",
+   "ru": "Когда часы показаны",
+   "id": "Setelah jam tampil"
+  },
+  "At night, once the clock has shown that long, the screens go off. When the night ends they come back on, with the clock.": {
+   "zh-Hans": "夜间，时钟显示这么久后屏幕会关闭。夜晚结束时屏幕会重新亮起，并显示时钟。",
+   "hi": "रात में, घड़ी इतनी देर दिखने के बाद स्क्रीन बंद हो जाती हैं। रात ख़त्म होने पर वे घड़ी के साथ फिर चालू हो जाती हैं।",
+   "es": "De noche, cuando el reloj lleve ese tiempo, las pantallas se apagan. Al acabar la noche vuelven a encenderse, con el reloj.",
+   "ar": "ليلًا، بعد ظهور الساعة هذه المدة، تنطفئ الشاشات. وعند انتهاء الليل تعود للعمل مع الساعة.",
+   "fr": "La nuit, une fois l'horloge affichée aussi longtemps, les écrans s'éteignent. À la fin de la nuit, ils se rallument, avec l'horloge.",
+   "bn": "রাতে, ঘড়ি এতক্ষণ দেখানোর পর স্ক্রিন বন্ধ হয়ে যায়। রাত শেষ হলে ঘড়িসহ আবার চালু হয়।",
+   "pt-BR": "À noite, depois do relógio aparecer por esse tempo, as telas se desligam. Quando a noite termina, elas voltam a ligar, com o relógio.",
+   "ru": "Ночью, когда часы покажутся столько времени, экраны выключаются. Когда ночь заканчивается, они снова включаются, с часами.",
+   "id": "Di malam hari, setelah jam tampil selama itu, layar mati. Saat malam berakhir, layar menyala lagi dengan jam."
+  },
+  "Small": {
+   "zh-Hans": "小",
+   "hi": "छोटा",
+   "es": "Pequeño",
+   "ar": "صغير",
+   "fr": "Petite",
+   "bn": "ছোট",
+   "pt-BR": "Pequeno",
+   "ru": "Маленький",
+   "id": "Kecil"
+  },
+  "Medium": {
+   "zh-Hans": "中",
+   "hi": "मध्यम",
+   "es": "Mediano",
+   "ar": "متوسط",
+   "fr": "Moyenne",
+   "bn": "মাঝারি",
+   "pt-BR": "Médio",
+   "ru": "Средний",
+   "id": "Sedang"
+  },
+  "Large": {
+   "zh-Hans": "大",
+   "hi": "बड़ा",
+   "es": "Grande",
+   "ar": "كبير",
+   "fr": "Grande",
+   "bn": "বড়",
+   "pt-BR": "Grande",
+   "ru": "Большой",
+   "id": "Besar"
+  },
+  "Clock size": {
+   "zh-Hans": "时钟大小",
+   "hi": "घड़ी का आकार",
+   "es": "Tamaño del reloj",
+   "ar": "حجم الساعة",
+   "fr": "Taille de l'horloge",
+   "bn": "ঘড়ির আকার",
+   "pt-BR": "Tamanho do relógio",
+   "ru": "Размер часов",
+   "id": "Ukuran jam"
+  },
+  "Show the date": {
+   "zh-Hans": "显示日期",
+   "hi": "तारीख़ दिखाएँ",
+   "es": "Mostrar la fecha",
+   "ar": "إظهار التاريخ",
+   "fr": "Afficher la date",
+   "bn": "তারিখ দেখান",
+   "pt-BR": "Mostrar a data",
+   "ru": "Показывать дату",
+   "id": "Tampilkan tanggal"
+  },
+  "Clock": {
+   "zh-Hans": "时钟",
+   "hi": "घड़ी",
+   "es": "Reloj",
+   "ar": "الساعة",
+   "fr": "Horloge",
+   "bn": "ঘড়ি",
+   "pt-BR": "Relógio",
+   "ru": "Часы",
+   "id": "Jam"
+  },
+  "12-hour": {
+   "zh-Hans": "12 小时制",
+   "hi": "12-घंटे",
+   "es": "12 horas",
+   "ar": "12 ساعة",
+   "fr": "12 heures",
+   "bn": "১২ ঘণ্টা",
+   "pt-BR": "12 horas",
+   "ru": "12-часовой",
+   "id": "12 jam"
+  },
+  "24-hour": {
+   "zh-Hans": "24 小时制",
+   "hi": "24-घंटे",
+   "es": "24 horas",
+   "ar": "24 ساعة",
+   "fr": "24 heures",
+   "bn": "২৪ ঘণ্টা",
+   "pt-BR": "24 horas",
+   "ru": "24-часовой",
+   "id": "24 jam"
   }
  }
 }

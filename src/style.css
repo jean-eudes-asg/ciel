@@ -168,13 +168,20 @@ body {
   position: absolute;
   top: 0;
   left: 50%;
+  height: 32px;
+  display: flex;
+  align-items: center;
   transform: translateX(-50%);
-  font: 600 12px/32px var(--font);
-  font-variant-numeric: tabular-nums;
-  color: rgba(255, 255, 255, 0.85);
-  white-space: nowrap;
   pointer-events: none;
   transition: opacity 0.25s ease-in-out;
+}
+
+/* The flip clock (views/flipclock.ts), small: two little cards on the black. */
+#island-clock .island-flip {
+  --flip-size: 11.5px;
+  --flip-card: #1d1e21;
+  --flip-ink: rgba(255, 255, 255, 0.9);
+  --flip-gap: 3px;
 }
 
 /* Open, centred on the header row (#content's 8px inset + 34px header). */

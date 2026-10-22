@@ -1,0 +1,52 @@
+/* The screensaver (main.ts): pitch black, the flip clock in the middle, the
+   date under it if wanted. No cursor. */
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  cursor: none;
+  user-select: none;
+  -webkit-user-select: none;
+  --font: system-ui, "Segoe UI Variable Text", "Segoe UI", "Noto Sans", sans-serif;
+}
+
+.saver-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5vh;
+}
+
+/* Two classes: over the clock's own defaults (flipclock.css), loaded after. */
+.flip-clock.saver-flip {
+  --flip-card: #141414;
+  --flip-ink: #b4b4b4;
+  --flip-gap: calc(var(--flip-size) * 0.1);
+  --flip-size: min(46vh, 29vw);
+}
+
+body[data-size="small"] .flip-clock.saver-flip {
+  --flip-size: min(19vh, 11vw);
+}
+
+body[data-size="medium"] .flip-clock.saver-flip {
+  --flip-size: min(30vh, 18vw);
+}
+
+.saver-date {
+  font: 500 clamp(13px, 2.2vh, 24px) var(--font);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #5e5e5e;
+}
+
+.saver-date[hidden] {
+  display: none;
+}

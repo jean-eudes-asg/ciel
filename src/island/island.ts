@@ -21,6 +21,7 @@ import { UploadCanvas } from "../upload/canvas";
 import { USC, UploadSeq } from "../upload/sequence";
 import { closePlanCard, openPlanColor, planCardOpen } from "../views/usage";
 import { buildPlanRings, type PlanRings } from "../views/plan-rings";
+import { buildFlipClock, setClockFormat } from "../views/flipclock";
 import { buildNoteStack, type NoteStack } from "../views/inbox";
 import { buildFlowStrip, type FlowStrip } from "./flow";
 import { buildNotificationCard, type NotificationCard } from "./notifications";
@@ -66,6 +67,7 @@ export class Island {
   private notes!: NotificationCard;
   private countdown!: HTMLElement;
   private clock!: HTMLElement;
+  private flip = buildFlipClock("island-flip");
   private noteStack!: NoteStack;
   private clockTimer = 0;
   private wakeStrip!: HTMLElement;
@@ -277,7 +279,7 @@ export class Island {
       },
     );
     this.countdown = h("div", { id: "countdown" });
-    this.clock = h("div", { id: "island-clock" });
+    this.clock = h("div", { id: "island-clock" }, this.flip.el);
     this.noteStack = buildNoteStack();
 
     this.header = buildHeader(actions);
@@ -1236,7 +1238,7 @@ export class Island {
     window.clearTimeout(this.clockTimer);
     if (!on) return;
     const now = new Date();
-    this.clock.textContent = now.toLocaleTimeString(document.documentElement.lang || undefined, { hour: "2-digit", minute: "2-digit" });
+    this.flip.set(now);
     this.clockTimer = window.setTimeout(() => this.syncClock(true), 60_000 - (now.getTime() % 60_000));
   }
 
@@ -1260,6 +1262,7 @@ export class Island {
     Sound.setVolume(State.settings.soundVolume);
     this.fsm.homeToPetitDelay = State.settings.autoCloseInterval;
     this.fsm.openOnHover = State.settings.openOnHover;
+    setClockFormat(State.settings.clockFormat);
     // Where no click elsewhere can be seen (Wayland), leaving stands in for it.
     this.fsm.quickLeave = State.settings.closeOnClickOutside && !this.clicksOutside;
     State.notify();

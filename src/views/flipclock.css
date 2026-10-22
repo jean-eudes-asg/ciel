@@ -1,0 +1,136 @@
+/* The split-flap clock (flipclock.ts). Each card is four halves: the next
+   value's top and the current value's bottom stay put, and while it flips the
+   current top folds down and the next bottom unfolds over them. */
+
+.flip-clock {
+  --flip-size: 64px;
+  --flip-card: #1b1b1d;
+  --flip-ink: #c9c9cc;
+  --flip-gap: calc(var(--flip-size) * 0.16);
+  --flip-radius: calc(var(--flip-size) * 0.12);
+  display: inline-flex;
+  gap: var(--flip-gap);
+  font: 700 var(--flip-size) / 1 var(--font, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--flip-ink);
+}
+
+.flip-card {
+  position: relative;
+  width: calc(var(--flip-size) * 1.42);
+  height: calc(var(--flip-size) * 1.2);
+  perspective: calc(var(--flip-size) * 6);
+}
+
+.flip-half,
+.flip-flap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+  background: var(--flip-card);
+  backface-visibility: hidden;
+}
+
+.flip-half span,
+.flip-flap span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 200%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flip-top {
+  top: 0;
+  border-radius: var(--flip-radius) var(--flip-radius) 0 0;
+  transform-origin: 50% 100%;
+}
+
+.flip-top span {
+  top: 0;
+}
+
+.flip-bottom {
+  bottom: 0;
+  border-radius: 0 0 var(--flip-radius) var(--flip-radius);
+  transform-origin: 50% 0;
+}
+
+.flip-bottom span {
+  bottom: 0;
+}
+
+/* The hinge: a hairline of shadow across the middle. */
+.flip-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: max(1px, calc(var(--flip-size) * 0.02));
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 3;
+}
+
+.flip-flap {
+  visibility: hidden;
+  z-index: 2;
+}
+
+.flip-card.flipping .flip-flap {
+  visibility: visible;
+}
+
+.flip-card.flipping .flip-flap.flip-top {
+  animation: flip-fold 0.32s ease-in both;
+}
+
+.flip-card.flipping .flip-flap.flip-bottom {
+  transform: rotateX(90deg);
+  animation: flip-land 0.32s 0.32s ease-out both;
+}
+
+@keyframes flip-fold {
+  from {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+  to {
+    transform: rotateX(-90deg);
+    filter: brightness(0.6);
+  }
+}
+
+@keyframes flip-land {
+  from {
+    transform: rotateX(90deg);
+    filter: brightness(0.7);
+  }
+  to {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}
+
+/* AM / PM, small in the hours card's top corner, as on Fliqlo: above the digits. */
+.flip-period {
+  position: absolute;
+  left: calc(var(--flip-size) * 0.09);
+  top: calc(var(--flip-size) * 0.07);
+  z-index: 4;
+  font-size: calc(var(--flip-size) * 0.12);
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
+.flip-period:empty {
+  display: none;
+}

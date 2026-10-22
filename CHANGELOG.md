@@ -4,6 +4,17 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 
 ## [Unreleased]
 
+### Added
+- **Screensaver** (Settings → General → Screensaver, off by default): a flip
+  clock on pitch black, like Fliqlo, on the main display only, after the
+  minutes chosen without the mouse or a key. Three sizes, the date if wanted,
+  and a Preview button. A key or the mouse sends it away.
+- **Screens off at night**: during the night you set (23:00 to 06:00 by
+  default), once the clock has shown long enough the screens go off; when the
+  night ends they come back on, with the clock.
+- **Flip clocks** in the island and on Home, and a **Clock** setting for 12 or
+  24 hours (Automatic follows the language).
+
 ### Fixed
 - Linux on X11: out on the desktop, Ciel's eyes follow the pointer across the
   whole screen, not only over him.

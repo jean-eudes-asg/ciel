@@ -101,7 +101,7 @@ gtk = "0.18"
 # through KWin's scripting (platform/linux_focus.rs).
 dbus = "0.9.12"
 # EWMH on X11 for "Open terminal", already in the tree (global-hotkey).
-x11rb = { version = "0.13", default-features = false, features = ["xinput", "xtest"] }
+x11rb = { version = "0.13", default-features = false, features = ["xinput", "xtest", "screensaver"] }
 # PulseAudio (or PipeWire's PulseAudio server) for the microphone list and the
 # monitor of the speakers, the Notetaker's "computer sound". Pure Rust client.
 cpal = { version = "0.18", features = ["pulseaudio"] }

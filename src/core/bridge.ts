@@ -275,6 +275,10 @@ export const Bridge = {
   gnomeExtensionStatus: () => call<GnomeExtStatus>("gnome_extension_status"),
   /** Installs it (its files, GNOME's list of enabled extensions) or takes it out. */
   gnomeExtensionSet: (on: boolean) => callOrThrow<GnomeExtStatus>("gnome_extension_set", { on }),
+  /** The screensaver goes: a key, a click or the mouse (src-tauri/src/screensaver.rs). */
+  screensaverDismiss: () => call<void>("screensaver_dismiss"),
+  /** Shows the screensaver now, to see it (Settings). */
+  screensaverPreview: () => call<void>("screensaver_preview"),
   /** A notification's Open (back to its tab or its mail) or Dismiss (src-tauri/src/notify.rs). */
   notificationAction: (id: string, action: "open" | "dismiss") => call<void>("notification_action", { id, action }),
   /** Whether there is a Spotify to launch (Settings). */

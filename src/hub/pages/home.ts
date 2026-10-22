@@ -21,6 +21,7 @@ import { sceneSpec, secondsOfDay, type SceneSpec } from "../../sky/scenes";
 import { moonPhase, placeFor, sunTimes, type Place } from "../../sky/sun";
 import type { HubContext } from "../shell";
 import { icon, iconButton, keyLabel, number, shortCount } from "../ui";
+import { buildFlipClock, tick } from "../../views/flipclock";
 import { duration } from "./insights";
 
 const FPS = 24;
@@ -171,16 +172,20 @@ function buildSky(prefs: WallpaperPrefs, ctx: HubContext, onTone: (dark: boolean
     onclick: () => void FlowBridge.startNote().then(() => ctx.navigate("notes"), () => ctx.navigate("notes")),
   }, icon("record"), h("span", { text: t("Record a call") }));
 
+  const flip = buildFlipClock("home-flip");
+  const stopClock = tick(flip);
   const el = h("section", { class: "home-sky" },
     canvas,
     h("div", { class: "home-sky-shade" }),
     words,
+    flip.el,
     h("div", { class: "home-sky-foot" }, h("div", { class: "home-actions" }, dictate, record), dayLine(new Date(), place!)),
   );
   return {
     el,
     stop() {
       stopped = true;
+      stopClock();
       if (frame != null) cancelAnimationFrame(frame);
       resized.disconnect();
       document.removeEventListener("visibilitychange", wake);

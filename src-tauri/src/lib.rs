@@ -35,6 +35,7 @@ mod portal;
 mod recap;
 mod secrets;
 mod session_window;
+mod screensaver;
 mod settings;
 mod shortcuts;
 mod sounds;
@@ -801,6 +802,8 @@ pub fn run() {
             notify::notification_action,
             browser_bridge::browser_bridge_status,
             gnome_ext::gnome_extension_status,
+            screensaver::screensaver_dismiss,
+            screensaver::screensaver_preview,
             gnome_ext::gnome_extension_set,
             browser_bridge::browser_bridge_set,
             save_settings,
@@ -952,6 +955,7 @@ pub fn run() {
                 island::apply_geometry(&handle, &loaded.screen, false);
                 let _ = win.show();
             }
+            screensaver::start(&handle);
             // A panel coming or going moves the top of the screen: the island follows.
             #[cfg(target_os = "linux")]
             if !platform::is_layer_surface() {

@@ -133,6 +133,19 @@ export interface Settings {
   desktopNotifications: boolean;
   /** GNOME: Ciel's extension hides the top bar, the island has the top. */
   hideGnomePanel: boolean;
+  /** The flip clock after this many minutes without input; 0 is off (src-tauri/src/screensaver.rs). */
+  screensaverMinutes: number;
+  /** 12 or 24 hours on the flip clocks (island, Home, screensaver); "auto" follows the language. */
+  clockFormat: "auto" | "12h" | "24h";
+  /** The flip clock's size on the screensaver. */
+  screensaverSize: "small" | "medium" | "large";
+  /** The date under it. */
+  screensaverDate: boolean;
+  /** At night, the screens off once the clock has shown `nightOffAfter` minutes, back on at `nightUntil`. */
+  nightOff: boolean;
+  nightFrom: string;
+  nightUntil: string;
+  nightOffAfter: number;
   /** Who the chat talks to (see core/providers.ts); picked in the chat view. */
   chatProvider: ProviderId;
   /** The model picked for each provider other than Anthropic, by provider id. */
@@ -199,6 +212,14 @@ export const DEFAULT_SETTINGS: Settings = {
   notificationSeconds: 7,
   desktopNotifications: false,
   hideGnomePanel: false,
+  screensaverMinutes: 0,
+  clockFormat: "auto",
+  screensaverSize: "large",
+  screensaverDate: true,
+  nightOff: false,
+  nightFrom: "23:00",
+  nightUntil: "06:00",
+  nightOffAfter: 120,
   chatProvider: "anthropic",
   chatModels: {},
   ollamaUrl: "",

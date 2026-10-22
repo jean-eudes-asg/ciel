@@ -28,6 +28,7 @@ import { notificationsSection } from "./notifications";
 import { updatesSection } from "./updates";
 import { renderDiff, statusDot } from "./parts";
 import { wallpaperSections } from "./wallpaper";
+import { setClockFormat } from "../views/flipclock";
 import {
   LANGUAGES, N_, isRtl, onLanguageChange, resolveLanguage, setLanguage, systemLanguages, t, tn,
 } from "../i18n/i18n";
@@ -1078,7 +1079,83 @@ function generalSection(): HTMLElement {
     ),
     ...recapRows(),
     languageRow(),
+    clockRow(),
     ...demoRows(),
+  );
+}
+
+/** The flip clock on the main display after a while, and the screens off at night (src-tauri/src/screensaver.rs). */
+function screensaverSection(): HTMLElement {
+  const choose = (values: number[], value: number, label: (v: number) => string, set: (v: number) => void) => {
+    const select = h("select", {}) as HTMLSelectElement;
+    for (const v of values) select.append(h("option", { value: String(v), text: label(v) }));
+    select.value = String(values.includes(value) ? value : values[0]);
+    select.addEventListener("change", () => {
+      set(Number(select.value));
+      void save();
+    });
+    return select;
+  };
+  const time = (value: string, set: (v: string) => void) => {
+    const input = h("input", { type: "time", value, style: "width:110px" }) as HTMLInputElement;
+    input.addEventListener("change", () => {
+      if (!input.value) return;
+      set(input.value);
+      void save();
+    });
+    return input;
+  };
+  const sizes = () => {
+    const select = h("select", {}) as HTMLSelectElement;
+    for (const [value, label] of [["small", t("Small")], ["medium", t("Medium")], ["large", t("Large")]] as const) {
+      select.append(h("option", { value, text: label }));
+    }
+    select.value = settings.screensaverSize;
+    select.addEventListener("change", () => {
+      settings.screensaverSize = select.value as typeof settings.screensaverSize;
+      void save();
+    });
+    return select;
+  };
+  const span = (minutes: number) =>
+    minutes === 0 ? t("Right away") : minutes < 60 ? t("{0} min", { 0: minutes }) : t("{0} h", { 0: minutes / 60 });
+  return h(
+    "section",
+    {},
+    h("h2", {}, h("span", { text: t("Screensaver") })),
+    h("div", { class: "row" },
+      h("label", { text: t("Flip clock after") }),
+      choose([0, 2, 5, 10, 15, 30, 60], settings.screensaverMinutes, (m) => (m === 0 ? t("Never") : t("{0} min", { 0: m })), (m) => {
+        settings.screensaverMinutes = m;
+      }),
+      h("button", { text: t("Preview"), onclick: () => void Bridge.screensaverPreview() }),
+    ),
+    h("div", { class: "hint", text: t("A flip clock on black, on the main display only, after these minutes without the mouse or a key. Keep it shorter than your system's own blank screen delay.") }),
+    h("div", { class: "row" },
+      h("label", { text: t("Clock size") }),
+      sizes(),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Show the date") }),
+      toggle(settings.screensaverDate, (v) => { settings.screensaverDate = v; void save(); }),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Screens off at night") }),
+      toggle(settings.nightOff, (v) => { settings.nightOff = v; void save(); }),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Night") }),
+      time(settings.nightFrom, (v) => { settings.nightFrom = v; }),
+      h("span", { class: "hint", text: "→" }),
+      time(settings.nightUntil, (v) => { settings.nightUntil = v; }),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Once the clock has shown") }),
+      choose([0, 30, 60, 120, 240], settings.nightOffAfter, span, (m) => {
+        settings.nightOffAfter = m;
+      }),
+    ),
+    h("div", { class: "hint", text: t("At night, once the clock has shown that long, the screens go off. When the night ends they come back on, with the clock.") }),
   );
 }
 
@@ -1102,6 +1179,21 @@ function gnomePanelRows(): HTMLElement {
     );
   });
   return box;
+}
+
+/** 12 or 24 hours on the flip clocks: the island's, Home's and the screensaver's. */
+function clockRow(): HTMLElement {
+  const select = h("select", {}) as HTMLSelectElement;
+  for (const [value, label] of [["auto", t("Automatic")], ["12h", t("12-hour")], ["24h", t("24-hour")]] as const) {
+    select.append(h("option", { value, text: label }));
+  }
+  select.value = settings.clockFormat;
+  select.addEventListener("change", () => {
+    settings.clockFormat = select.value as typeof settings.clockFormat;
+    setClockFormat(settings.clockFormat);
+    void save();
+  });
+  return h("div", { class: "row" }, h("label", { text: t("Clock") }), select);
 }
 
 /**
@@ -1406,6 +1498,7 @@ async function main() {
   const boot = await Bridge.boot();
   if (boot) {
     settings = { ...settings, ...boot.settings };
+    setClockFormat(settings.clockFormat);
     version = boot.version;
     clicksOutside = boot.clicksOutside;
   }
@@ -1434,6 +1527,7 @@ async function main() {
     const after = `${settings.chatProvider}|${settings.ollamaUrl}|${settings.lmstudioUrl}|${settings.customUrl}`;
     if (before !== after) localRedraw?.();
     applyLanguage();
+    setClockFormat(settings.clockFormat);
   });
 }
 
@@ -1495,6 +1589,7 @@ async function render() {
   const sections: Partial<Record<PageId, () => HTMLElement[]>> = {
     general: () => [
       generalSection(),
+      screensaverSection(),
       updatesSection({
         auto: settings.checkUpdates,
         setAuto: (on) => {

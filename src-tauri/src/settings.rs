@@ -54,6 +54,20 @@ pub struct Settings {
     pub desktop_notifications: bool,
     /// GNOME: Ciel's extension hides the top bar, the island has the top (gnome_ext.rs).
     pub hide_gnome_panel: bool,
+    /// The flip clock after this many minutes without input; 0 is off (screensaver.rs).
+    pub screensaver_minutes: u32,
+    /// 12 or 24 hours on the flip clocks: "auto" (the language's), "12h" or "24h".
+    pub clock_format: String,
+    /// The flip clock's size: "small", "medium" or "large".
+    pub screensaver_size: String,
+    /// The date under the flip clock.
+    pub screensaver_date: bool,
+    /// At night, the screens off once the clock has shown `night_off_after` minutes.
+    pub night_off: bool,
+    /// The night, "HH:MM" to "HH:MM": the screens come back on with the clock at its end.
+    pub night_from: String,
+    pub night_until: String,
+    pub night_off_after: u32,
     /// Who the chat talks to: "anthropic", a cloud provider of
     /// openai_compat.rs ("openai", "google", "openrouter"), or a model server
     /// of local_chat.rs ("ollama", "lmstudio", "custom"). Picked in the chat view.
@@ -224,6 +238,14 @@ impl Default for Settings {
             notification_seconds: 7,
             desktop_notifications: false,
             hide_gnome_panel: false,
+            screensaver_minutes: 0,
+            clock_format: "auto".into(),
+            screensaver_size: "large".into(),
+            screensaver_date: true,
+            night_off: false,
+            night_from: "23:00".into(),
+            night_until: "06:00".into(),
+            night_off_after: 120,
             chat_provider: crate::chat::ANTHROPIC.into(),
             chat_models: BTreeMap::new(),
             ollama_url: String::new(),
@@ -508,6 +530,14 @@ mod tests {
   "notificationSeconds": 20,
   "desktopNotifications": true,
   "hideGnomePanel": true,
+  "screensaverMinutes": 10,
+  "clockFormat": "24h",
+  "screensaverSize": "small",
+  "screensaverDate": false,
+  "nightOff": true,
+  "nightFrom": "22:30",
+  "nightUntil": "07:00",
+  "nightOffAfter": 60,
   "chatProvider": "ollama",
   "chatModels": { "ollama": "llama3.2", "openai": "gpt-x" },
   "ollamaUrl": "http://127.0.0.1:11434",
@@ -953,6 +983,14 @@ mod tests {
                 "notificationSeconds",
                 "desktopNotifications",
                 "hideGnomePanel",
+                "screensaverMinutes",
+                "clockFormat",
+                "screensaverSize",
+                "screensaverDate",
+                "nightOff",
+                "nightFrom",
+                "nightUntil",
+                "nightOffAfter",
                 "chatProvider",
                 "chatModels",
                 "ollamaUrl",
