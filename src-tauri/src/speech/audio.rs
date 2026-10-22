@@ -195,18 +195,82 @@ fn device_id(d: &cpal::Device) -> String {
     d.id().map(|id| id.to_string()).unwrap_or_default()
 }
 
+/// What Settings calls each input, by cpal's id. cpal names a PulseAudio
+/// source after its card and profile ("Built-in Audio Analog Stereo"); the
+/// jack a microphone is in is a *port* of that source, which cpal leaves out.
+/// On Linux the sources are read once more over the PulseAudio protocol and
+/// named after their active port and card: "Microphone · Built-in Audio",
+/// "Headset Microphone · Blue Yeti". Elsewhere cpal's names already read so.
+type Labels = std::collections::HashMap<String, String>;
+
+/// "Microphone · Built-in Audio" from a source's description, the description
+/// of its active port and its card's. Without a port, the description as is.
+#[cfg_attr(not(target_os = "linux"), allow(dead_code))]
+fn label(description: &str, port: Option<&str>, card: Option<&str>) -> String {
+    let port = port.map(str::trim).filter(|p| !p.is_empty());
+    let card = card.map(str::trim).filter(|c| !c.is_empty());
+    match (port, card) {
+        (Some(port), Some(card)) if port != card => format!("{port} · {card}"),
+        (Some(port), _) => port.to_string(),
+        (None, _) => description.trim().to_string(),
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn source_labels() -> Labels {
+    use std::ffi::{CStr, CString};
+    fn text(c: &CStr) -> String {
+        c.to_string_lossy().into_owned()
+    }
+    // A blocking handshake with no timeout, as in cpal: on its own thread,
+    // waited for briefly, so a stuck sound server costs a plain list.
+    let (tx, rx) = mpsc::channel();
+    std::thread::spawn(move || {
+        let name = CString::new(format!("ciel-{}", std::process::id())).unwrap_or_default();
+        let sources = pulseaudio::Client::from_env(&name)
+            .and_then(|client| futures_executor::block_on(client.list_sources()));
+        let _ = tx.send(sources);
+    });
+    let Ok(Ok(sources)) = rx.recv_timeout(Duration::from_secs(2)) else {
+        return Labels::new();
+    };
+    sources
+        .into_iter()
+        .map(|s| {
+            let description = s.description.as_deref().map(text).unwrap_or_default();
+            let port = s.ports.get(s.active_port).map(|p| p.description.as_deref().map(text).unwrap_or_else(|| text(&p.name)));
+            let card = s
+                .props
+                .get(pulseaudio::protocol::Prop::DeviceDescription)
+                .map(|v| String::from_utf8_lossy(v).trim_end_matches('\0').to_string());
+            (format!("pulseaudio:{}", text(&s.name)), label(&description, port.as_deref(), card.as_deref()))
+        })
+        .collect()
+}
+
+#[cfg(not(target_os = "linux"))]
+fn source_labels() -> Labels {
+    Labels::new()
+}
+
+/// The name shown for `d`: its label when the sound server gave one.
+fn display_name(labels: &Labels, d: &cpal::Device) -> String {
+    labels.get(&device_id(d)).cloned().unwrap_or_else(|| device_name(d))
+}
+
 /// The microphones, the default first. Monitors of outputs are left out.
 pub fn input_devices() -> Vec<InputDevice> {
     let host = cpal::default_host();
-    let default = host.default_input_device().map(|d| device_name(&d));
+    let labels = source_labels();
+    let default = host.default_input_device().map(|d| device_id(&d));
     let mut out = Vec::new();
     if let Ok(devices) = host.input_devices() {
         for d in devices {
-            let name = device_name(&d);
+            let name = display_name(&labels, &d);
             if name.is_empty() || is_monitor(&d) || out.iter().any(|x: &InputDevice| x.name == name) {
                 continue;
             }
-            out.push(InputDevice { default: Some(&name) == default.as_ref(), name });
+            out.push(InputDevice { default: Some(device_id(&d)) == default, name });
         }
     }
     out.sort_by_key(|d| !d.default);
@@ -222,10 +286,15 @@ fn is_monitor(d: &cpal::Device) -> bool {
 fn open_device(source: &Source) -> Option<cpal::Device> {
     let host = cpal::default_host();
     match source {
+        // By the shown name, or by cpal's own (what a preference saved before
+        // the labels said "Microphone · Built-in Audio").
         Source::Mic(Some(name)) => host
             .input_devices()
             .ok()
-            .and_then(|mut it| it.find(|d| device_name(d) == *name))
+            .and_then(|mut it| {
+                let labels = source_labels();
+                it.find(|d| display_name(&labels, d) == *name || device_name(d) == *name)
+            })
             .or_else(|| host.default_input_device()),
         Source::Mic(None) => host.default_input_device(),
         Source::System => system_device(&host),
@@ -492,6 +561,28 @@ mod tests {
         (0..(rate as f64 * seconds) as usize)
             .map(|i| (2.0 * std::f64::consts::PI * freq * i as f64 / rate as f64).sin() as f32 * 0.5)
             .collect()
+    }
+
+    #[test]
+    fn inputs_are_named_after_their_port_and_card() {
+        assert_eq!(label("Built-in Audio Analog Stereo", Some("Microphone"), Some("Built-in Audio")), "Microphone · Built-in Audio");
+        assert_eq!(label("Blue Yeti Analog Stereo", Some("Microphone"), Some("Blue Yeti")), "Microphone · Blue Yeti");
+        // The card's description missing, or the same as the port's: the port alone.
+        assert_eq!(label("Built-in Audio Analog Stereo", Some("Headset Microphone"), None), "Headset Microphone");
+        assert_eq!(label("USB Microphone", Some("Microphone"), Some("Microphone")), "Microphone");
+        // A source without ports (a virtual one) keeps its description.
+        assert_eq!(label("Echo-cancelled input", None, Some("Built-in Audio")), "Echo-cancelled input");
+        assert_eq!(label(" Noise-cancelled ", Some("  "), None), "Noise-cancelled");
+    }
+
+    /// The inputs of this computer, as Settings lists them:
+    /// `cargo test -- --ignored --nocapture lists_the_inputs`.
+    #[test]
+    #[ignore]
+    fn lists_the_inputs_of_this_computer() {
+        for d in input_devices() {
+            println!("{}{}", d.name, if d.default { "  (default)" } else { "" });
+        }
     }
 
     #[test]
