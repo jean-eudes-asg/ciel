@@ -38,6 +38,11 @@ ring = "0.17"
 # on this computer: sherpa-onnx (Apache-2.0) with NVIDIA's Parakeet, linked
 # statically (onnxruntime included), the models downloaded on the user's click.
 sherpa-onnx = { version = "1.13.8", default-features = false, features = ["static"] }
+# Kitten, « OK Ciel »'s voice on this computer, comes as a .tar.bz2 from
+# sherpa-onnx's releases (voice/kitten.rs). Both already in the tree: tar
+# through the updater, bzip2 through sherpa-onnx's build script.
+tar = "0.4"
+bzip2 = "0.5"
 # The microphone, and the computer's own sound for the Notetaker (WASAPI
 # loopback on Windows, a PulseAudio/PipeWire monitor on Linux). Apache-2.0.
 cpal = "0.18"

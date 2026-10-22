@@ -921,6 +921,8 @@ pub fn run() {
             notes::notes_export,
             voice::voice_done,
             voice::voice_say_native,
+            voice::voice_kitten_download,
+            voice::voice_kitten_remove,
             wallpaper::wallpaper_monitors,
             wallpaper::wallpaper_set_desktop,
             wallpaper::wallpaper_set_lock_screen,

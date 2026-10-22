@@ -7,8 +7,8 @@ import { Bridge } from "../../core/bridge";
 import type { VoiceOutput } from "../../core/flow";
 import { localName, staysHere, type AiStatus } from "../../core/brain";
 import type { HubContext } from "../shell";
-import { button, card, divider, label, row, segmented, toggle } from "../ui";
-import { modelsControl } from "./flowsettings";
+import { button, card, divider, label, number, row, segmented, toggle } from "../ui";
+import { KITTEN, modelsControl } from "./flowsettings";
 
 const ELEVEN = "elevenlabs-api-key";
 /** Where secrets.rs keeps the keys on this OS (same words as Notch → Chat). */
@@ -67,14 +67,27 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
   page.append(main);
 
   page.append(label(t("Answers")));
-  const outputs: [VoiceOutput, string][] = [["system", t("System voice")], ["elevenlabs", "ElevenLabs"], ["off", t("Text only")]];
+  const outputs: [VoiceOutput, string][] = [["system", t("System voice")], ["kitten", "Kitten"], ["elevenlabs", "ElevenLabs"], ["off", t("Text only")]];
   const answers = card(
     row(t("Ciel answers out loud"), null, segmented(outputs, prefs.voiceOutput, (v) => void ctx.setPrefs((p) => (p.voiceOutput = v)).then(() => ctx.navigate("voice")))),
   );
-  if (prefs.voiceOutput === "elevenlabs") {
+  const gender = () => row(t("Voice"), null, segmented([["female", t("Female")], ["male", t("Male")]], prefs.voiceGender, (g) => void ctx.setPrefs((p) => (p.voiceGender = g))));
+  if (prefs.voiceOutput === "kitten") {
     answers.append(
       divider(),
-      row(t("Voice"), null, segmented([["female", t("Female")], ["male", t("Male")]], prefs.voiceGender, (g) => void ctx.setPrefs((p) => (p.voiceGender = g)))),
+      row(t("Kitten, on your computer"),
+        t("Says the answers here, without the internet. English only: answers in another language get the system voice. Downloaded once (about {0} MB).", { 0: number(status.models.kittenMb) }),
+        modelsControl(ctx, () => ctx.navigate("voice"), KITTEN)),
+      divider(),
+      gender(),
+    );
+    if (status.models.kitten.state !== "ready") {
+      answers.append(h("div", { class: "hub-warn", text: t("Until Kitten is downloaded, the system voice says the answers.") }));
+    }
+  } else if (prefs.voiceOutput === "elevenlabs") {
+    answers.append(
+      divider(),
+      gender(),
       divider(),
       row(t("ElevenLabs key"), null, elevenKey()),
     );

@@ -79,7 +79,7 @@ const DEFAULT_STATUS: FlowStatus = {
     enabled: false, key: "right_ctrl", edge: "island", mic: "", keepDays: 30, cleanup: false,
     defaultStyle: "natural", summaryEngine: "claude", openAtLaunch: true, voice: false, voiceOutput: "system", voiceGender: "female",
   },
-  models: { parakeet: { state: "missing" }, downloadMb: 700 },
+  models: { parakeet: { state: "missing" }, downloadMb: 700, kitten: { state: "missing" }, kittenMb: 63 },
   keys: "ok",
   hasClaudeKey: false,
   ai: NO_BRAIN,

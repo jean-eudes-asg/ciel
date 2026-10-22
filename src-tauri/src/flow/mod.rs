@@ -512,7 +512,7 @@ pub fn flow_set_prefs(app: AppHandle, flow: State<Arc<Flow>>, mut prefs: Prefs) 
     if prefs.enabled && (!before.enabled || restart) {
         enable(&app, &flow);
     }
-    if before.voice != prefs.voice || before.mic != prefs.mic {
+    if before.voice != prefs.voice || before.mic != prefs.mic || before.voice_output != prefs.voice_output {
         if before.mic != prefs.mic {
             crate::voice::restart(&app);
         } else {

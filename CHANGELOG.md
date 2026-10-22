@@ -14,6 +14,10 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   night ends they come back on, with the clock.
 - **Flip clocks** in the island and on Home, and a **Clock** setting for 12 or
   24 hours (Automatic follows the language).
+- **Kitten**, a voice on your computer for « OK Ciel »'s answers (Settings →
+  OK Ciel → Answers): KittenML's small model through sherpa-onnx, downloaded
+  once on a click (about 63 MB), then offline. A woman's or a man's voice.
+  English only: an answer in another language gets the system voice.
 
 ### Fixed
 - Linux on X11: out on the desktop, Ciel's eyes follow the pointer across the

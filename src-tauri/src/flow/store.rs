@@ -110,9 +110,9 @@ pub struct Prefs {
     pub open_at_launch: bool,
     /// « OK Ciel »: listen for it and answer with Ciel's brain (ai.rs).
     pub voice: bool,
-    /// How Ciel answers out loud: "system", "elevenlabs" or "off".
+    /// How Ciel answers out loud: "system", "kitten", "elevenlabs" or "off".
     pub voice_output: String,
-    /// The ElevenLabs voice: "female" or "male".
+    /// The Kitten or ElevenLabs voice: "female" or "male".
     pub voice_gender: String,
     /// Dictation moved into the island once: the pill at the bottom, the old
     /// default, went there. Missing from older files, so false for them.

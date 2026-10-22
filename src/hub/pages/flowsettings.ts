@@ -5,31 +5,55 @@
 import { h, clear } from "../../views/dom";
 import { t } from "../../i18n/i18n";
 import { onEvent } from "../../core/bridge";
-import { FlowBridge, type Edge, type FlowKey, type ModelsStatus } from "../../core/flow";
+import { FlowBridge, type Edge, type FlowKey, type ModelState, type ModelsStatus } from "../../core/flow";
 import { localName, staysHere } from "../../core/brain";
 import type { HubContext } from "../shell";
 import { button, card, divider, keyKeycap, keycap, label, number, row, segmented, select, toggle } from "../ui";
 
-/** Download / progress / installed, for the voice model. Redraws itself. */
-export function modelsControl(ctx: HubContext, onReady?: () => void): HTMLElement {
+/** A model downloaded on a click: where its state is, and how to get or remove it. */
+export interface ModelKind {
+  pick: (models: ModelsStatus) => ModelState;
+  download: () => Promise<unknown>;
+  remove: () => Promise<unknown>;
+  removeLabel: () => string;
+}
+
+/** Parakeet and the voices model: dictation, the Notetaker and « OK Ciel » hear with them. */
+const PARAKEET: ModelKind = {
+  pick: (m) => m.parakeet,
+  download: () => FlowBridge.download(),
+  remove: () => FlowBridge.removeModels(),
+  removeLabel: () => t("Remove the models"),
+};
+
+/** Kitten: the voice « OK Ciel » can answer in, on this computer. */
+export const KITTEN: ModelKind = {
+  pick: (m) => m.kitten,
+  download: () => FlowBridge.downloadKitten(),
+  remove: () => FlowBridge.removeKitten(),
+  removeLabel: () => t("Remove the voice"),
+};
+
+/** Download / progress / installed, for a model (Parakeet unless told). Redraws itself. */
+export function modelsControl(ctx: HubContext, onReady?: () => void, kind: ModelKind = PARAKEET): HTMLElement {
   const el = h("div", { style: "display:flex;align-items:center;gap:8px" });
   let confirming = false;
   const draw = (models: ModelsStatus) => {
     clear(el);
-    const m = models.parakeet;
+    const m = kind.pick(models);
     if (m.state === "missing") {
-      el.append(button(t("Download"), () => void FlowBridge.download(), "primary"));
+      el.append(button(t("Download"), () => void kind.download(), "primary"));
     } else if (m.state === "downloading") {
       const bar = h("div", { class: "hub-progress" }, h("i", { style: `width:${Math.round(m.fraction * 100)}%` }));
       el.append(bar, h("span", { class: "hub-note", text: `${Math.round(m.fraction * 100)} %` }));
     } else if (m.state === "failed") {
       el.append(h("span", { class: "hub-note", text: m.error, title: m.error, style: "max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" }));
-      el.append(button(t("Retry"), () => void FlowBridge.download()));
+      el.append(button(t("Retry"), () => void kind.download()));
     } else if (confirming) {
       el.append(
-        button(t("Remove the models"), () => {
+        button(kind.removeLabel(), () => {
           confirming = false;
-          void FlowBridge.removeModels();
+          void kind.remove();
         }, "danger", true),
         button(t("Cancel"), () => {
           confirming = false;
@@ -37,7 +61,7 @@ export function modelsControl(ctx: HubContext, onReady?: () => void): HTMLElemen
         }, "", true),
       );
     } else {
-      const ok = h("button", { class: "hub-link", style: "color:var(--hub-green)", text: `✓ ${t("Installed")}`, title: t("Remove the models") });
+      const ok = h("button", { class: "hub-link", style: "color:var(--hub-green)", text: `✓ ${t("Installed")}`, title: kind.removeLabel() });
       ok.addEventListener("click", () => {
         confirming = true;
         draw(ctx.status.models);
@@ -48,10 +72,10 @@ export function modelsControl(ctx: HubContext, onReady?: () => void): HTMLElemen
   draw(ctx.status.models);
   void onEvent<ModelsStatus>("speech-models", (models) => {
     if (!el.isConnected) return;
-    const wasReady = ctx.status.models.parakeet.state === "ready";
+    const wasReady = kind.pick(ctx.status.models).state === "ready";
     ctx.status.models = models;
     draw(models);
-    if (!wasReady && models.parakeet.state === "ready") onReady?.();
+    if (!wasReady && kind.pick(models).state === "ready") onReady?.();
   });
   return el;
 }

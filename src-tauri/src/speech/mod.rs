@@ -131,6 +131,9 @@ pub struct ModelsStatus {
     pub parakeet: ModelState,
     /// Size of the whole download in MB, both sets.
     pub download_mb: u64,
+    /// Kitten, the voice « OK Ciel » can answer in (voice/kitten.rs), downloaded on its own.
+    pub kitten: ModelState,
+    pub kitten_mb: u64,
 }
 
 struct Downloads {
@@ -156,14 +159,19 @@ pub fn status() -> ModelsStatus {
     } else {
         ModelState::Missing
     };
-    ModelsStatus { parakeet, download_mb: (PARAKEET.total_size() + DIARIZER.total_size()) / 1_000_000 }
+    ModelsStatus {
+        parakeet,
+        download_mb: (PARAKEET.total_size() + DIARIZER.total_size()) / 1_000_000,
+        kitten: crate::voice::kitten::state(),
+        kitten_mb: crate::voice::kitten::download_mb(),
+    }
 }
 
 pub fn is_ready() -> bool {
     PARAKEET.is_present()
 }
 
-fn emit_status(app: &AppHandle) {
+pub(crate) fn emit_status(app: &AppHandle) {
     let _ = app.emit("speech-models", status());
     crate::voice::sync(app);
 }
@@ -277,7 +285,7 @@ fn load_lock() -> &'static Mutex<()> {
     L.get_or_init(|| Mutex::new(()))
 }
 
-fn threads() -> i32 {
+pub(crate) fn threads() -> i32 {
     std::thread::available_parallelism().map(|n| n.get().clamp(1, 4) as i32).unwrap_or(2)
 }
 
