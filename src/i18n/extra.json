@@ -4435,6 +4435,50 @@
    "ru": "Только текст",
    "id": "Teks saja"
   },
+  "Kitten, on your computer": {
+   "zh-Hans": "Kitten，在你的电脑上",
+   "hi": "Kitten, आपके कंप्यूटर पर",
+   "es": "Kitten, en tu ordenador",
+   "ar": "Kitten، على حاسوبك",
+   "fr": "Kitten, sur ton ordinateur",
+   "bn": "Kitten, আপনার কম্পিউটারে",
+   "pt-BR": "Kitten, no seu computador",
+   "ru": "Kitten на вашем компьютере",
+   "id": "Kitten, di komputermu"
+  },
+  "Says the answers here, without the internet. English only: answers in another language get the system voice. Downloaded once (about {0} MB).": {
+   "zh-Hans": "在本机朗读回答，无需联网。仅支持英语：其他语言的回答由系统语音朗读。只需下载一次（约 {0} MB）。",
+   "hi": "जवाब यहीं बोलता है, बिना इंटरनेट के। केवल अंग्रेज़ी: दूसरी भाषा के जवाब सिस्टम की आवाज़ में बोले जाते हैं। एक बार डाउनलोड होता है (लगभग {0} MB)।",
+   "es": "Dice las respuestas aquí, sin internet. Solo en inglés: las respuestas en otro idioma usan la voz del sistema. Se descarga una vez (unos {0} MB).",
+   "ar": "ينطق الإجابات هنا، دون إنترنت. بالإنجليزية فقط: الإجابات بلغة أخرى ينطقها صوت النظام. يُنزَّل مرة واحدة (نحو {0} ميغابايت).",
+   "fr": "Dit les réponses ici, sans internet. En anglais seulement : les réponses dans une autre langue passent par la voix du système. Téléchargé une fois (environ {0} Mo).",
+   "bn": "উত্তরগুলো এখানেই বলে, ইন্টারনেট ছাড়া। শুধু ইংরেজি: অন্য ভাষার উত্তর সিস্টেমের কণ্ঠে বলা হয়। একবার ডাউনলোড হয় (প্রায় {0} MB)।",
+   "pt-BR": "Fala as respostas aqui, sem internet. Só em inglês: respostas em outro idioma usam a voz do sistema. Baixado uma vez (cerca de {0} MB).",
+   "ru": "Произносит ответы здесь, без интернета. Только английский: ответы на другом языке звучат системным голосом. Скачивается один раз (около {0} МБ).",
+   "id": "Mengucapkan jawaban di sini, tanpa internet. Hanya bahasa Inggris: jawaban dalam bahasa lain memakai suara sistem. Diunduh sekali (sekitar {0} MB)."
+  },
+  "Until Kitten is downloaded, the system voice says the answers.": {
+   "zh-Hans": "在下载 Kitten 之前，回答由系统语音朗读。",
+   "hi": "जब तक Kitten डाउनलोड नहीं होता, जवाब सिस्टम की आवाज़ में बोले जाते हैं।",
+   "es": "Hasta que Kitten se descargue, la voz del sistema dice las respuestas.",
+   "ar": "إلى أن يُنزَّل Kitten، ينطق صوت النظام الإجابات.",
+   "fr": "Tant que Kitten n'est pas téléchargé, la voix du système dit les réponses.",
+   "bn": "Kitten ডাউনলোড না হওয়া পর্যন্ত সিস্টেমের কণ্ঠ উত্তরগুলো বলে।",
+   "pt-BR": "Até o Kitten ser baixado, a voz do sistema fala as respostas.",
+   "ru": "Пока Kitten не скачан, ответы произносит системный голос.",
+   "id": "Sampai Kitten diunduh, suara sistem yang mengucapkan jawaban."
+  },
+  "Remove the voice": {
+   "zh-Hans": "移除语音",
+   "hi": "आवाज़ हटाएँ",
+   "es": "Eliminar la voz",
+   "ar": "إزالة الصوت",
+   "fr": "Supprimer la voix",
+   "bn": "কণ্ঠ মুছুন",
+   "pt-BR": "Remover a voz",
+   "ru": "Удалить голос",
+   "id": "Hapus suara"
+  },
   "Ciel answers out loud": {
    "zh-Hans": "Ciel 大声回答",
    "hi": "Ciel ज़ोर से जवाब देता है",

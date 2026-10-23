@@ -56,6 +56,9 @@ export type ModelState =
 export interface ModelsStatus {
   parakeet: ModelState;
   downloadMb: number;
+  /** Kitten, the voice « OK Ciel » can answer in, downloaded on its own. */
+  kitten: ModelState;
+  kittenMb: number;
 }
 
 export interface FlowStatus {
@@ -191,7 +194,7 @@ export interface VoiceView {
   answer: string;
 }
 
-export type VoiceOutput = "system" | "elevenlabs" | "off";
+export type VoiceOutput = "system" | "kitten" | "elevenlabs" | "off";
 
 // ── What the pill, or the island, shows ───────────────────────────────────────
 
@@ -291,6 +294,8 @@ export const FlowBridge = {
   pasteAgain: () => call<void>("flow_paste_again"),
   download: () => call<void>("flow_models_download"),
   removeModels: () => call<void>("flow_models_remove"),
+  downloadKitten: () => call<void>("voice_kitten_download"),
+  removeKitten: () => call<void>("voice_kitten_remove"),
 
   notes: () => call<NotesState>("notes_state"),
   startNote: () => callOrThrow<string>("notes_start"),

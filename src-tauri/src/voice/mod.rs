@@ -7,13 +7,14 @@
 // what you said after it goes to Ciel's brain (brain.rs, ai.rs) — Claude with
 // your own key, or the chat's local model — never the audio. Ciel shows it all
 // in the pill at the bottom of the screen — listening, thinking, then the
-// answer, said out loud by the system's voice (the pill's speechSynthesis) or
-// ElevenLabs with your key.
+// answer, said out loud by the system's voice (the pill's speechSynthesis),
+// Kitten on this computer (kitten.rs) or ElevenLabs with your key.
 //
 // It stops listening while you dictate, while a call is recorded and while it
 // speaks itself.
 
 pub mod brain;
+pub mod kitten;
 pub mod wake;
 
 use std::collections::HashMap;
@@ -73,7 +74,13 @@ fn cannot_answer(app: &AppHandle) -> String {
 
 /// Starts or stops listening to follow the preference.
 pub fn sync(app: &AppHandle) {
-    let wanted = crate::flow::get(app).is_some_and(|f| f.store.lock().unwrap().prefs.voice);
+    let (wanted, output) = crate::flow::get(app)
+        .map(|f| {
+            let p = &f.store.lock().unwrap().prefs;
+            (p.voice, p.voice_output.clone())
+        })
+        .unwrap_or_default();
+    kitten::sync(wanted && output == "kitten");
     let mut running = RUNNING.lock().unwrap();
     match (wanted && requirements_met(app), running.is_some()) {
         (true, false) => {
@@ -256,8 +263,10 @@ struct Say {
     id: u64,
     text: String,
     lang: Option<&'static str>,
-    /// ElevenLabs' MP3, base64.
+    /// ElevenLabs' MP3 or Kitten's WAV, base64.
     audio: Option<String>,
+    /// The type of `audio`.
+    mime: &'static str,
     gender: String,
 }
 
@@ -273,11 +282,15 @@ fn speak(app: &AppHandle, text: &str) {
         std::thread::sleep(Duration::from_millis(1500));
         return;
     }
-    let audio = if output == "elevenlabs" { elevenlabs(text, &gender).map(|mp3| base64(&mp3)) } else { None };
+    let (audio, mime) = match output.as_str() {
+        "elevenlabs" => (elevenlabs(text, &gender).map(|mp3| base64(&mp3)), "audio/mpeg"),
+        "kitten" => (kitten::say(text, &gender).map(|wav| base64(&wav)), "audio/wav"),
+        _ => (None, "audio/mpeg"),
+    };
     let id = NEXT_ID.fetch_add(1, Ordering::Relaxed);
     let (tx, rx) = mpsc::channel();
     pending().lock().unwrap().insert(id, tx);
-    let _ = app.emit_to(pill::LABEL, "voice-say", Say { id, text: text.into(), lang: wake::speech_lang(text), audio, gender });
+    let _ = app.emit_to(pill::LABEL, "voice-say", Say { id, text: text.into(), lang: wake::speech_lang(text), audio, mime, gender });
     let words = crate::flow::text::word_count(text) as u64;
     let _ = rx.recv_timeout(Duration::from_millis(4000 + words * 600));
     pending().lock().unwrap().remove(&id);
@@ -289,6 +302,18 @@ pub fn voice_done(id: u64, text: Option<String>) {
     if let Some(tx) = pending().lock().unwrap().remove(&id) {
         let _ = tx.send(text.unwrap_or_default());
     }
+}
+
+/// OK Ciel → Kitten → Download.
+#[tauri::command]
+pub fn voice_kitten_download(app: AppHandle) {
+    kitten::download(app);
+}
+
+/// OK Ciel → Kitten → Remove the voice.
+#[tauri::command]
+pub fn voice_kitten_remove(app: AppHandle) {
+    kitten::remove(&app);
 }
 
 /// Where the webview has no voice (WebKitGTK often): speech-dispatcher or

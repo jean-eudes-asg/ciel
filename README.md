@@ -136,6 +136,9 @@ Then **Settings → Chat**: connect Ollama, pick the model, and set **Ciel's bra
 to *Local model*. `qwen3.5:9b` (6.6 GB) runs well on an 8 GB graphics card; on
 less, try `qwen3.5:4b`.
 
+For « OK Ciel » to answer out loud on your computer too, pick **Kitten** in
+**Settings → OK Ciel → Answers** and download it (about 63 MB, English only).
+
 ## Privacy
 
 No telemetry, no account. Keys live in Windows Credential Manager or the Linux

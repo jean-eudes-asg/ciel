@@ -110,9 +110,9 @@ pub struct Prefs {
     pub open_at_launch: bool,
     /// « OK Ciel »: listen for it and answer with Ciel's brain (ai.rs).
     pub voice: bool,
-    /// How Ciel answers out loud: "system", "elevenlabs" or "off".
+    /// How Ciel answers out loud: "system", "kitten", "elevenlabs" or "off".
     pub voice_output: String,
-    /// The ElevenLabs voice: "female" or "male".
+    /// The Kitten or ElevenLabs voice: "female" or "male".
     pub voice_gender: String,
     /// « OK Ciel » through the user's own Claude Code (agent/), in a build
     /// that has it. Off until they turn it on.

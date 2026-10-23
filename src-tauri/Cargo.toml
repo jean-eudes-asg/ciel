@@ -48,6 +48,11 @@ sherpa-onnx = { version = "1.13.8", default-features = false, features = ["stati
 # the times a calendar writes without one. Already in the tree through
 # async-imap; "clock" adds only iana-time-zone, on the windows-core wry has.
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+# Kitten, « OK Ciel »'s voice on this computer, comes as a .tar.bz2 from
+# sherpa-onnx's releases (voice/kitten.rs). Both already in the tree: tar
+# through the updater, bzip2 through sherpa-onnx's build script.
+tar = "0.4"
+bzip2 = "0.5"
 # The microphone, and the computer's own sound for the Notetaker (WASAPI
 # loopback on Windows, a PulseAudio/PipeWire monitor on Linux). Apache-2.0.
 cpal = "0.18"

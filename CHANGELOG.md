@@ -32,6 +32,10 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   for your calendar, your call notes and your spending. With Claude, the
   first two are on and spending is off until you turn it on. A local model
   reads all of it, as before; spending used to be for a local model only.
+- **Kitten**, a voice on your computer for « OK Ciel »'s answers (Settings →
+  OK Ciel → Answers): KittenML's small model through sherpa-onnx, downloaded
+  once on a click (about 63 MB), then offline. A woman's or a man's voice.
+  English only: an answer in another language gets the system voice.
 
 ### Fixed
 - Linux on X11: out on the desktop, Ciel's eyes follow the pointer across the
