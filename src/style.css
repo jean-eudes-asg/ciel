@@ -2484,6 +2484,22 @@ input[type="range"]::-webkit-slider-thumb {
   min-width: 0;
 }
 
+/* The Alerts card's ✕: takes an alert off the list. */
+.int-dismiss {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0 2px;
+  border: 0;
+  background: none;
+  font: 400 10px var(--font);
+  color: var(--dim-3);
+  cursor: pointer;
+}
+
+.int-dismiss:hover {
+  color: #c5c8cd;
+}
+
 .int-amount {
   font: 500 11px var(--mono);
   margin-left: auto;

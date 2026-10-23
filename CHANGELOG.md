@@ -36,6 +36,12 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   OK Ciel → Answers): KittenML's small model through sherpa-onnx, downloaded
   once on a click (about 63 MB), then offline. A woman's or a man's voice.
   English only: an answer in another language gets the system voice.
+- **Alerts**, a new pill: what Grafana, Alertmanager, Uptime Kuma or Zabbix
+  send to Ciel's own address, on this computer only unless you let the
+  network in (Settings → Integrations → Alerts). A new problem is a
+  notification that opens the page its tool sent; the card lists what's
+  still wrong, worst first, and a recovery takes its problem off. The
+  address carries a token kept in the keychain; the alerts stay in memory.
 
 ### Fixed
 - Linux on X11: out on the desktop, Ciel's eyes follow the pointer across the

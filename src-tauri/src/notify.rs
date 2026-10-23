@@ -27,7 +27,7 @@ use tokio::sync::mpsc;
 #[serde(rename_all = "camelCase")]
 pub struct Notification {
     pub id: String,
-    /// "chrome", "gmail" or "desktop".
+    /// "chrome", "gmail", "desktop" or "alerts".
     pub source: String,
     /// The app or site: "Gmail", "WhatsApp"…
     pub app: String,
@@ -75,6 +75,8 @@ pub enum Target {
     /// A meeting of the calendar (calendar/mod.rs): Join (and Open) go to its
     /// video room, Take notes starts the Notetaker on it.
     Meeting { join: Option<String>, meeting: crate::notes::Meeting },
+    /// Nothing to open: an alert that came without a page (alerts.rs).
+    None,
     /// The app that notified: its desktop entry id, the process that sent it
     /// (whose window comes forward), and GNOME's own copy of it once known.
     #[cfg(target_os = "linux")]

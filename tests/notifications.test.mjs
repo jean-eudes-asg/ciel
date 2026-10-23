@@ -87,3 +87,10 @@ test("a meeting's card brings its own buttons, its time, and stays until the mee
   const span = timeSpan({ start: Date.UTC(2026, 9, 20, 13), end: Date.UTC(2026, 9, 20, 13, 30) }, "en-GB");
   assert.match(span, /^\d\d:\d\d – \d\d:\d\d$/);
 });
+
+test("an alert from a monitoring tool comes as a notification of its own source", () => {
+  const n = parseNotification(raw({ source: "alerts", app: "Grafana", title: "Disk almost full", tag: "grafana:a1b2" }));
+  assert.equal(n.source, "alerts");
+  assert.equal(n.app, "Grafana");
+  assert.equal(parseNotification(raw({ source: "alerts", app: "" })).app, "Alerts");
+});

@@ -149,6 +149,10 @@ export const PILL_CATALOG: readonly PillDefinition[] = [
   // a card before each one (src-tauri/src/calendar/). Not on the Mac.
   { id: "integration_calendar", name: "Calendar", color: "#F472B6", category: "service",
     subtitle: N_("Meetings"), source: "n8n", support: "yes", connect: key("calendar-ics-1") },
+  // What Grafana, Alertmanager, Uptime Kuma or Zabbix send to Ciel's address
+  // (src-tauri/src/alerts.rs). Not on the Mac.
+  { id: "integration_alerts", name: "Alerts", color: "#F97316", category: "service",
+    subtitle: N_("Monitoring"), source: "n8n", support: "yes", connect: none },
 ];
 
 /** The always-on pill unless the user picks another workspace tool. */

@@ -1,10 +1,11 @@
 // Notifications from other apps, shown in the island (island/notifications.ts):
 // new mail in Gmail (src-tauri/src/gmail.rs), and what websites in Chrome, Edge
 // or Brave show (the Ciel for Chrome extension, through `ciel-hook --chrome`;
-// src-tauri/src/notify.rs), and on Linux the other apps' (notify.rs too). Pure rules here; nothing is stored, nothing is kept
+// src-tauri/src/notify.rs), on Linux the other apps' (notify.rs too), and what
+// monitoring tools send the Alerts pill (alerts.rs). Pure rules here; nothing is stored, nothing is kept
 // past the queue.
 
-export type NotificationSource = "chrome" | "gmail" | "desktop" | "ciel";
+export type NotificationSource = "chrome" | "gmail" | "desktop" | "ciel" | "alerts";
 
 export interface CielNotification {
   /** Unique, given by Rust. */
@@ -56,7 +57,9 @@ const clip = (s: unknown, max: number) => {
 export function parseNotification(raw: unknown): CielNotification | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
-  const source = r.source === "gmail" || r.source === "chrome" || r.source === "desktop" || r.source === "ciel" ? r.source : null;
+  const source = r.source === "gmail" || r.source === "chrome" || r.source === "desktop" || r.source === "ciel" || r.source === "alerts"
+    ? r.source
+    : null;
   const title = clip(r.title, MAX_TITLE);
   const body = clip(r.body, MAX_BODY);
   if (!source || typeof r.id !== "string" || !r.id || (!title && !body)) return null;
@@ -64,7 +67,7 @@ export function parseNotification(raw: unknown): CielNotification | null {
   return {
     id: r.id,
     source,
-    app: clip(r.app, 60) || { gmail: "Gmail", chrome: "Chrome", desktop: "", ciel: "Ciel" }[source],
+    app: clip(r.app, 60) || { gmail: "Gmail", chrome: "Chrome", desktop: "", ciel: "Ciel", alerts: "Alerts" }[source],
     title: title || body,
     body: title ? body : "",
     icon,

@@ -105,6 +105,11 @@ pub struct Settings {
     /// The Finance pill's folder (expenses.csv and settings.json). Empty means
     /// `<config dir>/finance`; see finance.rs.
     pub finance_folder: String,
+    /// The Alerts pill's port (alerts.rs).
+    pub alerts_port: u16,
+    /// The Alerts pill takes alerts from other computers, not only this one.
+    /// Off by default: Ciel listens on 127.0.0.1 until the user allows it.
+    pub alerts_lan: bool,
     /// Ciel's wallpapers (wallpaper/): what they go on and how they look.
     /// Written by the webviews, keys this build doesn't know included.
     pub wallpaper: WallpaperPrefs,
@@ -283,6 +288,8 @@ impl Default for Settings {
             language: String::new(),
             desktop_cloud: DesktopCloudPref::default(),
             finance_folder: String::new(),
+            alerts_port: crate::alerts::DEFAULT_PORT,
+            alerts_lan: false,
             wallpaper: WallpaperPrefs::default(),
             brain_reads: BrainReads::default(),
         }
@@ -577,6 +584,8 @@ mod tests {
   "language": "pt-BR",
   "desktopCloud": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } },
   "financeFolder": "/srv/dashboard/data",
+  "alertsPort": 8080,
+  "alertsLan": true,
   "wallpaper": {
     "desktop": true, "lockScreen": true, "live": false, "pauseOnBattery": false,
     "lat": 48.85, "lon": 2.35, "cielSize": 0.3, "cielX": 0.25, "cielY": 0.5,
@@ -1032,6 +1041,8 @@ mod tests {
                 "language",
                 "desktopCloud",
                 "financeFolder",
+                "alertsPort",
+                "alertsLan",
                 "wallpaper",
                 "brainReads",
             ]

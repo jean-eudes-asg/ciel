@@ -197,6 +197,10 @@ export interface Settings {
    * "" for `<Ciel's config dir>/finance` (src-tauri/src/finance.rs).
    */
   financeFolder: string;
+  /** The Alerts pill's port (src-tauri/src/alerts.rs). */
+  alertsPort: number;
+  /** The Alerts pill takes alerts from other computers; off, only from this one. */
+  alertsLan: boolean;
   /**
    * Ciel's wallpapers (src/sky, island/wallpaper.ts): off until the user turns
    * them on. Rust (settings.rs) keeps the same defaults; read it through
@@ -248,6 +252,8 @@ export const DEFAULT_SETTINGS: Settings = {
   pillColors: {},
   language: "",
   financeFolder: "",
+  alertsPort: 9797,
+  alertsLan: false,
   wallpaper: { ...DEFAULT_WALLPAPER },
   brainReads: { calendar: true, notes: true, finance: false },
 };

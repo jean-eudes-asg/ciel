@@ -295,6 +295,18 @@ export const Bridge = {
   /** Shows the folder, making it with its defaults first if it is new. */
   financeOpenFolder: () => call<void>("finance_open_folder"),
 
+  // ── Alerts (src-tauri/src/alerts.rs) ──────────────────────────────────────
+  /** Where to send alerts, the token hidden, and whether Ciel listens. */
+  alertsInfo: () => call<AlertsInfo>("alerts_info"),
+  /** Copies the address with its token; the token never comes to the page. */
+  alertsCopyAddress: () => call<boolean>("alerts_copy_address"),
+  /** A new token, so the old address stops working; the new address is copied. */
+  alertsNewAddress: () => call<boolean>("alerts_new_address"),
+  /** Copies the script of a Zabbix media type of type Webhook. */
+  alertsCopyZabbixScript: () => call<boolean>("alerts_copy_zabbix_script"),
+  /** Takes an alert off the list, until its tool sends it again. */
+  alertsDismiss: (key: string) => call<void>("alerts_dismiss", { key }),
+
   // ── Wallpapers (the Rust side of src/sky; island/wallpaper.ts drives it) ──
   /** The displays, in physical pixels; `id` is what wallpaperSetDesktop takes. */
   wallpaperMonitors: () => call<WallpaperMonitor[]>("wallpaper_monitors"),
@@ -384,6 +396,15 @@ async function sendBytes(cmd: string, png: Uint8Array, headers: Record<string, s
 }
 
 export type SpotifyAction = "playPause" | "next" | "previous" | "seek" | "shuffle" | "repeat" | "volume";
+
+/** The Alerts pill, as Settings shows it (src-tauri/src/alerts.rs AlertsInfo). */
+export interface AlertsInfo {
+  /** The address to give a monitoring tool, its token hidden. */
+  address: string;
+  listening: boolean;
+  /** Why Ciel doesn't listen (the port is taken…), or null. */
+  error: string | null;
+}
 
 /** Ciel's own updates, as Settings shows them (src-tauri/src/updates.rs UpdateStatus). */
 export interface UpdateStatus {

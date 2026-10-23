@@ -29,6 +29,8 @@ pub const KNOWN_KEYS: &[&str] = &[
     "calendar-ics-1",
     "calendar-ics-2",
     "calendar-ics-3",
+    // The Alerts pill (alerts.rs): the token monitoring tools send with each alert.
+    "alerts-token",
 ];
 
 fn entry(key: &str) -> Option<Entry> {
