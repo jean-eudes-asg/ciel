@@ -1,8 +1,9 @@
 // The screensaver (screensaver.html), on the main display only: a flip clock
 // on pitch black, like Fliqlo, in the size chosen in Settings, the date under
-// it if wanted. Rust shows it after the minutes chosen and takes it away again
-// (src-tauri/src/screensaver.rs); a key, a click or the mouse moving sends it
-// away from here. Nothing moves but the cards, once a minute.
+// it if wanted. Rust makes the window at launch, shows it after the minutes
+// chosen and takes it away again (src-tauri/src/screensaver.rs); a key, a
+// click or the mouse moving sends it away from here. Nothing moves but the
+// cards, once a minute, and nothing at all while it's hidden.
 
 import "./screensaver.css";
 import { Bridge, onEvent } from "../core/bridge";
@@ -11,6 +12,8 @@ import { buildFlipClock, setClockFormat, tick } from "../views/flipclock";
 
 /** The pointer may tremble: it has to travel this far to wake the screen. */
 const MOVE_PX = 14;
+/** Keys that wake nothing alone: Windows presses Alt itself as the clock comes to the front. */
+const MODIFIERS = new Set(["Alt", "AltGraph", "Control", "Shift", "Meta"]);
 
 const flip = buildFlipClock("saver-flip");
 const date = document.createElement("div");
@@ -36,18 +39,26 @@ function refreshDate() {
   });
 }
 
-// ── Going away ────────────────────────────────────────────────────────────────
+// ── Showing and going away ────────────────────────────────────────────────────
 
-let shownAt = performance.now();
+// Input counts only while the clock is up: from "screensaver-shown", which Rust
+// sends before the window appears, until it goes. What comes outside that is
+// ignored; Rust sees the user back from the idle time anyway.
+let up = false;
+let shownAt = 0;
 let from: { x: number; y: number } | null = null;
-let leaving = false;
+let stopTick: (() => void) | null = null;
+let dateTimer = 0;
+
 function leave() {
   // The pointer under the window as it appears is not a move.
-  if (leaving || performance.now() - shownAt < 700) return;
-  leaving = true;
+  if (!up || performance.now() - shownAt < 700) return;
+  up = false;
   void Bridge.screensaverDismiss();
 }
-window.addEventListener("keydown", leave);
+window.addEventListener("keydown", (e) => {
+  if (!MODIFIERS.has(e.key)) leave();
+});
 window.addEventListener("mousedown", leave);
 window.addEventListener("wheel", leave, { passive: true });
 window.addEventListener("touchstart", leave, { passive: true });
@@ -57,11 +68,22 @@ window.addEventListener("mousemove", (e) => {
 });
 
 void onEvent<boolean>("screensaver-shown", () => {
+  up = true;
   shownAt = performance.now();
   from = null;
-  leaving = false;
-  flip.set(new Date());
+  stopTick?.();
+  stopTick = tick(flip);
   refreshDate();
+  window.clearInterval(dateTimer);
+  // The date changes at midnight: once a minute is plenty.
+  dateTimer = window.setInterval(refreshDate, 60_000);
+});
+void onEvent<boolean>("screensaver-hidden", () => {
+  up = false;
+  from = null;
+  stopTick?.();
+  stopTick = null;
+  window.clearInterval(dateTimer);
 });
 void onEvent<Settings>("settings-changed", apply);
 
@@ -69,8 +91,7 @@ void Bridge.boot()
   .then((boot) => apply(boot?.settings))
   .catch(() => {})
   .finally(() => {
-    tick(flip);
+    // Never an empty card, should the first "shown" come before the page.
+    flip.set(new Date());
     refreshDate();
-    // The date changes at midnight: once a minute is plenty.
-    window.setInterval(refreshDate, 60_000);
   });

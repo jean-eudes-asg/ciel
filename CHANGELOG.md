@@ -2,6 +2,14 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+- Windows: the screensaver's **Preview** froze Ciel the first time. The
+  clock's window is now made at launch, like Ciel's other windows.
+- Windows: the flip clock could go away as soon as it came up, taking the Alt
+  key Windows presses to bring it to the front for you coming back.
+
 ## [0.3.0] - 2026-10-24
 
 ### Added

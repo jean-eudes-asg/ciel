@@ -139,10 +139,11 @@ fn page_url(app: &AppHandle) -> WebviewUrl {
     WebviewUrl::App("screensaver.html".into())
 }
 
-fn window(app: &AppHandle) -> Option<WebviewWindow> {
-    if let Some(win) = app.get_webview_window(LABEL) {
-        return Some(win);
-    }
+/// The clock's window, made hidden at launch and only shown and hidden after,
+/// like the Ciel window (lib.rs create_settings_window): on Windows a WebView2
+/// window made later may come up blank, and one made in a synchronous command
+/// (Preview) hangs the app.
+pub fn setup(app: &AppHandle) {
     let built = WebviewWindowBuilder::new(app, LABEL, page_url(app))
         .additional_browser_args(crate::BROWSER_ARGS)
         .title("Ciel")
@@ -158,19 +159,22 @@ fn window(app: &AppHandle) -> Option<WebviewWindow> {
         .background_color(tauri::window::Color(5, 7, 13, 255))
         .visible(false)
         .build();
-    match built {
-        Ok(win) => Some(win),
-        Err(err) => {
-            crate::log::line(format!("screensaver: no window: {err}"));
-            None
-        }
+    if let Err(err) = built {
+        crate::log::line(format!("screensaver: no window: {err}"));
     }
+}
+
+fn window(app: &AppHandle) -> Option<WebviewWindow> {
+    app.get_webview_window(LABEL)
 }
 
 /// Full screen on the main display only.
 fn show(app: &AppHandle) {
     let Some(win) = window(app) else { return };
     let Some(m) = app.primary_monitor().ok().flatten() else { return };
+    // Before the window: on Windows, set_focus presses Alt to bring it to the
+    // front, and the page must know by then that the clock is up.
+    let _ = win.emit_to(LABEL, "screensaver-shown", true);
     let _ = win.set_fullscreen(false);
     let _ = win.set_position(*m.position());
     let _ = win.set_size(*m.size());
@@ -178,13 +182,13 @@ fn show(app: &AppHandle) {
     let _ = win.set_fullscreen(true);
     let _ = win.set_always_on_top(true);
     let _ = win.set_focus();
-    let _ = win.emit_to(LABEL, "screensaver-shown", true);
 }
 
 fn hide(app: &AppHandle) {
-    if let Some(win) = app.get_webview_window(LABEL) {
+    if let Some(win) = window(app) {
         let _ = win.set_fullscreen(false);
         let _ = win.hide();
+        let _ = win.emit_to(LABEL, "screensaver-hidden", true);
     }
 }
 
@@ -195,9 +199,10 @@ pub fn screensaver_dismiss(app: AppHandle) {
     hide(&app);
 }
 
-/// Settings' Preview: the clock now, until a key or the mouse.
+/// Settings' Preview: the clock now, until a key or the mouse. Async: off the
+/// main thread, which a window's calls must not wait on from a command.
 #[tauri::command]
-pub fn screensaver_preview(app: AppHandle) {
+pub async fn screensaver_preview(app: AppHandle) {
     *PHASE.lock().unwrap() = Phase::Shown(Instant::now());
     show(&app);
 }

@@ -957,9 +957,11 @@ pub fn run() {
             tray::build(&handle)?;
             // Before the island: see create_settings_window.
             create_settings_window(&handle);
-            // Same rule for Ciel's desktop window and the dictation pill.
+            // Same rule for Ciel's desktop window, the dictation pill and the
+            // screensaver's clock.
             desktop::setup(&handle);
             flow::setup(&handle);
+            screensaver::setup(&handle);
             notes::setup(&handle);
 
             if let Some(win) = island::window(&handle) {
