@@ -57,6 +57,9 @@ pub struct Settings {
     pub desktop_notifications: bool,
     /// GNOME: Ciel's extension hides the top bar, the island has the top (gnome_ext.rs).
     pub hide_gnome_panel: bool,
+    /// Windows: Ciel's windows are left out of screen shares, recordings and
+    /// screenshots (capture.rs). Off by default.
+    pub hide_from_screen_sharing: bool,
     /// The flip clock after this many minutes without input; 0 is off (screensaver.rs).
     pub screensaver_minutes: u32,
     /// 12 or 24 hours on the flip clocks: "auto" (the language's), "12h" or "24h".
@@ -269,6 +272,7 @@ impl Default for Settings {
             meeting_reminder_minutes: 5,
             desktop_notifications: false,
             hide_gnome_panel: false,
+            hide_from_screen_sharing: false,
             screensaver_minutes: 0,
             clock_format: "auto".into(),
             screensaver_size: "large".into(),
@@ -565,6 +569,7 @@ mod tests {
   "meetingReminderMinutes": 10,
   "desktopNotifications": true,
   "hideGnomePanel": true,
+  "hideFromScreenSharing": true,
   "screensaverMinutes": 10,
   "clockFormat": "24h",
   "screensaverSize": "small",
@@ -886,6 +891,13 @@ mod tests {
     }
 
     #[test]
+    fn ciel_shows_in_screen_shares_until_the_user_hides_him() {
+        assert!(!Settings::default().hide_from_screen_sharing);
+        assert!(!parse(&custom_with("hideFromScreenSharing", None)).unwrap().hide_from_screen_sharing);
+        assert!(parse(&custom_with("hideFromScreenSharing", Some(json!(true)))).unwrap().hide_from_screen_sharing);
+    }
+
+    #[test]
     fn wallpaper_keys_from_a_later_version_are_kept() {
         let loaded = parse(CUSTOM.as_bytes()).unwrap();
         assert_eq!(loaded.wallpaper.extra.get("aKeyFromALaterVersion"), Some(&json!([1, 2])));
@@ -1022,6 +1034,7 @@ mod tests {
                 "meetingReminderMinutes",
                 "desktopNotifications",
                 "hideGnomePanel",
+                "hideFromScreenSharing",
                 "screensaverMinutes",
                 "clockFormat",
                 "screensaverSize",

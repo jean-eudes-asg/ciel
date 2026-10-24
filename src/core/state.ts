@@ -148,6 +148,8 @@ export interface Settings {
   desktopNotifications: boolean;
   /** GNOME: Ciel's extension hides the top bar, the island has the top. */
   hideGnomePanel: boolean;
+  /** Windows: Ciel's windows are left out of screen shares, recordings and screenshots (src-tauri/src/capture.rs). */
+  hideFromScreenSharing: boolean;
   /** The flip clock after this many minutes without input; 0 is off (src-tauri/src/screensaver.rs). */
   screensaverMinutes: number;
   /** 12 or 24 hours on the flip clocks (island, Home, screensaver); "auto" follows the language. */
@@ -234,6 +236,7 @@ export const DEFAULT_SETTINGS: Settings = {
   meetingReminderMinutes: 5,
   desktopNotifications: false,
   hideGnomePanel: false,
+  hideFromScreenSharing: false,
   screensaverMinutes: 0,
   clockFormat: "auto",
   screensaverSize: "large",

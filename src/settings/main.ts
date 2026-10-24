@@ -1217,6 +1217,7 @@ function generalSection(): HTMLElement {
       screen,
     ),
     gnomePanelRows(),
+    ...screenSharingRows(),
     h("div", { class: "row" },
       h("label", { text: t("Launch at startup") }),
       toggle(settings.autostart, (v) => { settings.autostart = v; void save(); }),
@@ -1323,6 +1324,18 @@ function gnomePanelRows(): HTMLElement {
     );
   });
   return box;
+}
+
+/** Windows: every window of Ciel's left out of screen shares (src-tauri/src/capture.rs). Linux has no way to. */
+function screenSharingRows(): HTMLElement[] {
+  if (!navigator.userAgent.includes("Windows")) return [];
+  return [
+    h("div", { class: "row" },
+      h("label", { text: t("Hide from screen sharing") }),
+      toggle(settings.hideFromScreenSharing, (v) => { settings.hideFromScreenSharing = v; void save(); }),
+    ),
+    h("div", { class: "hint", text: t("Ciel stays on your screen but is left out of screen shares, recordings and screenshots, yours included. A camera pointed at the screen still sees everything.") }),
+  ];
 }
 
 /** 12 or 24 hours on the flip clocks: the island's, Home's and the screensaver's. */

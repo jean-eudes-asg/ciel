@@ -6993,6 +6993,28 @@
    "pt-BR": "Até o Kokoro ser baixado, a voz do sistema diz as respostas.",
    "ru": "Пока Kokoro не скачан, ответы произносит системный голос.",
    "id": "Sampai Kokoro diunduh, suara sistem yang mengucapkan jawaban."
+  },
+  "Hide from screen sharing": {
+   "zh-Hans": "在屏幕共享中隐藏",
+   "hi": "स्क्रीन शेयरिंग में छिपाएँ",
+   "es": "Ocultar al compartir pantalla",
+   "ar": "إخفاء عند مشاركة الشاشة",
+   "fr": "Masquer lors du partage d'écran",
+   "bn": "স্ক্রিন শেয়ারিংয়ে লুকান",
+   "pt-BR": "Ocultar no compartilhamento de tela",
+   "ru": "Скрывать при демонстрации экрана",
+   "id": "Sembunyikan saat berbagi layar"
+  },
+  "Ciel stays on your screen but is left out of screen shares, recordings and screenshots, yours included. A camera pointed at the screen still sees everything.": {
+   "zh-Hans": "Ciel 仍显示在你的屏幕上，但不会出现在屏幕共享、录屏和截图中，包括你自己截的。对着屏幕的摄像头仍能看到一切。",
+   "hi": "Ciel आपकी स्क्रीन पर दिखता रहता है, पर स्क्रीन शेयर, रिकॉर्डिंग और स्क्रीनशॉट में नहीं आता, आपके अपने भी नहीं। स्क्रीन की ओर रखा कैमरा फिर भी सब कुछ देखता है।",
+   "es": "Ciel sigue en tu pantalla, pero no aparece al compartir pantalla, en grabaciones ni en capturas, tampoco en las tuyas. Una cámara que apunte a la pantalla sigue viéndolo todo.",
+   "ar": "يبقى Ciel على شاشتك، لكنه لا يظهر في مشاركة الشاشة ولا في التسجيلات ولا في لقطات الشاشة، بما فيها لقطاتك أنت. أما الكاميرا الموجّهة إلى الشاشة فترى كل شيء.",
+   "fr": "Ciel reste sur ton écran mais n'apparaît ni dans les partages d'écran, ni dans les enregistrements, ni dans les captures, les tiennes comprises. Une caméra pointée sur l'écran voit quand même tout.",
+   "bn": "Ciel আপনার স্ক্রিনে থাকে, কিন্তু স্ক্রিন শেয়ার, রেকর্ডিং আর স্ক্রিনশটে আসে না, আপনার নিজেরগুলোতেও না। স্ক্রিনের দিকে তাক করা ক্যামেরা তবুও সবকিছু দেখে।",
+   "pt-BR": "O Ciel continua na sua tela, mas fica de fora de compartilhamentos de tela, gravações e capturas de tela, inclusive as suas. Uma câmera apontada para a tela ainda vê tudo.",
+   "ru": "Ciel остаётся на вашем экране, но не попадает в демонстрацию экрана, записи и снимки экрана, в том числе ваши собственные. Камера, направленная на экран, всё равно видит всё.",
+   "id": "Ciel tetap ada di layarmu, tetapi tidak ikut dalam berbagi layar, rekaman, dan tangkapan layar, termasuk milikmu sendiri. Kamera yang diarahkan ke layar tetap melihat semuanya."
   }
  }
 }

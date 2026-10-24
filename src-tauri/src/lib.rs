@@ -17,6 +17,7 @@ mod github;
 mod gnome_ext;
 mod gmail;
 mod calendar;
+mod capture;
 mod agent;
 mod ytmusic;
 mod updates;
@@ -155,6 +156,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     }
     #[cfg(not(target_os = "linux"))]
     let _ = (desktop_changed, panel_changed);
+    capture::sync(&app, settings.hide_from_screen_sharing);
     if shortcuts_changed {
         shortcuts::apply(&app, &settings.shortcuts);
     }
@@ -810,6 +812,8 @@ pub fn run() {
         .manage(Chat::default())
         .manage(shortcuts::Registry::default())
         .manage(recap::load())
+        // Hide from screen sharing, for the windows made after launch too.
+        .on_page_load(capture::page_load)
         .invoke_handler(tauri::generate_handler![
             boot,
             notify::notification_action,
@@ -966,6 +970,8 @@ pub fn run() {
             flow::setup(&handle);
             screensaver::setup(&handle);
             notes::setup(&handle);
+            // Every window made so far, before the island is placed and drawn.
+            capture::sync(&handle, loaded.hide_from_screen_sharing);
 
             if let Some(win) = island::window(&handle) {
                 // Where Tauri takes the drop itself (Linux), its paths are the

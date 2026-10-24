@@ -20,6 +20,10 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   this computer or your network that speaks OpenAI's speech API, like
   VoiceStudio, with its voice picked from the ones it lists. When it doesn't
   answer, the system voice speaks.
+- **Hide from screen sharing** (Windows, Settings → General): Ciel stays on
+  your screen but is left out of screen shares, recordings and screenshots,
+  so your sessions, approvals, mail and notes don't go out with a shared
+  screen. Off by default.
 
 ### Fixed
 - « OK Ciel » wakes when « Ciel » is said in one syllable, which the voice
