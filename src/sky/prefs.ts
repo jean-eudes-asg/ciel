@@ -9,6 +9,7 @@ import type { BotStateName } from "../core/layout";
 export type Theme = "clear" | "cloudy" | "golden" | "sunset" | "night" | "space" | "storm";
 export type Phase = "night" | "dawn" | "day" | "golden" | "sunset" | "dusk";
 export type Source = "drawn" | "photos";
+export type LockStyle = "sky" | "clock";
 
 export const THEMES: readonly Theme[] = ["clear", "cloudy", "golden", "sunset", "night", "space", "storm"];
 export const PHASES: readonly Phase[] = ["night", "dawn", "day", "golden", "sunset", "dusk"];
@@ -22,6 +23,8 @@ export interface WallpaperPrefs {
   desktop: boolean;
   /** Apply to the lock screen (always a still picture). */
   lockScreen: boolean;
+  /** What the lock screen shows: Ciel's sky, or the screensaver's flip clock on black. */
+  lockStyle: LockStyle;
   /** The desktop is animated; false = still pictures. */
   live: boolean;
   /** Live pauses on battery. */
@@ -45,6 +48,7 @@ export interface WallpaperPrefs {
 export const DEFAULT_WALLPAPER: WallpaperPrefs = {
   desktop: false,
   lockScreen: false,
+  lockStyle: "sky",
   live: true,
   pauseOnBattery: true,
   lat: null,
@@ -90,6 +94,7 @@ export function wallpaperPrefs(raw: unknown): WallpaperPrefs {
     ...r,
     desktop: r.desktop === true,
     lockScreen: r.lockScreen === true,
+    lockStyle: r.lockStyle === "clock" ? "clock" : "sky",
     live: typeof r.live === "boolean" ? r.live : d.live,
     pauseOnBattery: typeof r.pauseOnBattery === "boolean" ? r.pauseOnBattery : d.pauseOnBattery,
     lat: coord(r.lat, 90),

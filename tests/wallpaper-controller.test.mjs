@@ -52,6 +52,10 @@ function harness() {
       calls.push(["render", spec.theme, spec.mood, w, h, spec.lockScreen, photo]);
       return new Uint8Array(8);
     },
+    renderClock: async (w, h, at) => {
+      calls.push(["clock", w, h, `${at.getHours()}:${String(at.getMinutes()).padStart(2, "0")}`]);
+      return new Uint8Array(8);
+    },
     log: (m) => calls.push(["log", m]),
   };
   const settle = async () => {
@@ -163,6 +167,37 @@ test("unlocking brings the lock screen up to date at once", async () => {
   const r = renders(h.take());
   assert.equal(r.length, 1);
   assert.equal(r[0][2], "finished");
+});
+
+test("the flip clock on the lock screen: drawn as it locks, at each new minute while locked, not while unlocked", async () => {
+  const h = harness();
+  const c = new WallpaperController(h.deps);
+  const prefs = { lockScreen: true, lockStyle: "clock", ...HERE };
+  const clocks = () => h.take().filter((x) => x[0] === "clock" || x[0] === "render");
+  c.update(prefs, "idle");
+  await h.advance(1_000);
+  assert.deepEqual(clocks(), [["clock", 3440, 1440, "12:30"]], "drawn once when chosen");
+
+  // Unlocked: neither the minutes nor a mood redraw it.
+  c.update(prefs, "error");
+  await h.advance(5 * MIN);
+  assert.deepEqual(clocks(), []);
+
+  c.session(true);
+  await h.settle();
+  assert.deepEqual(clocks(), [["clock", 3440, 1440, "12:35"]], "as it locks");
+  // Rust's "still locked" in the same minute draws nothing more.
+  await h.advance(10_000);
+  c.session(true);
+  await h.settle();
+  assert.deepEqual(clocks(), []);
+  await h.advance(2 * MIN);
+  assert.deepEqual(clocks(), [["clock", 3440, 1440, "12:36"], ["clock", 3440, 1440, "12:37"]], "each new minute");
+
+  c.session(false);
+  await h.settle();
+  await h.advance(3 * MIN);
+  assert.deepEqual(clocks(), [], "nothing once unlocked");
 });
 
 test("a fresh picture every refreshMinutes, and at a new phase of the day", async () => {

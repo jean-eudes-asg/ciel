@@ -4,6 +4,12 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 
 ## [Unreleased]
 
+### Added
+- **The flip clock on the lock screen** (Settings → Wallpaper → On the lock
+  screen): the screensaver's clock on black instead of Ciel's sky, in its
+  size and with its date, below the system's own clock. It is drawn again
+  every minute while the computer is locked.
+
 ### Fixed
 - Windows: the screensaver's **Preview** froze Ciel the first time. The
   clock's window is now made at launch, like Ciel's other windows.

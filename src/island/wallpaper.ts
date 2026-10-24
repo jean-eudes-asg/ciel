@@ -2,9 +2,11 @@
 // when the pictures change: a new phase of the day, a mood that has settled
 // (the lock screen at most every few minutes), every `refreshMinutes`, and
 // when the session locks or unlocks. It renders one PNG per display and hands
-// it to Rust, or, in live mode, tells the live windows what to draw. With the
-// desktop and the lock screen both off it does nothing at all: no timer, no
-// rendering, no call.
+// it to Rust, or, in live mode, tells the live windows what to draw. The lock
+// screen may show the screensaver's flip clock instead of the sky: drawn when
+// the session locks, then every minute while it stays locked, never while it
+// isn't. With the desktop and the lock screen both off it does nothing at
+// all: no timer, no rendering, no call.
 
 import { Bridge, onEvent, broadcast, type WallpaperMonitor, type WallpaperPhoto } from "../core/bridge";
 import { State } from "../core/state";
@@ -47,6 +49,8 @@ export interface WallpaperDeps {
   photos(theme: Theme): Promise<WallpaperPhoto[] | null>;
   /** A PNG of `spec` at `width`×`height`; `photo` is a cached photo's path. */
   render(spec: SceneSpec, width: number, height: number, t: number, photo: string | null): Promise<Uint8Array>;
+  /** A PNG of the screensaver's flip clock showing `now`, for the lock screen. */
+  renderClock(width: number, height: number, now: Date): Promise<Uint8Array>;
   log(message: string): void;
 }
 
@@ -71,6 +75,8 @@ export class WallpaperController {
   private liveKey = "";
   private running: Record<Target, boolean> = { desktop: false, lock: false };
   private again: Record<Target, boolean> = { desktop: false, lock: false };
+  /** The session, as the last lock or unlock said. */
+  private locked = false;
 
   constructor(deps: WallpaperDeps) {
     this.deps = deps;
@@ -78,6 +84,11 @@ export class WallpaperController {
 
   get enabled(): boolean {
     return this.prefs.desktop || this.prefs.lockScreen;
+  }
+
+  /** The lock screen shows the flip clock, not the sky. */
+  private get clockOnLock(): boolean {
+    return this.prefs.lockScreen && this.prefs.lockStyle === "clock";
   }
 
   get isLive(): boolean {
@@ -122,7 +133,7 @@ export class WallpaperController {
     if (moodChanged) {
       if (this.liveOn) this.later("live", TIMING.liveDebounceMs, () => void this.pushLive());
       if (prefs.desktop && !this.liveOn) this.later("desktop", TIMING.stillDebounceMs, () => this.refresh("desktop", false));
-      if (prefs.lockScreen) this.later("lock", TIMING.stillDebounceMs, () => this.refresh("lock", false));
+      if (prefs.lockScreen && !this.clockOnLock) this.later("lock", TIMING.stillDebounceMs, () => this.refresh("lock", false));
     }
   }
 
@@ -132,10 +143,32 @@ export class WallpaperController {
     this.refreshAll(true);
   }
 
-  /** The session was locked or unlocked: the lock screen catches up with the mood, now. */
-  session(_locked: boolean) {
+  /**
+   * The session was locked or unlocked: the lock screen catches up with the
+   * mood, now. The flip clock is drawn as it locks, and not as it unlocks.
+   */
+  session(locked: boolean) {
+    this.locked = locked;
     if (!this.prefs.lockScreen) return;
+    if (this.clockOnLock) {
+      if (locked) this.clockMinute();
+      else this.cancel("clock");
+      return;
+    }
     this.refresh("lock", false, true);
+  }
+
+  /**
+   * The flip clock as it is now, and again at each new minute while the
+   * session stays locked. Rust says "locked" again at each minute too
+   * (wallpaper/session.rs), for when a hidden page's timers are held back.
+   */
+  private clockMinute() {
+    this.refresh("lock", false, true);
+    const intoMinute = this.deps.now().getTime() % 60_000;
+    this.later("clock", 60_000 - intoMinute + 500, () => {
+      if (this.locked && this.clockOnLock) this.clockMinute();
+    });
   }
 
   /** A live window (re)loaded: tell it what to draw. */
@@ -164,12 +197,17 @@ export class WallpaperController {
   // ── Scheduling ──────────────────────────────────────────────────────────────
 
   private later(name: string, ms: number, fn: () => void) {
-    const prev = this.timers.get(name);
-    if (prev != null) this.deps.clearTimeout(prev);
+    this.cancel(name);
     this.timers.set(name, this.deps.setTimeout(() => {
       this.timers.delete(name);
       fn();
     }, ms));
+  }
+
+  private cancel(name: string) {
+    const id = this.timers.get(name);
+    if (id != null) this.deps.clearTimeout(id);
+    this.timers.delete(name);
   }
 
   private refreshAll(force: boolean) {
@@ -190,6 +228,8 @@ export class WallpaperController {
     for (const target of ["desktop", "lock"] as const) {
       if (target === "desktop" && (!this.prefs.desktop || this.liveOn)) continue;
       if (target === "lock" && !this.prefs.lockScreen) continue;
+      // The flip clock keeps its own minutes, while locked (clockMinute).
+      if (target === "lock" && this.clockOnLock) continue;
       const due = now - this.shown[target].at >= refresh;
       const changed = this.sceneKey() !== this.shown[target].key;
       if (due || changed) this.refresh(target, due);
@@ -204,7 +244,7 @@ export class WallpaperController {
     // Live mode draws the desktop itself: no still under it.
     if (target === "desktop" && (!this.prefs.desktop || this.liveOn)) return;
     if (target === "lock" && !this.prefs.lockScreen) return;
-    if (!force && this.sceneKey() === this.shown[target].key) return;
+    if (!force && this.keyFor(target) === this.shown[target].key) return;
     const gap = target === "lock" ? TIMING.lockMinGapMs : TIMING.stillMinGapMs;
     const wait = this.shown[target].at + gap - this.deps.now().getTime();
     if (!force && !now && wait > 0) {
@@ -224,6 +264,14 @@ export class WallpaperController {
     // Photos take turns; a drawn sky doesn't change with the hour.
     const turn = this.prefs.sources[theme] === "photos" ? this.photoTurn() : "-";
     return `${theme}|${phase}|${this.mood}|${turn}|${this.prefsKey}`;
+  }
+
+  /** What a target's picture shows: the scene, or for the flip clock its minute. */
+  private keyFor(target: Target): string {
+    if (target === "lock" && this.clockOnLock) {
+      return `clock|${Math.floor(this.deps.now().getTime() / 60_000)}|${this.prefsKey}`;
+    }
+    return this.sceneKey();
   }
 
   private photoTurn(): number {
@@ -247,10 +295,16 @@ export class WallpaperController {
     this.running[target] = true;
     try {
       const now = this.deps.now();
-      const key = this.sceneKey();
+      const key = this.keyFor(target);
+      const monitors = (await this.deps.monitors()) ?? [];
+      if (target === "lock" && this.clockOnLock) {
+        const primary = monitors.find((m) => m.primary) ?? monitors[0];
+        await this.deps.setLockScreen(await this.deps.renderClock(primary?.width ?? 1920, primary?.height ?? 1080, now));
+        this.shown[target] = { key, at: this.deps.now().getTime() };
+        return;
+      }
       const choice = chooseScene(now, this.mood, this.prefs);
       const photo = await this.photoFor(choice.theme);
-      const monitors = (await this.deps.monitors()) ?? [];
       const t = secondsOfDay(now);
       if (target === "lock") {
         const primary = monitors.find((m) => m.primary) ?? monitors[0];
@@ -330,6 +384,12 @@ export function islandDeps(): WallpaperDeps {
       } finally {
         bitmap?.close();
       }
+    },
+    renderClock: async (width, height, now) => {
+      const { clockPng } = await import("../views/flipclock-picture");
+      const s = State.settings;
+      const lang = document.documentElement.lang || undefined;
+      return clockPng(width, height, now, { format: s.clockFormat, size: s.screensaverSize, date: s.screensaverDate, lang });
     },
     log: (message) => void Bridge.log(message),
   };

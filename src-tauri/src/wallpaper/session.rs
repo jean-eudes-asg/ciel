@@ -2,7 +2,9 @@
 // about, while the lock screen is in use or live mode is on:
 //
 //   * the session locking and unlocking (WTSRegisterSessionNotification): the
-//     island hears `wallpaper-session`, and live windows pause;
+//     island hears `wallpaper-session`, and live windows pause. While it stays
+//     locked the island hears it again at each new minute, for the flip clock
+//     on the lock screen: a page's own timers are held back while locked;
 //   * the display going off (GUID_CONSOLE_DISPLAY_STATE) and the power source
 //     changing: live windows pause or carry on;
 //   * Explorer starting again (the "TaskbarCreated" broadcast, which only
@@ -24,16 +26,18 @@ use windows::Win32::System::Power::{
 };
 use windows::Win32::System::RemoteDesktop::{WTSRegisterSessionNotification, WTSUnRegisterSessionNotification, NOTIFY_FOR_THIS_SESSION};
 use windows::Win32::UI::WindowsAndMessaging::{
-    CreateWindowExW, DefWindowProcW, DestroyWindow, DispatchMessageW, GetMessageW, PostMessageW, PostQuitMessage,
-    RegisterClassW, RegisterWindowMessageW, TranslateMessage, DEVICE_NOTIFY_WINDOW_HANDLE, MSG, PBT_APMPOWERSTATUSCHANGE,
-    PBT_POWERSETTINGCHANGE, WINDOW_EX_STYLE, WM_CLOSE, WM_DESTROY, WM_DISPLAYCHANGE, WM_POWERBROADCAST,
-    WM_WTSSESSION_CHANGE, WNDCLASSW, WS_EX_TOOLWINDOW, WS_POPUP,
+    CreateWindowExW, DefWindowProcW, DestroyWindow, DispatchMessageW, GetMessageW, KillTimer, PostMessageW,
+    PostQuitMessage, RegisterClassW, RegisterWindowMessageW, SetTimer, TranslateMessage, DEVICE_NOTIFY_WINDOW_HANDLE,
+    MSG, PBT_APMPOWERSTATUSCHANGE, PBT_POWERSETTINGCHANGE, WINDOW_EX_STYLE, WM_CLOSE, WM_DESTROY, WM_DISPLAYCHANGE,
+    WM_POWERBROADCAST, WM_TIMER, WM_WTSSESSION_CHANGE, WNDCLASSW, WS_EX_TOOLWINDOW, WS_POPUP,
 };
 
 use super::{live, SESSION_EVENT};
 
 const WTS_SESSION_LOCK: usize = 7;
 const WTS_SESSION_UNLOCK: usize = 8;
+/// While locked: the timer of each new minute.
+const MINUTE_TIMER: usize = 1;
 /// The console display's power state (off, on, dimmed).
 const GUID_CONSOLE_DISPLAY_STATE: windows::core::GUID =
     windows::core::GUID::from_u128(0x6fe69556_704a_47a0_8f24_c28d936fda47);
@@ -58,6 +62,18 @@ pub fn display_off() -> bool {
 #[derive(Clone, Serialize)]
 struct Session {
     locked: bool,
+}
+
+/// Just past the next minute.
+fn until_next_minute() -> u32 {
+    let ms = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |d| d.as_millis() as u64);
+    (60_000 - ms % 60_000) as u32 + 500
+}
+
+fn tell_island(locked: bool) {
+    if let Some(app) = APP.get() {
+        let _ = app.emit_to(crate::island::WINDOW_LABEL, SESSION_EVENT, Session { locked });
+    }
 }
 
 /// Starts or stops following the session.
@@ -137,10 +153,25 @@ unsafe extern "system" fn proc(hwnd: HWND, msg: u32, wparam: WPARAM, lparam: LPA
         WM_WTSSESSION_CHANGE if matches!(wparam.0, WTS_SESSION_LOCK | WTS_SESSION_UNLOCK) => {
             let now_locked = wparam.0 == WTS_SESSION_LOCK;
             LOCKED.store(now_locked, Ordering::Relaxed);
-            if let Some(app) = app {
-                let _ = app.emit_to(crate::island::WINDOW_LABEL, SESSION_EVENT, Session { locked: now_locked });
+            tell_island(now_locked);
+            unsafe {
+                if now_locked {
+                    SetTimer(Some(hwnd), MINUTE_TIMER, until_next_minute(), None);
+                } else {
+                    let _ = KillTimer(Some(hwnd), MINUTE_TIMER);
+                }
             }
             live::poke();
+        }
+        WM_TIMER if wparam.0 == MINUTE_TIMER => {
+            if locked() {
+                tell_island(true);
+                // Again at the next minute, measured afresh so it doesn't drift.
+                unsafe { SetTimer(Some(hwnd), MINUTE_TIMER, until_next_minute(), None) };
+            } else {
+                let _ = unsafe { KillTimer(Some(hwnd), MINUTE_TIMER) };
+            }
+            return LRESULT(0);
         }
         WM_POWERBROADCAST => {
             if wparam.0 as u32 == PBT_POWERSETTINGCHANGE && lparam.0 != 0 {

@@ -6828,6 +6828,50 @@
    "pt-BR": "Não foi possível escutar na porta {port}: {error}",
    "ru": "Не удалось открыть порт {port}: {error}",
    "id": "Tidak bisa mendengarkan di port {port}: {error}"
+  },
+  "On the lock screen": {
+   "zh-Hans": "锁屏上显示",
+   "hi": "लॉक स्क्रीन पर",
+   "es": "En la pantalla de bloqueo",
+   "ar": "على شاشة القفل",
+   "fr": "Sur l'écran de verrouillage",
+   "bn": "লক স্ক্রিনে",
+   "pt-BR": "Na tela de bloqueio",
+   "ru": "На экране блокировки",
+   "id": "Di layar kunci"
+  },
+  "Ciel's sky": {
+   "zh-Hans": "Ciel 的天空",
+   "hi": "Ciel का आसमान",
+   "es": "El cielo de Ciel",
+   "ar": "سماء Ciel",
+   "fr": "Le ciel de Ciel",
+   "bn": "Ciel-এর আকাশ",
+   "pt-BR": "O céu do Ciel",
+   "ru": "Небо Ciel",
+   "id": "Langit Ciel"
+  },
+  "The flip clock": {
+   "zh-Hans": "翻页时钟",
+   "hi": "फ़्लिप घड़ी",
+   "es": "El reloj de paletas",
+   "ar": "الساعة القلّابة",
+   "fr": "L'horloge à palettes",
+   "bn": "ফ্লিপ ঘড়ি",
+   "pt-BR": "O relógio de flip",
+   "ru": "Перекидные часы",
+   "id": "Jam flip"
+  },
+  "The screensaver's flip clock on black, below the system's own clock, drawn again every minute while the computer is locked.": {
+   "zh-Hans": "屏幕保护的翻页时钟，黑色背景，位于系统自带时钟下方，电脑锁定期间每分钟重新绘制。",
+   "hi": "स्क्रीनसेवर की फ़्लिप घड़ी काले पर्दे पर, सिस्टम की अपनी घड़ी के नीचे, कंप्यूटर लॉक रहने तक हर मिनट फिर से बनाई जाती है।",
+   "es": "El reloj de paletas del salvapantallas sobre negro, bajo el reloj del propio sistema, redibujado cada minuto mientras el equipo está bloqueado.",
+   "ar": "الساعة القلّابة لشاشة التوقف على خلفية سوداء، أسفل ساعة النظام نفسه، وتُرسم من جديد كل دقيقة ما دام الحاسوب مقفلًا.",
+   "fr": "L'horloge à palettes de l'économiseur d'écran sur fond noir, sous l'horloge du système, redessinée chaque minute tant que l'ordinateur est verrouillé.",
+   "bn": "স্ক্রিনসেভারের ফ্লিপ ঘড়ি কালোর উপর, সিস্টেমের নিজস্ব ঘড়ির নিচে, কম্পিউটার লক থাকা অবস্থায় প্রতি মিনিটে নতুন করে আঁকা হয়।",
+   "pt-BR": "O relógio de flip do protetor de tela sobre preto, abaixo do relógio do próprio sistema, redesenhado a cada minuto enquanto o computador está bloqueado.",
+   "ru": "Перекидные часы заставки на чёрном фоне, под часами самой системы, перерисовываются каждую минуту, пока компьютер заблокирован.",
+   "id": "Jam flip screensaver di atas hitam, di bawah jam sistem sendiri, digambar ulang setiap menit selama komputer terkunci."
   }
  }
 }

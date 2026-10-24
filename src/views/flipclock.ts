@@ -4,6 +4,9 @@
 // size is the --flip-size font size, its colours --flip-card and --flip-ink.
 
 import "./flipclock.css";
+import { clockFace, twelveHours, type ClockFormat } from "./clockformat";
+
+export type { ClockFormat } from "./clockformat";
 
 export interface FlipClock {
   el: HTMLElement;
@@ -13,8 +16,7 @@ export interface FlipClock {
 
 const FLIP_MS = 640;
 
-/** "auto" follows the interface's language; Settings → General → Clock. */
-export type ClockFormat = "auto" | "12h" | "24h";
+/** Settings → General → Clock. */
 let format: ClockFormat = "auto";
 /** The clocks on screen, redrawn when the format changes. */
 const clocks = new Set<FlipClock>();
@@ -87,13 +89,6 @@ function show(c: Card, value: string) {
   }, FLIP_MS);
 }
 
-/** 12 or 24 hours: as chosen, or as the interface's language says. */
-function twelveHours(lang: string | undefined): boolean {
-  if (format !== "auto") return format === "12h";
-  const cycle = new Intl.DateTimeFormat(lang, { hour: "numeric" }).resolvedOptions().hourCycle;
-  return cycle === "h12" || cycle === "h11";
-}
-
 export function buildFlipClock(className = ""): FlipClock {
   const el = document.createElement("div");
   el.className = `flip-clock ${className}`.trim();
@@ -108,14 +103,10 @@ export function buildFlipClock(className = ""): FlipClock {
     el,
     set(now) {
       const lang = document.documentElement.lang || undefined;
-      const twelve = twelveHours(lang);
-      let h = now.getHours();
-      if (twelve) h = h % 12 || 12;
-      show(hours, twelve ? String(h) : String(h).padStart(2, "0"));
-      show(minutes, String(now.getMinutes()).padStart(2, "0"));
-      period.textContent = twelve
-        ? new Intl.DateTimeFormat(lang, { hour: "numeric", hour12: true }).formatToParts(now).find((p) => p.type === "dayPeriod")?.value ?? ""
-        : "";
+      const face = clockFace(now, twelveHours(format, lang), lang);
+      show(hours, face.hours);
+      show(minutes, face.minutes);
+      period.textContent = face.period;
     },
   };
   clocks.add(clock);

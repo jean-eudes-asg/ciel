@@ -131,6 +131,29 @@ function mainSection(
   const lock = toggle(p.lockScreen && sup.lockScreen, (v) => change((x) => (x.lockScreen = v)));
   (lock as HTMLButtonElement).disabled = !sup.lockScreen;
 
+  // Ciel's sky, or the screensaver's flip clock (views/flipclock-picture.ts).
+  const lockStyle = h("select", {}) as HTMLSelectElement;
+  lockStyle.append(
+    h("option", { value: "sky", text: t("Ciel's sky") }),
+    h("option", { value: "clock", text: t("The flip clock") }),
+  );
+  lockStyle.value = p.lockStyle;
+  lockStyle.disabled = !sup.lockScreen;
+  const skyHint = h("div", { class: "hint", text: t("The lock screen can't animate: Ciel appears there as a picture, refreshed with his mood.") });
+  const clockHint = h("div", {
+    class: "hint",
+    text: t("The screensaver's flip clock on black, below the system's own clock, drawn again every minute while the computer is locked."),
+  });
+  const showHint = () => {
+    clockHint.hidden = lockStyle.value !== "clock";
+    skyHint.hidden = !clockHint.hidden;
+  };
+  showHint();
+  lockStyle.addEventListener("change", () => {
+    showHint();
+    change((x) => (x.lockStyle = lockStyle.value === "clock" ? "clock" : "sky"));
+  });
+
   const mode = h("select", {}) as HTMLSelectElement;
   mode.append(
     h("option", { value: "live", text: t("Animated") }),
@@ -180,7 +203,9 @@ function mainSection(
     h("div", { class: "hint", text: t("Nothing changes on your PC until you turn one of these on.") }),
     h("div", { class: "row" }, h("label", { text: t("Desktop") }), desktop, sup.desktop ? null : unsupported()),
     h("div", { class: "row" }, h("label", { text: t("Lock screen") }), lock, sup.lockScreen ? null : unsupported()),
-    h("div", { class: "hint", text: t("The lock screen can't animate: Ciel appears there as a picture, refreshed with his mood.") }),
+    h("div", { class: "row" }, h("label", { text: t("On the lock screen") }), lockStyle),
+    skyHint,
+    clockHint,
     h("div", { class: "row" }, h("label", { text: t("Mode") }), mode),
     h("div", {
       class: "hint",
