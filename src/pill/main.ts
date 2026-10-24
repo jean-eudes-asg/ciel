@@ -12,6 +12,8 @@ import type { Settings } from "../core/state";
 import { BotEngine, hexToRGB } from "../cloud/engine";
 import { resolveLanguage, setLanguage, systemLanguages, t } from "../i18n/i18n";
 import { HUB_ICONS, keyLabel } from "../hub/ui";
+import { speechChunks } from "./chunks";
+import { audioUrl } from "./audio";
 
 const RESTING_LENGTH = 44;
 const RESTING_THICKNESS = 8;
@@ -399,39 +401,50 @@ function systemVoice(lang: string | null, gender: string): SpeechSynthesisVoice 
 
 async function sayWithSystem(text: string, lang: string | null, gender: string): Promise<void> {
   const synth = window.speechSynthesis;
-  if (synth && synth.getVoices().length === 0) {
+  // The list comes late the first time. Without it, Windows' own default voice
+  // would answer, maybe not the one picked: one voice, every time.
+  for (let tries = 0; synth && synth.getVoices().length === 0 && tries < 30; tries++) {
     await new Promise<void>((r) => {
       synth.addEventListener("voiceschanged", () => r(), { once: true });
-      setTimeout(r, 600);
+      setTimeout(r, 100);
     });
   }
   if (synth && synth.getVoices().length > 0) {
-    await new Promise<void>((resolve) => {
-      const u = new SpeechSynthesisUtterance(text);
-      const voice = systemVoice(lang, gender);
-      if (voice) u.voice = voice;
-      u.lang = voice?.lang ?? lang ?? navigator.language;
-      u.onend = () => resolve();
-      u.onerror = () => resolve();
-      synth.cancel();
-      synth.speak(u);
-    });
+    const voice = systemVoice(lang, gender);
+    synth.cancel();
+    // A piece at a time: a long utterance stops partway (chunks.ts).
+    for (const piece of speechChunks(text)) {
+      const said = await new Promise<boolean>((resolve) => {
+        const u = new SpeechSynthesisUtterance(piece);
+        if (voice) u.voice = voice;
+        u.lang = voice?.lang ?? lang ?? navigator.language;
+        u.onend = () => resolve(true);
+        // Cancelled (a new answer came): the rest goes too.
+        u.onerror = (e) => resolve(e.error !== "interrupted" && e.error !== "canceled");
+        synth.speak(u);
+      });
+      if (!said) return;
+    }
     return;
   }
   await FlowBridge.sayNative(text, lang);
 }
 
 async function sayAudio(base64: string, mime: string): Promise<boolean> {
+  const url = audioUrl(base64, mime);
   try {
-    const audio = new Audio(`data:${mime};base64,${base64}`);
+    const audio = new Audio(url);
     await audio.play();
     await new Promise<void>((resolve) => {
       audio.onended = () => resolve();
       audio.onerror = () => resolve();
     });
     return true;
-  } catch {
+  } catch (err) {
+    void Bridge.log(`voice: the answer's audio didn't play (${err instanceof Error ? err.name : "error"}), the system voice says it`);
     return false;
+  } finally {
+    URL.revokeObjectURL(url);
   }
 }
 

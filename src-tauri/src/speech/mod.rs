@@ -134,6 +134,9 @@ pub struct ModelsStatus {
     /// Kitten, the voice « OK Ciel » can answer in (voice/kitten.rs), downloaded on its own.
     pub kitten: ModelState,
     pub kitten_mb: u64,
+    /// Kokoro, its natural voices (voice/kokoro.rs), likewise.
+    pub kokoro: ModelState,
+    pub kokoro_mb: u64,
 }
 
 struct Downloads {
@@ -164,6 +167,8 @@ pub fn status() -> ModelsStatus {
         download_mb: (PARAKEET.total_size() + DIARIZER.total_size()) / 1_000_000,
         kitten: crate::voice::kitten::state(),
         kitten_mb: crate::voice::kitten::download_mb(),
+        kokoro: crate::voice::kokoro::state(),
+        kokoro_mb: crate::voice::kokoro::download_mb(),
     }
 }
 

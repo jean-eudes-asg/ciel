@@ -3,18 +3,22 @@
 //
 // While it is on, the microphone is open and a cheap energy detector cuts what
 // you say into stretches; only a stretch of speech goes to Parakeet, on this
-// computer, and only a stretch that starts with « OK Ciel » goes further:
-// what you said after it goes to Ciel's brain (brain.rs, ai.rs) — Claude with
-// your own key, or the chat's local model — never the audio. Ciel shows it all
-// in the pill at the bottom of the screen — listening, thinking, then the
-// answer, said out loud by the system's voice (the pill's speechSynthesis),
-// Kitten on this computer (kitten.rs) or ElevenLabs with your key.
+// computer, and only a stretch that starts with « OK Ciel » (or the other
+// name you gave Ciel) goes further: what you said after it goes to Ciel's
+// brain (brain.rs, ai.rs) — Claude with your own key, or the chat's local
+// model — never the audio. Ciel shows it all in the pill at the bottom of the
+// screen — listening, thinking, then the answer, said out loud by the
+// system's voice (the pill's speechSynthesis), Kitten on this computer
+// (kitten.rs) or ElevenLabs with your key — then listens a few seconds more
+// for your reply.
 //
 // It stops listening while you dictate, while a call is recorded and while it
 // speaks itself.
 
 pub mod brain;
 pub mod kitten;
+pub mod kokoro;
+pub mod pack;
 pub mod wake;
 
 use std::collections::HashMap;
@@ -81,6 +85,7 @@ pub fn sync(app: &AppHandle) {
         })
         .unwrap_or_default();
     kitten::sync(wanted && output == "kitten");
+    kokoro::sync(wanted && output == "kokoro");
     let mut running = RUNNING.lock().unwrap();
     match (wanted && requirements_met(app), running.is_some()) {
         (true, false) => {
@@ -123,13 +128,55 @@ fn show(app: &AppHandle, view: Option<VoiceView>) {
     pill::update(app, |s| s.voice = view);
 }
 
+#[derive(Debug, Clone, PartialEq)]
 enum Mode {
     /// Waiting for « OK Ciel ».
     Wake,
-    /// Heard « OK Ciel » alone: what comes next is the question.
-    Command { text: String, until: Instant },
-    /// Ciel asked something back: an answer comes without « OK Ciel ».
+    /// Heard « OK Ciel »: the request comes in pieces, with pauses in it,
+    /// and is answered once a pause lasts until `until`.
+    Request { text: String, until: Instant },
+    /// Ciel answered: a reply comes without « OK Ciel ».
     FollowUp { until: Instant },
+}
+
+/// How long Ciel waits for a reply after answering.
+const FOLLOW_UP: Duration = Duration::from_secs(8);
+/// A pause this long, once a stretch of speech has ended, ends the request.
+const PAUSE: Duration = Duration::from_millis(1000);
+/// After « OK Ciel » alone, the question may take a moment to come.
+const FIRST_WORDS: Duration = Duration::from_secs(7);
+
+/// What was heard of the request so far, and how long to wait for more.
+fn request(text: String, now: Instant) -> Mode {
+    let wait = if text.trim().is_empty() { FIRST_WORDS } else { PAUSE };
+    Mode::Request { text, until: now + wait }
+}
+
+/// One more stretch of speech, past « OK Ciel » or in reply: the request grows.
+fn heard_more(mode: Mode, heard: &str, now: Instant) -> Mode {
+    match mode {
+        Mode::Request { text, .. } => request(format!("{text} {heard}").trim().to_string(), now),
+        Mode::FollowUp { .. } => request(heard.trim().to_string(), now),
+        Mode::Wake => Mode::Wake,
+    }
+}
+
+/// The clock moved: a request whose pause lasted is ready, and a wait that ran
+/// out goes back to listening for « OK Ciel ». Never while someone speaks.
+fn tick(mode: &Mode, now: Instant, speech_goes_on: bool) -> Option<(Mode, Option<String>)> {
+    if speech_goes_on {
+        return None;
+    }
+    match mode {
+        Mode::Request { text, until } if now > *until => Some((Mode::Wake, Some(text.clone()).filter(|t| !t.trim().is_empty()))),
+        Mode::FollowUp { until } if now > *until => Some((Mode::Wake, None)),
+        _ => None,
+    }
+}
+
+/// The other name Ciel answers to (Settings → OK Ciel), maybe none.
+fn wake_name(app: &AppHandle) -> String {
+    crate::flow::get(app).map(|f| f.store.lock().unwrap().prefs.wake_name.clone()).unwrap_or_default()
 }
 
 fn run(app: AppHandle, stop: Arc<AtomicBool>) {
@@ -162,21 +209,12 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
             hide_at = None;
             show(&app, None);
         }
-        match &mode {
-            Mode::Command { until, .. } | Mode::FollowUp { until } if now > *until => {
-                mode = Mode::Wake;
-                vad.hangover = 25;
-                show(&app, None);
-            }
-            _ => {}
-        }
         // Dictation and calls have the microphone: Ciel doesn't listen meanwhile.
         if pill::dictating(&app) || crate::notes::is_recording(&app) {
             vad.reset();
             continue;
         }
-        let Some(chunk) = chunk else { continue };
-        for segment in vad.feed(&chunk) {
+        for segment in chunk.map(|c| vad.feed(&c)).unwrap_or_default() {
             if segment.len() < speech::SAMPLE_RATE as usize * 35 / 100 {
                 continue;
             }
@@ -184,62 +222,57 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
             if heard.is_empty() {
                 continue;
             }
-            let question = match &mut mode {
-                Mode::Wake => match wake::after_wake(&heard) {
+            mode = match std::mem::replace(&mut mode, Mode::Wake) {
+                Mode::Wake => match wake::after_wake(&heard, &wake_name(&app)) {
                     Some(rest) => {
                         crate::log::line("voice: « OK Ciel » heard");
                         // A local model loads, or Claude Code starts, while the question comes.
                         crate::ai::warm_up(&app);
                         crate::agent::warm_up(&app);
                         hide_at = None;
-                        if crate::flow::text::word_count(&rest) >= 2 {
-                            Some(rest)
-                        } else {
-                            show(&app, Some(VoiceView { phase: "listening".into(), heard: rest.clone(), answer: String::new() }));
-                            mode = Mode::Command { text: rest, until: now + Duration::from_secs(7) };
-                            // A question may come with pauses in it.
-                            vad.hangover = 40;
-                            None
-                        }
+                        // A request may come with pauses in it.
+                        vad.hangover = 40;
+                        request(rest, now)
                     }
-                    None => None,
+                    None => Mode::Wake,
                 },
-                Mode::Command { text, .. } => {
-                    let full = format!("{text} {heard}").trim().to_string();
-                    Some(full)
-                }
-                Mode::FollowUp { .. } => Some(heard),
+                other => heard_more(other, &heard, now),
             };
-            let Some(question) = question else { continue };
-            mode = Mode::Wake;
-            vad.hangover = 25;
-            show(&app, Some(VoiceView { phase: "thinking".into(), heard: question.clone(), answer: String::new() }));
-            *HEARD.lock().unwrap() = question.clone();
-            let reply = brain.respond(&app, &question);
-            let answer = reply.as_ref().map(|r| r.text.clone()).unwrap_or_default();
-            if answer.is_empty() {
-                let done = reply.is_some_and(|r| r.acted);
-                show(&app, Some(VoiceView {
-                    phase: "speaking".into(),
-                    heard: question,
-                    answer: if done { "✓".into() } else { cannot_answer(&app) },
-                }));
-                hide_at = Some(Instant::now() + Duration::from_secs(5));
-                continue;
-            }
-            show(&app, Some(VoiceView { phase: "speaking".into(), heard: question.clone(), answer: answer.clone() }));
-            speak(&app, &answer);
-            vad.reset();
-            // Drop what the microphone heard of Ciel's own voice.
-            while rx.try_recv().is_ok() {}
-            if answer.trim_end().ends_with('?') {
-                mode = Mode::FollowUp { until: Instant::now() + Duration::from_secs(8) };
-                vad.hangover = 40;
-                show(&app, Some(VoiceView { phase: "listening".into(), heard: String::new(), answer }));
-            } else {
-                hide_at = Some(Instant::now() + Duration::from_secs(6));
+            if let Mode::Request { text, .. } = &mode {
+                show(&app, Some(VoiceView { phase: "listening".into(), heard: text.clone(), answer: String::new() }));
             }
         }
+        let Some((next, ready)) = tick(&mode, Instant::now(), vad.in_speech()) else { continue };
+        mode = next;
+        vad.hangover = 25;
+        let Some(question) = ready else {
+            show(&app, None);
+            continue;
+        };
+        show(&app, Some(VoiceView { phase: "thinking".into(), heard: question.clone(), answer: String::new() }));
+        *HEARD.lock().unwrap() = question.clone();
+        let reply = brain.respond(&app, &question);
+        let answer = reply.as_ref().map(|r| r.text.clone()).unwrap_or_default();
+        if answer.is_empty() {
+            let done = reply.is_some_and(|r| r.acted);
+            show(&app, Some(VoiceView {
+                phase: "speaking".into(),
+                heard: question,
+                answer: if done { "✓".into() } else { cannot_answer(&app) },
+            }));
+            hide_at = Some(Instant::now() + Duration::from_secs(5));
+            continue;
+        }
+        show(&app, Some(VoiceView { phase: "speaking".into(), heard: question.clone(), answer: answer.clone() }));
+        speak(&app, &answer);
+        vad.reset();
+        // Drop what the microphone heard of Ciel's own voice.
+        while rx.try_recv().is_ok() {}
+        // The conversation goes on: a reply needs no « OK Ciel » for a while,
+        // and each one starts the wait again. Silence ends it.
+        mode = Mode::FollowUp { until: Instant::now() + FOLLOW_UP };
+        vad.hangover = 40;
+        show(&app, Some(VoiceView { phase: "listening".into(), heard: String::new(), answer }));
     }
     capture.stop();
     show(&app, None);
@@ -270,30 +303,126 @@ struct Say {
     gender: String,
 }
 
-/// Says `text` and returns once it is said (or after a sensible time).
+/// Audio made for a piece of an answer, and its type.
+type Made = Option<(Vec<u8>, &'static str)>;
+
+/// Says `text` and returns once it is said (or after a sensible time). A voice
+/// made here or by a service says it a piece at a time, the next one made
+/// while one plays: Ciel starts speaking once the first sentence is ready.
 fn speak(app: &AppHandle, text: &str) {
-    let (output, gender) = crate::flow::get(app)
+    let (output, gender, voice) = crate::flow::get(app)
         .map(|f| {
             let p = &f.store.lock().unwrap().prefs;
-            (p.voice_output.clone(), p.voice_gender.clone())
+            (p.voice_output.clone(), p.voice_gender.clone(), p.kokoro_voice.clone())
         })
-        .unwrap_or_else(|| ("system".into(), "female".into()));
+        .unwrap_or_else(|| ("system".into(), "female".into(), String::new()));
     if output == "off" {
         std::thread::sleep(Duration::from_millis(1500));
         return;
     }
-    let (audio, mime) = match output.as_str() {
-        "elevenlabs" => (elevenlabs(text, &gender).map(|mp3| base64(&mp3)), "audio/mpeg"),
-        "kitten" => (kitten::say(text, &gender).map(|wav| base64(&wav)), "audio/wav"),
-        _ => (None, "audio/mpeg"),
+    let g = gender.clone();
+    let make: Option<Box<dyn Fn(&str) -> Made + Send>> = match output.as_str() {
+        "kokoro" => Some(Box::new(move |s: &str| kokoro::say(s, &voice).map(|wav| (wav, "audio/wav")))),
+        // English only: an answer Kitten can't say whole is the system voice's.
+        "kitten" if kitten::can_say(text) => Some(Box::new(move |s: &str| kitten::say(s, &g).map(|wav| (wav, "audio/wav")))),
+        "elevenlabs" => Some(Box::new(move |s: &str| elevenlabs(s, &g).map(|mp3| (mp3, "audio/mpeg")))),
+        "server" => {
+            let app = app.clone();
+            Some(Box::new(move |s: &str| server_speech(&app, s).map(|mp3| (mp3, "audio/mpeg"))))
+        }
+        _ => None,
     };
+    let Some(make) = make else {
+        say_piece(app, text, None, &gender);
+        return;
+    };
+    let pieces = pieces(text, 200);
+    let (tx, rx) = mpsc::sync_channel::<Made>(1);
+    let todo = pieces.clone();
+    std::thread::spawn(move || {
+        for piece in &todo {
+            if tx.send(make(piece)).is_err() {
+                break;
+            }
+        }
+    });
+    for (i, piece) in pieces.iter().enumerate() {
+        match rx.recv().ok().flatten() {
+            Some(made) => say_piece(app, piece, Some(made), &gender),
+            None => {
+                // That voice failed: the system voice says the rest.
+                say_piece(app, &pieces[i..].join(" "), None, &gender);
+                break;
+            }
+        }
+    }
+}
+
+/// One piece to the pill, and the wait until it is said.
+fn say_piece(app: &AppHandle, text: &str, made: Made, gender: &str) {
+    let words = crate::flow::text::word_count(text) as u64;
+    let wait = match &made {
+        Some((wav, "audio/wav")) => Duration::from_secs_f64(pack::wav_seconds(wav)) + Duration::from_secs(3),
+        _ => Duration::from_millis(4000 + words * 600),
+    };
+    let (audio, mime) = made.map_or((None, "audio/mpeg"), |(bytes, mime)| (Some(base64(&bytes)), mime));
     let id = NEXT_ID.fetch_add(1, Ordering::Relaxed);
     let (tx, rx) = mpsc::channel();
     pending().lock().unwrap().insert(id, tx);
-    let _ = app.emit_to(pill::LABEL, "voice-say", Say { id, text: text.into(), lang: wake::speech_lang(text), audio, mime, gender });
-    let words = crate::flow::text::word_count(text) as u64;
-    let _ = rx.recv_timeout(Duration::from_millis(4000 + words * 600));
+    let _ = app.emit_to(pill::LABEL, "voice-say", Say { id, text: text.into(), lang: wake::speech_lang(text), audio, mime, gender: gender.into() });
+    let _ = rx.recv_timeout(wait);
     pending().lock().unwrap().remove(&id);
+}
+
+/// `text` in pieces of at most `max` characters, cut where a voice pauses: the
+/// first sentence alone, so it is ready soon; then sentences joined while they
+/// stay short, and a long one cut at a comma, else a space.
+fn pieces(text: &str, max: usize) -> Vec<String> {
+    let mut sentences: Vec<String> = Vec::new();
+    let mut current = String::new();
+    let text = text.split_whitespace().collect::<Vec<_>>().join(" ");
+    let mut chars = text.chars().peekable();
+    while let Some(c) = chars.next() {
+        current.push(c);
+        let ends = matches!(c, '.' | '!' | '?' | '…') && chars.peek().is_none_or(|n| *n == ' ');
+        if ends {
+            sentences.push(std::mem::take(&mut current).trim().to_string());
+        }
+    }
+    if !current.trim().is_empty() {
+        sentences.push(current.trim().to_string());
+    }
+    let mut cut: Vec<String> = Vec::new();
+    for sentence in sentences.into_iter().filter(|s| !s.is_empty()) {
+        let mut s = sentence.as_str();
+        while s.chars().count() > max {
+            let limit = s.char_indices().nth(max).map_or(s.len(), |(i, _)| i);
+            let head = &s[..limit];
+            let at = match head.rfind(", ").or_else(|| head.rfind("; ")) {
+                Some(comma) if comma > limit / 3 => comma + 1,
+                _ => head.rfind(' ').filter(|&i| i > 0).unwrap_or(limit),
+            };
+            cut.push(s[..at].trim().to_string());
+            s = s[at..].trim_start();
+        }
+        if !s.is_empty() {
+            cut.push(s.to_string());
+        }
+    }
+    let mut out: Vec<String> = Vec::new();
+    for piece in cut {
+        // The first piece stays alone: it is the one Ciel waits for.
+        if out.len() >= 2 {
+            let last = out.last_mut().unwrap();
+            if last.chars().count() + 1 + piece.chars().count() <= max {
+                last.push(' ');
+                last.push_str(&piece);
+                continue;
+            }
+        }
+        out.push(piece);
+    }
+    out
 }
 
 /// The pill says it has finished speaking (`id`), or the island answers a question.
@@ -302,6 +431,17 @@ pub fn voice_done(id: u64, text: Option<String>) {
     if let Some(tx) = pending().lock().unwrap().remove(&id) {
         let _ = tx.send(text.unwrap_or_default());
     }
+}
+
+/// OK Ciel → Kokoro → Download.
+#[tauri::command]
+pub fn voice_kokoro_download(app: AppHandle) {
+    kokoro::download(app);
+}
+
+#[tauri::command]
+pub fn voice_kokoro_remove(app: AppHandle) {
+    kokoro::remove(&app);
 }
 
 /// OK Ciel → Kitten → Download.
@@ -373,6 +513,92 @@ fn elevenlabs(text: &str, gender: &str) -> Option<Vec<u8>> {
         }
         Some(response.bytes().await.ok()?.to_vec())
     })
+}
+
+/// The user's voice server and the voice it speaks with.
+fn voice_server(app: &AppHandle) -> Option<(reqwest::Url, String)> {
+    let (url, voice) = crate::flow::get(app).map(|f| {
+        let p = &f.store.lock().unwrap().prefs;
+        (p.voice_server_url.clone(), p.voice_server_voice.clone())
+    })?;
+    Some((crate::net::normalise_server_url(&url).ok()?, if voice.is_empty() { "default".into() } else { voice }))
+}
+
+/// The answer from the user's voice server, on OpenAI's speech API (VoiceStudio
+/// and others), as MP3; None when it isn't running, and the system voice speaks.
+fn server_speech(app: &AppHandle, text: &str) -> Option<Vec<u8>> {
+    let (base, voice) = voice_server(app)?;
+    let input: String = text.chars().take(4000).collect();
+    tauri::async_runtime::block_on(async {
+        // A model may load on the first answer.
+        let client = crate::net::client(&base, Duration::from_secs(90)).ok()?;
+        let sent = client
+            .post(crate::net::join(&base, "v1/audio/speech"))
+            .json(&json!({ "model": "tts-1", "input": input, "voice": voice, "response_format": "mp3" }))
+            .send()
+            .await;
+        let response = match sent {
+            Ok(r) if r.status().is_success() => r,
+            Ok(r) => {
+                crate::log::line(format!("voice: the voice server at {} answered {}", crate::net::host_for_log(&base), r.status()));
+                return None;
+            }
+            Err(_) => {
+                crate::log::line(format!("voice: no voice server at {}", crate::net::host_for_log(&base)));
+                return None;
+            }
+        };
+        crate::net::read_capped(response, 32 << 20).await.ok().filter(|mp3| !mp3.is_empty())
+    })
+}
+
+/// A voice of the voice server, for Settings → OK Ciel.
+#[derive(Serialize, Clone, Debug, PartialEq)]
+pub struct ServerVoice {
+    pub id: String,
+    pub name: String,
+}
+
+/// The voices the server at `url` lists (VoiceStudio's `/v1/audio/voices`):
+/// its own profiles first. An error when nothing answers there.
+#[tauri::command]
+pub async fn voice_server_voices(url: String) -> Result<Vec<ServerVoice>, String> {
+    let base = crate::net::normalise_server_url(&url)?;
+    let client = crate::net::client(&base, Duration::from_secs(5))?;
+    let response = client
+        .get(crate::net::join(&base, "v1/audio/voices"))
+        .send()
+        .await
+        .map_err(|_| crate::i18n::t("Nothing answers at this address: is the voice server open?"))?;
+    if !response.status().is_success() {
+        // A server without a voice list still speaks with its own voice.
+        return Ok(Vec::new());
+    }
+    let body = crate::net::read_capped(response, 1 << 20).await?;
+    let list: Value = serde_json::from_slice(&body).map_err(|e| e.to_string())?;
+    Ok(server_voices(&list))
+}
+
+/// The voices of a voice list worth choosing: the server's own (VoiceStudio's
+/// profiles, or the plain names others list), not OpenAI's names, which
+/// VoiceStudio maps all to its default voice.
+fn server_voices(list: &Value) -> Vec<ServerVoice> {
+    list["voices"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|v| {
+            if let Some(id) = v.as_str() {
+                return Some(ServerVoice { id: id.into(), name: id.into() });
+            }
+            if v["type"].as_str() == Some("openai_alias") {
+                return None;
+            }
+            let id = v["voice_id"].as_str().or_else(|| v["id"].as_str())?.to_string();
+            let name = v["name"].as_str().unwrap_or(&id).to_string();
+            Some(ServerVoice { id, name })
+        })
+        .collect()
 }
 
 /// First English voice of the gender (a young one first for a man); else any
@@ -692,6 +918,69 @@ mod tests {
     use super::*;
 
     #[test]
+    fn a_request_with_pauses_is_answered_whole_once_the_pause_lasts() {
+        let t0 = Instant::now();
+        let ms = |n: u64| t0 + Duration::from_millis(n);
+        // « Raphael, what time » … pause … « is it in Tokyo »
+        let mode = request("what time".into(), t0);
+        assert_eq!(tick(&mode, ms(500), false), None, "a short pause: more may come");
+        assert_eq!(tick(&mode, ms(2000), true), None, "never while it goes on");
+        let mode = heard_more(mode, "is it in Tokyo", ms(1400));
+        assert_eq!(tick(&mode, ms(2000), false), None);
+        assert_eq!(tick(&mode, ms(2500), false), Some((Mode::Wake, Some("what time is it in Tokyo".into()))));
+    }
+
+    #[test]
+    fn the_name_alone_waits_for_the_question_and_a_reply_needs_no_name() {
+        let t0 = Instant::now();
+        let s = |n: u64| t0 + Duration::from_secs(n);
+        // « Raphael. » … then the question a few seconds later.
+        let mode = request(String::new(), t0);
+        assert_eq!(tick(&mode, s(5), false), None);
+        assert_eq!(tick(&mode, s(8), false), Some((Mode::Wake, None)), "nothing came: back to listening for the name");
+        let mode = heard_more(request(String::new(), t0), "play some music", s(3));
+        assert_eq!(tick(&mode, s(5), false), Some((Mode::Wake, Some("play some music".into()))));
+        // After an answer, a reply is a request of its own; silence ends the conversation.
+        let follow = Mode::FollowUp { until: s(8) };
+        assert_eq!(heard_more(follow.clone(), " and in Paris? ", s(2)), Mode::Request { text: "and in Paris?".into(), until: s(2) + PAUSE });
+        assert_eq!(tick(&follow, s(9), false), Some((Mode::Wake, None)));
+        assert_eq!(heard_more(Mode::Wake, "anything", s(1)), Mode::Wake);
+    }
+
+    #[test]
+    fn an_answer_is_said_in_pieces_the_first_sentence_alone() {
+        let text = "It's 16:45. Your next meeting is at 17:00, with Ana. It takes 3.5 hours. Bring the slides!";
+        assert_eq!(pieces(text, 200), ["It's 16:45.", "Your next meeting is at 17:00, with Ana. It takes 3.5 hours. Bring the slides!"]);
+        // Every word kept, in order, none over the limit; a long sentence cut at a comma.
+        let long = "The weather in Paris is mild today, with a light breeze from the west and clouds that should clear by the afternoon, so you won't need an umbrella.";
+        let p = pieces(&format!("Sure. {long} Anything else?"), 80);
+        assert_eq!(p.join(" "), format!("Sure. {long} Anything else?"));
+        assert!(p.iter().all(|s| s.chars().count() <= 80), "{p:?}");
+        assert_eq!(p[0], "Sure.");
+        assert!(p.iter().any(|s| s.ends_with(',')), "{p:?}");
+        assert_eq!(pieces("abcdefghij", 4), ["abcd", "efgh", "ij"]);
+        assert!(pieces("   ", 200).is_empty());
+        assert_eq!(pieces("Déjà vu… Encore ?", 200), ["Déjà vu…", "Encore ?"]);
+    }
+
+    #[test]
+    fn only_the_voice_servers_own_voices_are_offered() {
+        // VoiceStudio: its profiles, and OpenAI's names that all sound like its default.
+        let list = json!({ "voices": [
+            { "voice_id": "alloy", "name": "Alloy", "type": "openai_alias" },
+            { "voice_id": "p_42", "name": "Jean", "type": "profile", "language": "fr" },
+            { "id": "bare" },
+            { "name": "no id" },
+        ] });
+        let ids: Vec<(String, String)> = server_voices(&list).into_iter().map(|v| (v.id, v.name)).collect();
+        assert_eq!(ids, [("p_42".into(), "Jean".into()), ("bare".into(), "bare".into())]);
+        // Kokoro's server lists plain names.
+        let names: Vec<String> = server_voices(&json!({ "voices": ["af_bella", "am_adam"] })).into_iter().map(|v| v.id).collect();
+        assert_eq!(names, ["af_bella", "am_adam"]);
+        assert!(server_voices(&json!({})).is_empty());
+    }
+
+    #[test]
     fn claude_reads_only_what_the_user_let_it_and_a_local_model_reads_it_all() {
         let mut s = crate::settings::Settings::default();
         // A pill's data needs its pill, whatever the brain.
@@ -760,7 +1049,7 @@ mod with_models {
             for segment in vad.feed(chunk) {
                 let text = crate::speech::transcribe(&segment).expect("models").text;
                 println!("segment {:.2} s: {text}", segment.len() as f32 / 16_000.0);
-                heard.push(super::wake::after_wake(&text));
+                heard.push(super::wake::after_wake(&text, ""));
             }
         }
         println!("{heard:?}");

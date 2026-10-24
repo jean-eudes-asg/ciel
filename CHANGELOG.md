@@ -2,6 +2,37 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **Another name for Ciel** (Settings → OK Ciel → Also answers to): said
+  first, it wakes Ciel like « OK Ciel » does, « Raphael, what time is it? »,
+  for when the voice model never writes « Ciel » right for your voice.
+- **A conversation**: after answering, Ciel listens 8 seconds more for your
+  reply, without « OK Ciel », and again after each answer.
+- **Kokoro, natural voices on your computer** (Settings → OK Ciel →
+  Answers): downloaded once on a click, then made here without the internet.
+  Six English voices to pick from, and French answers in its French voice.
+- **Ciel starts speaking sooner**: with Kokoro, Kitten, ElevenLabs or a voice
+  server, the answer is said a sentence at a time, the next one made while
+  one plays.
+- **A voice server for the answers** (Settings → OK Ciel → Answers): one on
+  this computer or your network that speaks OpenAI's speech API, like
+  VoiceStudio, with its voice picked from the ones it lists. When it doesn't
+  answer, the system voice speaks.
+
+### Fixed
+- « OK Ciel » wakes when « Ciel » is said in one syllable, which the voice
+  model writes « see yeah », « C yeah » or, as what you say begins,
+  « see you ».
+- « OK Ciel » no longer answers at your first pause: what you say is heard
+  whole, across pauses, and answered once you've stopped.
+- The system voice says long answers to the end, and it's the same voice
+  every time: the first answer no longer gets Windows' default one.
+- Kitten, ElevenLabs and voice server answers are heard in their own voice:
+  the pill played them in a way the app's own security policy refused, and
+  the system voice said them instead.
+
 ## [0.3.1] - 2026-10-24
 
 ### Added

@@ -4,11 +4,11 @@
 import { h, clear } from "../../views/dom";
 import { t } from "../../i18n/i18n";
 import { Bridge } from "../../core/bridge";
-import { FlowBridge, type AgentStatus, type VoiceOutput } from "../../core/flow";
+import { FlowBridge, type AgentStatus, type FlowPrefs, type VoiceOutput } from "../../core/flow";
 import { localName, staysHere, type AiStatus } from "../../core/brain";
 import type { HubContext } from "../shell";
 import { button, card, divider, label, number, row, segmented, toggle } from "../ui";
-import { KITTEN, modelsControl } from "./flowsettings";
+import { KITTEN, KOKORO, modelsControl } from "./flowsettings";
 
 const ELEVEN = "elevenlabs-api-key";
 /** Where secrets.rs keeps the keys on this OS (same words as Notch → Chat). */
@@ -50,9 +50,17 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
   const agent = await FlowBridge.agentStatus();
   const agentReady = !!agent?.built && !!agent.path && agent.signedIn && prefs.voiceAgent === true;
   page.append(label(t("Listening")));
+  // Another name, for a voice the model writes « Ciel » wrong for (wake.rs).
+  const name = h("input", {
+    class: "hub-input", type: "text", value: prefs.wakeName ?? "", placeholder: t("A name"),
+    autocomplete: "off", spellcheck: "false", maxlength: "40", style: "width:180px",
+  }) as HTMLInputElement;
+  name.addEventListener("change", () => void ctx.setPrefs((p) => (p.wakeName = name.value.trim())));
   const main = card(
     row(t("Listen for « OK Ciel »"), t("The microphone stays open; only what follows « OK Ciel » goes further."),
       toggle(prefs.voice, (on) => void ctx.setPrefs((p) => (p.voice = on)).then(() => ctx.navigate("voice")))),
+    divider(),
+    row(t("Also answers to"), t("Another name that wakes Ciel when you say it first: « Raphael, what time is it? ». Pick one that dictation writes right."), name),
     divider(),
     row(t("Parakeet, on your computer"), t("Hears « OK Ciel » here, without the internet."), modelsControl(ctx, () => ctx.navigate("voice"))),
   );
@@ -75,12 +83,30 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
   }
 
   page.append(label(t("Answers")));
-  const outputs: [VoiceOutput, string][] = [["system", t("System voice")], ["kitten", "Kitten"], ["elevenlabs", "ElevenLabs"], ["off", t("Text only")]];
+  const outputs: [VoiceOutput, string][] = [["system", t("System voice")], ["kokoro", "Kokoro"], ["kitten", "Kitten"], ["elevenlabs", "ElevenLabs"], ["server", t("Voice server")], ["off", t("Text only")]];
   const answers = card(
     row(t("Ciel answers out loud"), null, segmented(outputs, prefs.voiceOutput, (v) => void ctx.setPrefs((p) => (p.voiceOutput = v)).then(() => ctx.navigate("voice")))),
   );
   const gender = () => row(t("Voice"), null, segmented([["female", t("Female")], ["male", t("Male")]], prefs.voiceGender, (g) => void ctx.setPrefs((p) => (p.voiceGender = g))));
-  if (prefs.voiceOutput === "kitten") {
+  if (prefs.voiceOutput === "kokoro") {
+    // The voices voice/kokoro.rs offers, by the names Kokoro gives them.
+    const voices: [string, string][] = [["af_heart", "Heart"], ["af_bella", "Bella"], ["af_nicole", "Nicole"], ["am_michael", "Michael"], ["am_fenrir", "Fenrir"], ["am_puck", "Puck"]];
+    const pick = h("select", { class: "hub-input", style: "width:180px" }) as HTMLSelectElement;
+    for (const [id, name] of voices) pick.append(h("option", { value: id, text: name }));
+    pick.value = voices.some(([id]) => id === prefs.kokoroVoice) ? prefs.kokoroVoice! : "af_heart";
+    pick.addEventListener("change", () => void ctx.setPrefs((p) => (p.kokoroVoice = pick.value)));
+    answers.append(
+      divider(),
+      row(t("Kokoro, on your computer"),
+        t("Natural voices, made here without the internet: English, and French in its own voice. Downloaded once (about {0} MB).", { 0: number(status.models.kokoroMb) }),
+        modelsControl(ctx, () => ctx.navigate("voice"), KOKORO)),
+      divider(),
+      row(t("Voice"), t("Heart, Bella and Nicole are women's voices; Michael, Fenrir and Puck, men's."), pick),
+    );
+    if (status.models.kokoro.state !== "ready") {
+      answers.append(h("div", { class: "hub-warn", text: t("Until Kokoro is downloaded, the system voice says the answers.") }));
+    }
+  } else if (prefs.voiceOutput === "kitten") {
     answers.append(
       divider(),
       row(t("Kitten, on your computer"),
@@ -99,6 +125,8 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
       divider(),
       row(t("ElevenLabs key"), null, elevenKey()),
     );
+  } else if (prefs.voiceOutput === "server") {
+    answers.append(divider(), ...serverRows(ctx, prefs));
   }
   page.append(answers);
 
@@ -108,6 +136,50 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
     divider(),
     h("div", { class: "hub-note", text: t("An email is never sent by Ciel: your mail app opens with it written, and you send it.") }),
   ));
+}
+
+/**
+ * A voice server of the user's, on OpenAI's speech API (VoiceStudio and
+ * others): its address, and the voice, from the ones it lists.
+ */
+function serverRows(ctx: HubContext, prefs: FlowPrefs): HTMLElement[] {
+  const url = h("input", {
+    class: "hub-input", type: "text", value: prefs.voiceServerUrl ?? "http://127.0.0.1:3900",
+    autocomplete: "off", spellcheck: "false", style: "width:220px",
+  }) as HTMLInputElement;
+  const voice = h("select", { class: "hub-input", style: "width:220px" }) as HTMLSelectElement;
+  const problem = h("div", { class: "hub-warn" });
+  problem.hidden = true;
+  const load = async () => {
+    let chosen = prefs.voiceServerVoice ?? "";
+    clear(voice);
+    voice.append(h("option", { value: "", text: t("The server's own voice") }));
+    problem.hidden = true;
+    try {
+      const voices = await FlowBridge.voiceServerVoices(url.value.trim());
+      for (const v of voices) voice.append(h("option", { value: v.id, text: v.name }));
+      // The server answered without it: the voice is gone, its own one speaks.
+      if (chosen && !voices.some((v) => v.id === chosen)) {
+        chosen = "";
+        void ctx.setPrefs((p) => (p.voiceServerVoice = prefs.voiceServerVoice = ""));
+      }
+    } catch (err) {
+      problem.textContent = String(err);
+      problem.hidden = false;
+      // Kept while the server is closed.
+      if (chosen) voice.append(h("option", { value: chosen, text: chosen }));
+    }
+    voice.value = chosen;
+  };
+  url.addEventListener("change", () => void ctx.setPrefs((p) => (p.voiceServerUrl = url.value.trim())).then(load));
+  voice.addEventListener("change", () => void ctx.setPrefs((p) => (p.voiceServerVoice = prefs.voiceServerVoice = voice.value)));
+  void load();
+  return [
+    row(t("Address"), t("A voice server on this computer or your network that speaks OpenAI's speech API, like VoiceStudio. When it doesn't answer, the system voice speaks."), url),
+    divider(),
+    row(t("Voice"), null, voice),
+    problem,
+  ];
 }
 
 /** « OK Ciel » through the user's own Claude Code: the switch, and what Ciel found of it. */

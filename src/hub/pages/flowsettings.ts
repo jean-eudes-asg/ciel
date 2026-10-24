@@ -34,6 +34,14 @@ export const KITTEN: ModelKind = {
   removeLabel: () => t("Remove the voice"),
 };
 
+/** Kokoro: « OK Ciel »'s natural voices, on this computer. */
+export const KOKORO: ModelKind = {
+  pick: (m) => m.kokoro,
+  download: () => FlowBridge.downloadKokoro(),
+  remove: () => FlowBridge.removeKokoro(),
+  removeLabel: () => t("Remove the voice"),
+};
+
 /** Download / progress / installed, for a model (Parakeet unless told). Redraws itself. */
 export function modelsControl(ctx: HubContext, onReady?: () => void, kind: ModelKind = PARAKEET): HTMLElement {
   const el = h("div", { style: "display:flex;align-items:center;gap:8px" });

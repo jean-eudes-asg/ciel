@@ -110,13 +110,23 @@ pub struct Prefs {
     pub open_at_launch: bool,
     /// « OK Ciel »: listen for it and answer with Ciel's brain (ai.rs).
     pub voice: bool,
-    /// How Ciel answers out loud: "system", "kitten", "elevenlabs" or "off".
+    /// How Ciel answers out loud: "system", "kokoro", "kitten", "elevenlabs",
+    /// "server" or "off".
     pub voice_output: String,
+    /// "kokoro": the voice it speaks English with (voice/kokoro.rs `VOICES`).
+    pub kokoro_voice: String,
+    /// "server": a voice server of the user's on OpenAI's speech API
+    /// (VoiceStudio and others), and the voice it speaks with ("" = its own).
+    pub voice_server_url: String,
+    pub voice_server_voice: String,
     /// The Kitten or ElevenLabs voice: "female" or "male".
     pub voice_gender: String,
     /// « OK Ciel » through the user's own Claude Code (agent/), in a build
     /// that has it. Off until they turn it on.
     pub voice_agent: bool,
+    /// Another name Ciel wakes to, said first ("Raphael, what time is
+    /// it?"), besides « OK Ciel ». Empty: none.
+    pub wake_name: String,
     /// Dictation moved into the island once: the pill at the bottom, the old
     /// default, went there. Missing from older files, so false for them.
     #[serde(default)]
@@ -151,8 +161,12 @@ impl Default for Prefs {
             open_at_launch: true,
             voice: false,
             voice_output: "system".into(),
+            kokoro_voice: "af_heart".into(),
+            voice_server_url: "http://127.0.0.1:3900".into(),
+            voice_server_voice: String::new(),
             voice_gender: "female".into(),
             voice_agent: false,
+            wake_name: String::new(),
             moved_to_island: true,
         }
     }

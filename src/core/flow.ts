@@ -43,6 +43,13 @@ export interface FlowPrefs {
   voiceGender: "female" | "male";
   /** « OK Ciel » through the user's own Claude Code (src-tauri/src/agent/), in a build that has it. */
   voiceAgent?: boolean;
+  /** Another name Ciel wakes to, said first, besides « OK Ciel » (voice/wake.rs). Empty: none. */
+  wakeName?: string;
+  /** voiceOutput "kokoro": the voice it speaks English with (voice/kokoro.rs VOICES). */
+  kokoroVoice?: string;
+  /** voiceOutput "server": a voice server on OpenAI's speech API (VoiceStudio…), and its voice ("" = its own). */
+  voiceServerUrl?: string;
+  voiceServerVoice?: string;
   /** Rust moved dictation into the island once (store.rs); kept as it came. */
   movedToIsland?: boolean;
 }
@@ -59,6 +66,8 @@ export interface ModelsStatus {
   /** Kitten, the voice « OK Ciel » can answer in, downloaded on its own. */
   kitten: ModelState;
   kittenMb: number;
+  kokoro: ModelState;
+  kokoroMb: number;
 }
 
 export interface FlowStatus {
@@ -194,7 +203,7 @@ export interface VoiceView {
   answer: string;
 }
 
-export type VoiceOutput = "system" | "kitten" | "elevenlabs" | "off";
+export type VoiceOutput = "system" | "kokoro" | "kitten" | "elevenlabs" | "server" | "off";
 
 // ── What the pill, or the island, shows ───────────────────────────────────────
 
@@ -278,6 +287,8 @@ export const FlowBridge = {
   status: () => call<FlowStatus>("flow_status"),
   /** Runs `claude --version` and `claude auth status` at most once a minute. */
   agentStatus: () => call<AgentStatus>("agent_status"),
+  /** The voices a voice server lists; throws when nothing answers there. */
+  voiceServerVoices: (url: string) => callOrThrow<{ id: string; name: string }[]>("voice_server_voices", { url }),
   setPrefs: (prefs: FlowPrefs) => call<void>("flow_set_prefs", { prefs }),
   history: () => call<FlowEntry[]>("flow_history"),
   deleteEntry: (id: string) => call<void>("flow_delete", { id }),
@@ -296,6 +307,8 @@ export const FlowBridge = {
   removeModels: () => call<void>("flow_models_remove"),
   downloadKitten: () => call<void>("voice_kitten_download"),
   removeKitten: () => call<void>("voice_kitten_remove"),
+  downloadKokoro: () => call<void>("voice_kokoro_download"),
+  removeKokoro: () => call<void>("voice_kokoro_remove"),
 
   notes: () => call<NotesState>("notes_state"),
   startNote: () => callOrThrow<string>("notes_start"),

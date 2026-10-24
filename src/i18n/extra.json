@@ -6872,6 +6872,127 @@
    "pt-BR": "O relógio de flip do protetor de tela sobre preto, abaixo do relógio do próprio sistema, redesenhado a cada minuto enquanto o computador está bloqueado.",
    "ru": "Перекидные часы заставки на чёрном фоне, под часами самой системы, перерисовываются каждую минуту, пока компьютер заблокирован.",
    "id": "Jam flip screensaver di atas hitam, di bawah jam sistem sendiri, digambar ulang setiap menit selama komputer terkunci."
+  },
+  "Also answers to": {
+   "zh-Hans": "也会回应",
+   "hi": "इस नाम पर भी जवाब दे",
+   "es": "También responde a",
+   "ar": "يستجيب أيضًا لاسم",
+   "fr": "Répond aussi à",
+   "bn": "এই নামেও সাড়া দেয়",
+   "pt-BR": "Também responde a",
+   "ru": "Также откликается на",
+   "id": "Juga menjawab nama"
+  },
+  "A name": {
+   "zh-Hans": "一个名字",
+   "hi": "एक नाम",
+   "es": "Un nombre",
+   "ar": "اسم",
+   "fr": "Un prénom",
+   "bn": "একটি নাম",
+   "pt-BR": "Um nome",
+   "ru": "Имя",
+   "id": "Sebuah nama"
+  },
+  "Another name that wakes Ciel when you say it first: « Raphael, what time is it? ». Pick one that dictation writes right.": {
+   "zh-Hans": "另一个名字，放在句首说出即可唤醒 Ciel：« Raphael，现在几点？»。请选一个听写能正确写出的名字。",
+   "hi": "एक और नाम जो वाक्य की शुरुआत में बोलने पर Ciel को जगाता है: « Raphael, कितने बजे हैं? »। ऐसा नाम चुनें जिसे डिक्टेशन सही लिखता हो।",
+   "es": "Otro nombre que despierta a Ciel si lo dices al principio: « Raphael, ¿qué hora es? ». Elige uno que el dictado escriba bien.",
+   "ar": "اسم آخر يوقظ Ciel عندما تبدأ به كلامك: « Raphael، كم الساعة؟ ». اختر اسمًا يكتبه الإملاء الصوتي بشكل صحيح.",
+   "fr": "Un autre nom qui réveille Ciel quand vous le dites en premier : « Raphael, quelle heure est-il ? ». Choisissez-en un que la dictée écrit correctement.",
+   "bn": "আরেকটি নাম, যা প্রথমে বললে Ciel জেগে ওঠে: « Raphael, কটা বাজে? »। এমন নাম বেছে নিন যা ডিক্টেশন ঠিকভাবে লেখে।",
+   "pt-BR": "Outro nome que acorda o Ciel quando você o diz primeiro: « Raphael, que horas são? ». Escolha um que o ditado escreva certo.",
+   "ru": "Ещё одно имя, которое будит Ciel, если сказать его первым: « Raphael, который час? ». Выберите такое, которое диктовка пишет правильно.",
+   "id": "Nama lain yang membangunkan Ciel saat Anda mengucapkannya di awal: « Raphael, jam berapa sekarang? ». Pilih nama yang ditulis dengan benar oleh dikte."
+  },
+  "Voice server": {
+   "zh-Hans": "语音服务器",
+   "hi": "वॉइस सर्वर",
+   "es": "Servidor de voz",
+   "ar": "خادم الصوت",
+   "fr": "Serveur vocal",
+   "bn": "ভয়েস সার্ভার",
+   "pt-BR": "Servidor de voz",
+   "ru": "Голосовой сервер",
+   "id": "Server suara"
+  },
+  "The server's own voice": {
+   "zh-Hans": "服务器自带的声音",
+   "hi": "सर्वर की अपनी आवाज़",
+   "es": "La voz propia del servidor",
+   "ar": "صوت الخادم نفسه",
+   "fr": "La voix du serveur",
+   "bn": "সার্ভারের নিজস্ব কণ্ঠ",
+   "pt-BR": "A voz do próprio servidor",
+   "ru": "Собственный голос сервера",
+   "id": "Suara bawaan server"
+  },
+  "A voice server on this computer or your network that speaks OpenAI's speech API, like VoiceStudio. When it doesn't answer, the system voice speaks.": {
+   "zh-Hans": "本机或你网络中支持 OpenAI 语音 API 的语音服务器，例如 VoiceStudio。它没有响应时，由系统语音朗读。",
+   "hi": "इस कंप्यूटर या आपके नेटवर्क पर एक वॉइस सर्वर जो OpenAI का स्पीच API बोलता है, जैसे VoiceStudio। जब वह जवाब न दे, तो सिस्टम की आवाज़ बोलती है।",
+   "es": "Un servidor de voz en este equipo o en tu red que hable la API de voz de OpenAI, como VoiceStudio. Si no responde, habla la voz del sistema.",
+   "ar": "خادم صوت على هذا الحاسوب أو على شبكتك يدعم واجهة OpenAI للكلام، مثل VoiceStudio. عندما لا يستجيب، يتحدث صوت النظام.",
+   "fr": "Un serveur vocal sur cet ordinateur ou votre réseau qui parle l'API vocale d'OpenAI, comme VoiceStudio. Quand il ne répond pas, la voix du système parle.",
+   "bn": "এই কম্পিউটারে বা আপনার নেটওয়ার্কে একটি ভয়েস সার্ভার যা OpenAI-এর স্পিচ API বোঝে, যেমন VoiceStudio। সেটি সাড়া না দিলে সিস্টেমের কণ্ঠ বলে।",
+   "pt-BR": "Um servidor de voz neste computador ou na sua rede que fale a API de fala da OpenAI, como o VoiceStudio. Quando ele não responde, fala a voz do sistema.",
+   "ru": "Голосовой сервер на этом компьютере или в вашей сети с речевым API OpenAI, например VoiceStudio. Если он не отвечает, говорит системный голос.",
+   "id": "Server suara di komputer ini atau jaringan Anda yang memakai API suara OpenAI, seperti VoiceStudio. Bila tidak menjawab, suara sistem yang berbicara."
+  },
+  "Nothing answers at this address: is the voice server open?": {
+   "zh-Hans": "此地址没有响应：语音服务器打开了吗？",
+   "hi": "इस पते पर कोई जवाब नहीं: क्या वॉइस सर्वर खुला है?",
+   "es": "Nada responde en esta dirección: ¿está abierto el servidor de voz?",
+   "ar": "لا شيء يستجيب على هذا العنوان: هل خادم الصوت مفتوح؟",
+   "fr": "Rien ne répond à cette adresse : le serveur vocal est-il ouvert ?",
+   "bn": "এই ঠিকানায় কেউ সাড়া দিচ্ছে না: ভয়েস সার্ভার কি খোলা আছে?",
+   "pt-BR": "Nada responde neste endereço: o servidor de voz está aberto?",
+   "ru": "По этому адресу никто не отвечает: открыт ли голосовой сервер?",
+   "id": "Tidak ada yang menjawab di alamat ini: apakah server suara terbuka?"
+  },
+  "Kokoro, on your computer": {
+   "zh-Hans": "Kokoro，在你的电脑上",
+   "hi": "Kokoro, आपके कंप्यूटर पर",
+   "es": "Kokoro, en tu equipo",
+   "ar": "Kokoro على حاسوبك",
+   "fr": "Kokoro, sur votre ordinateur",
+   "bn": "Kokoro, আপনার কম্পিউটারে",
+   "pt-BR": "Kokoro, no seu computador",
+   "ru": "Kokoro на вашем компьютере",
+   "id": "Kokoro, di komputer Anda"
+  },
+  "Natural voices, made here without the internet: English, and French in its own voice. Downloaded once (about {0} MB).": {
+   "zh-Hans": "自然的声音，在本机生成，无需联网：英语，以及用专属声音朗读的法语。只需下载一次（约 {0} MB）。",
+   "hi": "स्वाभाविक आवाज़ें, यहीं बनती हैं, बिना इंटरनेट के: अंग्रेज़ी, और फ़्रेंच अपनी अलग आवाज़ में। एक बार डाउनलोड (लगभग {0} MB)।",
+   "es": "Voces naturales, hechas aquí sin internet: inglés, y francés con su propia voz. Se descarga una vez (unos {0} MB).",
+   "ar": "أصوات طبيعية تُصنع هنا دون إنترنت: الإنجليزية، والفرنسية بصوتها الخاص. تُنزَّل مرة واحدة (نحو {0} ميغابايت).",
+   "fr": "Des voix naturelles, faites ici sans internet : en anglais, et en français avec sa propre voix. Téléchargées une fois (environ {0} Mo).",
+   "bn": "স্বাভাবিক কণ্ঠ, এখানেই তৈরি হয়, ইন্টারনেট ছাড়াই: ইংরেজি, আর ফরাসি তার নিজস্ব কণ্ঠে। একবার ডাউনলোড (প্রায় {0} MB)।",
+   "pt-BR": "Vozes naturais, feitas aqui sem internet: inglês, e francês com voz própria. Baixadas uma vez (cerca de {0} MB).",
+   "ru": "Естественные голоса, создаются здесь без интернета: английский и французский — своим голосом. Скачиваются один раз (около {0} МБ).",
+   "id": "Suara alami, dibuat di sini tanpa internet: bahasa Inggris, dan bahasa Prancis dengan suaranya sendiri. Diunduh sekali (sekitar {0} MB)."
+  },
+  "Heart, Bella and Nicole are women's voices; Michael, Fenrir and Puck, men's.": {
+   "zh-Hans": "Heart、Bella 和 Nicole 是女声；Michael、Fenrir 和 Puck 是男声。",
+   "hi": "Heart, Bella और Nicole महिलाओं की आवाज़ें हैं; Michael, Fenrir और Puck पुरुषों की।",
+   "es": "Heart, Bella y Nicole son voces de mujer; Michael, Fenrir y Puck, de hombre.",
+   "ar": "Heart وBella وNicole أصوات نسائية؛ وMichael وFenrir وPuck أصوات رجالية.",
+   "fr": "Heart, Bella et Nicole sont des voix de femme ; Michael, Fenrir et Puck, d'homme.",
+   "bn": "Heart, Bella ও Nicole নারীকণ্ঠ; Michael, Fenrir ও Puck পুরুষকণ্ঠ।",
+   "pt-BR": "Heart, Bella e Nicole são vozes femininas; Michael, Fenrir e Puck, masculinas.",
+   "ru": "Heart, Bella и Nicole — женские голоса; Michael, Fenrir и Puck — мужские.",
+   "id": "Heart, Bella, dan Nicole adalah suara perempuan; Michael, Fenrir, dan Puck, suara laki-laki."
+  },
+  "Until Kokoro is downloaded, the system voice says the answers.": {
+   "zh-Hans": "在下载 Kokoro 之前，由系统语音朗读回答。",
+   "hi": "जब तक Kokoro डाउनलोड नहीं होता, सिस्टम की आवाज़ जवाब बोलती है।",
+   "es": "Hasta que Kokoro se descargue, la voz del sistema dice las respuestas.",
+   "ar": "إلى أن يُنزَّل Kokoro، يقول صوت النظام الإجابات.",
+   "fr": "Tant que Kokoro n'est pas téléchargé, la voix du système dit les réponses.",
+   "bn": "Kokoro ডাউনলোড না হওয়া পর্যন্ত সিস্টেমের কণ্ঠ উত্তর বলে।",
+   "pt-BR": "Até o Kokoro ser baixado, a voz do sistema diz as respostas.",
+   "ru": "Пока Kokoro не скачан, ответы произносит системный голос.",
+   "id": "Sampai Kokoro diunduh, suara sistem yang mengucapkan jawaban."
   }
  }
 }
