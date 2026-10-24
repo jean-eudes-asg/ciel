@@ -2,7 +2,7 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.3.1] - 2026-10-24
 
 ### Added
 - **The flip clock on the lock screen** (Settings → Wallpaper → On the lock
@@ -248,6 +248,7 @@ an eye on your AI coding agents. Windows 10/11; Linux builds from source.
 Ciel is a fork of [Coucou](https://github.com/Louis-CFM/coucou) by Louis
 Raillé (MIT). Thank you.
 
+[0.3.1]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.3.1
 [0.3.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.3.0
 [0.2.7]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.7
 [0.2.6]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.2.6
