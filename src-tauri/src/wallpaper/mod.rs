@@ -328,6 +328,8 @@ pub struct Supported {
     pub desktop: bool,
     pub lock_screen: bool,
     pub live: bool,
+    /// GNOME: the lock screen waits for Ciel's extension (gnome_ext.rs).
+    pub lock_needs_extension: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]

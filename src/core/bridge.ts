@@ -360,7 +360,7 @@ export interface WallpaperPhoto {
 }
 
 export interface WallpaperStatus {
-  supported: { desktop: boolean; lockScreen: boolean; live: boolean };
+  supported: { desktop: boolean; lockScreen: boolean; live: boolean; lockNeedsExtension?: boolean };
   live: boolean;
   paused: boolean;
   saved: boolean;

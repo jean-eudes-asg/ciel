@@ -79,11 +79,16 @@ mod imp {
         Some(done)
     }
 
-    fn active() -> bool {
+    /// The running extension's version; None when GNOME isn't running it.
+    pub fn version() -> Option<u32> {
         use dbus::blocking::stdintf::org_freedesktop_dbus::Properties;
-        let Ok(conn) = Connection::new_session() else { return false };
+        let conn = Connection::new_session().ok()?;
         let proxy = conn.with_proxy("org.gnome.Shell", PATH, Duration::from_millis(800));
-        proxy.get::<u32>(IFACE, "Version").is_ok()
+        proxy.get::<u32>(IFACE, "Version").ok()
+    }
+
+    fn active() -> bool {
+        version().is_some()
     }
 
     pub fn status() -> ExtStatus {
@@ -137,7 +142,10 @@ mod imp {
 }
 
 #[cfg(target_os = "linux")]
-pub use imp::{act, set_panel};
+pub use imp::{act, set_panel, version};
+
+/// The first version that draws the lock screen from Ciel's picture.
+pub const LOCK_SCREEN_VERSION: u32 = 3;
 
 #[tauri::command]
 pub fn gnome_extension_status() -> ExtStatus {

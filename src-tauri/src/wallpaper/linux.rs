@@ -89,8 +89,19 @@ fn desktop_ok() -> bool {
     }
 }
 
+/// GNOME draws its lock screen from the desktop's background: Ciel's picture
+/// shows there only through Ciel's extension (gnome-extension/), which draws
+/// it from org.gnome.desktop.screensaver instead.
 fn lock_ok() -> bool {
+    lock_settable() && extension_draws_lock()
+}
+
+fn lock_settable() -> bool {
     desk() == Desk::Gnome && crate::platform::find_on_path("gsettings").is_some() && writable(SCREENSAVER, "picture-uri")
+}
+
+fn extension_draws_lock() -> bool {
+    crate::gnome_ext::version().is_some_and(|v| v >= crate::gnome_ext::LOCK_SCREEN_VERSION)
 }
 
 /// CIEL_LAYER_SHELL=0 turns layer-shell off, as for the island.
@@ -100,9 +111,13 @@ fn layer_wanted() -> bool {
 
 pub async fn supported(app: &AppHandle) -> Supported {
     let live = live_supported(app).await;
-    tauri::async_runtime::spawn_blocking(move || Supported { desktop: desktop_ok(), lock_screen: lock_ok(), live })
+    tauri::async_runtime::spawn_blocking(move || {
+        let settable = lock_settable();
+        let drawn = settable && extension_draws_lock();
+        Supported { desktop: desktop_ok(), lock_screen: drawn, live, lock_needs_extension: settable && !drawn }
+    })
         .await
-        .unwrap_or(Supported { desktop: false, lock_screen: false, live: false })
+        .unwrap_or(Supported { desktop: false, lock_screen: false, live: false, lock_needs_extension: false })
 }
 
 pub async fn live_supported(app: &AppHandle) -> bool {

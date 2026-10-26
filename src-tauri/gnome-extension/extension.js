@@ -12,12 +12,21 @@
 // before Ciel runs; Ciel tells it at once when the switch moves. Locked, or
 // with the extension off, the bar is back.
 //
+// And it gives the lock screen Ciel's picture (Settings → Wallpaper → Lock
+// screen). GNOME draws its lock screen from the desktop's background, blurred;
+// while Ciel's option is on, it is drawn from org.gnome.desktop.screensaver
+// instead, the picture Ciel sets there (and saved the user's before), unblurred.
+// Option off, GNOME's own. That is why it also runs while the screen is locked.
+//
 // Nothing else is exposed: these calls, on the session bus.
 
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
+import * as Background from 'resource:///org/gnome/shell/ui/background.js';
+import * as UnlockDialog from 'resource:///org/gnome/shell/ui/unlockDialog.js';
+import St from 'gi://St';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const PATH = '/io/github/jeaneudesasg/Ciel/Shell';
@@ -37,15 +46,45 @@ const fdo = id => Main.notificationDaemon?._fdoNotificationDaemon?._notification
 /** One sent to org.gtk.Notifications, by its app and its own id. */
 const gtk = (app, id) => Main.notificationDaemon?._gtkNotificationDaemon?._sources?.[app]?._notifications?.[id] ?? null;
 
-/** Ciel's choice, as saved: settings.json under the user's config folder. */
-function panelWanted() {
+/** Ciel's settings, as saved: settings.json under the user's config folder. */
+function cielSettings() {
     try {
         const path = GLib.build_filenamev([GLib.get_user_config_dir(), 'ciel', 'settings.json']);
         const [, bytes] = GLib.file_get_contents(path);
-        return JSON.parse(new TextDecoder().decode(bytes)).hideGnomePanel === true;
+        return JSON.parse(new TextDecoder().decode(bytes));
     } catch {
-        return false;
+        return {};
     }
+}
+
+const panelWanted = () => cielSettings().hideGnomePanel === true;
+const lockWanted = () => cielSettings().wallpaper?.lockScreen === true;
+
+/**
+ * The lock screen's background, as unlockDialog.js makes it, from Ciel's
+ * picture when the option is on: org.gnome.desktop.screensaver, no blur.
+ */
+function cielLockBackground(original) {
+    return function (monitorIndex) {
+        if (!lockWanted())
+            return original.call(this, monitorIndex);
+        const monitor = Main.layoutManager.monitors[monitorIndex];
+        const widget = new St.Widget({
+            style_class: 'screen-shield-background',
+            x: monitor.x,
+            y: monitor.y,
+            width: monitor.width,
+            height: monitor.height,
+        });
+        const bgManager = new Background.BackgroundManager({
+            container: widget,
+            monitorIndex,
+            controlPosition: false,
+            settingsSchema: 'org.gnome.desktop.screensaver',
+        });
+        this._bgManagers.push(bgManager);
+        this._backgroundGroup.add_child(widget);
+    };
 }
 
 /** The top bar out of the way: no room kept for it, shown only in the overview. */
@@ -96,22 +135,36 @@ function dismiss(notification) {
 export default class CielExtension extends Extension {
     enable() {
         this._panel = new PanelHider();
-        this._panel.set(panelWanted());
+        this._panel.set(panelWanted() && !Main.sessionMode.isLocked);
+        // Locked, the lock screen keeps its bar; unlocked, Ciel's choice again.
+        this._mode = Main.sessionMode.connect('updated', () =>
+            this._panel?.set(panelWanted() && !Main.sessionMode.isLocked));
+        const proto = UnlockDialog.UnlockDialog.prototype;
+        this._createBackground = proto._createBackground;
+        proto._createBackground = cielLockBackground(this._createBackground);
         this._dbus = Gio.DBusExportedObject.wrapJSObject(IFACE, {
             Activate: id => activate(fdo(id)),
             Dismiss: id => dismiss(fdo(id)),
             ActivateGtk: (app, id) => activate(gtk(app, id)),
             DismissGtk: (app, id) => dismiss(gtk(app, id)),
             SetPanelHidden: hidden => {
-                this._panel.set(hidden);
+                this._panel.set(hidden && !Main.sessionMode.isLocked);
                 return true;
             },
-            Version: 2,
+            Version: 3,
         });
         this._dbus.export(Gio.DBus.session, PATH);
     }
 
     disable() {
+        if (this._createBackground) {
+            UnlockDialog.UnlockDialog.prototype._createBackground = this._createBackground;
+            this._createBackground = null;
+        }
+        if (this._mode) {
+            Main.sessionMode.disconnect(this._mode);
+            this._mode = null;
+        }
         this._dbus?.unexport();
         this._dbus = null;
         this._panel?.set(false);

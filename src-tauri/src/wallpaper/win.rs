@@ -152,10 +152,10 @@ pub async fn supported(_app: &AppHandle) -> Supported {
             && with_com(false, || desktop_wallpaper().is_ok());
         let lock_screen = !locked_by_policy(r"Software\Policies\Microsoft\Windows\Personalization", "NoChangingLockScreen")
             && with_com(true, || WinLockScreen::OriginalImageFile().is_ok());
-        Supported { desktop, lock_screen, live: desktop_ready() }
+        Supported { desktop, lock_screen, live: desktop_ready(), lock_needs_extension: false }
     })
     .await
-    .unwrap_or(Supported { desktop: false, lock_screen: false, live: false })
+    .unwrap_or(Supported { desktop: false, lock_screen: false, live: false, lock_needs_extension: false })
 }
 
 /// Explorer's desktop is there to put a window behind (looked up, nothing sent).

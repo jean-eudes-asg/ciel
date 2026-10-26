@@ -202,7 +202,10 @@ function mainSection(
     preview,
     h("div", { class: "hint", text: t("Nothing changes on your PC until you turn one of these on.") }),
     h("div", { class: "row" }, h("label", { text: t("Desktop") }), desktop, sup.desktop ? null : unsupported()),
-    h("div", { class: "row" }, h("label", { text: t("Lock screen") }), lock, sup.lockScreen ? null : unsupported()),
+    h("div", { class: "row" }, h("label", { text: t("Lock screen") }), lock, sup.lockScreen || sup.lockNeedsExtension ? null : unsupported()),
+    sup.lockNeedsExtension
+      ? h("div", { class: "hint", text: t("Needs Ciel's extension for GNOME Shell: Integrations → Notifications → Open in the app.") })
+      : null,
     h("div", { class: "row" }, h("label", { text: t("On the lock screen") }), lockStyle),
     skyHint,
     clockHint,
