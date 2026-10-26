@@ -41,6 +41,7 @@ mod secrets;
 mod session_window;
 mod screensaver;
 mod settings;
+mod system;
 mod shortcuts;
 mod sounds;
 mod speech;
@@ -142,6 +143,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     gmail::sync(&app, &settings.active_integrations, false);
     calendar::settings_saved(&settings.active_integrations);
     alerts::sync(&app, &settings);
+    system::sync();
     #[cfg(target_os = "linux")]
     {
         notify::desktop::sync(&app, settings.desktop_notifications);
@@ -384,6 +386,7 @@ fn set_paused(app: AppHandle, shared: State<Shared>, paused: bool) {
     let settings = shared.settings.lock().unwrap().clone();
     gmail::sync(&app, &settings.active_integrations, false);
     alerts::sync(&app, &settings);
+    system::sync();
 }
 
 // ── Claude Code hooks ─────────────────────────────────────────────────────────
@@ -821,6 +824,8 @@ pub fn run() {
             browser_bridge::browser_bridge_status,
             gnome_ext::gnome_extension_status,
             screensaver::screensaver_dismiss,
+            system::system_watch,
+            system::system_end,
             screensaver::screensaver_preview,
             gnome_ext::gnome_extension_set,
             browser_bridge::browser_bridge_set,
@@ -988,6 +993,7 @@ pub fn run() {
                 let _ = win.show();
             }
             screensaver::start(&handle);
+            system::start(&handle);
             // A panel coming or going moves the top of the screen: the island follows.
             #[cfg(target_os = "linux")]
             if !platform::is_layer_surface() {

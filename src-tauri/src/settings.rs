@@ -62,6 +62,8 @@ pub struct Settings {
     pub hide_from_screen_sharing: bool,
     /// The flip clock after this many minutes without input; 0 is off (screensaver.rs).
     pub screensaver_minutes: u32,
+    /// The System pill warns when CPU, memory, disk or temperature runs high (system.rs).
+    pub system_warnings: bool,
     /// 12 or 24 hours on the flip clocks: "auto" (the language's), "12h" or "24h".
     pub clock_format: String,
     /// The flip clock's size: "small", "medium" or "large".
@@ -274,6 +276,7 @@ impl Default for Settings {
             hide_gnome_panel: false,
             hide_from_screen_sharing: false,
             screensaver_minutes: 0,
+            system_warnings: false,
             clock_format: "auto".into(),
             screensaver_size: "large".into(),
             screensaver_date: true,
@@ -571,6 +574,7 @@ mod tests {
   "hideGnomePanel": true,
   "hideFromScreenSharing": true,
   "screensaverMinutes": 10,
+  "systemWarnings": true,
   "clockFormat": "24h",
   "screensaverSize": "small",
   "screensaverDate": false,
@@ -1036,6 +1040,7 @@ mod tests {
                 "hideGnomePanel",
                 "hideFromScreenSharing",
                 "screensaverMinutes",
+                "systemWarnings",
                 "clockFormat",
                 "screensaverSize",
                 "screensaverDate",

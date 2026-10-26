@@ -5,7 +5,7 @@
 // monitoring tools send the Alerts pill (alerts.rs). Pure rules here; nothing is stored, nothing is kept
 // past the queue.
 
-export type NotificationSource = "chrome" | "gmail" | "desktop" | "ciel" | "alerts";
+export type NotificationSource = "chrome" | "gmail" | "desktop" | "ciel" | "alerts" | "system";
 
 export interface CielNotification {
   /** Unique, given by Rust. */
@@ -57,7 +57,7 @@ const clip = (s: unknown, max: number) => {
 export function parseNotification(raw: unknown): CielNotification | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
-  const source = r.source === "gmail" || r.source === "chrome" || r.source === "desktop" || r.source === "ciel" || r.source === "alerts"
+  const source = r.source === "gmail" || r.source === "chrome" || r.source === "desktop" || r.source === "ciel" || r.source === "alerts" || r.source === "system"
     ? r.source
     : null;
   const title = clip(r.title, MAX_TITLE);
@@ -67,7 +67,7 @@ export function parseNotification(raw: unknown): CielNotification | null {
   return {
     id: r.id,
     source,
-    app: clip(r.app, 60) || { gmail: "Gmail", chrome: "Chrome", desktop: "", ciel: "Ciel", alerts: "Alerts" }[source],
+    app: clip(r.app, 60) || { gmail: "Gmail", chrome: "Chrome", desktop: "", ciel: "Ciel", alerts: "Alerts", system: "System" }[source],
     title: title || body,
     body: title ? body : "",
     icon,

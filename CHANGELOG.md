@@ -2,6 +2,17 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **System**, a pill for this computer (after SysDash): CPU, memory, disk and
+  temperature as rings with their last two minutes, green, orange or red past
+  their limits, and the processes that weigh most, with End on your own (a
+  second click ends it). **Warn me** (Settings → Integrations → System, off by
+  default): a notification when one runs high, naming what uses the most, at
+  most once an hour each. Ciel looks every 2 s while the card shows, every
+  30 s with the warnings on, and not at all otherwise.
+
 ## [0.3.2] - 2026-10-26
 
 ### Added

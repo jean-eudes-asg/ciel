@@ -7015,6 +7015,193 @@
    "pt-BR": "O Ciel continua na sua tela, mas fica de fora de compartilhamentos de tela, gravações e capturas de tela, inclusive as suas. Uma câmera apontada para a tela ainda vê tudo.",
    "ru": "Ciel остаётся на вашем экране, но не попадает в демонстрацию экрана, записи и снимки экрана, в том числе ваши собственные. Камера, направленная на экран, всё равно видит всё.",
    "id": "Ciel tetap ada di layarmu, tetapi tidak ikut dalam berbagi layar, rekaman, dan tangkapan layar, termasuk milikmu sendiri. Kamera yang diarahkan ke layar tetap melihat semuanya."
+  },
+  "This computer": {
+   "zh-Hans": "这台电脑",
+   "hi": "यह कंप्यूटर",
+   "es": "Este equipo",
+   "ar": "هذا الحاسوب",
+   "fr": "Cet ordinateur",
+   "bn": "এই কম্পিউটার",
+   "pt-BR": "Este computador",
+   "ru": "Этот компьютер",
+   "id": "Komputer ini"
+  },
+  "CPU": {
+   "zh-Hans": "CPU",
+   "hi": "CPU",
+   "es": "CPU",
+   "ar": "المعالج",
+   "fr": "CPU",
+   "bn": "CPU",
+   "pt-BR": "CPU",
+   "ru": "ЦП",
+   "id": "CPU"
+  },
+  "Memory": {
+   "zh-Hans": "内存",
+   "hi": "मेमोरी",
+   "es": "Memoria",
+   "ar": "الذاكرة",
+   "fr": "Mémoire",
+   "bn": "মেমরি",
+   "pt-BR": "Memória",
+   "ru": "Память",
+   "id": "Memori"
+  },
+  "Disk": {
+   "zh-Hans": "磁盘",
+   "hi": "डिस्क",
+   "es": "Disco",
+   "ar": "القرص",
+   "fr": "Disque",
+   "bn": "ডিস্ক",
+   "pt-BR": "Disco",
+   "ru": "Диск",
+   "id": "Disk"
+  },
+  "Processes": {
+   "zh-Hans": "进程",
+   "hi": "प्रोसेस",
+   "es": "Procesos",
+   "ar": "العمليات",
+   "fr": "Processus",
+   "bn": "প্রসেস",
+   "pt-BR": "Processos",
+   "ru": "Процессы",
+   "id": "Proses"
+  },
+  "End": {
+   "zh-Hans": "结束",
+   "hi": "बंद करें",
+   "es": "Terminar",
+   "ar": "إنهاء",
+   "fr": "Arrêter",
+   "bn": "বন্ধ করুন",
+   "pt-BR": "Encerrar",
+   "ru": "Завершить",
+   "id": "Akhiri"
+  },
+  "Sure?": {
+   "zh-Hans": "确定？",
+   "hi": "पक्का?",
+   "es": "¿Seguro?",
+   "ar": "متأكد؟",
+   "fr": "Sûr ?",
+   "bn": "নিশ্চিত?",
+   "pt-BR": "Certeza?",
+   "ru": "Точно?",
+   "id": "Yakin?"
+  },
+  "Warn me": {
+   "zh-Hans": "提醒我",
+   "hi": "मुझे चेतावनी दें",
+   "es": "Avisarme",
+   "ar": "نبّهني",
+   "fr": "Me prévenir",
+   "bn": "আমাকে সতর্ক করুন",
+   "pt-BR": "Me avisar",
+   "ru": "Предупреждать",
+   "id": "Peringatkan saya"
+  },
+  "A notification when CPU, memory, disk or temperature runs high, naming what uses the most, at most once an hour each. Ciel then looks every 30 seconds, even with the island shut.": {
+   "zh-Hans": "当 CPU、内存、磁盘或温度过高时发出通知，并指出占用最多的程序，每项每小时最多一次。此时即使岛关闭，Ciel 也会每 30 秒查看一次。",
+   "hi": "जब CPU, मेमोरी, डिस्क या तापमान ज़्यादा हो, तो सबसे ज़्यादा इस्तेमाल करने वाले का नाम लेकर सूचना, हर एक के लिए घंटे में अधिकतम एक बार। तब Ciel आइलैंड बंद होने पर भी हर 30 सेकंड में देखता है।",
+   "es": "Una notificación cuando la CPU, la memoria, el disco o la temperatura suben mucho, con lo que más consume, como mucho una vez por hora cada una. Ciel mira entonces cada 30 segundos, incluso con la isla cerrada.",
+   "ar": "إشعار عندما يرتفع المعالج أو الذاكرة أو القرص أو الحرارة، مع ذكر الأكثر استهلاكًا، مرة في الساعة على الأكثر لكل منها. عندها يتحقق Ciel كل 30 ثانية حتى والشريط مغلق.",
+   "fr": "Une notification quand le CPU, la mémoire, le disque ou la température montent trop, avec ce qui en utilise le plus, au plus une fois par heure chacun. Ciel regarde alors toutes les 30 secondes, même l'île fermée.",
+   "bn": "CPU, মেমরি, ডিস্ক বা তাপমাত্রা বেশি হলে একটি বিজ্ঞপ্তি, সবচেয়ে বেশি ব্যবহারকারীর নামসহ, প্রতিটির জন্য ঘণ্টায় সর্বোচ্চ একবার। তখন আইল্যান্ড বন্ধ থাকলেও Ciel প্রতি ৩০ সেকেন্ডে দেখে।",
+   "pt-BR": "Uma notificação quando a CPU, a memória, o disco ou a temperatura sobem demais, dizendo o que mais usa, no máximo uma vez por hora cada. O Ciel então olha a cada 30 segundos, mesmo com a ilha fechada.",
+   "ru": "Уведомление, когда ЦП, память, диск или температура слишком высоки, с тем, что использует больше всего, не чаще раза в час для каждого. Тогда Ciel проверяет каждые 30 секунд, даже когда остров закрыт.",
+   "id": "Notifikasi saat CPU, memori, disk, atau suhu terlalu tinggi, dengan yang paling banyak memakai, paling sering sekali per jam masing-masing. Ciel lalu memeriksa tiap 30 detik, bahkan saat pulau tertutup."
+  },
+  "CPU at {pct}%": {
+   "zh-Hans": "CPU 已达 {pct}%",
+   "hi": "CPU {pct}% पर",
+   "es": "CPU al {pct} %",
+   "ar": "المعالج عند {pct}%",
+   "fr": "CPU à {pct} %",
+   "bn": "CPU {pct}%-এ",
+   "pt-BR": "CPU em {pct}%",
+   "ru": "ЦП на {pct}%",
+   "id": "CPU di {pct}%"
+  },
+  "Memory at {pct}%": {
+   "zh-Hans": "内存已达 {pct}%",
+   "hi": "मेमोरी {pct}% पर",
+   "es": "Memoria al {pct} %",
+   "ar": "الذاكرة عند {pct}%",
+   "fr": "Mémoire à {pct} %",
+   "bn": "মেমরি {pct}%-এ",
+   "pt-BR": "Memória em {pct}%",
+   "ru": "Память на {pct}%",
+   "id": "Memori di {pct}%"
+  },
+  "Disk at {pct}%": {
+   "zh-Hans": "磁盘已达 {pct}%",
+   "hi": "डिस्क {pct}% पर",
+   "es": "Disco al {pct} %",
+   "ar": "القرص عند {pct}%",
+   "fr": "Disque à {pct} %",
+   "bn": "ডিস্ক {pct}%-এ",
+   "pt-BR": "Disco em {pct}%",
+   "ru": "Диск на {pct}%",
+   "id": "Disk di {pct}%"
+  },
+  "Processor at {deg} °C": {
+   "zh-Hans": "处理器 {deg} °C",
+   "hi": "प्रोसेसर {deg} °C पर",
+   "es": "Procesador a {deg} °C",
+   "ar": "المعالج عند {deg} °م",
+   "fr": "Processeur à {deg} °C",
+   "bn": "প্রসেসর {deg} °C-এ",
+   "pt-BR": "Processador a {deg} °C",
+   "ru": "Процессор {deg} °C",
+   "id": "Prosesor {deg} °C"
+  },
+  "{name} uses the most": {
+   "zh-Hans": "{name} 占用最多",
+   "hi": "{name} सबसे ज़्यादा इस्तेमाल करता है",
+   "es": "{name} es lo que más consume",
+   "ar": "{name} هو الأكثر استهلاكًا",
+   "fr": "{name} en utilise le plus",
+   "bn": "{name} সবচেয়ে বেশি ব্যবহার করে",
+   "pt-BR": "{name} é o que mais usa",
+   "ru": "Больше всего использует {name}",
+   "id": "{name} paling banyak memakai"
+  },
+  "{name} uses {size}": {
+   "zh-Hans": "{name} 占用 {size}",
+   "hi": "{name} {size} इस्तेमाल करता है",
+   "es": "{name} usa {size}",
+   "ar": "{name} يستخدم {size}",
+   "fr": "{name} utilise {size}",
+   "bn": "{name} {size} ব্যবহার করে",
+   "pt-BR": "{name} usa {size}",
+   "ru": "{name} занимает {size}",
+   "id": "{name} memakai {size}"
+  },
+  "{free} free on {mount}": {
+   "zh-Hans": "{mount} 剩余 {free}",
+   "hi": "{mount} पर {free} खाली",
+   "es": "{free} libres en {mount}",
+   "ar": "{free} متاحة في {mount}",
+   "fr": "{free} libres sur {mount}",
+   "bn": "{mount}-এ {free} খালি",
+   "pt-BR": "{free} livres em {mount}",
+   "ru": "{free} свободно на {mount}",
+   "id": "{free} kosong di {mount}"
+  },
+  "Temp": {
+   "zh-Hans": "温度",
+   "hi": "ताप",
+   "es": "Temp.",
+   "ar": "حرارة",
+   "fr": "Temp.",
+   "bn": "তাপ",
+   "pt-BR": "Temp.",
+   "ru": "Темп.",
+   "id": "Suhu"
   }
  }
 }

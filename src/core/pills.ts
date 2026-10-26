@@ -153,6 +153,10 @@ export const PILL_CATALOG: readonly PillDefinition[] = [
   // (src-tauri/src/alerts.rs). Not on the Mac.
   { id: "integration_alerts", name: "Alerts", color: "#F97316", category: "service",
     subtitle: N_("Monitoring"), source: "n8n", support: "yes", connect: none },
+  // This computer's CPU, memory, disk, temperature and heaviest processes
+  // (src-tauri/src/system.rs). Not on the Mac.
+  { id: "integration_system", name: "System", color: "#22D3EE", category: "service",
+    subtitle: N_("This computer"), source: "n8n", support: "yes", connect: none },
 ];
 
 /** The always-on pill unless the user picks another workspace tool. */

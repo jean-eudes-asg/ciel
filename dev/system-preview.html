@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel - System pill preview</title>
+    <style>
+      body { margin: 0; padding: 24px 0 80px; background: #1b1b1f; font: 12px system-ui; color: #ddd; }
+      h1 { font: 600 14px system-ui; text-align: center; margin: 0 0 18px; }
+      .cases { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+      .case { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      /* The open island's card, Ciel's place on its left. */
+      .box { position: relative; height: 118px; background: #141518; border-radius: 20px; overflow: hidden; }
+      .box .ciel { position: absolute; left: 34px; top: 30px; width: 46px; height: 46px; border-radius: 50%; background: #f5f6f8; }
+    </style>
+  </head>
+  <body>
+    <h1>The System pill's card (src/views/system.ts)</h1>
+    <div class="cases" id="cases"></div>
+    <script type="module" src="./system-preview.ts"></script>
+  </body>
+</html>

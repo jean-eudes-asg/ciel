@@ -152,6 +152,8 @@ export interface Settings {
   hideFromScreenSharing: boolean;
   /** The flip clock after this many minutes without input; 0 is off (src-tauri/src/screensaver.rs). */
   screensaverMinutes: number;
+  /** The System pill warns when CPU, memory, disk or temperature runs high (src-tauri/src/system.rs). */
+  systemWarnings: boolean;
   /** 12 or 24 hours on the flip clocks (island, Home, screensaver); "auto" follows the language. */
   clockFormat: "auto" | "12h" | "24h";
   /** The flip clock's size on the screensaver. */
@@ -238,6 +240,7 @@ export const DEFAULT_SETTINGS: Settings = {
   hideGnomePanel: false,
   hideFromScreenSharing: false,
   screensaverMinutes: 0,
+  systemWarnings: false,
   clockFormat: "auto",
   screensaverSize: "large",
   screensaverDate: true,

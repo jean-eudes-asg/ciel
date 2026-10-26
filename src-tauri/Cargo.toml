@@ -56,6 +56,9 @@ bzip2 = "0.5"
 # The microphone, and the computer's own sound for the Notetaker (WASAPI
 # loopback on Windows, a PulseAudio/PipeWire monitor on Linux). Apache-2.0.
 cpal = "0.18"
+# The System pill (system.rs): CPU, memory, disks, temperatures and processes,
+# on Linux and Windows. MIT. Without rayon: one sample at a time is plenty.
+sysinfo = { version = "0.33", default-features = false, features = ["system", "disk", "component"] }
 
 [target.'cfg(windows)'.dependencies]
 keyring = { version = "3", features = ["windows-native"] }

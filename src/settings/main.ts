@@ -835,6 +835,8 @@ const INTEGRATIONS: IntegrationDef[] = [
   { id: "integration_finance", name: "Finance", color: "#10B981", fields: [] },
   // An address to give monitoring tools; its token is made by Ciel (src-tauri/src/alerts.rs).
   { id: "integration_alerts", name: "Alerts", color: "#F97316", fields: [] },
+  // Nothing to enter: this computer, read by Ciel (src-tauri/src/system.rs).
+  { id: "integration_system", name: "System", color: "#22D3EE", fields: [] },
 ];
 
 /**
@@ -1084,6 +1086,15 @@ function integrationsSection(present: Record<string, boolean>): HTMLElement {
     if (def.id === "integration_finance") rows.append(...financeFolderRows());
     if (def.id === "integration_calendar") rows.append(...meetingCardRows());
     if (def.id === "integration_alerts") rows.append(...alertsRows());
+    if (def.id === "integration_system") {
+      rows.append(
+        h("div", { class: "row" },
+          h("label", { text: t("Warn me") }),
+          toggle(settings.systemWarnings, (v) => { settings.systemWarnings = v; void save(); }),
+        ),
+        h("div", { class: "hint", text: t("A notification when CPU, memory, disk or temperature runs high, naming what uses the most, at most once an hour each. Ciel then looks every 30 seconds, even with the island shut.") }),
+      );
+    }
     if (def.id === "integration_spotify" && HOST_OS === "windows") {
       // Windows: the pill follows whatever plays, not Spotify alone.
       rows.append(h("div", {

@@ -12,6 +12,7 @@ import { isComingSoon, pillDefinition } from "../core/pills";
 import { refreshHookPills } from "../island/integrations";
 import { readActivity, readPulse, readStats } from "../core/github";
 import { githubDetail, githubPulseCard } from "./github";
+import { SYSTEM_ID, hasSystemData, renderSystem } from "./system";
 import { N_, language, t } from "../i18n/i18n";
 
 /** Same shape as the Swift `timeAgo` computed properties. */
@@ -571,6 +572,8 @@ export function hasIntegrationData(id: string): boolean {
       return typeof get(id).unread === "number";
     case "integration_alerts":
       return Array.isArray(get(id).active);
+    case SYSTEM_ID:
+      return hasSystemData();
     case "integration_github":
       return get(id).totalRepos != null || readPulse(get(id)) != null;
     case "integration_stripe":
@@ -596,6 +599,7 @@ export function renderIntegrationCard(task: AgentTask, hooks: IntegrationCardHoo
       ? n8nDetail(task, hooks.closeDetail)
       : n8nCard(task, hooks.openDetail, hooks.openSettings);
   }
+  if (task.id === SYSTEM_ID && hasSystemData()) return renderSystem(wide, hooks.detailOpen, hooks.openDetail, hooks.closeDetail);
   if (task.id === "integration_vercel" && hasIntegrationData(task.id)) {
     if (wide) return split(vercelCard(hooks.openDetail), vercelDetail(hooks.closeDetail));
     return hooks.detailOpen ? vercelDetail(hooks.closeDetail) : vercelCard(hooks.openDetail);

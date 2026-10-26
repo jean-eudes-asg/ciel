@@ -18,6 +18,7 @@ export function registerIntegrationHandlers(island: Island) {
   void onEvent<GitHubEvent[]>("github-alerts", handleGitHubAlerts);
   void refreshConfigured();
   State.subscribe(refreshGitHubWhenShown);
+  State.subscribe(watchSystemWhenShown);
 }
 
 /**
@@ -35,6 +36,15 @@ export function handleGitHubAlerts(events: GitHubEvent[]) {
   if (State.focusId !== GITHUB) task.pillBadge = alert.badge;
   Sound.play(alert.sound);
   State.notify();
+}
+
+let systemShown = false;
+
+/** The System card on screen: Rust looks every 2 s, and stops when it goes. */
+function watchSystemWhenShown() {
+  const shown = State.mode === "expanded" && State.view === "overview" && State.focusTask?.id === "integration_system";
+  if (shown !== systemShown) void Bridge.systemWatch(shown);
+  systemShown = shown;
 }
 
 let gitHubShown = false;

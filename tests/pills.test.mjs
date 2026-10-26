@@ -53,6 +53,7 @@ test("the catalog holds the Mac's pills with the Claude Code label for Windows a
     // Windows and Linux only too: secret iCal links (src-tauri/src/calendar/).
     ["integration_calendar", "Calendar", "#F472B6", "service", "Meetings"],
     ["integration_alerts", "Alerts", "#F97316", "service", "Monitoring"],
+    ["integration_system", "System", "#22D3EE", "service", "This computer"],
   ];
   assert.deepEqual(
     PILL_CATALOG.map((p) => [p.id, p.name, p.color, p.category, p.subtitle]),
