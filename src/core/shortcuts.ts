@@ -80,6 +80,25 @@ export const SHORTCUTS: readonly ShortcutDef[] = [
   def("desktopToggle", "Ctrl+Alt+D", true, true),
 ];
 
+/**
+ * Linux desktops keep these Ctrl+Alt keys for themselves (GNOME and others: a
+ * terminal on T, the desktop on D, the workspaces on the arrows), so there
+ * Ciel's defaults are others. Same as LINUX_KEYS in src-tauri/src/shortcuts.rs.
+ */
+export const LINUX_KEYS: Readonly<Partial<Record<ShortcutId, string>>> = {
+  jumpToTerminal: "Ctrl+Alt+J",
+  nextPill: "Ctrl+Alt+PageDown",
+  prevPill: "Ctrl+Alt+PageUp",
+  desktopToggle: "Ctrl+Alt+O",
+};
+
+const onLinux = () => typeof navigator === "undefined" || !/Windows/.test(navigator.userAgent ?? "");
+
+/** The keys `d` has until the user changes them, on this system. */
+export function defaultKeys(d: ShortcutDef, linux = onLinux()): string {
+  return (linux && LINUX_KEYS[d.id]) || d.defaultKeys;
+}
+
 export interface Binding {
   /** Canonical accelerator, e.g. "Ctrl+Alt+Space"; empty for no key. */
   keys: string;
@@ -92,7 +111,7 @@ export type Bindings = Record<string, Binding>;
 /** The binding in force: what the user stored, or the default. */
 export function effective(d: ShortcutDef, stored: Bindings | undefined): Binding {
   const own = stored?.[d.id];
-  return own ? { keys: own.keys, enabled: own.enabled } : { keys: d.defaultKeys, enabled: d.enabledByDefault };
+  return own ? { keys: own.keys, enabled: own.enabled } : { keys: defaultKeys(d), enabled: d.enabledByDefault };
 }
 
 // ── Accelerators ──────────────────────────────────────────────────────────────

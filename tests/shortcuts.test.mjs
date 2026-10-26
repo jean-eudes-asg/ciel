@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { calls, emit, sent } from "./tauri.mjs";
 import {
-  ALTGR_CHARACTERS, ISLAND_SHORTCUTS, KEY_NAMES, SHORTCUTS, SHORTCUT_TEXT, activeKeys, altGrClashes,
+  ALTGR_CHARACTERS, ISLAND_SHORTCUTS, KEY_NAMES, LINUX_KEYS, SHORTCUTS, SHORTCUT_TEXT, activeKeys, altGrClashes, defaultKeys,
   cyclePill, displayKeys, duplicates, effective, formatKeys, islandKeyAction, navigate, normalizeKeys,
   parseKeys, pillByNumber, recordPress,
 } from "../src/core/shortcuts.ts";
@@ -62,6 +62,23 @@ test("the defaults are the same on both sides of the bridge", () => {
     rows,
     SHORTCUTS.map((d) => ({ id: d.id, keys: d.defaultKeys, on: d.enabledByDefault, ported: d.ported })),
   );
+});
+
+test("on Linux, the defaults leave the desktop's own Ctrl+Alt keys alone, the same on both sides", () => {
+  const rust = readFileSync(new URL("../src-tauri/src/shortcuts.rs", import.meta.url), "utf8");
+  const rows = Object.fromEntries([...rust.matchAll(/^\s*\("(\w+)", "(Ctrl\+Alt\+\w+)"\),/gm)].map(([, id, keys]) => [id, keys]));
+  assert.deepEqual(rows, LINUX_KEYS);
+  // GNOME's: a terminal, the desktop, the workspaces.
+  const desktop = ["Ctrl+Alt+T", "Ctrl+Alt+D", "Ctrl+Alt+Left", "Ctrl+Alt+Right", "Ctrl+Alt+Up", "Ctrl+Alt+Down"];
+  const linux = SHORTCUTS.map((d) => [d.id, defaultKeys(d, true)]);
+  for (const [id, keys] of linux) {
+    assert.equal(formatKeys(parseKeys(keys)), keys, `${id} is not canonical`);
+    assert.ok(!desktop.includes(keys), `${id} = ${keys}`);
+    assert.deepEqual(altGrClashes(keys), [], `${id} = ${keys}`);
+  }
+  assert.deepEqual(duplicates(linux), new Set());
+  // Windows keeps the Mac's.
+  assert.equal(defaultKeys(SHORTCUTS.find((d) => d.id === "jumpToTerminal"), false), "Ctrl+Alt+T");
 });
 
 test("the descriptions the Wayland portal shows are the labels Settings shows", () => {

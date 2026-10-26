@@ -13,6 +13,13 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   most once an hour each. Ciel looks every 2 s while the card shows, every
   30 s with the warnings on, and not at all otherwise.
 
+### Fixed
+- Linux: Ciel's default shortcuts no longer take the desktop's own Ctrl+Alt
+  keys (a terminal on Ctrl+Alt+T, the desktop on D, the workspaces on the
+  arrows). On Linux, Open terminal is Ctrl+Alt+J, Ciel on the desktop
+  Ctrl+Alt+O, and the next and previous pill Ctrl+Alt+Page Down and Page Up.
+  Shortcuts you changed stay as you set them.
+
 ## [0.3.2] - 2026-10-26
 
 ### Added

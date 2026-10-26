@@ -69,6 +69,22 @@ pub const ACTIONS: &[ActionDef] = &[
     action("desktopToggle", "Ctrl+Alt+D", true, true),
 ];
 
+/// Linux desktops keep these Ctrl+Alt keys for themselves (GNOME and others: a
+/// terminal on T, the desktop on D, the workspaces on the arrows), so there
+/// Ciel's defaults are others. LINUX_KEYS in src/core/shortcuts.ts, the same.
+pub const LINUX_KEYS: &[(&str, &str)] = &[
+    ("jumpToTerminal", "Ctrl+Alt+J"),
+    ("nextPill", "Ctrl+Alt+PageDown"),
+    ("prevPill", "Ctrl+Alt+PageUp"),
+    ("desktopToggle", "Ctrl+Alt+O"),
+];
+
+/// The keys `def` has until the user changes them, on this system.
+pub fn default_keys(def: &ActionDef) -> &'static str {
+    let linux = cfg!(target_os = "linux").then(|| LINUX_KEYS.iter().find(|(id, _)| *id == def.id)).flatten();
+    linux.map_or(def.default_keys, |(_, keys)| *keys)
+}
+
 pub fn find(id: &str) -> Option<&'static ActionDef> {
     ACTIONS.iter().find(|a| a.id == id)
 }
@@ -114,7 +130,7 @@ pub type Bindings = BTreeMap<String, Binding>;
 /// The binding in force for `def`: the stored one, or the default.
 pub fn effective(def: &ActionDef, stored: &Bindings) -> Binding {
     stored.get(def.id).cloned().unwrap_or_else(|| Binding {
-        keys: def.default_keys.to_string(),
+        keys: default_keys(def).to_string(),
         enabled: def.enabled_by_default,
     })
 }
@@ -704,6 +720,15 @@ mod tests {
             let shortcut = parse(def.default_keys)
                 .unwrap_or_else(|| panic!("{} default does not parse", def.id));
             assert!(is_altgr_like(&shortcut), "{} default is not Ctrl+Alt", def.id);
+        }
+    }
+
+    #[test]
+    fn the_linux_defaults_parse_and_name_real_actions() {
+        for (id, keys) in LINUX_KEYS {
+            assert!(find(id).is_some(), "{id} is not an action");
+            let shortcut = parse(keys).unwrap_or_else(|| panic!("{id} = {keys} does not parse"));
+            assert!(is_altgr_like(&shortcut), "{id} = {keys} is not Ctrl+Alt");
         }
     }
 
