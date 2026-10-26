@@ -2,15 +2,6 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
-
-### Fixed
-- GNOME: the **Lock screen** option shows Ciel's picture, the sky or the flip
-  clock. GNOME draws its lock screen from the desktop's background, so the
-  picture Ciel set never showed; Ciel's GNOME extension now draws it there,
-  unblurred, while the option is on. Install the extension again
-  (Integrations → Notifications).
-
 ## [0.3.2] - 2026-10-26
 
 ### Added
@@ -35,6 +26,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   screen. Off by default.
 
 ### Fixed
+- GNOME: the **Lock screen** option shows Ciel's picture, the sky or the flip
+  clock. GNOME draws its lock screen from the desktop's background, so the
+  picture Ciel set never showed; Ciel's GNOME extension now draws it there,
+  unblurred, while the option is on. Install the extension again
+  (Integrations → Notifications).
 - « OK Ciel » wakes when « Ciel » is said in one syllable, which the voice
   model writes « see yeah », « C yeah » or, as what you say begins,
   « see you ».
