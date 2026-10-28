@@ -34,8 +34,8 @@ mod notify;
 mod openai_compat;
 mod pipe;
 mod platform;
-#[cfg(target_os = "linux")]
 mod play;
+#[cfg(target_os = "linux")]
 mod portal;
 mod recap;
 mod secrets;
