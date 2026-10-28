@@ -12,7 +12,7 @@ import {
 } from "../core/shortcuts";
 import { DEFAULT_SETTINGS, type Settings } from "../core/state";
 import { isFullPath, type FinanceFolderInfo } from "../core/finance";
-import { SOUND_NAMES } from "../core/sound";
+import { SOUND_NAMES, Sound } from "../core/sound";
 import {
   HOST_OS, MAX_DECLARED, PILL_CATEGORIES, availablePills, chooseMainPill, isComingSoon, mainPillChoices,
   sanitizeDeclared, toggleDeclared, type PillDefinition,
@@ -49,7 +49,14 @@ let root: HTMLElement = windowRoot;
 let hub: { redraw(): void; current(): PageId } | null = null;
 
 async function save() {
+  followSound();
   await Bridge.saveSettings(settings);
+}
+
+/** The Games page plays with Ciel's sound switch and volume (src/play/sfx.ts). */
+function followSound() {
+  Sound.setEnabled(settings.soundEnabled);
+  Sound.setVolume(settings.soundVolume);
 }
 
 /** A colour was picked for a pill's Ciel (see ./colors.ts): the island follows. */
@@ -1667,6 +1674,7 @@ async function main() {
   if (boot) {
     settings = { ...settings, ...boot.settings };
     setClockFormat(settings.clockFormat);
+    followSound();
     version = boot.version;
     clicksOutside = boot.clicksOutside;
   }
@@ -1696,6 +1704,7 @@ async function main() {
     if (before !== after) localRedraw?.();
     applyLanguage();
     setClockFormat(settings.clockFormat);
+    followSound();
   });
 }
 

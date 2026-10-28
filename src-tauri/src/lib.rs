@@ -35,6 +35,7 @@ mod openai_compat;
 mod pipe;
 mod platform;
 #[cfg(target_os = "linux")]
+mod play;
 mod portal;
 mod recap;
 mod secrets;
@@ -824,6 +825,10 @@ pub fn run() {
             browser_bridge::browser_bridge_status,
             gnome_ext::gnome_extension_status,
             screensaver::screensaver_dismiss,
+            play::game_line,
+            play::games_window,
+            play::games_window_open,
+            play::games_on_top,
             system::system_watch,
             system::system_end,
             screensaver::screensaver_preview,
@@ -969,11 +974,12 @@ pub fn run() {
             tray::build(&handle)?;
             // Before the island: see create_settings_window.
             create_settings_window(&handle);
-            // Same rule for Ciel's desktop window, the dictation pill and the
-            // screensaver's clock.
+            // Same rule for Ciel's desktop window, the dictation pill, the
+            // screensaver's clock and the games' window.
             desktop::setup(&handle);
             flow::setup(&handle);
             screensaver::setup(&handle);
+            play::setup(&handle);
             notes::setup(&handle);
             // Every window made so far, before the island is placed and drawn.
             capture::sync(&handle, loaded.hide_from_screen_sharing);

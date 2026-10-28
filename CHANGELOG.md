@@ -2,6 +2,38 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **Games** (Ciel window → Games), five of them for a break between two
+  tasks. Chess, draughts and the maze are played against five clouds of
+  Ciel's family, each with his face, his voice, his sky and his way of
+  playing: Cirrus the dreamer, cheerful Cumulus, Ciel himself, calm Stratus
+  at night and Nimbus, the storm.
+  - **Chess** and **international draughts** (10x10, flying kings, the
+    most pieces must be taken): pick your opponent, click or drag your
+    pieces, take a move back, play either side; a hint in chess.
+    The board takes the colours of his sky, and he takes a person's time over
+    his moves. With a brain (your Claude key or a local model) he says a word
+    now and then, in his own character; his moves are always his own
+    player's, on this computer. An unfinished game waits for you.
+  - **A maze** in his living sky, a new one at each level, a little bigger
+    each time, with a new rival every two levels from Cirrus's morning to
+    Nimbus's storm. Race him home or play alone, find the three stars in the
+    dead ends, or play at night with only your light.
+  - **Clouds**: slide the clouds along their length until Ciel can float out
+    to the sun. A new puzzle at each level, harder each time, with the fewest
+    moves it takes and a hint.
+  - **Constellations**: join each pair of stars with lines that never
+    cross, in a night sky; fill every point for a perfect one, and Ciel's
+    brain names the constellation you drew.
+  - **Their own window**: take the games out of the Ciel window to play
+    beside your work, as big as you like, kept over the other windows if
+    you want, and back into the Ciel window in one click.
+  - **Sounds**: pieces on wood, captures, check, steps, stars, the
+    countdown, a tune at the end, the wind and the storm, all made in code
+    and following Ciel's sound switch and volume.
+
 ## [0.3.2] - 2026-10-26
 
 ### Added

@@ -8,6 +8,7 @@ import type { FlowKey } from "../core/flow";
 /** Stroke icons on a 24×24 grid, standing in for the Mac's SF Symbols. */
 export const HUB_ICONS: Record<string, string> = {
   home: "M4 10.5 12 4l8 6.5V20h-5.5v-5.5h-5V20H4z",
+  game: "M7.5 8h9a4.5 4.5 0 0 1 4.3 5.8l-1 3.4a2.2 2.2 0 0 1-3.9.6L14.5 16h-5l-1.4 1.8a2.2 2.2 0 0 1-3.9-.6l-1-3.4A4.5 4.5 0 0 1 7.5 8zM8 10.5v3M6.5 12h3M15.5 11.5h.01M17 13h.01",
   mic: "M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3",
   record: "M12 3.5a8.5 8.5 0 1 0 0 17 8.5 8.5 0 0 0 0-17zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z",
   chart: "M5 20v-7M10 20V6M15 20v-9M20 20V9",

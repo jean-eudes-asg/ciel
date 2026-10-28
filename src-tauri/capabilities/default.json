@@ -2,6 +2,6 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "What Ciel's windows are allowed to do. Everything that touches the OS goes through Ciel's own commands.",
-  "windows": ["island", "settings", "cloud", "pill", "wallpaper-*", "screensaver"],
+  "windows": ["island", "settings", "cloud", "pill", "wallpaper-*", "screensaver", "games"],
   "permissions": ["core:default", "autostart:default"]
 }

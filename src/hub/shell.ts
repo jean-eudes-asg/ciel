@@ -13,7 +13,7 @@ import { hero, liveCloud } from "./hero";
 import { icon, keyLabel } from "./ui";
 
 export type PageId =
-  | "home"
+  | "home" | "games"
   | "dictation" | "notes" | "insights" | "dictionary" | "snippets" | "styles" | "flowsettings"
   | "general" | "pills" | "agents" | "chat" | "voice" | "integrations" | "shortcuts" | "wallpaper";
 
@@ -27,6 +27,8 @@ interface PageDef {
 
 /** The page the window opens on (pages/home.ts). */
 const HOME_PAGE: PageDef = { id: "home", icon: "home", title: () => t("Home") };
+/** Chess and the maze (pages/games.ts), under Home. */
+const GAMES_PAGE: PageDef = { id: "games", icon: "game", title: () => t("Games") };
 
 export const FLOW_PAGES: PageDef[] = [
   { id: "dictation", icon: "mic", title: () => t("Dictation") },
@@ -49,7 +51,7 @@ export const NOTCH_PAGES: PageDef[] = [
   { id: "wallpaper", icon: "image", title: () => t("Wallpaper"), subtitle: () => t("Ciel's sky on your desktop and lock screen, in his mood.") },
 ];
 
-const ALL = [HOME_PAGE, ...FLOW_PAGES, ...NOTCH_PAGES];
+const ALL = [HOME_PAGE, GAMES_PAGE, ...FLOW_PAGES, ...NOTCH_PAGES];
 
 /** What a page gets to draw itself and reach the rest of the window. */
 export interface HubContext {
@@ -174,7 +176,7 @@ export async function startHub(root: HTMLElement, opts: HubOptions) {
       side.append(b);
     }
   };
-  group("", [HOME_PAGE]);
+  group("", [HOME_PAGE, GAMES_PAGE]);
   group("Flow", FLOW_PAGES);
   group(t("Notch"), NOTCH_PAGES);
   side.append(h("div", { class: "spacer" }), statusLine, h("div", { class: "hub-version", text: `Ciel ${opts.version}` }));

@@ -352,6 +352,11 @@ const m = (color: string, size: number, start: number, extra: Partial<CloudSpec>
 });
 
 export const THEMES: Record<string, Theme> = {
+  games: {
+    // The rivals of the Games page (src/play/cast.ts), in the sunset.
+    color: "#F2A65A",
+    cast: [m("#EEF3FB", 40, 0.05), m("#FFFFFF", 46, 0.28), m("#F5F6F8", 54, 0.52), m("#C3CBD6", 46, 0.76), m("#8E98A8", 50, 1)],
+  },
   dictation: { color: "#FB923C", cast: [m("#F5F6F8", 66, 0.2), m("#FB923C", 52, 0.65), m("#F472B6", 44, 0.95)] },
   notes: { color: "#3B9EFF", cast: [m("#3B9EFF", 58, 0.1), m("#34D399", 50, 0.5), m("#A78BFA", 46, 0.9)] },
   insights: { color: "#34D399", cast: [m("#F7B32B", 62, 0.3), m("#34D399", 48, 0.75), m("#F5F6F8", 40, 1)] },

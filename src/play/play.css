@@ -1,0 +1,600 @@
+/* The Games page: a board of evening sky, Ciel beside it, and the maze. */
+
+.games {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.games-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.games-top .spacer {
+  flex: 1;
+}
+
+.games-top button.hub-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.games-top button.hub-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+button.hub-btn.games-pin.on {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.games-back {
+  display: flex;
+  justify-content: center;
+}
+
+/* The games' own window: no sidebar, and the boards and skies grow with it. */
+body.games-window #games {
+  height: 100vh;
+  overflow: auto;
+  padding: 16px 20px 20px;
+}
+
+body.games-window .games {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+body.games-window .cb {
+  justify-content: center;
+}
+
+body.games-window .cb-board {
+  width: max(320px, min(calc(100vh - 100px), calc(100vw - 460px)));
+}
+
+body.games-window .cb-side {
+  flex: 0 1 380px;
+  max-width: 420px;
+}
+
+body.games-window .cb-face {
+  height: clamp(190px, 28vh, 320px);
+}
+
+body.games-window .cb-status {
+  font-size: 17px;
+}
+
+body.games-window .cb-moves {
+  font-size: 13.5px;
+}
+
+body.games-window .mz-canvas,
+body.games-window .cl-canvas {
+  height: max(320px, calc(100vh - 150px));
+}
+
+/* ── Chess ────────────────────────────────────────────────────────────────── */
+
+.cb-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cb-rivals {
+  display: flex;
+  gap: 2px;
+}
+
+.cb-rival {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 5px 2px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--hub-secondary);
+  font: 600 11.5px var(--font);
+  transition: background 0.2s, color 0.2s;
+}
+
+.cb-rival canvas {
+  width: 34px;
+  height: 34px;
+}
+
+.cb-rival:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cb-rival.on {
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--hub-text);
+}
+
+.cb {
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.cb-eval {
+  flex: 0 0 8px;
+  border-radius: 6px;
+  background: #ece8df;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cb-eval i {
+  display: block;
+  background: #23262d;
+  transition: height 0.8s ease;
+}
+
+.cb-eval.flip {
+  flex-direction: column-reverse;
+  background: #23262d;
+}
+
+.cb-eval.flip i {
+  background: #ece8df;
+}
+
+.cb-board {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(620px, calc(100vh - 260px), calc(100vw - 600px));
+  min-width: 320px;
+  aspect-ratio: 1;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px var(--cb-edge), 0 0 0 5px rgba(255, 255, 255, 0.08), 0 22px 50px rgba(0, 0, 0, 0.5);
+  touch-action: none;
+  user-select: none;
+  transition: box-shadow 0.6s;
+}
+
+.cb-squares {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+}
+
+.cb-sq {
+  position: relative;
+  transition: background 0.6s;
+}
+
+.cb-sq.light {
+  background: var(--cb-light);
+}
+
+.cb-sq.dark {
+  background: var(--cb-dark);
+}
+
+.cb-sq.last::after,
+.cb-sq.picked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--cb-mark);
+  opacity: 0.7;
+}
+
+.cb-sq.picked::after {
+  opacity: 1;
+}
+
+.cb-sq.check {
+  box-shadow: inset 0 0 22px 8px rgba(214, 64, 69, 0.85);
+}
+
+.cb-sq.target::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: 26%;
+  height: 26%;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: rgba(20, 22, 28, 0.26);
+}
+
+.cb-sq.target.take::before {
+  width: 86%;
+  height: 86%;
+  background: none;
+  border: 5px solid rgba(20, 22, 28, 0.26);
+}
+
+.cb-rank,
+.cb-file {
+  position: absolute;
+  font: 700 10px var(--font);
+  opacity: 0.8;
+}
+
+.cb-rank {
+  left: 4px;
+  top: 3px;
+}
+
+.cb-file {
+  right: 5px;
+  bottom: 2px;
+}
+
+.cb-sq.light .cb-rank,
+.cb-sq.light .cb-file {
+  color: var(--cb-dark);
+}
+
+.cb-sq.dark .cb-rank,
+.cb-sq.dark .cb-file {
+  color: var(--cb-light);
+}
+
+.cb-pieces {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.cb-piece {
+  position: absolute;
+  width: 12.5%;
+  height: 12.5%;
+  padding: 0.6%;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* A piece played glides, lifted a little on its way. */
+.cb-piece.sliding {
+  transition: transform 0.38s cubic-bezier(0.45, 0.05, 0.25, 1);
+  z-index: 2;
+}
+
+.cb-piece svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cb-piece.dragging {
+  transition: none;
+  z-index: 3;
+  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.4));
+}
+
+.cb-arrow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  stroke: rgba(46, 125, 90, 0.82);
+  fill: rgba(46, 125, 90, 0.82);
+}
+
+.cb-promo {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(10, 12, 16, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.cb-promo.on {
+  display: flex;
+}
+
+.cb-promo-piece {
+  width: 16%;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background: var(--cb-light);
+  padding: 6px;
+}
+
+.cb-promo-piece:hover {
+  background: var(--cb-mark);
+}
+
+.cb-side {
+  flex: 1 1 240px;
+  min-width: 240px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* The rival, in his own sky. */
+.cb-face {
+  position: relative;
+  height: 190px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--cb-edge);
+}
+
+.cb-sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cb-who {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  max-width: calc(100% - 20px);
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px 6px;
+  border-radius: 10px;
+  background: rgba(16, 18, 24, 0.42);
+  backdrop-filter: blur(6px);
+}
+
+.cb-who b {
+  font: 700 15px var(--font);
+}
+
+.cb-who span {
+  font-size: 11.5px;
+  opacity: 0.85;
+}
+
+.cb-bubble {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  padding: 8px 12px;
+  border-radius: 12px 12px 12px 4px;
+  background: #fbfaf7;
+  color: #1c1e24;
+  font: 500 12.5px/1.35 var(--font);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  translate: 0 -4px;
+  transition: opacity 0.3s, translate 0.3s;
+  pointer-events: none;
+}
+
+.cb-bubble.on {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.cb-status {
+  font: 700 15px var(--font);
+}
+
+.cb-status.thinking {
+  animation: cb-breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes cb-breathe {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.cb-status.over {
+  color: var(--hub-accent);
+}
+
+.cb-moves {
+  flex: 1 1 120px;
+  min-height: 90px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 34px 1fr 1fr;
+  align-content: start;
+  gap: 2px 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--hub-card);
+  font: 500 12.5px var(--font-mono, ui-monospace, monospace);
+  color: var(--hub-body);
+}
+
+.cb-moves .n {
+  color: var(--hub-muted);
+}
+
+.cb-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cb-label {
+  color: var(--hub-secondary);
+  font-size: 12.5px;
+}
+
+.cb-row button.hub-btn:disabled {
+  opacity: 0.4;
+}
+
+/* ── Maze ─────────────────────────────────────────────────────────────────── */
+
+.mz {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mz-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.mz-bar b {
+  font: 700 15px var(--font);
+}
+
+.mz-time {
+  font: 600 14px var(--font-mono, ui-monospace, monospace);
+  color: var(--hub-body);
+  min-width: 56px;
+}
+
+.mz-foe,
+.mz-best {
+  color: var(--hub-secondary);
+  font-size: 12.5px;
+}
+
+.mz-stars {
+  color: #f3e3b0;
+  font: 600 12.5px var(--font);
+}
+
+.mz-bar .spacer {
+  flex: 1;
+}
+
+button.hub-btn.mz-toggle.on {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mz-stage {
+  position: relative;
+}
+
+.mz-canvas {
+  display: block;
+  width: 100%;
+  height: min(620px, calc(100vh - 330px));
+  min-height: 300px;
+  border-radius: 14px;
+  background: #1a2233;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 18px 50px rgba(0, 0, 0, 0.5);
+  outline: none;
+}
+
+.mz-banner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 28px;
+  border-radius: 18px;
+  background: rgba(18, 20, 26, 0.82);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+.mz-banner.on {
+  display: flex;
+}
+
+.mz-banner b {
+  font: 800 20px var(--font);
+}
+
+.mz-banner span {
+  font: 600 14px var(--font-mono, ui-monospace, monospace);
+  color: #f3e3b0;
+}
+
+.mz-banner em {
+  max-width: 260px;
+  text-align: center;
+  font-style: normal;
+  color: var(--hub-secondary);
+  font-size: 12.5px;
+}
+
+.mz-help {
+  color: var(--hub-muted);
+  font-size: 12px;
+}
+
+/* ── Draughts ─────────────────────────────────────────────────────────────── */
+
+.ck-board .cb-squares {
+  grid-template: repeat(10, 1fr) / repeat(10, 1fr);
+}
+
+.ck-piece {
+  width: 10%;
+  height: 10%;
+  transition: opacity 0.25s;
+}
+
+/* Taken during a capture: it stays until the move ends. */
+.ck-piece.hit {
+  opacity: 0.45;
+}
+
+.ck-piece.sliding {
+  transition: transform 0.18s ease-out, opacity 0.25s;
+}
+
+.ck-piece.gone {
+  opacity: 0;
+}
+
+/* A piece that has to take, while one must. */
+.cb-sq.must::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 3px var(--cb-mark);
+}
+
+/* ── Clouds and Constellations ────────────────────────────────────────────── */
+
+.cl-canvas {
+  display: block;
+  width: 100%;
+  height: min(600px, calc(100vh - 330px));
+  min-height: 340px;
+  border-radius: 14px;
+  background: #1a2233;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 18px 50px rgba(0, 0, 0, 0.5);
+  touch-action: none;
+  user-select: none;
+}
+
+.st-canvas {
+  cursor: crosshair;
+}

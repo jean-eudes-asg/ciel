@@ -132,7 +132,8 @@ class SoundEngine {
     this.enabled = on;
   }
 
-  play(name: SoundName | string) {
+  /** `rate` above 1 plays it higher and quicker (the Games page's rivals). */
+  play(name: SoundName | string, rate = 1) {
     if (!this.enabled) return;
     const ctx = this.ctx;
     const master = this.master;
@@ -145,6 +146,7 @@ class SoundEngine {
     if (ctx.state === "suspended") void ctx.resume();
     const src = ctx.createBufferSource();
     src.buffer = buf;
+    src.playbackRate.value = rate;
     const gain = ctx.createGain();
     src.connect(gain);
     gain.connect(master);

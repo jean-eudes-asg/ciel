@@ -279,6 +279,13 @@ export const Bridge = {
   systemWatch: (watching: boolean) => call<void>("system_watch", { watching }),
   /** Ends one of the user's processes (the card's End, clicked twice). */
   systemEnd: (pid: number) => call<boolean>("system_end", { pid }),
+  /** A line from Ciel's brain about the game on the Games page (src-tauri/src/play.rs); null without a brain. */
+  gameLine: (facts: string) => call<string | null>("game_line", { facts }),
+  /** The games in their own window, or back in the Ciel window (src-tauri/src/play.rs). */
+  gamesWindow: (open: boolean) => call<void>("games_window", { open }),
+  gamesWindowOpen: () => call<boolean>("games_window_open"),
+  /** Keeps the games' window over the others. */
+  gamesOnTop: (on: boolean) => call<void>("games_on_top", { on }),
   /** The screensaver goes: a key, a click or the mouse (src-tauri/src/screensaver.rs). */
   screensaverDismiss: () => call<void>("screensaver_dismiss"),
   /** Shows the screensaver now, to see it (Settings). */
