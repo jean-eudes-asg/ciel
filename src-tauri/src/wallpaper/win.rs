@@ -402,12 +402,13 @@ fn forget_own_pictures(dir: &Path) {
     }
 }
 
-pub fn restore() -> Result<(), String> {
+/// The user's own desktop and/or lock screen back, for those Ciel changed.
+pub fn restore(desktop: bool, lock_screen: bool) -> Result<(), String> {
     let dir = super::dir();
     let Some(mut record) = original::load(&dir) else { return Ok(()) };
     let mut keep = Vec::new();
     let mut failure = None;
-    if let Some(desktop) = record.desktop.clone() {
+    if let Some(desktop) = record.desktop.clone().filter(|_| desktop) {
         match with_com(false, || restore_desktop(&desktop, &dir)) {
             Ok(used) => {
                 keep.extend(used);
@@ -416,7 +417,7 @@ pub fn restore() -> Result<(), String> {
             Err(err) => failure = Some(err),
         }
     }
-    if let Some(lock) = record.lock_screen.clone() {
+    if let Some(lock) = record.lock_screen.clone().filter(|_| lock_screen) {
         match with_com(true, || restore_lock_screen(&lock, &dir)) {
             Ok(used) => {
                 keep.extend(used);

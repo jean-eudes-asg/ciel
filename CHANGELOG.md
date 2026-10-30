@@ -34,6 +34,13 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
     countdown, a tune at the end, the wind and the storm, all made in code
     and following Ciel's sound switch and volume.
 
+### Fixed
+- Turning off the desktop or the lock screen (Settings → Wallpaper) puts
+  your own picture back. Ciel's last one stayed there, like a flip clock
+  stopped at the minute it was drawn, until **Restore my previous
+  wallpaper**. A picture left behind that way goes the next time Ciel
+  starts.
+
 ## [0.3.2] - 2026-10-26
 
 ### Added

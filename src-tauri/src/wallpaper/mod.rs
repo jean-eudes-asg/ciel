@@ -4,7 +4,8 @@
 //
 // The island draws (src/sky) and decides; Rust only applies, and only when a
 // command asks: nothing here runs, polls or touches the desktop while the
-// wallpaper settings are off.
+// wallpaper settings are off, but for putting the user's own pictures back
+// once, when one is turned off.
 //
 //   * original.rs — what was there before Ciel's first change, for restore;
 //   * photos.rs   — NASA and Wikimedia Commons photos, cached with credits;
@@ -36,7 +37,7 @@ use std::sync::Mutex;
 
 use serde::Serialize;
 use tauri::ipc::{InvokeBody, Request, Response};
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 
 use crate::i18n::{t, tf};
 use crate::settings::WallpaperPrefs;
@@ -248,23 +249,58 @@ pub async fn wallpaper_monitors(app: AppHandle) -> Result<Vec<MonitorInfo>, Stri
 
 // ── Desktop and lock screen ───────────────────────────────────────────────────
 
+/// Whether the user still wants Ciel's pictures there. Asked once the picture
+/// may go on: one drawn before they turned it off doesn't go on after.
+fn wanted(app: &AppHandle, part: fn(&WallpaperPrefs) -> bool) -> bool {
+    app.try_state::<crate::Shared>().is_none_or(|s| part(&s.settings.lock().unwrap().wallpaper))
+}
+
 /// Blocking: `png` on the monitor `id`, saving the user's own pictures first
 /// if this is Ciel's first change.
-pub(crate) fn apply_desktop(id: &str, png: &[u8], screens: &[Screen]) -> Result<(), String> {
+pub(crate) fn apply_desktop(app: &AppHandle, id: &str, png: &[u8], screens: &[Screen]) -> Result<(), String> {
     let _apply = apply_lock();
+    if !wanted(app, |w| w.desktop) {
+        return Ok(());
+    }
     os::set_desktop(id, png, screens)
 }
 
 /// Blocking: `png` on the lock screen, saving the user's own picture first.
-pub(crate) fn apply_lock_screen(png: &[u8]) -> Result<(), String> {
+/// False when the lock screen was turned off meanwhile and nothing changed.
+pub(crate) fn apply_lock_screen(app: &AppHandle, png: &[u8]) -> Result<bool, String> {
     let _apply = apply_lock();
-    os::set_lock_screen(png)
+    if !wanted(app, |w| w.lock_screen) {
+        return Ok(false);
+    }
+    os::set_lock_screen(png).map(|()| true)
 }
 
 /// Blocking: what was there before Ciel's first change, back.
 pub(crate) fn put_back() -> Result<(), String> {
     let _apply = apply_lock();
-    os::restore()
+    os::restore(true, true)
+}
+
+/// The desktop and the lock screen Ciel changed and the user has turned off.
+fn turned_off(prefs: &WallpaperPrefs, record: &original::Original) -> (bool, bool) {
+    (!prefs.desktop && record.desktop.is_some(), !prefs.lock_screen && record.lock_screen.is_some())
+}
+
+/// What the user turned off gets their own picture back, so Ciel's last one
+/// doesn't stay on the desktop or the lock screen. At launch too, for a
+/// picture an earlier version left behind.
+fn put_back_turned_off(prefs: &WallpaperPrefs) {
+    let Some(record) = original::load(&dir()) else { return };
+    let (desktop, lock_screen) = turned_off(prefs, &record);
+    if !desktop && !lock_screen {
+        return;
+    }
+    std::thread::spawn(move || {
+        let _apply = apply_lock();
+        if let Err(err) = os::restore(desktop, lock_screen) {
+            crate::log::line(format!("wallpaper: turned off, but {err}"));
+        }
+    });
 }
 
 #[tauri::command]
@@ -272,15 +308,17 @@ pub async fn wallpaper_set_desktop(app: AppHandle, request: Request<'_>) -> Resu
     let id = text_arg(&request, "monitorId").unwrap_or_default();
     let png = png_arg(&request)?;
     let screens = screens(&app);
-    blocking(move || apply_desktop(&id, &png, &screens)).await
+    blocking(move || apply_desktop(&app, &id, &png, &screens)).await
 }
 
 #[tauri::command]
 pub async fn wallpaper_set_lock_screen(app: AppHandle, request: Request<'_>) -> Result<(), String> {
     let png = png_arg(&request)?;
-    blocking(move || apply_lock_screen(&png)).await?;
-    // The island may want to redraw it around a lock from now on.
-    live::follow_session(&app, true);
+    let handle = app.clone();
+    if blocking(move || apply_lock_screen(&handle, &png)).await? {
+        // The island may want to redraw it around a lock from now on.
+        live::follow_session(&app, true);
+    }
     Ok(())
 }
 
@@ -356,10 +394,12 @@ pub async fn wallpaper_status(app: AppHandle) -> Status {
 
 /// At launch and after every settings save: with the lock screen on, the
 /// session is followed so the island hears about locks; otherwise nothing of
-/// the wallpapers runs (unless live mode is up).
+/// the wallpapers runs (unless live mode is up). What was turned off gets the
+/// user's own picture back.
 pub fn sync(app: &AppHandle, prefs: &WallpaperPrefs) {
     live::set_pause_on_battery(prefs.pause_on_battery);
     live::follow_session(app, prefs.lock_screen);
+    put_back_turned_off(prefs);
 }
 
 /// The app is quitting: live windows leave the desktop layer and the picture
@@ -422,6 +462,24 @@ mod tests {
         assert_eq!(percent_decode(r"\\?\DISPLAY#X&0"), r"\\?\DISPLAY#X&0");
         assert_eq!(percent_decode("100%"), "100%");
         assert_eq!(percent_decode("%zz"), "%zz");
+    }
+
+    #[test]
+    fn what_is_turned_off_gets_the_users_own_picture_back() {
+        let prefs = |desktop, lock_screen| WallpaperPrefs { desktop, lock_screen, ..WallpaperPrefs::default() };
+        let both = original::Original {
+            desktop: Some(Default::default()),
+            lock_screen: Some(Default::default()),
+            ..Default::default()
+        };
+        let lock_only = original::Original { lock_screen: Some(Default::default()), ..Default::default() };
+        assert_eq!(turned_off(&prefs(true, true), &both), (false, false));
+        assert_eq!(turned_off(&prefs(true, false), &both), (false, true));
+        assert_eq!(turned_off(&prefs(false, true), &both), (true, false));
+        assert_eq!(turned_off(&prefs(false, false), &both), (true, true));
+        // Only what Ciel changed: the desktop it never touched stays as it is.
+        assert_eq!(turned_off(&prefs(false, false), &lock_only), (false, true));
+        assert_eq!(turned_off(&prefs(false, false), &original::Original::default()), (false, false));
     }
 
     #[test]

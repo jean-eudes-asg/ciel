@@ -300,12 +300,13 @@ fn put_back(settings: &[Setting], dir: &Path, used: &mut Vec<PathBuf>) -> Result
     Ok(())
 }
 
-pub fn restore() -> Result<(), String> {
+/// The user's own desktop and/or lock screen back, for those Ciel changed.
+pub fn restore(desktop: bool, lock_screen: bool) -> Result<(), String> {
     let dir = super::dir();
     let Some(mut record): Option<Original> = original::load(&dir) else { return Ok(()) };
     let mut used = Vec::new();
     let mut failure = None;
-    if let Some(desktop) = record.desktop.clone() {
+    if let Some(desktop) = record.desktop.clone().filter(|_| desktop) {
         let mut result = put_back(&desktop.settings, &dir, &mut used);
         if let (Ok(()), Some(picture)) = (&result, &desktop.plasma) {
             result = match original::source_for(&dir, picture) {
@@ -325,7 +326,7 @@ pub fn restore() -> Result<(), String> {
             Err(e) => failure = Some(tf("Ciel couldn't put your wallpaper back: {error}", &[("error", &e)])),
         }
     }
-    if let Some(lock) = record.lock_screen.clone() {
+    if let Some(lock) = record.lock_screen.clone().filter(|_| lock_screen) {
         match put_back(&lock.settings, &dir, &mut used) {
             Ok(()) => record.lock_screen = None,
             Err(e) => {
