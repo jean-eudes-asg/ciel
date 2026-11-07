@@ -20,6 +20,7 @@ import {
 import { placeFor } from "../src/sky/sun";
 import type { StageEvent, StageMessage, StageView } from "./sky-stage";
 import { Ambient, type AmbientScene } from "./ambient";
+import { cielMark, constellation } from "../src/hub/constellation";
 
 const $ = <T extends Element = HTMLElement>(sel: string) => document.querySelector(sel) as T;
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
@@ -105,15 +106,8 @@ function applyTone() {
   const spec = sky.specs.real;
   const l = lightOf(spec);
   document.documentElement.dataset.tone = brightness(l) > 138 ? "light" : "dark";
-  // Until the first frame: the same sky as a gradient.
-  $(".stage").style.setProperty(
-    "--stage-bg",
-    `linear-gradient(180deg, ${css(l.zenith)} 0%, ${css(l.upper)} 30%, ${css(l.mid)} 60%, ${css(l.horizon)} 80%, ${css(l.cmid)} 100%)`,
-  );
-  $<HTMLMetaElement>('meta[name="theme-color"]').content = css(l.zenith);
-  // The ground is the sea of clouds the sky sinks into: always pale, in the sky's own light.
-  const cloud = mix(l.lit, [250, 248, 252], 0.72 + 0.16 * clamp(l.dark, 0, 1));
-  document.documentElement.style.setProperty("--ground", css(cloud));
+  // Until the first frame: the sky's own colour.
+  $(".stage").style.setProperty("--stage-bg", css(l.mid));
 
   // The little sun (or moon) beside "The sky is the limit.", in the sky's own light.
   const glyph: RGB = sky.phase === "night" || sky.phase === "dusk" ? [226, 232, 255] : mix(l.sunColor, [255, 196, 70], 0.7);
@@ -836,6 +830,15 @@ function footerCiel(canvas: HTMLCanvasElement) {
 
 const napCanvas = document.querySelector<HTMLCanvasElement>(".foot-ciel");
 if (napCanvas) footerCiel(napCanvas);
+
+// ── Ciel's silhouette and his constellation ───────────────────────────────────
+
+// The header's mark, and the setup's last screen under "Give Ciel a star":
+// every star lit, his eyes open (src/hub/constellation.ts, as in the app).
+document.querySelector(".brand-mark")?.append(cielMark(28));
+document.querySelector(".star-sky")?.append(
+  constellation(260, 210, { done: [true, true, true, true, true, true, true], current: -1, big: true }),
+);
 
 // ── Go ────────────────────────────────────────────────────────────────────────
 

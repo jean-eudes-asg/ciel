@@ -1,56 +1,44 @@
-/* Ciel's website. The page sits on a living sky (the stage, drawn by the
-   app's own renderer); everything that carries text either reads straight
-   off the sky with a tone picked from it (the hero, "Try it") or sits on
-   glass cards, then on solid ground once the sky is behind us. */
+/* Ciel's website, in the app's colours: pitch black, white type, a hairline
+   where something needs an edge. The one picture is the sky, drawn by the
+   app's own renderer, framed like a screen: Ciel floats in it while the
+   features scroll over it as black cards, cut like his island. Words that sit
+   straight on the sky (the hero, "Try it") take a tone picked from it. */
 
 @import "@fontsource-variable/nunito/wght.css";
 
 :root {
   --font: "Nunito Variable", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --navy: #13213f;
-  --navy-soft: #3f4c69;
-  --amber: #ffcf6e;
+  --bg: #000;
+  --surface: #0a0a0a;
+  --raised: #161616;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-2: rgba(255, 255, 255, 0.18);
+  --text: #f4f4f4;
+  --text-2: #a3a3a3;
+  --text-3: #787878;
 
-  /* Text straight on the sky (hero, "Try it"): set from the visitor's sky by main.ts. */
-  --sky-ink: var(--navy);
-  --sky-ink-soft: #2c3a5a;
-  --sky-halo: rgba(255, 255, 255, 0.62);
-  --sky-chip: rgba(255, 255, 255, 0.5);
-  --sky-chip-border: rgba(255, 255, 255, 0.7);
+  /* Words straight on the sky: set from the visitor's sky by main.ts. */
+  --sky-ink: #0a0a0a;
+  --sky-ink-soft: rgba(10, 10, 10, 0.72);
+  --sky-btn: #000;
+  --sky-btn-ink: #fff;
+  --sky-line: rgba(10, 10, 10, 0.28);
 
-  /* Glass cards over the sky. */
-  --card-bg: rgba(255, 255, 255, 0.76);
-  --card-border: rgba(255, 255, 255, 0.75);
-  --card-ink: var(--navy);
-  --card-soft: #45526f;
-  --card-chip: rgba(19, 33, 63, 0.07);
-  --card-shadow: 0 30px 70px -30px rgba(15, 30, 70, 0.45), 0 2px 6px rgba(15, 30, 70, 0.06);
-
-  /* The ground the page lands on: the sea of clouds the sky sinks into, always
-     pale, tinted by main.ts with the visitor's own sky (white by day, peach at
-     sunset, lavender under the moon). */
-  --ground: #f5f3f8;
-  --ground-ink: #262c39;
-  --ground-soft: #5a6274;
-  --panel: rgba(255, 255, 255, 0.6);
-  --panel-border: rgba(38, 44, 57, 0.07);
-  --panel-shadow: none;
-  --link: #2d67b2;
-  --code-bg: rgba(38, 44, 57, 0.06);
-
-  --radius: 28px;
+  --header: 64px;
+  --frame: 12px;
   --gutter: clamp(16px, 4.5vw, 56px);
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 :root[data-tone="dark"] {
-  --sky-ink: #ffffff;
-  --sky-ink-soft: #e2e8f8;
-  --sky-halo: rgba(6, 10, 30, 0.55);
-  --sky-chip: rgba(10, 16, 42, 0.42);
-  --sky-chip-border: rgba(255, 255, 255, 0.18);
+  --sky-ink: #fff;
+  --sky-ink-soft: rgba(255, 255, 255, 0.8);
+  --sky-btn: #fff;
+  --sky-btn-ink: #000;
+  --sky-line: rgba(255, 255, 255, 0.36);
 }
 
 *,
@@ -62,6 +50,7 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  background: var(--bg);
 }
 
 body {
@@ -69,11 +58,16 @@ body {
   font-family: var(--font);
   font-size: 17px;
   line-height: 1.6;
-  color: var(--ground-ink);
-  background: var(--ground);
+  color: var(--text);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+::selection {
+  background: #fff;
+  color: #000;
 }
 
 img {
@@ -89,7 +83,6 @@ h2,
 h3 {
   margin: 0;
   line-height: 1.12;
-  letter-spacing: -0.015em;
 }
 
 p {
@@ -105,7 +98,7 @@ pre {
 code {
   padding: 0.1em 0.38em;
   border-radius: 6px;
-  background: var(--code-bg);
+  background: var(--raised);
 }
 
 a {
@@ -113,9 +106,14 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid var(--amber);
+  outline: 2px solid #fff;
   outline-offset: 3px;
-  border-radius: 10px;
+  border-radius: 8px;
+}
+
+section[id],
+#top {
+  scroll-margin-top: var(--header);
 }
 
 .skip {
@@ -124,10 +122,10 @@ a {
   top: -60px;
   z-index: 30;
   padding: 10px 16px;
-  border-radius: 12px;
-  background: var(--navy);
-  color: #fff;
-  font-weight: 700;
+  border-radius: 10px;
+  background: #fff;
+  color: #000;
+  font-weight: 650;
   text-decoration: none;
 }
 
@@ -137,42 +135,45 @@ a {
 
 /* ── Top bar ──────────────────────────────────────────────────────────────── */
 
-.top,
-.hero,
-.try {
-  transition: color 0.5s ease;
-}
-
 .top {
-  position: absolute;
-  inset: 0 0 auto 0;
+  position: sticky;
+  top: 0;
   z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px var(--gutter);
-  color: var(--sky-ink);
+  height: var(--header);
+  padding: 0 calc(var(--frame) + 12px);
+  background: var(--bg);
 }
 
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 21px;
-  font-weight: 850;
-  letter-spacing: -0.01em;
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
   text-decoration: none;
 }
 
-.brand img {
-  filter: drop-shadow(0 2px 6px rgba(10, 20, 50, 0.25));
+.brand-mark {
+  display: inline-flex;
+  width: 28px;
+  height: 22px;
+  color: var(--text);
+}
+
+.brand-mark svg {
+  width: 28px;
+  height: 22px;
 }
 
 .top nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .nav-link,
@@ -180,35 +181,30 @@ a {
 .nav-sound {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 15.5px;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text-2);
+  font: 550 15px var(--font);
   text-decoration: none;
-  transition: background 0.2s ease;
+  cursor: pointer;
+  transition: color 140ms var(--ease), background-color 140ms var(--ease);
 }
 
 .nav-link:hover,
-.nav-gh:hover,
 .nav-sound:hover {
-  background: var(--sky-chip);
+  color: var(--text);
+  background: var(--raised);
 }
 
 /* The sound switch: a speaker, crossed out when off, with waves when on. */
-.nav-sound {
-  border: 1px solid transparent;
-  background: none;
-  color: inherit;
-  font-family: var(--font);
-  cursor: pointer;
-}
-
 .nav-sound svg {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.9;
+  stroke-width: 1.6;
   stroke-linecap: round;
 }
 
@@ -219,24 +215,21 @@ a {
 
 .nav-sound[aria-pressed="true"] .snd-on {
   display: inline;
-  animation: waves 2.4s ease-in-out infinite;
 }
 
 .nav-sound[aria-pressed="true"] {
-  border-color: var(--sky-chip-border);
-  background: var(--sky-chip);
-}
-
-@keyframes waves {
-  0%, 100% { opacity: 0.55; }
-  50% { opacity: 1; }
+  color: var(--text);
+  border-color: var(--line-2);
 }
 
 .nav-gh {
-  background: var(--sky-chip);
-  border: 1px solid var(--sky-chip-border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  margin-left: 6px;
+  color: var(--text);
+  border-color: var(--line-2);
+}
+
+.nav-gh:hover {
+  background: var(--raised);
 }
 
 @media (max-width: 640px) {
@@ -245,27 +238,40 @@ a {
     display: none;
   }
   .nav-sound {
-    padding: 0 11px;
+    padding: 0 10px;
+  }
+  .top {
+    padding: 0 var(--frame);
   }
 }
 
-/* ── The stage: sky and Ciel ─────────────────────────────────────────────── */
+/* ── The stage: the sky, framed like a screen, and Ciel in it ─────────────── */
 
 .journey {
   position: relative;
+  margin: 0 var(--frame);
+  border-radius: 24px;
+  /* clip, not hidden: the stage inside stays sticky to the window. */
+  overflow: clip;
+  background: #000;
 }
 
 .stage {
+  --stage-h: calc(100vh - var(--header) - var(--frame));
   position: sticky;
-  top: 0;
+  top: var(--header);
   z-index: 0;
-  height: 100vh;
-  height: 100lvh;
-  margin-bottom: -100vh;
-  margin-bottom: -100lvh;
+  height: var(--stage-h);
+  margin-bottom: calc(-1 * var(--stage-h));
   overflow: hidden;
-  /* Until the first frame: a sky of the right mood, set by main.ts. */
-  background: var(--stage-bg, linear-gradient(180deg, #2a5797 0%, #6d9fd6 52%, #d6e4f0 80%, #eef3f8 100%));
+  /* Until the first frame: the sky's own colour, set by main.ts. */
+  background: var(--stage-bg, #3a6aa6);
+}
+
+@supports (height: 100svh) {
+  .stage {
+    --stage-h: calc(100svh - var(--header) - var(--frame));
+  }
 }
 
 .stage canvas {
@@ -341,18 +347,22 @@ a {
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
 
 .hero {
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: calc(100vh - var(--header) - var(--frame));
   display: flex;
   flex-direction: column;
   align-items: center;
   /* The top third at least is Ciel's, however tall the words get. */
-  padding: calc(64px + 30vh) 16px 104px;
-  padding-top: calc(64px + 30svh);
+  padding: calc(24px + 30vh) 16px 104px;
   color: var(--sky-ink);
   text-align: center;
-  /* The halo behind the words is wider than a phone: it mustn't scroll the page sideways. */
-  overflow-x: clip;
+  transition: color 0.5s ease;
+}
+
+@supports (height: 100svh) {
+  .hero {
+    min-height: calc(100svh - var(--header) - var(--frame));
+    padding-top: calc(24px + 30svh);
+  }
 }
 
 .hero-copy {
@@ -361,32 +371,21 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 760px;
-}
-
-/* A soft halo of the sky's own light behind the words. */
-.hero-copy::before {
-  content: "";
-  position: absolute;
-  inset: -12% -16% -18%;
-  z-index: -1;
-  background: radial-gradient(50% 50% at 50% 50%, var(--sky-halo), transparent 72%);
-  filter: blur(8px);
-  pointer-events: none;
+  max-width: 780px;
 }
 
 .wordmark {
   font-size: clamp(60px, min(10vw, 12svh), 112px);
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 0.95;
 }
 
 .tagline {
   margin-top: clamp(8px, 1.6svh, 16px);
-  max-width: 21em;
-  font-size: clamp(19px, 2.3vw, 26px);
-  font-weight: 700;
+  max-width: 22em;
+  font-size: clamp(19px, 2.3vw, 25px);
+  font-weight: 600;
   line-height: 1.3;
   color: var(--sky-ink-soft);
   text-wrap: balance;
@@ -403,7 +402,7 @@ a {
 .fine {
   margin-top: 12px;
   font-size: 14.5px;
-  font-weight: 650;
+  font-weight: 550;
   color: var(--sky-ink-soft);
 }
 
@@ -411,6 +410,7 @@ a {
   text-underline-offset: 3px;
 }
 
+/* A small black label, like the island, in the sky's corner. */
 .sky-note {
   position: absolute;
   left: var(--gutter);
@@ -419,20 +419,17 @@ a {
   align-items: center;
   gap: 10px;
   max-width: min(440px, calc(100% - 2 * var(--gutter)));
-  padding: 9px 16px 9px 11px;
-  border-radius: 18px;
-  background: var(--sky-chip);
-  border: 1px solid var(--sky-chip-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 8px 16px 8px 12px;
+  border-radius: 14px;
+  background: #000;
   text-align: left;
   font-size: 14px;
   line-height: 1.35;
-  color: var(--sky-ink);
+  color: #fff;
   opacity: 0;
   visibility: hidden;
   transform: translateY(6px);
-  transition: opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s;
+  transition: opacity 0.8s var(--ease) 0.4s, transform 0.8s var(--ease) 0.4s;
 }
 
 .sky-note.on {
@@ -443,17 +440,15 @@ a {
 
 .sky-glyph {
   flex: none;
-  width: 22px;
-  height: 22px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, var(--glyph, #ffd27a) 0 46%, transparent 50%),
-    radial-gradient(circle, color-mix(in srgb, var(--glyph, #ffd27a) 45%, transparent) 0, transparent 70%);
+  background: var(--glyph, #fff);
 }
 
 .sky-line {
   display: block;
-  font-weight: 750;
-  letter-spacing: 0.005em;
+  font-weight: 600;
 }
 
 .scroll-cue {
@@ -466,22 +461,8 @@ a {
   height: 44px;
   margin-left: -22px;
   border-radius: 50%;
-  color: var(--sky-ink);
-  background: var(--sky-chip);
-  border: 1px solid var(--sky-chip-border);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  animation: bob 2.6s ease-in-out infinite;
-}
-
-@keyframes bob {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(5px);
-  }
+  color: #fff;
+  background: #000;
 }
 
 @media (max-width: 760px) {
@@ -503,60 +484,60 @@ a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  min-height: 50px;
-  padding: 0 24px;
-  border-radius: 999px;
+  gap: 8px;
+  height: 48px;
+  padding: 0 22px;
+  border-radius: 12px;
   border: 1px solid transparent;
-  font: 800 16.5px/1 var(--font);
-  letter-spacing: 0.005em;
+  font: 650 16px/1 var(--font);
   text-decoration: none;
   white-space: nowrap;
-  transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1), box-shadow 0.25s ease, background 0.25s ease;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
+  transition: opacity 140ms var(--ease), transform 120ms var(--ease), background-color 140ms var(--ease);
 }
 
 .btn:active {
-  transform: translateY(0) scale(0.98);
+  transform: scale(0.98);
 }
 
 .btn-primary {
-  background: var(--navy);
-  color: #fff;
-  box-shadow: 0 14px 30px -14px rgba(10, 22, 52, 0.75);
+  background: #fff;
+  color: #000;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 18px 36px -14px rgba(10, 22, 52, 0.85);
+  opacity: 0.88;
 }
 
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.55);
-  border-color: rgba(255, 255, 255, 0.75);
-  color: var(--navy);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: transparent;
+  border-color: var(--line-2);
+  color: var(--text);
 }
 
-:root[data-tone="dark"] .hero .btn-primary,
-:root[data-tone="dark"] .try .btn-primary {
-  background: #fff;
-  color: var(--navy);
+.btn-ghost:hover {
+  background: var(--raised);
 }
 
-:root[data-tone="dark"] .hero .btn-ghost {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.32);
-  color: #fff;
+/* On the sky: black on a bright sky, white on a dark one. */
+.hero .btn-primary,
+.try .btn-primary {
+  background: var(--sky-btn);
+  color: var(--sky-btn-ink);
+}
+
+.hero .btn-ghost {
+  border-color: var(--sky-line);
+  color: var(--sky-ink);
+}
+
+.hero .btn-ghost:hover {
+  background: color-mix(in srgb, var(--sky-btn) 12%, transparent);
 }
 
 @media (max-width: 400px) {
   .btn {
-    gap: 7px;
-    min-height: 46px;
+    gap: 6px;
+    height: 44px;
     padding: 0 16px;
     font-size: 15px;
   }
@@ -566,12 +547,12 @@ a {
 }
 
 .btn-small {
-  min-height: 42px;
-  padding: 0 18px;
+  height: 40px;
+  padding: 0 16px;
   font-size: 15px;
 }
 
-/* ── Features ─────────────────────────────────────────────────────────────── */
+/* ── Features: black cards, cut like the island ───────────────────────────── */
 
 .feature {
   min-height: 125vh;
@@ -587,66 +568,40 @@ a {
 
 .card {
   width: min(540px, 100%);
-  padding: clamp(22px, 3vw, 34px);
-  border-radius: var(--radius);
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  box-shadow: var(--card-shadow);
-  backdrop-filter: blur(18px) saturate(1.25);
-  -webkit-backdrop-filter: blur(18px) saturate(1.25);
-  color: var(--card-ink);
-}
-
-.dark .card {
-  --card-bg: rgba(12, 18, 46, 0.6);
-  --card-border: rgba(255, 255, 255, 0.13);
-  --card-ink: #f3f6ff;
-  --card-soft: #c3cbe6;
-  --card-chip: rgba(255, 255, 255, 0.1);
-  --card-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.7);
-  --code-bg: rgba(255, 255, 255, 0.1);
+  padding: clamp(24px, 3vw, 32px);
+  border-radius: 28px;
+  background: #000;
+  color: var(--text);
 }
 
 .kicker {
-  display: flex;
-  align-items: center;
-  gap: 9px;
   font-size: 14px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--card-soft);
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--c);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c) 22%, transparent);
+  font-weight: 600;
+  color: var(--text-3);
 }
 
 .card h2 {
-  margin-top: 12px;
-  font-size: clamp(27px, 3.1vw, 38px);
-  font-weight: 900;
+  margin-top: 8px;
+  font-size: clamp(27px, 3vw, 36px);
+  font-weight: 650;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
 .card > p:not(.kicker) {
   margin-top: 12px;
-  color: var(--card-soft);
-  font-weight: 550;
+  color: var(--text-2);
 }
 
 .card b {
-  color: var(--card-ink);
+  color: var(--text);
+  font-weight: 650;
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 8px;
   margin: 16px 0 0;
   padding: 0;
   list-style: none;
@@ -655,50 +610,25 @@ a {
 .chips li {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: var(--card-chip);
-  font-size: 14px;
-  font-weight: 750;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line-2);
+  color: var(--text-2);
+  font-size: 13.5px;
+  font-weight: 550;
 }
 
-.chips.pills li::before {
-  content: "";
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--c);
-}
-
-/* A screenshot's frame. Until the picture exists it shows a little island in
-   a sky of its own, so the page looks finished either way. */
+/* A screenshot's frame. Until the picture exists it shows a little island,
+   so the page looks finished either way. */
 .shot {
   position: relative;
-  margin: 22px 0 0;
+  margin: 24px 0 0;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  border-radius: 18px;
-  border: 1px solid rgba(19, 33, 63, 0.1);
-  background: linear-gradient(180deg, #3a7fcf 0%, #86b6e3 55%, #dfeaf3 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
-}
-
-[data-scene="golden"] .shot {
-  background: linear-gradient(180deg, #2c5b9c 0%, #a2b4cf 55%, #ffd29a 100%);
-}
-
-[data-scene="cloudy"] .shot {
-  background: linear-gradient(180deg, #7f8b9a 0%, #b4bdc8 55%, #e1e5eb 100%);
-}
-
-[data-scene="sunset"] .shot {
-  background: linear-gradient(180deg, #30528c 0%, #c49a9e 55%, #ffb267 100%);
-}
-
-.dark .shot {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: linear-gradient(180deg, #050a22 0%, #131d45 60%, #25305f 100%);
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
 }
 
 .shot img {
@@ -725,39 +655,17 @@ a {
   /* The island. */
   content: "";
   position: absolute;
-  left: 24%;
-  top: 7%;
-  width: 52%;
-  height: 17%;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle closest-side, #fff 90%, transparent 100%) 5% 50% / 13% 60% no-repeat,
-    linear-gradient(rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.42)) 30% 36% / 44% 12% no-repeat,
-    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 27% 66% / 28% 12% no-repeat,
-    #0b0f1c;
-  box-shadow: 0 14px 30px -12px rgba(5, 10, 30, 0.6);
+  left: 30%;
+  top: 0;
+  width: 40%;
+  height: 12%;
+  border-radius: 0 0 18px 18px;
+  background: #000;
+  border: 1px solid var(--line);
+  border-top: 0;
 }
 
-.shot::after {
-  /* A sea of clouds along the bottom. */
-  content: "";
-  position: absolute;
-  inset: auto -5% -18% -5%;
-  height: 42%;
-  background:
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) ) 0% 30% / 30% 90% no-repeat,
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) 30% 10% / 34% 100% no-repeat,
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0)) 62% 25% / 32% 90% no-repeat,
-    radial-gradient(closest-side, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) 100% 15% / 34% 100% no-repeat;
-  opacity: 0.85;
-}
-
-.dark .shot::after {
-  opacity: 0.18;
-}
-
-.shot:not(.empty)::before,
-.shot:not(.empty)::after {
+.shot:not(.empty)::before {
   display: none;
 }
 
@@ -775,8 +683,8 @@ a {
 
 .card-small {
   width: min(400px, 100%);
-  font-size: clamp(19px, 2vw, 23px);
-  font-weight: 750;
+  font-size: clamp(19px, 2vw, 22px);
+  font-weight: 600;
   line-height: 1.4;
   text-wrap: balance;
 }
@@ -804,16 +712,17 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
+  gap: 24px;
   padding: 16vh 16px 22vh;
   color: var(--sky-ink);
   text-align: center;
+  transition: color 0.5s ease;
 }
 
 .try h2 {
   font-size: clamp(32px, 4.4vw, 52px);
-  font-weight: 900;
-  text-shadow: 0 1px 24px var(--sky-halo);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .demo {
@@ -825,13 +734,9 @@ a {
   width: 100%;
   aspect-ratio: 900 / 420;
   overflow: hidden;
-  border-radius: 26px;
+  border-radius: 24px;
   /* A screen with the page's sky as its wallpaper: the island lives at its top edge. */
-  background: linear-gradient(180deg, rgba(8, 12, 30, 0.34), rgba(8, 12, 30, 0.1) 40%, rgba(8, 12, 30, 0.06));
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: 0 40px 90px -40px rgba(5, 10, 30, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(3px) saturate(1.15);
-  -webkit-backdrop-filter: blur(3px) saturate(1.15);
+  border: 1px solid var(--sky-line);
 }
 
 .demo-frame {
@@ -861,12 +766,10 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 16px;
   padding: 20px;
   color: #fff;
-  background:
-    radial-gradient(60% 80% at 50% 0%, rgba(120, 160, 255, 0.28), transparent 70%),
-    linear-gradient(180deg, rgba(14, 20, 50, 0.88), rgba(8, 12, 32, 0.92));
+  background: #000;
 }
 
 .demo[data-state="missing"] .demo-fallback {
@@ -875,27 +778,27 @@ a {
 
 .demo-fallback p {
   max-width: 30em;
-  color: #d6def5;
-  font-weight: 600;
+  color: var(--text-2);
 }
 
 .demo-fallback b {
   color: #fff;
   font-size: 1.15em;
+  font-weight: 650;
 }
 
 .demo-fallback .btn-primary {
   background: #fff;
-  color: var(--navy);
+  color: #000;
 }
 
-/* The moments a visitor can call up, under the demo. */
+/* The moments a visitor can call up, under the demo: black, like the island. */
 .demo-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .demo[data-state="missing"] .demo-actions {
@@ -905,32 +808,19 @@ a {
 .play {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  min-height: 42px;
-  padding: 0 18px 0 14px;
-  border-radius: 999px;
-  border: 1px solid var(--sky-chip-border);
-  background: var(--sky-chip);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  color: var(--sky-ink);
-  font: 750 15px/1 var(--font);
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 0;
+  background: #000;
+  color: #fff;
+  font: 600 15px/1 var(--font);
   cursor: pointer;
-  transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1), background 0.2s ease, opacity 0.3s ease;
-}
-
-.play::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--dot);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot) 30%, transparent);
+  transition: opacity 140ms var(--ease), transform 120ms var(--ease);
 }
 
 .play:hover:not(:disabled) {
-  transform: translateY(-2px);
-  background: color-mix(in srgb, var(--sky-chip) 60%, #fff 40%);
+  opacity: 0.82;
 }
 
 .play:active:not(:disabled) {
@@ -942,16 +832,10 @@ a {
   cursor: default;
 }
 
-.play:focus-visible {
-  outline: 2px solid var(--sky-ink);
-  outline-offset: 2px;
-}
-
 .demo-caption {
   max-width: 36em;
-  font-weight: 650;
+  font-weight: 550;
   color: var(--sky-ink-soft);
-  text-shadow: 0 1px 18px var(--sky-halo);
 }
 
 @media (max-width: 640px) {
@@ -971,41 +855,18 @@ a {
   }
 }
 
-/* ── The ground ───────────────────────────────────────────────────────────── */
+/* ── Below the sky ────────────────────────────────────────────────────────── */
 
 .ground {
   position: relative;
   z-index: 2;
-  background: var(--ground);
   padding: 0 var(--gutter);
-}
-
-/* The ground's edge: a bank of cloud tops, three rows of puffs. */
-.ground::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(100% - 1px);
-  height: 84px;
-  pointer-events: none;
-  /* Puffs of four sizes repeating at unrelated spacings, so the edge never looks regular. */
-  background:
-    radial-gradient(circle 76px at 50% 100%, var(--ground) 99%, transparent) 0 100% / 263px 84px repeat-x,
-    radial-gradient(circle 58px at 50% 100%, var(--ground) 99%, transparent) 101px 100% / 187px 66px repeat-x,
-    radial-gradient(circle 44px at 50% 100%, var(--ground) 98%, transparent) 37px 100% / 119px 50px repeat-x,
-    radial-gradient(circle 33px at 50% 100%, var(--ground) 98%, transparent) 60px 100% / 71px 38px repeat-x,
-    linear-gradient(var(--ground), var(--ground)) 0 100% / 100% 20px no-repeat;
 }
 
 .block {
   max-width: 1120px;
   margin: 0 auto;
-  padding: clamp(48px, 8vw, 96px) 0 0;
-}
-
-.block:first-child {
-  padding-top: clamp(24px, 4vw, 48px);
+  padding: clamp(64px, 9vw, 112px) 0 0;
 }
 
 .block-head {
@@ -1014,48 +875,52 @@ a {
 }
 
 .block .eyebrow {
-  font-size: 15px;
-  font-weight: 750;
-  color: var(--ground-soft);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-3);
 }
 
 .block h2 {
   margin-top: 8px;
-  font-size: clamp(30px, 4vw, 46px);
-  font-weight: 900;
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 650;
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 .block h3 {
-  font-size: 19px;
-  font-weight: 850;
+  font-size: 18px;
+  font-weight: 650;
 }
 
 .block p {
-  color: var(--ground-soft);
-  font-weight: 550;
+  color: var(--text-2);
 }
 
 .block a:not(.btn) {
-  color: var(--link);
+  color: var(--text);
+  text-decoration-color: var(--line-2);
   text-underline-offset: 3px;
+}
+
+.block a:not(.btn):hover {
+  text-decoration-color: var(--text);
 }
 
 .cols {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  gap: 12px;
 }
 
 .panel,
 .steps > li,
 .tiles > li,
 .linux {
-  padding: 26px;
-  border-radius: 22px;
-  background: var(--panel);
-  border: 1px solid var(--panel-border);
-  box-shadow: var(--panel-shadow);
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
 }
 
 .panel p,
@@ -1066,15 +931,15 @@ a {
 
 .link {
   display: inline-block;
-  margin-top: 14px;
-  font-weight: 750;
+  margin-top: 16px;
+  font-weight: 600;
   overflow-wrap: anywhere;
 }
 
 .steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1090,18 +955,16 @@ a {
 .steps > li::before {
   content: counter(step);
   position: absolute;
-  left: 26px;
-  top: 22px;
+  left: 24px;
+  top: 24px;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background: #fff;
-  border: 1px solid var(--panel-border);
-  color: var(--ground-ink);
-  font-weight: 900;
-  font-size: 16px;
+  border: 1px solid var(--line-2);
+  color: var(--text);
+  font: 600 14px var(--mono);
 }
 
 .steps .btn {
@@ -1114,12 +977,6 @@ a {
   margin-top: 12px;
 }
 
-.steps pre {
-  margin-top: 12px;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
 /* One system's downloads first: data-os on <html>, set in index.html's head. */
 html[data-os="windows"] [data-os-show]:not([data-os-show~="windows"]),
 html[data-os="linux"] [data-os-show]:not([data-os-show~="linux"]),
@@ -1127,13 +984,14 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
   display: none !important;
 }
 
+/* Windows' own SmartScreen box, in its own colours: what the visitor will see. */
 .smartscreen {
   display: grid;
   gap: 6px;
   justify-items: start;
   margin-top: 16px;
   padding: 14px 16px;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #0a5ea8;
   color: #fff;
   font: 600 13px/1.3 "Segoe UI", system-ui, sans-serif;
@@ -1147,7 +1005,7 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
 .ss-link {
   text-decoration: underline;
   text-underline-offset: 2px;
-  outline: 2px solid var(--amber);
+  outline: 2px solid #fff;
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -1156,7 +1014,7 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
   justify-self: end;
   padding: 5px 14px;
   border: 1px solid #fff;
-  outline: 2px solid var(--amber);
+  outline: 2px solid #fff;
   outline-offset: 2px;
 }
 
@@ -1165,18 +1023,24 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
   grid-template-columns: 1.3fr 1fr;
   align-items: center;
   gap: 8px 28px;
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .steps pre,
 .linux pre {
   margin: 0;
-  padding: 16px 18px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.75);
-  border: 1px solid var(--panel-border);
-  color: var(--ground-ink);
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
   overflow-x: auto;
+}
+
+.steps pre {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.7;
 }
 
 .steps pre code,
@@ -1192,8 +1056,8 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
 
 .tiles {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1201,12 +1065,12 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
 
 .tile-icon {
   display: block;
-  width: 40px;
-  height: 40px;
-  margin-bottom: 12px;
+  width: 28px;
+  height: 28px;
+  margin-bottom: 16px;
   fill: none;
-  stroke: var(--ground-ink);
-  stroke-width: 1.8;
+  stroke: var(--text);
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -1232,22 +1096,34 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
   .steps > li,
   .tiles > li,
   .linux {
-    padding: 22px;
+    padding: 20px;
   }
   .steps > li {
-    padding-top: 62px;
+    padding-top: 60px;
   }
   .steps > li::before {
-    left: 22px;
+    left: 20px;
+    top: 20px;
   }
 }
 
-/* ── A star for Ciel ──────────────────────────────────────────────────────── */
+/* ── A star for Ciel: his constellation, as in the app's setup ───────────── */
 
 .star {
-  position: relative;
   max-width: 760px;
   text-align: center;
+}
+
+.star-sky {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.star-sky svg {
+  width: min(240px, 60vw);
+  height: auto;
+  overflow: visible;
 }
 
 .star h2 {
@@ -1256,7 +1132,7 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
 
 .star p {
   max-width: 34em;
-  margin: 14px auto 0;
+  margin: 16px auto 0;
 }
 
 .star-cta {
@@ -1264,73 +1140,28 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 26px;
-}
-
-.star .btn-primary svg {
-  color: var(--amber);
-}
-
-.star .btn-ghost {
-  background: rgba(255, 255, 255, 0.7);
-  border-color: var(--panel-border);
-}
-
-/* A few stars around the words, twinkling out of step. */
-.star-sky {
-  position: absolute;
-  inset: 24px -40px auto;
-  height: 150px;
-  pointer-events: none;
-}
-
-.star-sky span {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  background: var(--amber);
-  clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
-  animation: twinkle 3.2s ease-in-out infinite;
-}
-
-.star-sky span:nth-child(1) { left: 6%; top: 20%; animation-delay: -0.4s; }
-.star-sky span:nth-child(2) { left: 15%; top: 70%; width: 9px; height: 9px; animation-delay: -1.7s; }
-.star-sky span:nth-child(3) { left: 27%; top: 6%; width: 8px; height: 8px; animation-delay: -2.6s; }
-.star-sky span:nth-child(4) { right: 8%; top: 12%; animation-delay: -1.1s; }
-.star-sky span:nth-child(5) { right: 18%; top: 64%; width: 10px; height: 10px; animation-delay: -2.2s; }
-.star-sky span:nth-child(6) { right: 29%; top: 0; width: 7px; height: 7px; animation-delay: -0.9s; }
-.star-sky span:nth-child(7) { left: 50%; top: -6%; width: 9px; height: 9px; animation-delay: -1.4s; }
-
-@keyframes twinkle {
-  0%, 100% { opacity: 0.35; transform: scale(0.75) rotate(0deg); }
-  50% { opacity: 1; transform: scale(1.1) rotate(20deg); }
-}
-
-@media (max-width: 560px) {
-  .star-sky {
-    inset: 8px 0 auto;
-  }
+  margin-top: 28px;
 }
 
 /* ── Footer ───────────────────────────────────────────────────────────────── */
 
 .foot {
   max-width: 1120px;
-  margin: clamp(56px, 9vw, 110px) auto 0;
+  margin: clamp(64px, 9vw, 112px) auto 0;
   padding: 32px 0 40px;
-  border-top: 1px solid var(--panel-border);
+  border-top: 1px solid var(--line);
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 18px 32px;
+  gap: 16px 32px;
   align-items: center;
   font-size: 15px;
-  color: var(--ground-soft);
+  color: var(--text-2);
 }
 
 .foot-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .foot-ciel {
@@ -1339,25 +1170,23 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
   height: 100px;
   margin: -30px -10px -14px -16px;
   cursor: pointer;
-  /* A white cloud on pale ground: a soft shade gives him his shape. */
-  filter: drop-shadow(0 4px 7px rgba(38, 44, 57, 0.2)) drop-shadow(0 0 1px rgba(38, 44, 57, 0.28));
 }
 
 .foot-name {
-  color: var(--ground-ink);
-  font-weight: 900;
-  font-size: 19px;
+  color: var(--text);
+  font-weight: 650;
+  font-size: 18px;
 }
 
 .foot-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 18px;
-  font-weight: 750;
+  gap: 6px 20px;
+  font-weight: 600;
 }
 
 .foot-links a {
-  color: var(--ground-ink);
+  color: var(--text);
   text-decoration: none;
 }
 
@@ -1369,10 +1198,11 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
 .foot-note {
   grid-column: 1 / -1;
   font-size: 13.5px;
+  color: var(--text-3);
 }
 
 .foot-note a {
-  color: var(--link);
+  color: var(--text-2);
 }
 
 @media (max-width: 700px) {
@@ -1387,27 +1217,12 @@ html[data-os="other"] [data-os-show]:not([data-os-show~="other"]) {
   html {
     scroll-behavior: auto;
   }
-  .scroll-cue,
-  .star-sky span,
-  .nav-sound[aria-pressed="true"] .snd-on {
-    animation: none;
-  }
   .stage .sky,
   .sky-note,
   .shot img,
   .demo-frame,
   .btn {
     transition: none;
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .card {
-    --card-bg: rgba(255, 255, 255, 0.96);
-    backdrop-filter: none;
-  }
-  .dark .card {
-    --card-bg: rgba(12, 18, 46, 0.95);
   }
 }
 

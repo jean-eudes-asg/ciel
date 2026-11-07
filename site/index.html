@@ -16,22 +16,22 @@
         document.documentElement.setAttribute("data-os", os);
       })();
     </script>
-    <title>Ciel · a little cloud that keeps an eye on your AI coding agents</title>
+    <title>Ciel · a little cloud at the top of your screen</title>
     <meta
       name="description"
-      content="Ciel is a small cloud at the top of your screen that watches Claude Code, Codex, Cursor and Gemini CLI. Allow or deny their requests, read live diffs, dictate offline and say « OK Ciel », with a local model if you like. Free and open source, for Windows and Linux."
+      content="Ciel is a small cloud at the top of your screen. He answers Claude Code, Codex, Cursor and Gemini CLI, keeps what you copy and the files you drop, rings your timers, says the weather and types what you say, offline. Free and open source, for Windows and Linux."
     />
-    <meta name="theme-color" content="#2c5b9c" />
+    <meta name="theme-color" content="#000000" />
     <link rel="canonical" href="https://jean-eudes-asg.github.io/ciel/" />
     <link rel="icon" type="image/png" sizes="32x32" href="../src-tauri/icons/32x32.png" />
     <link rel="apple-touch-icon" href="../src-tauri/icons/128x128@2x.png" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Ciel" />
-    <meta property="og:title" content="Ciel · a little cloud that keeps an eye on your AI coding agents" />
+    <meta property="og:title" content="Ciel · a little cloud at the top of your screen" />
     <meta
       property="og:description"
-      content="Allow or deny your agents' requests, watch every session live, dictate offline and say « OK Ciel ». Free and open source, for Windows and Linux."
+      content="Answer your coding agents, keep your clipboard, files and timers, dictate offline and say « OK Ciel ». Free and open source, for Windows and Linux."
     />
     <meta property="og:url" content="https://jean-eudes-asg.github.io/ciel/" />
     <meta property="og:image" content="https://jean-eudes-asg.github.io/ciel/og.jpg" />
@@ -40,10 +40,10 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="Ciel, a small white cloud with round eyes, floating in a golden-hour sky above a sea of clouds" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ciel · a little cloud that keeps an eye on your AI coding agents" />
+    <meta name="twitter:title" content="Ciel · a little cloud at the top of your screen" />
     <meta
       name="twitter:description"
-      content="Allow or deny your agents' requests, watch every session live, dictate offline and say « OK Ciel ». Free and open source."
+      content="Answer your coding agents, keep your clipboard, files and timers, dictate offline and say « OK Ciel ». Free and open source, for Windows and Linux."
     />
     <meta name="twitter:image" content="https://jean-eudes-asg.github.io/ciel/og.jpg" />
     <meta name="twitter:image:alt" content="Ciel, a small white cloud with round eyes, floating in a golden-hour sky above a sea of clouds" />
@@ -56,7 +56,7 @@
 
     <header class="top">
       <a class="brand" href="#top">
-        <img src="../src-tauri/icons/128x128.png" width="30" height="30" alt="" />
+        <span class="brand-mark" aria-hidden="true"></span>
         <span>Ciel</span>
       </a>
       <nav aria-label="Sections">
@@ -94,7 +94,7 @@
         <section class="step hero" data-scene="real" data-mood="idle" aria-labelledby="hero-title">
           <div class="hero-copy">
             <h1 id="hero-title" class="wordmark">Ciel</h1>
-            <p class="tagline">A little cloud that keeps an eye on your AI&nbsp;coding&nbsp;agents.</p>
+            <p class="tagline">A little cloud at the top of your screen, for your coding agents and the rest of your&nbsp;day.</p>
             <div class="cta">
               <a class="btn btn-primary" data-react="love" data-os-show="windows other" href="https://github.com/jean-eudes-asg/ciel/releases/latest/download/Ciel-Windows-setup.exe">
                 <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16.5h12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -126,7 +126,7 @@
 
         <section class="step feature" id="features" data-scene="clear" data-mood="working" aria-labelledby="f-agents">
           <article class="card">
-            <p class="kicker"><span class="dot" style="--c: #3b9eff"></span>Watches your agents</p>
+            <p class="kicker">Your agents</p>
             <h2 id="f-agents">Every session, live.</h2>
             <p>
               Claude Code, Codex, Cursor, Gemini CLI, Copilot CLI and more. Ciel shows what each one reads, edits and
@@ -144,7 +144,7 @@
 
         <section class="step feature" data-scene="golden" data-mood="approval" aria-labelledby="f-approval">
           <article class="card">
-            <p class="kicker"><span class="dot" style="--c: #f5a524"></span>Asks before anything runs</p>
+            <p class="kicker">Before anything runs</p>
             <h2 id="f-approval">Nothing runs without your OK.</h2>
             <p>
               When an agent wants to run a command or change a file, the island slides down with <b>Deny</b> and
@@ -158,9 +158,29 @@
           </article>
         </section>
 
+        <section class="step feature" data-scene="clear" data-mood="idle" aria-labelledby="f-tools">
+          <article class="card">
+            <p class="kicker">Everyday tools</p>
+            <h2 id="f-tools">Timers, what you copied, your files, the weather.</h2>
+            <p>
+              The island's Tools tab: type “25m tea” for a timer or run Focus rounds, find what you copied an hour
+              ago, drop files on Ciel and drag them out into any app later, set the volume and the brightness, mute
+              every microphone at once, and see the rain coming. What matters shows in the folded island: a timer
+              counting down, Mic off, the line of the song playing.
+            </p>
+            <ul class="chips" aria-label="The tools">
+              <li>Timers</li><li>Focus</li><li>Clipboard</li><li>Shelf</li><li>Controls</li><li>Weather</li><li>Lyrics</li>
+            </ul>
+            <figure class="shot">
+              <img data-shot="tools" src="./shots/tools.jpg" loading="lazy" decoding="async"
+                alt="The island's Tools tab: a tea timer and a Focus round counting down, with Ciel raining into a glass as the time goes by" />
+            </figure>
+          </article>
+        </section>
+
         <section class="step feature" data-scene="cloudy" data-mood="thinking" aria-labelledby="f-voice">
           <article class="card">
-            <p class="kicker"><span class="dot" style="--c: #8b5cf6"></span>Dictation and Notetaker</p>
+            <p class="kicker">Your voice</p>
             <h2 id="f-voice">Hold Right Ctrl and talk.</h2>
             <p>
               Speak anywhere, let go, and your words are typed where you were. The Notetaker records a call and hands
@@ -176,12 +196,12 @@
 
         <section class="step feature" data-scene="sunset" data-mood="idle" aria-labelledby="f-ok">
           <article class="card">
-            <p class="kicker"><span class="dot" style="--c: #ff8a5a"></span>« OK Ciel »</p>
+            <p class="kicker">« OK Ciel »</p>
             <h2 id="f-ok">Ask out loud. Nothing leaves your computer.</h2>
             <p>
-              Ask for your pills, your music, what you spent this month, or to open an app. Ciel answers with Claude
-              and your own key, or with a model on your own machine through Ollama, such as <code>qwen3.5:9b</code>.
-              Then nothing leaves your computer.
+              Ask for a timer, the weather, your music, what you spent this month, or to open an app. Ciel answers
+              with Claude and your own key, or with a model on your own machine through Ollama, such as
+              <code>qwen3.5:9b</code>. Then nothing leaves your computer.
             </p>
             <figure class="shot">
               <img data-shot="ok-ciel" src="./shots/ok-ciel.png" loading="lazy" decoding="async"
@@ -190,28 +210,28 @@
           </article>
         </section>
 
-        <section class="step feature" data-scene="golden" data-mood="finished" aria-labelledby="f-finance">
+        <section class="step feature" data-scene="golden" data-mood="finished" aria-labelledby="f-window">
           <article class="card">
-            <p class="kicker"><span class="dot" style="--c: #34d499"></span>Finance pill</p>
-            <h2 id="f-finance">Where the money went, at a glance.</h2>
+            <p class="kicker">The Ciel window</p>
+            <h2 id="f-window">Set up in two minutes, in the stars.</h2>
             <p>
-              This month against your budget, the top categories and the latest entries. Add an expense in a few
-              clicks, or just tell Ciel “I spent 12 euros on lunch”. It all stays in two plain files, in a folder you
-              choose.
+              The first time, a short setup asks what you code with, how the island opens and which tools and voice
+              you want. Each step lights a star on Ciel's outline, until he is drawn in the night and opens his eyes.
+              After that, the window shows your day under the real sky, pitch black or white.
             </p>
-            <ul class="chips pills" aria-label="Other pills">
-              <li style="--c: #8b949e">GitHub</li><li style="--c: #a3a9b5">Vercel</li><li style="--c: #635bff">Stripe</li><li style="--c: #ea4b71">n8n</li><li style="--c: #1db954">Spotify</li>
+            <ul class="chips" aria-label="Pills that can sit beside Ciel">
+              <li>GitHub</li><li>Vercel</li><li>Stripe</li><li>n8n</li><li>Spotify</li><li>Finance</li><li>Calendar</li>
             </ul>
             <figure class="shot">
-              <img data-shot="finance" src="./shots/finance.png" loading="lazy" decoding="async"
-                alt="The Finance pill: this month's spending against the budget, the top categories and the latest expenses" />
+              <img data-shot="window" src="./shots/window.jpg" loading="lazy" decoding="async"
+                alt="The end of the setup in the Ciel window: Ciel drawn as a constellation with his eyes open, and the keys worth knowing" />
             </figure>
           </article>
         </section>
 
         <section class="step feature dark" data-scene="night" data-mood="sleeping" aria-labelledby="f-sky">
           <article class="card">
-            <p class="kicker"><span class="dot" style="--c: #c9d6ff"></span>Wallpapers and lock screen</p>
+            <p class="kicker">Your sky</p>
             <h2 id="f-sky">Skies for your desktop, lit by the real sun.</h2>
             <p>
               Clear, cloudy, golden, sunset, night, space and storm, drawn by Ciel and lit by the sun where you are,
@@ -242,11 +262,11 @@
               </div>
             </div>
             <div class="demo-actions" role="group" aria-label="Make something happen on the island">
-              <button type="button" class="play" data-play="approval" style="--dot: #ffc35c" disabled>Ask for permission</button>
-              <button type="button" class="play" data-play="question" style="--dot: #ffc35c" disabled>Ask a question</button>
-              <button type="button" class="play" data-play="diff" style="--dot: #58c98b" disabled>Show the diff</button>
-              <button type="button" class="play" data-play="finished" style="--dot: #ff8f73" disabled>Finish the task</button>
-              <button type="button" class="play" data-play="chat" style="--dot: #7fb4ea" disabled>Chat with Ciel</button>
+              <button type="button" class="play" data-play="approval" disabled>Ask for permission</button>
+              <button type="button" class="play" data-play="question" disabled>Ask a question</button>
+              <button type="button" class="play" data-play="diff" disabled>Show the diff</button>
+              <button type="button" class="play" data-play="finished" disabled>Finish the task</button>
+              <button type="button" class="play" data-play="chat" disabled>Chat with Ciel</button>
             </div>
           </div>
           <p class="demo-caption">
@@ -295,7 +315,7 @@
         <section class="block" id="install" aria-labelledby="install-title">
           <div class="block-head">
             <p class="eyebrow">Install</p>
-            <h2 id="install-title">Three steps, then he's on duty.</h2>
+            <h2 id="install-title">Three steps, then he's at the top of your screen.</h2>
           </div>
           <ol class="steps" data-os-show="windows other">
             <li>
@@ -317,10 +337,10 @@
               </div>
             </li>
             <li>
-              <h3>Connect your agents</h3>
+              <h3>Answer a few questions</h3>
               <p>
-                Ciel appears at the top of your screen. Open <b>Settings → Claude Code → Install hooks…</b> (and the
-                page of each other agent you use): you see the exact change and a dated backup is kept before
+                Ciel appears at the top of your screen and his window opens on a short setup. Pick what you code
+                with and Ciel installs its hooks: you see the exact change, and a dated backup is kept, before
                 anything is written.
               </p>
             </li>
@@ -343,10 +363,10 @@ sudo dnf install ./Ciel-Linux-x86_64.rpm
 chmod +x Ciel-Linux-x86_64.AppImage</code></pre>
             </li>
             <li>
-              <h3>Connect your agents</h3>
+              <h3>Answer a few questions</h3>
               <p>
-                Ciel appears at the top of your screen. Open <b>Settings → Claude Code → Install hooks…</b> (and the
-                page of each other agent you use): you see the exact change and a dated backup is kept before
+                Ciel appears at the top of your screen and his window opens on a short setup. Pick what you code
+                with and Ciel installs its hooks: you see the exact change, and a dated backup is kept, before
                 anything is written.
               </p>
             </li>
@@ -366,7 +386,7 @@ chmod +x Ciel-Linux-x86_64.AppImage</code></pre>
               <h3>On Linux</h3>
               <p>
                 X11 and Wayland. The latest release has the <code>.deb</code> for Debian and Ubuntu 22.04+, the
-                <code>.rpm</code> for Fedora and an AppImage for everything else. Then connect your agents as above.
+                <code>.rpm</code> for Fedora and an AppImage for everything else. The same setup opens the first time.
               </p>
             </div>
             <pre><code>sudo apt install ./Ciel-Linux-amd64.deb</code></pre>
@@ -391,6 +411,11 @@ chmod +x Ciel-Linux-x86_64.AppImage</code></pre>
               <p>API keys live in Windows Credential Manager or the Linux Secret Service, never in a file.</p>
             </li>
             <li>
+              <svg class="tile-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="8.5" width="11" height="11.5" rx="2"/><path d="M5 15.5V5.5a2 2 0 0 1 2-2h8"/></svg>
+              <h3>What you copy stays here</h3>
+              <p>The clipboard history is off until you turn it on, kept in memory, and never keeps a password manager's copies.</p>
+            </li>
+            <li>
               <svg class="tile-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3.5m-3.5 0h7"/></svg>
               <h3>Your voice stays home</h3>
               <p>Dictation and the Notetaker transcribe on your CPU. Only text goes to the AI you choose.</p>
@@ -400,16 +425,19 @@ chmod +x Ciel-Linux-x86_64.AppImage</code></pre>
               <h3>Local models</h3>
               <p>Point « OK Ciel », the chat and the call summaries at Ollama or LM Studio, and nothing leaves your computer.</p>
             </li>
+            <li>
+              <svg class="tile-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V20.5H6z"/><path d="M14 3.5v4h4M9 13h6M9 16.5h4"/></svg>
+              <h3>Asks before writing</h3>
+              <p>An agent's config is backed up and changed only after you saw the exact diff and clicked.</p>
+            </li>
           </ul>
         </section>
 
         <section class="block star" id="star" aria-labelledby="star-title">
-          <div class="star-sky" aria-hidden="true">
-            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
+          <div class="star-sky" aria-hidden="true"></div>
           <h2 id="star-title">Give Ciel a star.</h2>
           <p>
-            If he makes life with your agents a little lighter, a star on GitHub helps other people find him. It's
+            If he makes your days a little lighter, a star on GitHub helps other people find him. It's
             also the nicest way to say thank you, and it keeps the skies coming.
           </p>
           <div class="star-cta">
@@ -423,7 +451,7 @@ chmod +x Ciel-Linux-x86_64.AppImage</code></pre>
             <canvas class="foot-ciel" width="100" height="100" aria-hidden="true"></canvas>
             <div>
               <p class="foot-name">Ciel</p>
-              <p>A little cloud that keeps an eye on your AI coding agents.</p>
+              <p>A little cloud at the top of your screen.</p>
             </div>
           </div>
           <nav class="foot-links" aria-label="Links">

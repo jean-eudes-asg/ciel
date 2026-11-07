@@ -28,22 +28,13 @@ await document.fonts.load(`900 130px "Nunito Variable"`);
 await document.fonts.load(`700 38px "Nunito Variable"`);
 
 const x = 590;
-ctx.save();
-// A soft glow of the sky's own light behind the words.
-const halo = ctx.createRadialGradient(x + 280, 330, 20, x + 280, 330, 440);
-halo.addColorStop(0, "rgba(255,250,240,0.5)");
-halo.addColorStop(1, "rgba(255,250,240,0)");
-ctx.fillStyle = halo;
-ctx.fillRect(x - 220, 0, W - x + 220, H);
-ctx.restore();
-
-ctx.fillStyle = "#13213f";
+ctx.fillStyle = "#0a0a0a";
 ctx.textBaseline = "alphabetic";
 ctx.font = `900 150px ${FONT}`;
 ctx.fillText("Ciel", x - 6, 310);
-ctx.fillStyle = "#24314f";
+ctx.fillStyle = "#1a1a1a";
 // The tagline on two lines, as large as fits.
-const lines = ["A little cloud that keeps an eye", "on your AI coding agents."];
+const lines = ["A little cloud at the top", "of your screen."];
 let size = 40;
 for (; size > 24; size--) {
   ctx.font = `750 ${size}px ${FONT}`;
@@ -51,7 +42,7 @@ for (; size > 24; size--) {
 }
 lines.forEach((line, i) => ctx.fillText(line, x, 372 + i * size * 1.28));
 ctx.font = `700 22px ${FONT}`;
-ctx.fillStyle = "rgba(19,33,63,0.7)";
+ctx.fillStyle = "rgba(10,10,10,0.7)";
 ctx.fillText("Free and open source · Windows and Linux", x, 500);
 
 document.title = "ready";
