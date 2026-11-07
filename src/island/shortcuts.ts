@@ -11,6 +11,7 @@ import type { BotEmoteName, IslandViewName } from "../core/layout";
 import { cyclePill, islandKeyAction, navigate, pillByNumber, type IslandKeyAction } from "../core/shortcuts";
 import { Sound } from "../core/sound";
 import { State } from "../core/state";
+import { Tools } from "../tools/store";
 
 const CLAUDE_DESKTOP_ID = "agent_claude-desktop";
 
@@ -29,6 +30,10 @@ export interface ShortcutHost {
   flyOutOrHome(): void;
   /** Hands Ctrl+O / Ctrl+E to the view on screen (the Mac posts notifications). */
   viewCommand(command: ViewCommand): void;
+  /** The view on screen's text field gets the keys (the clipboard history's search). */
+  focusView?(): void;
+  /** The folded island comes out, without its peek sound. */
+  revealSilently?(): void;
 }
 
 /** What the open view is asked to do: open the highlighted item, toggle the diff. */
@@ -127,6 +132,32 @@ export function runGlobalShortcut(host: ShortcutHost, action: string, resume: ()
       }
       if (!State.cloudOnDesktop) resume();
       host.flyOutOrHome();
+      break;
+
+    // Every microphone at once; the folded island says so while they are off.
+    case "micToggle":
+      void Bridge.micToggle().then((muted) => {
+        if (muted == null) {
+          host.emote("annoyed");
+          Sound.play("error");
+          return;
+        }
+        if (Tools.controls) Tools.controls = { ...Tools.controls, micMuted: muted };
+        void Tools.refreshControls();
+        Sound.play(muted ? "close" : "open");
+        host.emote(muted ? "wink" : "happy");
+        // The folded island says "Mic off" (or that they're back) for a moment.
+        if (State.mode === "hidden") host.revealSilently?.();
+        State.notify();
+      });
+      break;
+
+    case "clipboardOpen":
+      resume();
+      Tools.want("clipboard");
+      host.alert("tools");
+      host.takeKeyboard();
+      window.setTimeout(() => host.focusView?.(), 120);
       break;
 
     // attachFrontWindow isn't in this version.

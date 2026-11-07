@@ -120,6 +120,49 @@ pub struct Settings {
     pub wallpaper: WallpaperPrefs,
     /// What Ciel's brain may read when it is Claude (Settings → Ciel's brain).
     pub brain_reads: BrainReads,
+    /// The island's Tools (src/tools): each one off until the user turns it on.
+    pub tools: ToolsPrefs,
+    /// The Ciel window's colours: "black", "white" or "system" (src/hub/shell.ts).
+    pub window_theme: String,
+    /// The steps of the window's setup the user went through (src/settings/setup.ts),
+    /// and "later" once they put it off; empty until it was first shown.
+    pub setup_steps: Vec<String>,
+}
+
+/// The Tools tab: what reads the clipboard or reaches the network does so only
+/// once the user turned it on there.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct ToolsPrefs {
+    /// Keep what is copied (clipboard.rs).
+    pub clipboard: bool,
+    /// The words of the song playing, from lrclib.net (lyrics.rs).
+    pub lyrics: bool,
+    /// The weather's place, as picked from Open-Meteo's search; "" for none (weather.rs).
+    pub weather_place: String,
+    pub weather_lat: f64,
+    pub weather_lon: f64,
+    /// "auto" (the language's), "c" or "f".
+    pub weather_units: String,
+    /// A card when rain is about to start (weather.rs).
+    pub rain_warnings: bool,
+    /// The sky wallpaper wears the real weather rather than Ciel's mood (src/sky).
+    pub sky_weather: bool,
+}
+
+impl Default for ToolsPrefs {
+    fn default() -> Self {
+        Self {
+            clipboard: false,
+            lyrics: false,
+            weather_place: String::new(),
+            weather_lat: 0.0,
+            weather_lon: 0.0,
+            weather_units: "auto".into(),
+            rain_warnings: false,
+            sky_weather: false,
+        }
+    }
 }
 
 /// What « OK Ciel » may read when its brain is Claude, with a key: what it
@@ -299,6 +342,9 @@ impl Default for Settings {
             alerts_lan: false,
             wallpaper: WallpaperPrefs::default(),
             brain_reads: BrainReads::default(),
+            tools: ToolsPrefs::default(),
+            window_theme: "black".into(),
+            setup_steps: Vec::new(),
         }
     }
 }
@@ -601,7 +647,13 @@ mod tests {
     "refreshMinutes": 30, "moods": { "error": "storm", "idle": "auto" },
     "sources": { "space": "photos" }, "aKeyFromALaterVersion": [1, 2]
   },
-  "brainReads": { "calendar": false, "notes": true, "finance": true }
+  "brainReads": { "calendar": false, "notes": true, "finance": true },
+  "tools": {
+    "clipboard": true, "lyrics": true, "weatherPlace": "Lyon, France", "weatherLat": 45.75, "weatherLon": 4.85,
+    "weatherUnits": "c", "rainWarnings": true, "skyWeather": true
+  },
+  "windowTheme": "white",
+  "setupSteps": ["hello", "work", "later"]
 }"##;
 
     fn custom() -> Value {
@@ -1063,6 +1115,9 @@ mod tests {
                 "alertsLan",
                 "wallpaper",
                 "brainReads",
+                "tools",
+                "windowTheme",
+                "setupSteps",
             ]
         );
         let _ = std::fs::remove_dir_all(&dir);

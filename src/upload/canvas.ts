@@ -20,7 +20,7 @@ const FONT = `system-ui, "Segoe UI Variable Text", "Segoe UI", ${SCRIPT_FONTS}, 
 const TEXT_RIGHT = USC.CARD_X + USC.CARD_W - 16;
 /** The two choose buttons, as drawn and as hit areas. */
 const ASK_BTN = { x: 114, w: 168 };
-const CANCEL_BTN = { x: 290, w: 120 };
+const SHELF_BTN = { x: 290, w: 132 };
 /** Drop-zone chips (English keys, shown with `t()`). */
 const CHIPS = [N_("PDF"), N_("Images"), N_("Code"), N_("Docs")];
 
@@ -112,11 +112,19 @@ function fitted(ctx: CanvasRenderingContext2D, s: string, maxW: number, weight: 
   return { font, s: ellipsize(ctx, s, maxW, font) };
 }
 
+/** "report.pdf is on the shelf.", or "report.pdf and 2 more are on the shelf." */
+export function onShelf(): string {
+  const name = State.droppedFile?.name ?? t("file");
+  return State.droppedMore > 0
+    ? t("{name} and {count} more are on the shelf.", { name, count: State.droppedMore })
+    : t("{name} is on the shelf.", { name });
+}
+
 export interface UploadCanvasActions {
   /** Primary button — hand the file to the chat. */
   ask(): void;
-  /** Secondary button. */
-  cancel(): void;
+  /** Secondary button — the shelf, where the dropped files are. */
+  shelf(): void;
 }
 
 export class UploadCanvas {
@@ -146,7 +154,7 @@ export class UploadCanvas {
     };
     this.overlay = document.createElement("div");
     this.overlay.id = "upload-overlay";
-    this.overlay.append(mk(ASK_BTN.x, ASK_BTN.w, actions.ask), mk(CANCEL_BTN.x, CANCEL_BTN.w, actions.cancel));
+    this.overlay.append(mk(ASK_BTN.x, ASK_BTN.w, actions.ask), mk(SHELF_BTN.x, SHELF_BTN.w, actions.shelf));
 
     this.el = document.createElement("div");
     this.el.id = "upload-layer";
@@ -229,7 +237,7 @@ export class UploadCanvas {
   private drawDropText(ctx: CanvasRenderingContext2D, f: UploadFrame) {
     ctx.save();
     ctx.globalAlpha = f.textAlpha;
-    const title = fitted(ctx, t("Drop your files here"), TEXT_RIGHT - USC.TEXT_X, 500, 13);
+    const title = fitted(ctx, t("Drop files on the shelf"), TEXT_RIGHT - USC.TEXT_X, 500, 13);
     text(ctx, title.s, USC.TEXT_X, USC.TEXT_Y - 4, title.font, "#D5D7DB");
 
     // The macOS port measures chips the same rough way, so the row lines up; a
@@ -344,7 +352,7 @@ export class UploadCanvas {
     ctx.translate(0, (1 - f.chooseAlpha) * 4);
 
     const maxW = TEXT_RIGHT - 114;
-    const ready = fitted(ctx, t("{name} is ready.", { name: State.droppedFile?.name ?? t("file") }), maxW, 600, 14);
+    const ready = fitted(ctx, onShelf(), maxW, 600, 14);
     text(ctx, ready.s, 114, 80, ready.font, "#F5F6F8");
     const what = fitted(ctx, t("What do you want to do with it?"), maxW, 400, 12.5);
     text(ctx, what.s, 114, 100, what.font, "#9398A1");
@@ -356,10 +364,10 @@ export class UploadCanvas {
     text(ctx, ask.s, ASK_BTN.x + ASK_BTN.w / 2, 126, ask.font, "#0B0C0E", "center");
 
     ctx.fillStyle = "rgba(255,255,255,0.09)";
-    rr(ctx, CANCEL_BTN.x, 113, CANCEL_BTN.w, 26, 13);
+    rr(ctx, SHELF_BTN.x, 113, SHELF_BTN.w, 26, 13);
     ctx.fill();
-    const cancel = fitted(ctx, t("Cancel"), CANCEL_BTN.w - 14, 500, 12.5);
-    text(ctx, cancel.s, CANCEL_BTN.x + CANCEL_BTN.w / 2, 126, cancel.font, "#F1F2F4", "center");
+    const shelf = fitted(ctx, t("Open the shelf"), SHELF_BTN.w - 14, 500, 12.5);
+    text(ctx, shelf.s, SHELF_BTN.x + SHELF_BTN.w / 2, 126, shelf.font, "#F1F2F4", "center");
     ctx.restore();
   }
 

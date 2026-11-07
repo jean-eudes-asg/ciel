@@ -7,8 +7,10 @@ mod browser_bridge;
 mod ai;
 mod chat;
 mod claude;
+mod clipboard;
 mod codex_plan;
 mod config_file;
+mod controls;
 mod desktop;
 mod files;
 mod finance;
@@ -28,6 +30,7 @@ mod integrations;
 mod island;
 mod local_chat;
 mod log;
+mod lyrics;
 mod net;
 mod notes;
 mod notify;
@@ -42,7 +45,9 @@ mod secrets;
 mod session_window;
 mod screensaver;
 mod settings;
+mod shelf;
 mod system;
+mod timers;
 mod shortcuts;
 mod sounds;
 mod speech;
@@ -52,6 +57,7 @@ mod voice;
 mod wallpaper;
 #[cfg(windows)]
 mod webview_drop;
+mod weather;
 
 use std::process::Command;
 use std::sync::atomic::Ordering;
@@ -145,6 +151,8 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     calendar::settings_saved(&settings.active_integrations);
     alerts::sync(&app, &settings);
     system::sync();
+    clipboard::sync(&app, settings.tools.clipboard);
+    weather::settings_saved(&app, &settings.tools.weather_place);
     #[cfg(target_os = "linux")]
     {
         notify::desktop::sync(&app, settings.desktop_notifications);
@@ -831,6 +839,30 @@ pub fn run() {
             play::games_on_top,
             system::system_watch,
             system::system_end,
+            clipboard::clipboard_state,
+            clipboard::clipboard_use,
+            clipboard::clipboard_put,
+            clipboard::clipboard_pin,
+            clipboard::clipboard_remove,
+            clipboard::clipboard_clear,
+            timers::timers_list,
+            timers::timer_start,
+            timers::reminder_add,
+            timers::focus_start,
+            timers::timer_action,
+            controls::controls_state,
+            controls::control_set,
+            controls::mic_toggle,
+            controls::awake_set,
+            weather::weather_search,
+            weather::weather_now,
+            lyrics::lyrics_get,
+            shelf::shelf_list,
+            shelf::shelf_remove,
+            shelf::shelf_open,
+            shelf::shelf_reveal,
+            shelf::shelf_copy,
+            shelf::shelf_drag,
             screensaver::screensaver_preview,
             gnome_ext::gnome_extension_set,
             browser_bridge::browser_bridge_set,
@@ -1000,6 +1032,10 @@ pub fn run() {
             }
             screensaver::start(&handle);
             system::start(&handle);
+            clipboard::sync(&handle, loaded.tools.clipboard);
+            timers::start(&handle);
+            controls::setup(&handle);
+            weather::start(&handle);
             // A panel coming or going moves the top of the screen: the island follows.
             #[cfg(target_os = "linux")]
             if !platform::is_layer_surface() {

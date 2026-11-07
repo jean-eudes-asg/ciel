@@ -8,6 +8,7 @@ import { h, clear } from "./dom";
 import { State } from "../core/state";
 import type { ViewActions, ViewHost } from "./views";
 import { N_, t, tl } from "../i18n/i18n";
+import { onShelf } from "../upload/canvas";
 
 /** Dashed rounded rect drawn as SVG so the dashes can march like on macOS. */
 function dashedFrame(): SVGSVGElement {
@@ -30,7 +31,7 @@ function dashedFrame(): SVGSVGElement {
 
 export function buildUpload(): ViewHost {
   const frame = dashedFrame();
-  const title = h("div", { class: "drop-title", text: tl("Drop your files here") });
+  const title = h("div", { class: "drop-title", text: tl("Drop files on the shelf") });
   const tags = h(
     "div",
     { class: "drop-tags" },
@@ -97,8 +98,8 @@ export function buildChoose(actions: ViewActions): ViewHost {
     }),
     h("button", {
       class: "btn secondary",
-      text: tl("Cancel"),
-      onclick: () => actions.cancelDrop(),
+      text: tl("Open the shelf"),
+      onclick: () => actions.openShelf(),
     }),
   );
   const el = h(
@@ -115,10 +116,7 @@ export function buildChoose(actions: ViewActions): ViewHost {
     el,
     sync() {
       clear(title);
-      title.append(
-        h("b", { text: State.droppedFile?.name ?? t("file") }),
-        document.createTextNode(t(" is ready.")),
-      );
+      title.append(h("b", { text: onShelf() }));
     },
   };
 }

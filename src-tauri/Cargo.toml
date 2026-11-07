@@ -59,6 +59,9 @@ cpal = "0.18"
 # The System pill (system.rs): CPU, memory, disks, temperatures and processes,
 # on Linux and Windows. MIT. Without rayon: one sample at a time is plenty.
 sysinfo = { version = "0.33", default-features = false, features = ["system", "disk", "component"] }
+# The clipboard history (clipboard.rs): pictures as PNG and their thumbnails.
+# The same version and features arboard's pictures already bring. MIT/Apache-2.0.
+image = { version = "0.25", default-features = false, features = ["png"] }
 
 [target.'cfg(windows)'.dependencies]
 keyring = { version = "3", features = ["windows-native"] }
@@ -102,9 +105,20 @@ windows = { version = "0.61", features = [
   "Win32_System_Power",
   "Win32_System_RemoteDesktop",
   "Win32_UI_Shell_Common",
+  # The clipboard history (clipboard.rs): told of each copy, and what marks one private.
+  "Win32_System_DataExchange",
+  "Win32_System_Memory",
+  # Quick controls (controls.rs): the speakers and microphones, a laptop's
+  # screen through WMI, the monitors through DDC/CI, Wi-Fi and Bluetooth.
+  "Win32_Media_Audio_Endpoints",
+  "Win32_System_Wmi",
+  "Win32_System_Rpc",
+  "Win32_Devices_Display",
+  "Devices_Radios",
 ] }
-# The clipboard for Flow dictation, kept out of the clipboard history. MIT/Apache-2.0.
-arboard = { version = "3.6", default-features = false }
+# The clipboard for Flow dictation, kept out of the clipboard history, and the
+# clipboard history's text, files and pictures (clipboard.rs). MIT/Apache-2.0.
+arboard = { version = "3.6", default-features = false, features = ["image-data"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 # Secret Service (GNOME Keyring, KWallet) over D-Bus, encrypted in transit.
@@ -119,12 +133,13 @@ gtk = "0.18"
 # through KWin's scripting (platform/linux_focus.rs).
 dbus = "0.9.12"
 # EWMH on X11 for "Open terminal", already in the tree (global-hotkey).
-x11rb = { version = "0.13", default-features = false, features = ["xinput", "xtest", "screensaver"] }
+# XFixes: told of each copy, for the clipboard history (clipboard.rs).
+x11rb = { version = "0.13", default-features = false, features = ["xinput", "xtest", "screensaver", "xfixes"] }
 # PulseAudio (or PipeWire's PulseAudio server) for the microphone list and the
 # monitor of the speakers, the Notetaker's "computer sound". Pure Rust client.
 cpal = { version = "0.18", features = ["pulseaudio"] }
 # The clipboard for Flow dictation (X11, and Wayland's data-control protocol).
-arboard = { version = "3.6", default-features = false, features = ["wayland-data-control"] }
+arboard = { version = "3.6", default-features = false, features = ["wayland-data-control", "image-data"] }
 
 # Tests only: the extension id Chrome derives from its manifest key (browser_bridge.rs).
 [dev-dependencies]

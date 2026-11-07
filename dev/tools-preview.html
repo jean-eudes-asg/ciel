@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel - Tools preview</title>
+    <style>
+      body { margin: 0; padding: 24px 0 80px; background: #1b1b1f; font: 12px system-ui; color: #ddd; overflow: auto !important; }
+      h1 { font: 600 14px system-ui; text-align: center; margin: 0 0 12px; }
+      #tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 16px; }
+      #tabs button { background: #2a2b30; color: #ddd; border: 0; border-radius: 8px; padding: 4px 10px; }
+      .cases { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+      .case { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      /* The open island's view area (620 wide), Ciel's place on its left. */
+      .box { position: relative; width: 620px; }
+      .box .view { opacity: 1 !important; transform: none !important; pointer-events: auto !important; }
+      .box .ciel { position: absolute; border-radius: 50%; background: #f5f6f8; z-index: 2; }
+      #compact { position: relative; width: 288px; height: 32px; margin: 0 auto; border-radius: 0 0 14px 14px; background: #000; }
+      #compact #island-live { opacity: 1; }
+    </style>
+  </head>
+  <body>
+    <h1>The Tools tab, the Today card, the live chip (src/tools, src/views/today.ts, src/island/live.ts)</h1>
+    <div id="tabs"></div>
+    <div id="compact"></div>
+    <div class="cases" id="cases"></div>
+    <script type="module" src="./tools-preview.ts"></script>
+  </body>
+</html>

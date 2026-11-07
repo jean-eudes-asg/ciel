@@ -646,6 +646,12 @@ pub fn set_activating(win: &WebviewWindow, activating: bool) {
     }
 }
 
+/// Windows gives the keyboard back to the app that had it before a search in
+/// the island; here the desktop does that itself when the island lets go.
+pub fn give_focus_back() -> bool {
+    false
+}
+
 /// Only this rectangle (window-logical pixels) takes the mouse; `None` means
 /// the whole window does. Everything outside goes to the window underneath.
 pub fn set_input_region(win: &WebviewWindow, rect: Region) {

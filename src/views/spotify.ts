@@ -18,6 +18,8 @@ import type { PlayerSource } from "../core/player";
 import { createMiniBot } from "../cloud/minibots";
 import { pillDefinition } from "../core/pills";
 import { N_, t } from "../i18n/i18n";
+import { Lyrics } from "../tools/lyrics";
+import { Tools } from "../tools/store";
 
 
 function lighter(hex: string, amount: number): string {
@@ -269,9 +271,11 @@ export function buildPlayerCard(source: PlayerSource): SpotifyCardHost {
   art.addEventListener("click", () => source.openFromCover());
   const title = h("span", { class: "np-title" });
   const subtitle = h("div", { class: "np-sub" });
+  // The line being sung (tools/lyrics.ts), in place of the subtitle while there is one.
+  const lyric = h("div", { class: "np-lyric" });
   const head = h("div", { class: "np-head" },
     art,
-    h("div", { class: "np-text" }, h("div", { class: "np-title-row" }, dot(green, 6), title), subtitle),
+    h("div", { class: "np-text" }, h("div", { class: "np-title-row" }, dot(green, 6), title), subtitle, lyric),
   );
 
   let dragFraction: number | null = null;
@@ -295,6 +299,11 @@ export function buildPlayerCard(source: PlayerSource): SpotifyCardHost {
   const prev = iconButton(ICONS.backward, 11, 0, () => source.control("previous"));
   const next = iconButton(ICONS.forward, 11, 0, () => source.control("next"));
   const repeat = iconButton(ICONS.repeat, 10, 2.2, () => setFlag(source, "repeat", !source.state.repeat));
+  // Lyrics: the button is also the yes to asking lrclib.net for them.
+  const words = iconButton(ICONS.quote, 10, 2, () => {
+    Tools.setPrefs({ lyrics: !Tools.prefs.lyrics });
+    Lyrics.want(source.state);
+  });
   prev.style.color = "#C5C8CD";
   next.style.color = "#C5C8CD";
   const play = h("button", { class: "np-play", onclick: () => togglePlay(source) });
@@ -306,7 +315,7 @@ export function buildPlayerCard(source: PlayerSource): SpotifyCardHost {
   );
   const volumeBox = h("div", { class: "np-volume" }, volIcon, volume.el);
   const controls = h("div", { class: "np-controls" },
-    h("div", { class: "np-buttons" }, shuffle, prev, play, next, repeat),
+    h("div", { class: "np-buttons" }, shuffle, prev, play, next, repeat, words),
     h("div", { class: "grow" }),
     volumeBox,
   );
@@ -339,6 +348,21 @@ export function buildPlayerCard(source: PlayerSource): SpotifyCardHost {
     progress.set(f);
     elapsed.textContent = formatTime(f * d);
     remaining.textContent = d > 0 ? `-${formatTime(Math.max(0, d - f * d))}` : "";
+    paintLyric();
+  }
+
+  /** The line being sung, under the title; the subtitle comes back between songs' words. */
+  function paintLyric() {
+    const line = Lyrics.current(source.state);
+    const on = line != null;
+    lyric.style.display = on ? "" : "none";
+    subtitle.classList.toggle("under-lyric", on);
+    if (on && lyric.textContent !== (line || "♪")) {
+      lyric.textContent = line || "♪";
+      lyric.classList.remove("in");
+      void lyric.offsetWidth;
+      lyric.classList.add("in");
+    }
   }
 
   /** The position runs on its own clock, twice a second, only while it plays on screen. */
@@ -394,6 +418,10 @@ export function buildPlayerCard(source: PlayerSource): SpotifyCardHost {
     shuffle.title = s.shuffle ? t("Shuffle on") : t("Shuffle off");
     repeat.style.color = s.repeat ? green : "#6B7079";
     repeat.title = s.repeat ? t("Repeat on") : t("Repeat off");
+    const wordsOn = Tools.prefs.lyrics;
+    words.style.color = wordsOn ? green : "#6B7079";
+    words.title = wordsOn ? t("Lyrics on (from lrclib.net)") : t("Show the lyrics (asks lrclib.net)");
+    Lyrics.want(s);
     prev.title = t("Previous");
     next.title = t("Next");
     if (playIcon !== s.playing) {

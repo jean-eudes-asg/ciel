@@ -13,6 +13,7 @@ import { applySpotify, registerSpotifyHandlers } from "./island/spotify";
 import { SPOTIFY_ID } from "./core/spotify";
 import { registerFinanceHandlers } from "./island/finance";
 import { registerWallpaper } from "./island/wallpaper";
+import { Tools } from "./tools/store";
 import { registerDemo } from "./demo/app";
 import { Recap } from "./recap/recap";
 import { onLanguageChange, resolveLanguage, setLanguage, systemLanguages } from "./i18n/i18n";
@@ -137,6 +138,8 @@ async function main() {
 
   registerHookHandlers(island);
   registerIntegrationHandlers(island);
+  // Timers, the clipboard, the controls, the weather (src/tools).
+  Tools.start();
   registerShortcutHandlers(island, () => setPaused(false));
   registerVoiceHandlers();
   registerSpotifyHandlers(island);

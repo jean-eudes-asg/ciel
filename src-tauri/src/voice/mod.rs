@@ -675,6 +675,9 @@ pub fn run_tool(app: &AppHandle, name: &str, input: &Value, cloud: bool) -> (Str
             (crate::notes::for_brain(app, input["query"].as_str().unwrap_or(""), limit), false)
         }
         "open_app" => open_app(input["name"].as_str().unwrap_or("")),
+        "timer" => crate::timers::for_brain(input),
+        "weather" => (crate::weather::for_brain(), false),
+        "controls" => crate::controls::for_brain(input),
         "prepare_email" => {
             let to = input["recipient"].as_str().unwrap_or("").trim().to_string();
             if !to.contains('@') {

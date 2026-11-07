@@ -7,7 +7,7 @@ import { t } from "../../i18n/i18n";
 import { onEvent } from "../../core/bridge";
 import { FlowBridge, type FlowEntry, type FlowStats } from "../../core/flow";
 import type { HubContext } from "../shell";
-import { emptyState, glowCard } from "../hero";
+import { emptyState, featureCard } from "../hero";
 import { button, card, icon, iconButton, keyLabel, label, number, row, shortCount, toggle } from "../ui";
 import { modelsControl } from "./flowsettings";
 
@@ -36,10 +36,9 @@ export async function dictationPage(page: HTMLElement, ctx: HubContext) {
   const record = button(t("Record a call"), () => {
     void FlowBridge.startNote().then(() => ctx.navigate("notes"), (err) => alertLine.replaceChildren(String(err)));
   }, "primary");
-  record.prepend(h("span", { class: "hub-rec", style: "background:#170c04;box-shadow:none;margin-inline-end:8px" }));
+  record.prepend(h("span", { class: "hub-rec on-primary" }));
   const alertLine = h("div", { class: "hub-note" });
-  const hello = status.userName ? t("Hello {0}", { 0: status.userName }) : t("Hello");
-  page.append(ctx.hero("dictation", hello, t("Hold {0} anywhere, speak, let go: it's pasted.", { 0: key }), [record]));
+  page.append(ctx.hero("dictation", t("Dictation"), t("Hold {0} anywhere, speak, let go: it's pasted.", { 0: key }), [record]));
   page.append(alertLine);
 
   if (!ready) page.append(setup(ctx));
@@ -58,7 +57,7 @@ export async function dictationPage(page: HTMLElement, ctx: HubContext) {
   function draw() {
     clear(list);
     if (status.prefs.keepDays === 0) {
-      list.append(emptyState(t("The history is off. Turn it on in Settings → Privacy.")));
+      list.append(emptyState(t("The history is off. Turn it on in Voice → Settings → Privacy.")));
       return;
     }
     const shown = query ? entries.filter((e) => e.text.toLowerCase().includes(query)) : entries;
@@ -123,10 +122,9 @@ function numbers(stats: FlowStats | null): HTMLElement {
 }
 
 function promo(ctx: HubContext): HTMLElement {
-  return glowCard(
-    "#FB923C",
-    h("div", { style: "font:700 15px var(--font)", text: t("The Notetaker") }),
-    h("div", { class: "hub-note", style: "color:#b7bbc2", text: t("Your calls transcribed person by person, with a summary and the to-dos. No bot in the meeting.") }),
+  return featureCard(
+    h("div", { class: "feature-title", text: t("The Notetaker") }),
+    h("div", { class: "hub-note", text: t("Your calls transcribed person by person, with a summary and the to-dos. No bot in the meeting.") }),
     h("button", { class: "hub-link", text: t("Open the Notetaker →"), onclick: () => ctx.navigate("notes") }),
   );
 }
@@ -137,12 +135,12 @@ function setup(ctx: HubContext): HTMLElement {
   const key = keyLabel(status.keys === "wayland" ? "wayland" : status.prefs.key, status.platform);
   const body = h("div", { style: "display:flex;flex-direction:column;gap:12px" });
   body.append(
-    h("div", { style: "font:700 17px var(--font)", text: t("Dictate anywhere on your computer") }),
-    h("div", { class: "hub-note", style: "color:#b7bbc2;font-size:13px", text: t("Hold {0} in any app, speak, let go: your words are pasted where you type.", { 0: key }) }),
+    h("div", { class: "feature-title", text: t("Dictate anywhere on your computer") }),
+    h("div", { class: "hub-note", text: t("Hold {0} in any app, speak, let go: your words are pasted where you type.", { 0: key }) }),
   );
   body.append(row(t("Turn on dictation"), null, toggle(status.prefs.enabled, (on) => {
     void ctx.setPrefs((p) => (p.enabled = on)).then(() => ctx.navigate("dictation"));
   })));
   body.append(row(t("Parakeet, on your computer"), t("The most accurate, offline, 25 languages. Downloaded once (about {0} MB).", { 0: number(status.models.downloadMb) }), modelsControl(ctx, () => ctx.navigate("dictation"))));
-  return glowCard("#FB923C", body);
+  return featureCard(body);
 }

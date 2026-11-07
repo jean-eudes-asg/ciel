@@ -162,7 +162,7 @@ fn tell_island(app: &AppHandle, version: &str) {
         source: "ciel".into(),
         app: "Ciel".into(),
         title: crate::i18n::tf("Ciel {version} is out", &[("version", version)]),
-        body: crate::i18n::t("Install it from Settings → General."),
+        body: crate::i18n::t("Install it from Preferences → Updates and privacy."),
         icon: None,
         at: now_ms(),
         tag: Some("ciel-update".into()),
@@ -170,7 +170,7 @@ fn tell_island(app: &AppHandle, version: &str) {
         until: None,
         time: None,
     };
-    crate::notify::show(app, n, crate::notify::Target::Settings("general".into()));
+    crate::notify::show(app, n, crate::notify::Target::Settings("updates".into()));
 }
 
 /// The daily check: on at launch and after each settings save when the user

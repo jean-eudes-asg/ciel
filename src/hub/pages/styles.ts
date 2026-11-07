@@ -46,8 +46,8 @@ export async function stylesPage(page: HTMLElement, ctx: HubContext) {
   const keyNote = h("div", {
     class: "hub-warn",
     text: ai.pref === "claude"
-      ? t("The clean-up uses your Claude key. Add it in Notch → Chat.")
-      : t("The clean-up needs Claude or a local model: set one up in Notch → Chat."),
+      ? t("The clean-up uses your Claude key. Add it in Island → Chat.")
+      : t("The clean-up needs Claude or a local model: set one up in Island → Chat."),
   });
   keyNote.style.display = ai.engine === "off" ? "" : "none";
   const privacy = !local

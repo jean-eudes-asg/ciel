@@ -23,7 +23,8 @@ export type IslandViewName =
   | "settings"
   | "greeting"
   | "recap"
-  | "notifications";
+  | "notifications"
+  | "tools";
 
 export type BotStateName =
   | "idle"
@@ -94,6 +95,8 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
   recap: { height: 184, botX: 62, botY: null, botDiameter: 58, agentMode: "column" },
   // The list Ciel keeps (views/inbox.ts): Ciel small at the top left, the rows beside him.
   notifications: { height: 280, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
+  // The Tools tab (src/tools): Ciel small at the top left, the tool beside him.
+  tools: { height: 268, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
 };
 
 // The upload views above are only the fallback geometry. Once a file is actually

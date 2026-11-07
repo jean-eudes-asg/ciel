@@ -4,7 +4,7 @@
 
 # Ciel
 
-**A little cloud at the top of your screen that keeps an eye on your AI coding agents.**
+**A little cloud at the top of your screen: your AI coding agents, your timers, your clipboard and the weather, at a glance.**
 
 [![Release](https://img.shields.io/github/v/release/jean-eudes-asg/ciel?color=7FB4EA&label=release)](https://github.com/jean-eudes-asg/ciel/releases/latest)
 [![CI](https://github.com/jean-eudes-asg/ciel/actions/workflows/ci.yml/badge.svg)](https://github.com/jean-eudes-asg/ciel/actions/workflows/ci.yml)
@@ -22,9 +22,11 @@
 
 Ciel lives in a small island at the top of your screen. It shows what Claude Code,
 Codex and your other agents are doing, asks you before anything runs, and gets out
-of the way the rest of the time. It also takes your dictation, answers « OK Ciel »,
-keeps an eye on your spending, and paints your desktop with a sky that follows the
-real sun. It's free, open source, and it can run entirely on your own computer.
+of the way the rest of the time. It also keeps your timers, your clipboard and your
+dropped files, mutes every microphone with one key, tells you when rain is coming,
+takes your dictation, answers « OK Ciel », and paints your desktop with a sky that
+follows the real sun. You don't need to code to use it. It's free, open source, and
+it can run entirely on your own computer.
 
 ## See it
 
@@ -59,6 +61,14 @@ runs the real island in demo mode, under a sky that follows his mood. In the app
 - **Allow / Deny, questions and live diffs** from the island. If Ciel isn't
   running, your agent simply asks in its own terminal: it never allows anything
   on its own.
+- **Tools**, a tab in the island: **timers and reminders** (type "25m tea" or
+  "18:30 call mum"; Focus rounds too), a **clipboard history** (off until you
+  turn it on; links cleaned of trackers, colours, sums, pins), a **shelf** where
+  the files you drop on Ciel wait, to ask about or drag into any app later, **controls** (volume,
+  brightness, Wi-Fi, Bluetooth, keep awake, and **Ctrl+Alt+U** for every
+  microphone at once) and the **weather** from Open-Meteo, with rain alerts.
+  What matters shows in the folded island in place of the clock: a timer
+  counting down, "Mic off", rain coming, the line of the song playing.
 - **Chat** with Claude, OpenAI, Google AI, OpenRouter or a local model.
 - **« OK Ciel ».** Say it, then ask: your pills, music, your numbers, your next
   meetings, what was decided in a call, open an app, "I spent 250 lira on
@@ -75,6 +85,8 @@ runs the real island in demo mode, under a sky that follows his mood. In the app
 - **Wallpapers and lock screen** drawn by Ciel (below).
 - **Updates from the app** on Windows and with the AppImage: signed, opt-in,
   installed only when you click.
+- **The Ciel window**, pitch black or white: Today, Island, Voice, Sky and
+  Preferences, and a setup of seven short steps the first time it opens.
 - Weekly recap, global shortcuts, Ciel on your desktop, 10 languages.
 
 ## Wallpapers and lock screen

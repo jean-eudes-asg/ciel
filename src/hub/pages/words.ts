@@ -99,7 +99,7 @@ export async function snippetsPage(page: HTMLElement, ctx: HubContext) {
   page.append(ctx.hero("snippets", t("Snippets"), t("Say the trigger while dictating: Ciel pastes the whole text in its place.")));
 
   let editing: Snippet | null = null;
-  const formTitle = h("div", { style: "font:700 14px var(--font)" });
+  const formTitle = h("div", { class: "feature-title" });
   const trigger = h("input", { class: "hub-input", placeholder: t("What you say, e.g. my signature") }) as HTMLInputElement;
   const text = h("textarea", { class: "hub-textarea", placeholder: t("The text Ciel pastes") }) as HTMLTextAreaElement;
   const cancel = button(t("Cancel"), () => edit(null));
@@ -133,7 +133,7 @@ export async function snippetsPage(page: HTMLElement, ctx: HubContext) {
   const draw = () => {
     clear(list);
     if (snippets.length === 0) {
-      list.append(emptyState(t("No snippet yet. Your booking link, your signature, your address: say a few words, get the whole text."), "idle", "#F7B32B"));
+      list.append(emptyState(t("No snippet yet. Your booking link, your signature, your address: say a few words, get the whole text."), "idle"));
       return;
     }
     for (const s of snippets) {

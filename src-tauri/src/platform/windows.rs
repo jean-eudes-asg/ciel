@@ -33,7 +33,7 @@ use ::windows::Win32::UI::Shell::{
 };
 use ::windows::Win32::UI::WindowsAndMessaging::{
     EnumChildWindows, EnumWindows, GetClassNameW, GetCursorPos, GetWindow, GetWindowLongPtrW,
-    GetWindowTextW, GetWindowThreadProcessId, IsIconic, IsWindowVisible, SetForegroundWindow,
+    GetForegroundWindow, GetWindowTextW, GetWindowThreadProcessId, IsIconic, IsWindowVisible, SetForegroundWindow,
     SetWindowLongPtrW, ShowWindow, GWL_EXSTYLE, GW_OWNER, SW_RESTORE, SW_SHOWNORMAL, WS_EX_NOACTIVATE,
     WS_EX_TOOLWINDOW,
 };
@@ -349,10 +349,20 @@ pub fn make_non_activating(win: &WebviewWindow) {
     }
 }
 
+/// The window in front before the island took the keyboard (a search in the
+/// clipboard history), to give it back before pasting there.
+static BEFORE_FOCUS: std::sync::atomic::AtomicIsize = std::sync::atomic::AtomicIsize::new(0);
+
 /// Temporarily allow activation so a text field inside the island can be typed in.
 pub fn set_activating(win: &WebviewWindow, activating: bool) {
     let Some(hwnd) = hwnd_of(win) else { return };
     unsafe {
+        if activating {
+            let front = GetForegroundWindow();
+            if !front.0.is_null() && front != hwnd {
+                BEFORE_FOCUS.store(front.0 as isize, std::sync::atomic::Ordering::SeqCst);
+            }
+        }
         let ex = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
         let want = if activating {
             ex & !(WS_EX_NOACTIVATE.0 as isize)
@@ -361,6 +371,13 @@ pub fn set_activating(win: &WebviewWindow, activating: bool) {
         };
         SetWindowLongPtrW(hwnd, GWL_EXSTYLE, want);
     }
+}
+
+/// The window that was in front before the island took the keyboard, in front
+/// again: what is pasted from the clipboard history goes there.
+pub fn give_focus_back() -> bool {
+    let raw = BEFORE_FOCUS.swap(0, std::sync::atomic::Ordering::SeqCst);
+    raw != 0 && bring_forward(raw)
 }
 
 /// Click-through here is the poll's WS_EX_TRANSPARENT toggle, not a region.

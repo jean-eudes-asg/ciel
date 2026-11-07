@@ -196,6 +196,41 @@ fn tools() -> Vec<Value> {
                 "required": ["recipient", "subject", "body"]
             }
         }),
+        json!({
+            "name": "timer",
+            "description": "Timers, reminders and Focus rounds in the island's Tools (they ring even with the island shut). start: a timer of minutes (and seconds), with a label. remind: at a local time HH:MM (today, or tomorrow if past) or in some minutes, with a label and maybe a repeat. focus: Focus rounds (25 min of work, 5 of break by default). list: what is set. cancel: by label, or all.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "action": { "type": "string", "enum": ["start", "remind", "focus", "list", "cancel"] },
+                    "minutes": { "type": "number", "description": "start: the length; focus: a round's length." },
+                    "seconds": { "type": "number", "description": "start: more seconds." },
+                    "label": { "type": "string", "description": "A few words: what it is for (start, remind), or which one (cancel; \"all\" for all)." },
+                    "at": { "type": "string", "description": "remind: local time, HH:MM in 24 hours." },
+                    "in_minutes": { "type": "number", "description": "remind: in how many minutes, instead of at." },
+                    "repeat": { "type": "string", "enum": ["", "daily", "weekdays", "weekly"], "description": "remind: how it comes back." },
+                    "break_minutes": { "type": "number", "description": "focus: a break's length." }
+                },
+                "required": ["action"]
+            }
+        }),
+        json!({
+            "name": "weather",
+            "description": "The weather where the user lives, if they picked their place in the island's Tools → Weather: now, the next 12 hours, the week, and when rain starts or stops.",
+            "input_schema": { "type": "object", "properties": {} }
+        }),
+        json!({
+            "name": "controls",
+            "description": "This computer's controls: mute or unmute every microphone, set the volume (0-100), mute or unmute the sound, keep the computer awake for some minutes (0 lets it sleep, -1 until told otherwise), or read their status.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "action": { "type": "string", "enum": ["status", "mute_mic", "unmute_mic", "volume", "mute", "unmute", "keep_awake"] },
+                    "value": { "type": "number", "description": "volume: 0-100; keep_awake: minutes." }
+                },
+                "required": ["action"]
+            }
+        }),
         json!({ "type": "web_search_20250305", "name": "web_search", "max_uses": 3 }),
     ]
 }
@@ -207,11 +242,13 @@ fn system_prompt(pills: &str, web_search: bool) -> String {
     let os = if cfg!(windows) { "Windows" } else { "Linux" };
     let act = if web_search {
         "Act with the tools instead of describing: pills, music, service_info for the user's own data, open_app, \
-prepare_email, and web_search for anything current (weather, news, scores, prices, facts you are not sure of). \
-Never invent the user's data."
+prepare_email, timer for timers and reminders, weather for the weather where the user lives, controls for the \
+microphones, the volume and keeping awake, and web_search for anything current (the weather elsewhere, news, \
+scores, prices, facts you are not sure of). Never invent the user's data."
     } else {
         "Act with the tools instead of describing: pills, music, service_info for the user's own data, open_app, \
-prepare_email. Never say something is done unless a tool said so. When the user asks for something a tool can do, call that tool right away instead of asking first; defaults are fine (an added pill is not the main one). Web search isn't available: for anything current \
+prepare_email, timer for timers and reminders, weather for the weather where the user lives, controls for the \
+microphones, the volume and keeping awake. Never say something is done unless a tool said so. When the user asks for something a tool can do, call that tool right away instead of asking first; defaults are fine (an added pill is not the main one). Web search isn't available: for anything current \
 (weather, news, scores, prices, facts you are not sure of), say you can't look it up from here. \
 Never invent the user's data."
     };
@@ -479,7 +516,7 @@ mod tests {
     fn a_local_model_gets_every_tool_but_the_web_search_and_is_told_so() {
         let functions = ai::function_tools(&tools());
         let names: Vec<&str> = functions.iter().filter_map(|t| t["function"]["name"].as_str()).collect();
-        assert_eq!(names, ["pills", "music", "service_info", "open_app", "prepare_email"]);
+        assert_eq!(names, ["pills", "music", "service_info", "open_app", "prepare_email", "timer", "weather", "controls"]);
         let local = system_prompt("Stripe, GitHub", false);
         assert!(!local.contains("web_search"));
         assert!(local.contains("Web search isn't available"));

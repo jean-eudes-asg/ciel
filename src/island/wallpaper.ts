@@ -15,6 +15,8 @@ import type { BotStateName } from "../core/layout";
 import { wallpaperPrefs, type Theme, type WallpaperPrefs } from "../sky/prefs";
 import { chooseScene, sceneSpec, secondsOfDay, type SceneSpec } from "../sky/scenes";
 import { WALLPAPER_EVENTS, decodePhoto, type LiveScene } from "../sky/live";
+import { Tools } from "../tools/store";
+import { themeForWeather } from "../core/weather";
 
 export { WALLPAPER_EVENTS, type LiveScene } from "../sky/live";
 
@@ -395,10 +397,28 @@ export function islandDeps(): WallpaperDeps {
   };
 }
 
+/**
+ * The wallpaper's settings as the sky should wear them: with "Sky" on in the
+ * Weather tool, the weather outside (when it isn't clear) stands in for the
+ * theme of Ciel's mood. The same object comes back while nothing changed,
+ * so the controller's own check stays cheap.
+ */
+let worn: { raw: unknown; theme: string | null; mood: string; prefs: unknown } | null = null;
+function wornPrefs(raw: unknown, mood: BotStateName): unknown {
+  const w = Tools.weather;
+  const theme = Tools.prefs.skyWeather && w && Date.now() - w.at < 3 * 3_600_000 ? themeForWeather(w.now.code) : null;
+  if (worn && worn.raw === raw && worn.theme === theme && worn.mood === mood) return worn.prefs;
+  const prefs = theme && raw && typeof raw === "object"
+    ? { ...(raw as Record<string, unknown>), moods: { ...((raw as { moods?: object }).moods ?? {}), [mood]: theme } }
+    : raw;
+  worn = { raw, theme, mood, prefs };
+  return prefs;
+}
+
 /** Starts the wallpapers' controller in the island. */
 export async function registerWallpaper() {
   const controller = new WallpaperController(islandDeps());
-  const sync = () => controller.update(State.settings.wallpaper, State.effectiveState);
+  const sync = () => controller.update(wornPrefs(State.settings.wallpaper, State.effectiveState), State.effectiveState);
   State.subscribe(sync);
   sync();
   await onEvent<{ locked: boolean }>(WALLPAPER_EVENTS.session, (e) => controller.session(!!e?.locked));

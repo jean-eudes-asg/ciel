@@ -55,11 +55,11 @@ export async function insightsPage(page: HTMLElement, ctx: HubContext) {
     days.forEach(([key], i) => {
       if (i % (period === "week" ? 1 : 5) === 0 || i === days.length - 1) axis.append(h("span", { text: String(Number(key.split("-")[2])) }));
     });
-    const chart = h("div", { class: "hub-card" }, h("div", { class: "title", style: "font:700 14px var(--font)", text: t("Words per day") }), bars, axis);
+    const chart = h("div", { class: "hub-card" }, h("div", { class: "title", text: t("Words per day") }), bars, axis);
 
     const apps = Object.entries(stats?.apps ?? {}).sort((a, b) => b[1] - a[1]).slice(0, 8);
     const total = apps.reduce((s, [, w]) => s + w, 0);
-    const appsCard = h("div", { class: "hub-card" }, h("div", { class: "title", style: "font:700 14px var(--font)", text: t("Where you dictate") }));
+    const appsCard = h("div", { class: "hub-card" }, h("div", { class: "title", text: t("Where you dictate") }));
     if (apps.length === 0) {
       appsCard.append(emptyState(t("Dictate in an app and it shows here."), "idle"));
     } else {

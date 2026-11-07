@@ -17,11 +17,13 @@ import { DEFAULT_SETTINGS, State } from "../src/core/state.ts";
 const MAC_IDS = [
   "toggleIsland", "openChat", "goToAlert", "jumpToTerminal", "attachFrontWindow",
   "nextPill", "prevPill", "muteToggle", "desktopToggle",
+  // The Tools' own, after the Mac's.
+  "micToggle", "clipboardOpen",
 ];
 
 // ── Defaults (testDefaultsExhaustive, testAllDefaultsHaveModifier, testNoDefaultDuplicates) ──
 
-test("every Mac action has a default, in the Mac's order, with its Mac id", () => {
+test("every Mac action has a default, in the Mac's order, with its Mac id, then the Tools' own", () => {
   assert.deepEqual(SHORTCUTS.map((d) => d.id), MAC_IDS);
   for (const d of SHORTCUTS) assert.ok(SHORTCUT_TEXT[d.id], `${d.id} has no label`);
 });
@@ -90,13 +92,13 @@ test("the descriptions the Wayland portal shows are the labels Settings shows", 
 });
 
 // testEnabledByDefault
-test("only the island toggle is off by default; the one not ported yet is reserved", () => {
+test("only the island toggle and the clipboard are off by default; the one not ported yet is reserved", () => {
   for (const d of SHORTCUTS) {
-    assert.equal(d.enabledByDefault, d.id !== "toggleIsland", d.id);
+    assert.equal(d.enabledByDefault, d.id !== "toggleIsland" && d.id !== "clipboardOpen", d.id);
     assert.equal(d.ported, d.id !== "attachFrontWindow", d.id);
   }
   assert.deepEqual(activeKeys({}).map(([id]) => id), [
-    "openChat", "goToAlert", "jumpToTerminal", "nextPill", "prevPill", "muteToggle", "desktopToggle",
+    "openChat", "goToAlert", "jumpToTerminal", "nextPill", "prevPill", "muteToggle", "desktopToggle", "micToggle",
   ]);
   // The Mac's ⌃⌥D, on the same letter.
   assert.equal(SHORTCUTS.find((d) => d.id === "desktopToggle").defaultKeys, "Ctrl+Alt+D");

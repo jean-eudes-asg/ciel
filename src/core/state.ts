@@ -16,6 +16,7 @@ import { pillColor } from "./pill-colors";
 import { Spotify, musicPlaying } from "./spotify";
 import { YTMUSIC_ID, YtMusic } from "./ytmusic";
 import { DEFAULT_WALLPAPER, type WallpaperPrefs } from "../sky/prefs";
+import { DEFAULT_TOOL_PREFS, type ToolPrefs } from "./tools";
 
 export type AgentSource = "claudeCode" | "n8n" | "agent";
 export type PillBadge = "approval" | "finished" | "error";
@@ -126,7 +127,7 @@ export interface Settings {
   absenceInterval: number;
   /** Declared pills next to the main one (at most 4), in the order they were added. */
   activeIntegrations: string[];
-  /** The always-on workspace pill: VS Code, Cursor, Codex or Antigravity. */
+  /** The always-on workspace pill: VS Code, Cursor, Codex or Antigravity; "" for none (NO_MAIN_PILL). */
   mainPill: string;
   /** "primary", "cursor", or `at:<x>,<y>` for one display (logical origin). */
   screen: string;
@@ -213,6 +214,12 @@ export interface Settings {
   wallpaper: WallpaperPrefs;
   /** What « OK Ciel » may read when its brain is Claude (src-tauri/src/voice/mod.rs `may_read`). */
   brainReads: BrainReads;
+  /** The island's Tools (src/tools): each off until turned on there. */
+  tools: ToolPrefs;
+  /** The Ciel window's colours (hub/shell.ts applyTheme). */
+  windowTheme: "black" | "white" | "system";
+  /** The steps of the window's setup gone through (settings/setup.ts), "later" once put off. */
+  setupSteps: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -262,6 +269,9 @@ export const DEFAULT_SETTINGS: Settings = {
   alertsLan: false,
   wallpaper: { ...DEFAULT_WALLPAPER },
   brainReads: { calendar: true, notes: true, finance: false },
+  tools: { ...DEFAULT_TOOL_PREFS },
+  windowTheme: "black",
+  setupSteps: [],
 };
 
 type Listener = () => void;
@@ -300,6 +310,8 @@ class AppState {
 
   promptContext: PromptContext | null = null;
   droppedFile: { name: string; path: string } | null = null;
+  /** The other files of the same drop, on the shelf with it (not in the chat). */
+  droppedMore = 0;
   noteMessage: string | null = null;
   searchResult: SearchResult | null = null;
   chatHistory: ChatMessage[] = [];
@@ -515,7 +527,7 @@ class AppState {
       if (def) t.color = pillColor(def.id, def.color, this.settings.pillColors);
     }
     this.tasks = orderPills(this.tasks, d.mainPill);
-    if (!this.focusId || !this.tasks.some((t) => t.id === this.focusId)) this.focusId = d.mainPill;
+    if (!this.focusId || !this.tasks.some((t) => t.id === this.focusId)) this.focusId = d.mainPill || (this.tasks[0]?.id ?? null);
     this.notify();
   }
 
@@ -542,7 +554,7 @@ class AppState {
     }
     this.tasks.splice(idx, 1);
     this.clearSessionDiffs(id);
-    if (this.focusId === id) this.focusId = this.tasks[0]?.id ?? this.mainPillId;
+    if (this.focusId === id) this.focusId = this.tasks[0]?.id ?? (this.mainPillId || null);
     this.notify();
   }
 
@@ -591,7 +603,7 @@ class AppState {
     const next = toggleDeclared(sanitizeDeclared(this.settings, this.os), id, this.os);
     if (!next) return;
     this.settings.activeIntegrations = next;
-    if (!next.includes(id) && this.focusId === id) this.focusId = this.mainPillId;
+    if (!next.includes(id) && this.focusId === id) this.focusId = this.mainPillId || null;
     this.loadIntegrationTasks();
   }
 

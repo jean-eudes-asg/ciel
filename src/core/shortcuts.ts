@@ -28,6 +28,8 @@ export const SHORTCUT_TEXT = {
   prevPill: N_("Previous pill"),
   muteToggle: N_("Mute or unmute Ciel"),
   desktopToggle: N_("Send Ciel to the desktop"),
+  micToggle: N_("Mute or unmute every microphone"),
+  clipboardOpen: N_("Open the clipboard history"),
   island: {
     nextPrev: N_("Next or previous pill"),
     byNumber: N_("Go to pill 1 to 9"),
@@ -44,7 +46,10 @@ export const SHORTCUT_TEXT = {
 
 // ── Actions ───────────────────────────────────────────────────────────────────
 
-/** Mac `ShortcutAction` raw values. Stored in settings.json: never rename one. */
+/**
+ * Mac `ShortcutAction` raw values, then the Tools' own (Windows and Linux
+ * only). Stored in settings.json: never rename one.
+ */
 export type ShortcutId =
   | "toggleIsland"
   | "openChat"
@@ -54,7 +59,9 @@ export type ShortcutId =
   | "nextPill"
   | "prevPill"
   | "muteToggle"
-  | "desktopToggle";
+  | "desktopToggle"
+  | "micToggle"
+  | "clipboardOpen";
 
 export interface ShortcutDef {
   id: ShortcutId;
@@ -78,6 +85,10 @@ export const SHORTCUTS: readonly ShortcutDef[] = [
   def("prevPill", "Ctrl+Alt+Left", true, true),
   def("muteToggle", "Ctrl+Alt+S", true, true),
   def("desktopToggle", "Ctrl+Alt+D", true, true),
+  // Not the Mac's: every microphone at once (M would type µ on German keyboards).
+  def("micToggle", "Ctrl+Alt+U", true, true),
+  // Off until turned on: Word's Paste Special is on the same keys.
+  def("clipboardOpen", "Ctrl+Alt+V", false, true),
 ];
 
 /**

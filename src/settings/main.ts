@@ -1,7 +1,7 @@
-// The Ciel window (settings.html): Flow dictation, the Notetaker and, under
-// Notch, every setting of the island — the place where anything that writes to
-// disk is confirmed. The window's frame and the Flow pages live in ../hub; the
-// island's settings are drawn here, one Notch page at a time.
+// The Ciel window (settings.html): your day, the voice pages and every setting
+// of the island — the place where anything that writes to disk is confirmed.
+// The window's frame and the voice pages live in ../hub; the island's settings
+// are drawn here, one page at a time, and so is the setup (./setup.ts).
 
 import "./settings.css";
 import { Bridge, onEvent, type AlertsInfo, type HookPreview, type HookStatus, type ShortcutsReport } from "../core/bridge";
@@ -14,11 +14,13 @@ import { DEFAULT_SETTINGS, type Settings } from "../core/state";
 import { isFullPath, type FinanceFolderInfo } from "../core/finance";
 import { SOUND_NAMES, Sound } from "../core/sound";
 import {
-  HOST_OS, MAX_DECLARED, PILL_CATEGORIES, availablePills, chooseMainPill, isComingSoon, mainPillChoices,
+  HOST_OS, MAX_DECLARED, NO_MAIN_PILL, PILL_CATEGORIES, availablePills, chooseMainPill, isComingSoon, mainPillChoices,
   sanitizeDeclared, toggleDeclared, type PillDefinition,
 } from "../core/pills";
 import { h, clear } from "../views/dom";
-import { startHub, type PageId } from "../hub/shell";
+import { DEFAULT_TOOL_PREFS, type ToolPrefs } from "../core/tools";
+import { applyTheme, startHub, type PageId, type WindowTheme } from "../hub/shell";
+import { renderSetup, setupFirstTime, setupProgress, type SetupHost } from "./setup";
 import { FLOW_PAGE_RENDERERS } from "../hub/pages";
 import { agentsSection } from "./agents";
 import { brainSection } from "./brain";
@@ -46,7 +48,7 @@ let clicksOutside = true;
 const windowRoot = document.getElementById("hub")!;
 /** Where the Notch page being shown draws its sections. */
 let root: HTMLElement = windowRoot;
-let hub: { redraw(): void; current(): PageId } | null = null;
+let hub: { redraw(): void; current(): PageId; show(page: PageId): void } | null = null;
 
 async function save() {
   followSound();
@@ -75,6 +77,72 @@ function toggle(on: boolean, onChange: (v: boolean) => void): HTMLElement {
     onChange(next);
   });
   return el;
+}
+
+// ── Tools ─────────────────────────────────────────────────────────────────────
+
+/**
+ * The island's Tools (src/tools): what reads the clipboard or reaches the
+ * network, each off until turned on — here or in the tool itself.
+ */
+function toolsSection(): HTMLElement {
+  const tools = () => ({ ...DEFAULT_TOOL_PREFS, ...(settings.tools ?? {}) });
+  const set = (change: Partial<ToolPrefs>) => {
+    settings.tools = { ...tools(), ...change };
+    void save();
+  };
+  const row = (label: string, control: HTMLElement) => h("div", { class: "row" }, h("label", { text: label }), control);
+  const hint = (text: string) => h("div", { class: "hint", text });
+
+  // Clipboard.
+  const forget = h("button", { text: t("Forget what was copied") });
+  forget.addEventListener("click", () => {
+    void Bridge.clipboardClear();
+    forget.textContent = t("Forgotten");
+  });
+  const clipboard = [
+    row(t("Keep what I copy"), toggle(tools().clipboard, (v) => set({ clipboard: v }))),
+    hint(t("Text, links, pictures and files you copy, on this computer only and until Ciel quits; what you pin stays. Password managers' copies are never kept, one-time codes go after two minutes.")),
+    h("div", { class: "row" }, forget),
+  ];
+
+  // Music.
+  const lyrics = [
+    row(t("Lyrics"), toggle(tools().lyrics, (v) => set({ lyrics: v }))),
+    hint(t("The words of the song playing, timed, from lrclib.net: only the song's title, artist, album and length are sent.")),
+  ];
+
+  // Weather.
+  const place = h("span", { class: "hint", text: tools().weatherPlace || t("None yet: pick it in the island, Tools → Weather.") });
+  const clearPlace = h("button", { text: t("Forget the place") });
+  clearPlace.style.display = tools().weatherPlace ? "" : "none";
+  clearPlace.addEventListener("click", () => {
+    set({ weatherPlace: "", weatherLat: 0, weatherLon: 0 });
+    place.textContent = t("None yet: pick it in the island, Tools → Weather.");
+    clearPlace.style.display = "none";
+  });
+  const units = h("select", {}) as HTMLSelectElement;
+  for (const [value, label] of [["auto", t("Automatic")], ["c", "°C"], ["f", "°F"]] as const) {
+    units.append(h("option", { value, text: label }));
+  }
+  units.value = tools().weatherUnits;
+  units.addEventListener("change", () => set({ weatherUnits: units.value as ToolPrefs["weatherUnits"] }));
+  const weather = [
+    row(t("Place"), h("div", { style: "display:flex;align-items:center;gap:10px" }, place, clearPlace)),
+    row(t("Units"), units),
+    row(t("Rain alerts"), toggle(tools().rainWarnings, (v) => set({ rainWarnings: v }))),
+    hint(t("A card when rain is about to start where you are.")),
+    row(t("The sky wears the weather"), toggle(tools().skyWeather, (v) => set({ skyWeather: v }))),
+    hint(t("Ciel's sky wallpaper turns grey or stormy with the weather outside; on clear days it follows his mood.")),
+    hint(t("From Open-Meteo, free and without an account. Only the place you pick is ever sent.")),
+  ];
+
+  return h("section", {},
+    h("h2", {}, h("span", { text: t("Clipboard") })), ...clipboard,
+    h("h2", {}, h("span", { text: t("Music") })), ...lyrics,
+    h("h2", {}, h("span", { text: t("Weather") })), ...weather,
+    hint(t("Timers, the controls and the shelf need nothing set up: they are in the island's Tools tab. The microphone key is in Shortcuts.")),
+  );
 }
 
 // ── Changes to Claude Code's settings.json ────────────────────────────────────
@@ -459,6 +527,8 @@ function activePillsSection(connected: Record<string, boolean>): HTMLElement {
   const slots = h("div", { class: "hint" });
   const main = h("select", {}) as HTMLSelectElement;
   for (const def of mainPillChoices()) main.append(h("option", { value: def.id, text: def.name }));
+  // Ciel for someone who doesn't code: no pill is always on (NO_MAIN_PILL).
+  main.append(h("option", { value: NO_MAIN_PILL, text: t("None — I don't code") }));
   main.addEventListener("change", () => {
     const next = chooseMainPill(settings, main.value);
     if (!next) return;
@@ -1110,12 +1180,12 @@ function integrationsSection(present: Record<string, boolean>): HTMLElement {
         text: t("Shows whatever is playing: Spotify, a browser, VLC, Media Player… The volume slider is Spotify's alone."),
       }));
     } else if (def.id === "integration_spotify") {
-      // As on the Mac's row: said only when there is no Spotify to launch.
-      const hint = h("div", { class: "hint", style: "padding-top:5px" });
-      rows.append(hint);
-      void Bridge.spotifyInstalled().then((ok) => {
-        hint.textContent = ok === false ? t("Not installed") : "";
-      });
+      // Linux follows any MPRIS player too, Spotify first when none plays.
+      rows.append(h("div", {
+        class: "hint",
+        style: "padding-top:5px",
+        text: t("Shows whatever is playing: Spotify, a browser, VLC, Rhythmbox…"),
+      }));
     }
 
     list.append(
@@ -1680,6 +1750,7 @@ async function main() {
   }
   setLanguage(resolveLanguage(settings.language, systemLanguages()));
   applyDirection();
+  applyTheme(settings.windowTheme ?? "black");
   hub = await startHub(windowRoot, {
     version,
     flowPages: FLOW_PAGE_RENDERERS,
@@ -1688,6 +1759,9 @@ async function main() {
       root = container;
       await render();
     },
+    renderSetup: (container, ctx) => renderSetup(container, ctx, setupHost),
+    setupProgress: () => setupProgress(settings),
+    firstPage: setupFirstTime(settings) ? "setup" : "home",
   });
   onLanguageChange(() => {
     applyDirection();
@@ -1703,9 +1777,63 @@ async function main() {
     const after = `${settings.chatProvider}|${settings.ollamaUrl}|${settings.lmstudioUrl}|${settings.customUrl}`;
     if (before !== after) localRedraw?.();
     applyLanguage();
+    applyTheme(settings.windowTheme ?? "black");
     setClockFormat(settings.clockFormat);
     followSound();
   });
+}
+
+/** What the setup reaches here: the settings, and the island's own sections it embeds. */
+const setupHost: SetupHost = {
+  settings: () => settings,
+  change(apply) {
+    apply(settings);
+    void save();
+  },
+  languageChanged: () => applyLanguage(),
+  async agentSections(mainPill) {
+    if (mainPill === "integration_claude") {
+      const status = (await Bridge.hooksStatus()) ?? {
+        installed: false, planRelayInstalled: false, settingsPath: "", hookPath: "", hookReady: false,
+      };
+      return [claudeSection(status)];
+    }
+    const agents = (await Bridge.agentHooksList()) ?? [];
+    const mine = agents.filter((a) => `agent_${a.id}` === mainPill);
+    return mine.length ? [agentsSection(mine)] : [];
+  },
+  async pillsSection() {
+    settings = { ...settings, ...sanitizeDeclared(settings) };
+    const connected: Record<string, boolean> = { ...((await Bridge.agentHooksStatus()) ?? {}) };
+    for (const def of availablePills()) {
+      if (def.connect.kind === "key") connected[def.id] = (await Bridge.secretPresent(def.connect.key)) ?? false;
+    }
+    declaredViews.length = 0;
+    return activePillsSection(connected);
+  },
+};
+
+/** Preferences → General → Window: pitch black, white, or as the system. */
+function windowSection(): HTMLElement {
+  const choices: [WindowTheme, string][] = [["black", t("Black")], ["white", t("White")], ["system", t("System")]];
+  const group = h("div", { class: "hub-segmented" });
+  for (const [value, label] of choices) {
+    const b = h("button", { class: (settings.windowTheme ?? "black") === value ? "on" : "", text: label });
+    b.addEventListener("click", () => {
+      for (const other of group.querySelectorAll("button")) other.classList.toggle("on", other === b);
+      settings.windowTheme = value;
+      applyTheme(value);
+      void save();
+    });
+    group.append(b);
+  }
+  const setup = h("button", { text: setupProgress(settings) ? t("Continue the setup") : t("Go through the setup again"), onclick: () => hub?.show("setup") });
+  return h("section", {},
+    h("h2", {}, h("span", { text: t("Window") })),
+    h("div", { class: "row" }, h("label", { text: t("Colours") }), group),
+    h("div", { class: "row" }, h("label", { text: t("Setup") }), setup),
+    h("div", { class: "hint", text: t("The questions of the first launch: what Ciel follows, how the island opens, your tools, your voice.") }),
+  );
 }
 
 /** The Notch page being shown. */
@@ -1765,9 +1893,9 @@ async function render() {
   shortcutsListener = null;
   clear(root);
   const sections: Partial<Record<PageId, () => HTMLElement[]>> = {
-    general: () => [
-      generalSection(),
-      screensaverSection(),
+    general: () => [windowSection(), generalSection()],
+    screensaver: () => [screensaverSection()],
+    updates: () => [
       updatesSection({
         auto: settings.checkUpdates,
         setAuto: (on) => {
@@ -1794,11 +1922,12 @@ async function render() {
       }),
       integrationsSection(present),
     ],
+    tools: () => [toolsSection()],
     shortcuts: () => [shortcutsSection(shortcutReport)],
     wallpaper: () => wallpaper,
   };
   root.append(...(sections[notchPage]?.() ?? []));
-  if (notchPage === "general") {
+  if (notchPage === "updates") {
     root.append(h("div", {
       class: "hint",
       text: t("No telemetry. Network requests only go to the services you configure yourself."),

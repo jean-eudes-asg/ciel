@@ -705,17 +705,6 @@
    "ru": "Готово. Цифры появятся после следующего ответа в сессии Claude Code.",
    "id": "Selesai. Angkanya muncul setelah balasan berikutnya dari sesi Claude Code."
   },
-  "Drop": {
-   "zh-Hans": "拖放",
-   "hi": "छोड़ें",
-   "es": "Soltar",
-   "ar": "إفلات",
-   "fr": "Déposer",
-   "bn": "ড্রপ",
-   "pt-BR": "Soltar",
-   "ru": "Перетащить",
-   "id": "Letakkan"
-  },
   "Enter the server address first.": {
    "zh-Hans": "请先输入服务器地址。",
    "hi": "पहले सर्वर का पता दर्ज करें।",
@@ -1706,17 +1695,6 @@
    "ru": "Поиск в интернете работает только с Claude.",
    "id": "Pencarian web hanya berfungsi dengan Claude."
   },
-  "Ciel needs a brain to answer: add your Claude key or connect a local model in Notch → Chat.": {
-   "zh-Hans": "Ciel 需要一个大脑才能回答：请在 Notch → 聊天 中添加你的 Claude 密钥或连接本地模型。",
-   "hi": "जवाब देने के लिए Ciel को एक दिमाग चाहिए: Notch → चैट में अपनी Claude कुंजी जोड़ें या एक स्थानीय मॉडल कनेक्ट करें।",
-   "es": "Ciel necesita un cerebro para responder: añade tu clave de Claude o conecta un modelo local en Notch → Chat.",
-   "ar": "يحتاج Ciel إلى عقل ليجيب: أضف مفتاح Claude الخاص بك أو صِل نموذجًا محليًا في Notch ← الدردشة.",
-   "fr": "Ciel a besoin d'un cerveau pour répondre : ajoute ta clé Claude ou connecte un modèle local dans Notch → Chat.",
-   "bn": "উত্তর দিতে Ciel-এর একটি মস্তিষ্ক দরকার: Notch → চ্যাট-এ আপনার Claude কী যোগ করুন বা একটি স্থানীয় মডেল সংযুক্ত করুন।",
-   "pt-BR": "O Ciel precisa de um cérebro para responder: adicione sua chave do Claude ou conecte um modelo local em Notch → Chat.",
-   "ru": "Чтобы отвечать, Ciel нужен мозг: добавьте ключ Claude или подключите локальную модель в Notch → Чат.",
-   "id": "Ciel butuh otak untuk menjawab: tambahkan kunci Claude-mu atau hubungkan model lokal di Notch → Obrolan."
-  },
   "Your voice never leaves this computer: Parakeet turns it into text here, and {model} answers here too.": {
    "zh-Hans": "你的声音永远不会离开这台电脑：Parakeet 在本机把它转成文字，{model} 也在本机回答。",
    "hi": "आपकी आवाज़ कभी इस कंप्यूटर से बाहर नहीं जाती: Parakeet उसे यहीं टेक्स्ट में बदलता है, और {model} भी यहीं जवाब देता है।",
@@ -1771,17 +1749,6 @@
    "pt-BR": "Limpar com o {model}",
    "ru": "Чистить текст с {model}",
    "id": "Rapikan dengan {model}"
-  },
-  "The clean-up needs Claude or a local model: set one up in Notch → Chat.": {
-   "zh-Hans": "清理功能需要 Claude 或本地模型：请在“Notch → 聊天”中设置一个。",
-   "hi": "सफ़ाई के लिए Claude या एक स्थानीय मॉडल चाहिए: Notch → चैट में एक सेट करें।",
-   "es": "La limpieza necesita Claude o un modelo local: configura uno en Notch → Chat.",
-   "ar": "يحتاج التنظيف إلى Claude أو نموذج محلي: اضبط أحدهما في Notch ← الدردشة.",
-   "fr": "Le nettoyage a besoin de Claude ou d'un modèle local : configure-en un dans Notch → Chat.",
-   "bn": "পরিষ্কার করতে Claude বা একটি স্থানীয় মডেল লাগে: Notch → চ্যাট-এ একটি সেট আপ করুন।",
-   "pt-BR": "A limpeza precisa do Claude ou de um modelo local: configure um em Notch → Chat.",
-   "ru": "Для очистки нужен Claude или локальная модель: настройте одно из них в Notch → Чат.",
-   "id": "Pembersihan butuh Claude atau model lokal: atur salah satunya di Notch → Obrolan."
   },
   "With the clean-up on, the text goes to {model} on this computer: nothing leaves it.": {
    "zh-Hans": "开启清理后，文字会交给这台电脑上的 {model}：没有任何内容离开它。",
@@ -4094,17 +4061,6 @@
    "ru": "Ваш голос не покидает этот компьютер: Parakeet превращает его в текст здесь, а запись удаляется сразу после вставки.",
    "id": "Suaramu tidak pernah meninggalkan komputer ini: Parakeet mengubahnya menjadi teks di sini, dan rekamannya dibuang begitu ditempel."
   },
-  "With Claude, the transcript (never the audio) goes to Anthropic with your key from Notch → Chat.": {
-   "zh-Hans": "使用 Claude 时，文字记录（绝不包括音频）会通过你在“Notch → 聊天”中设置的密钥发送给 Anthropic。",
-   "hi": "Claude के साथ, ट्रांसक्रिप्ट (ऑडियो कभी नहीं) Notch → चैट में दी गई आपकी कुंजी के साथ Anthropic को जाता है।",
-   "es": "Con Claude, la transcripción (nunca el audio) va a Anthropic con tu clave de Notch → Chat.",
-   "ar": "مع Claude، يذهب النص المكتوب (لا الصوت أبدًا) إلى Anthropic بمفتاحك من Notch ← الدردشة.",
-   "fr": "Avec Claude, la transcription (jamais l'audio) part chez Anthropic avec ta clé de Notch → Chat.",
-   "bn": "Claude-এ, ট্রান্সক্রিপ্ট (অডিও কখনো নয়) Notch → চ্যাট থেকে আপনার কী দিয়ে Anthropic-এ যায়।",
-   "pt-BR": "Com o Claude, a transcrição (nunca o áudio) vai para a Anthropic com sua chave de Notch → Chat.",
-   "ru": "С Claude расшифровка (но никогда не звук) уходит в Anthropic с вашим ключом из Notch → Чат.",
-   "id": "Dengan Claude, transkrip (tidak pernah audionya) dikirim ke Anthropic dengan kuncimu dari Notch → Obrolan."
-  },
   "Everything stays on this computer. Tell the people in the call that you are recording.": {
    "zh-Hans": "所有内容都留在这台电脑上。请告知通话中的人你正在录音。",
    "hi": "सब कुछ इसी कंप्यूटर पर रहता है। कॉल में मौजूद लोगों को बताएँ कि आप रिकॉर्ड कर रहे हैं।",
@@ -4170,17 +4126,6 @@
    "pt-BR": "O Ciel escreve suas chamadas neste computador com o Parakeet e distingue as vozes com um segundo modelo pequeno. Os dois são baixados uma vez (cerca de {0} MB) e depois tudo funciona offline.",
    "ru": "Ciel записывает ваши звонки на этом компьютере с помощью Parakeet и различает голоса второй небольшой моделью. Обе скачиваются один раз (около {0} МБ), дальше всё работает офлайн.",
    "id": "Ciel menulis panggilanmu di komputer ini dengan Parakeet, dan membedakan suara dengan model kecil kedua. Keduanya diunduh sekali (sekitar {0} MB), lalu semuanya bekerja offline."
-  },
-  "The clean-up uses your Claude key. Add it in Notch → Chat.": {
-   "zh-Hans": "清理功能使用你的 Claude 密钥。请在“Notch → 聊天”中添加。",
-   "hi": "सफ़ाई आपकी Claude कुंजी इस्तेमाल करती है। इसे Notch → चैट में जोड़ें।",
-   "es": "La limpieza usa tu clave de Claude. Añádela en Notch → Chat.",
-   "ar": "يستخدم التنظيف مفتاح Claude الخاص بك. أضفه في Notch ← الدردشة.",
-   "fr": "Le nettoyage utilise ta clé Claude. Ajoute-la dans Notch → Chat.",
-   "bn": "পরিষ্কার করতে আপনার Claude কী লাগে। Notch → চ্যাট-এ যোগ করুন।",
-   "pt-BR": "A limpeza usa sua chave do Claude. Adicione-a em Notch → Chat.",
-   "ru": "Для очистки нужен ваш ключ Claude. Добавьте его в Notch → Чат.",
-   "id": "Pembersihan memakai kunci Claude-mu. Tambahkan di Notch → Obrolan."
   },
   "With the clean-up on, the text (never your voice) goes to Anthropic with your Claude key. Off, everything stays on this computer.": {
    "zh-Hans": "开启清理后，文字（绝不包括你的声音）会通过你的 Claude 密钥发送给 Anthropic。关闭时，一切都留在这台电脑上。",
@@ -4379,17 +4324,6 @@
    "pt-BR": "Ouve « OK Ciel » aqui, sem internet.",
    "ru": "Слышит « OK Ciel » прямо здесь, без интернета.",
    "id": "Mendengar « OK Ciel » di sini, tanpa internet."
-  },
-  "Ciel answers with Claude: add your Claude key in Notch → Chat.": {
-   "zh-Hans": "Ciel 用 Claude 回答：请在 Notch → 聊天 中添加你的 Claude 密钥。",
-   "hi": "Ciel Claude से जवाब देता है: Notch → चैट में अपनी Claude कुंजी जोड़ें।",
-   "es": "Ciel responde con Claude: añade tu clave de Claude en Notch → Chat.",
-   "ar": "يجيب Ciel باستخدام Claude: أضف مفتاح Claude الخاص بك في Notch ← الدردشة.",
-   "fr": "Ciel répond avec Claude : ajoute ta clé Claude dans Notch → Chat.",
-   "bn": "Ciel Claude দিয়ে উত্তর দেয়: Notch → চ্যাট-এ আপনার Claude কী যোগ করুন।",
-   "pt-BR": "O Ciel responde com o Claude: adicione sua chave do Claude em Notch → Chat.",
-   "ru": "Ciel отвечает с помощью Claude: добавьте свой ключ Claude в Notch → Чат.",
-   "id": "Ciel menjawab dengan Claude: tambahkan kunci Claude-mu di Notch → Obrolan."
   },
   "Download the voice model so Ciel can hear you.": {
    "zh-Hans": "下载语音模型，Ciel 才能听到你。",
@@ -5927,17 +5861,6 @@
    "ru": "Вышел Ciel {version}",
    "id": "Ciel {version} sudah tersedia"
   },
-  "Install it from Settings → General.": {
-   "zh-Hans": "在“设置 → 通用”中安装。",
-   "hi": "इसे सेटिंग्स → सामान्य से इंस्टॉल करें।",
-   "es": "Instálalo desde Ajustes → General.",
-   "ar": "ثبّته من الإعدادات ← عام.",
-   "fr": "Installez-la depuis Réglages → Général.",
-   "bn": "সেটিংস → সাধারণ থেকে ইনস্টল করুন।",
-   "pt-BR": "Instale em Ajustes → Geral.",
-   "ru": "Установите его в «Настройки → Основные».",
-   "id": "Pasang dari Pengaturan → Umum."
-  },
   "Good morning": {
    "zh-Hans": "早上好",
    "hi": "सुप्रभात",
@@ -6091,17 +6014,6 @@
    "pt-BR": "Tarefas das suas chamadas",
    "ru": "Задачи из ваших звонков",
    "id": "Tugas dari panggilan Anda"
-  },
-  "Home": {
-   "zh-Hans": "主页",
-   "hi": "होम",
-   "es": "Inicio",
-   "ar": "الرئيسية",
-   "fr": "Accueil",
-   "bn": "হোম",
-   "pt-BR": "Início",
-   "ru": "Главная",
-   "id": "Beranda"
   },
   "Right away": {
    "zh-Hans": "立即",
@@ -7851,6 +7763,2458 @@
    "pt-BR": "Seu jogo está numa janela própria.",
    "ru": "Ваша игра в отдельном окне.",
    "id": "Permainan Anda ada di jendelanya sendiri."
+  },
+  "Mute or unmute every microphone": {
+   "zh-Hans": "静音或取消静音所有麦克风",
+   "hi": "सभी माइक्रोफ़ोन म्यूट या अनम्यूट करें",
+   "es": "Silenciar o activar todos los micrófonos",
+   "ar": "كتم كل الميكروفونات أو إلغاء كتمها",
+   "fr": "Couper ou rétablir tous les micros",
+   "bn": "সব মাইক্রোফোন মিউট বা আনমিউট করুন",
+   "pt-BR": "Silenciar ou ativar todos os microfones",
+   "ru": "Выключить или включить все микрофоны",
+   "id": "Bisukan atau aktifkan semua mikrofon"
+  },
+  "Open the clipboard history": {
+   "zh-Hans": "打开剪贴板历史",
+   "hi": "क्लिपबोर्ड इतिहास खोलें",
+   "es": "Abrir el historial del portapapeles",
+   "ar": "فتح سجل الحافظة",
+   "fr": "Ouvrir l'historique du presse-papiers",
+   "bn": "ক্লিপবোর্ডের ইতিহাস খুলুন",
+   "pt-BR": "Abrir o histórico da área de transferência",
+   "ru": "Открыть историю буфера обмена",
+   "id": "Buka riwayat papan klip"
+  },
+  "Partly cloudy": {
+   "zh-Hans": "局部多云",
+   "hi": "आंशिक रूप से बादल",
+   "es": "Parcialmente nublado",
+   "ar": "غائم جزئيًا",
+   "fr": "Partiellement nuageux",
+   "bn": "আংশিক মেঘলা",
+   "pt-BR": "Parcialmente nublado",
+   "ru": "Переменная облачность",
+   "id": "Sebagian berawan"
+  },
+  "Fog": {
+   "zh-Hans": "雾",
+   "hi": "कोहरा",
+   "es": "Niebla",
+   "ar": "ضباب",
+   "fr": "Brouillard",
+   "bn": "কুয়াশা",
+   "pt-BR": "Neblina",
+   "ru": "Туман",
+   "id": "Kabut"
+  },
+  "Drizzle": {
+   "zh-Hans": "毛毛雨",
+   "hi": "बूंदाबांदी",
+   "es": "Llovizna",
+   "ar": "رذاذ",
+   "fr": "Bruine",
+   "bn": "গুঁড়ি গুঁড়ি বৃষ্টি",
+   "pt-BR": "Garoa",
+   "ru": "Морось",
+   "id": "Gerimis"
+  },
+  "Rain": {
+   "zh-Hans": "雨",
+   "hi": "बारिश",
+   "es": "Lluvia",
+   "ar": "مطر",
+   "fr": "Pluie",
+   "bn": "বৃষ্টি",
+   "pt-BR": "Chuva",
+   "ru": "Дождь",
+   "id": "Hujan"
+  },
+  "Snow": {
+   "zh-Hans": "雪",
+   "hi": "बर्फ़बारी",
+   "es": "Nieve",
+   "ar": "ثلج",
+   "fr": "Neige",
+   "bn": "তুষার",
+   "pt-BR": "Neve",
+   "ru": "Снег",
+   "id": "Salju"
+  },
+  "Thunderstorm": {
+   "zh-Hans": "雷暴",
+   "hi": "आंधी-तूफ़ान",
+   "es": "Tormenta",
+   "ar": "عاصفة رعدية",
+   "fr": "Orage",
+   "bn": "বজ্রঝড়",
+   "pt-BR": "Tempestade",
+   "ru": "Гроза",
+   "id": "Badai petir"
+  },
+  "Rain for a while": {
+   "zh-Hans": "雨还会下一阵",
+   "hi": "कुछ देर बारिश रहेगी",
+   "es": "Lluvia por un rato",
+   "ar": "مطر لبعض الوقت",
+   "fr": "De la pluie pour un moment",
+   "bn": "কিছুক্ষণ বৃষ্টি চলবে",
+   "pt-BR": "Chuva por um tempo",
+   "ru": "Дождь ещё надолго",
+   "id": "Hujan untuk sementara"
+  },
+  "Rain stops in {minutes} min": {
+   "zh-Hans": "雨将在 {minutes} 分钟后停",
+   "hi": "{minutes} मिनट में बारिश रुकेगी",
+   "es": "La lluvia para en {minutes} min",
+   "ar": "يتوقف المطر بعد {minutes} د",
+   "fr": "La pluie cesse dans {minutes} min",
+   "bn": "{minutes} মিনিটে বৃষ্টি থামবে",
+   "pt-BR": "A chuva para em {minutes} min",
+   "ru": "Дождь кончится через {minutes} мин",
+   "id": "Hujan reda dalam {minutes} mnt"
+  },
+  "Rain starting now": {
+   "zh-Hans": "现在开始下雨",
+   "hi": "अभी बारिश शुरू हो रही है",
+   "es": "Empieza a llover",
+   "ar": "يبدأ المطر الآن",
+   "fr": "La pluie commence",
+   "bn": "এখনই বৃষ্টি শুরু হচ্ছে",
+   "pt-BR": "Começando a chover",
+   "ru": "Начинается дождь",
+   "id": "Hujan mulai turun"
+  },
+  "Rain in {minutes} min": {
+   "zh-Hans": "{minutes} 分钟后下雨",
+   "hi": "{minutes} मिनट में बारिश",
+   "es": "Lluvia en {minutes} min",
+   "ar": "مطر بعد {minutes} د",
+   "fr": "Pluie dans {minutes} min",
+   "bn": "{minutes} মিনিটে বৃষ্টি",
+   "pt-BR": "Chuva em {minutes} min",
+   "ru": "Дождь через {minutes} мин",
+   "id": "Hujan dalam {minutes} mnt"
+  },
+  "Tools": {
+   "zh-Hans": "工具",
+   "hi": "टूल्स",
+   "es": "Herramientas",
+   "ar": "الأدوات",
+   "fr": "Outils",
+   "bn": "টুলস",
+   "pt-BR": "Ferramentas",
+   "ru": "Инструменты",
+   "id": "Alat"
+  },
+  "The island's clipboard, timers, controls, weather and shelf.": {
+   "zh-Hans": "岛上的剪贴板、计时器、控制、天气和文件架。",
+   "hi": "आइलैंड का क्लिपबोर्ड, टाइमर, कंट्रोल, मौसम और शेल्फ़।",
+   "es": "El portapapeles, los temporizadores, los controles, el tiempo y el estante de la isla.",
+   "ar": "حافظة الجزيرة ومؤقتاتها وعناصر التحكم والطقس والرف.",
+   "fr": "Le presse-papiers, les minuteurs, les réglages, la météo et l'étagère de l'île.",
+   "bn": "আইল্যান্ডের ক্লিপবোর্ড, টাইমার, কন্ট্রোল, আবহাওয়া আর শেলফ।",
+   "pt-BR": "A área de transferência, os timers, os controles, o tempo e a prateleira da ilha.",
+   "ru": "Буфер обмена, таймеры, управление, погода и полка острова.",
+   "id": "Papan klip, pengatur waktu, kontrol, cuaca, dan rak di pulau."
+  },
+  "Mic off": {
+   "zh-Hans": "麦克风已关",
+   "hi": "माइक बंद",
+   "es": "Micro apagado",
+   "ar": "الميكروفون مغلق",
+   "fr": "Micro coupé",
+   "bn": "মাইক বন্ধ",
+   "pt-BR": "Microfone desligado",
+   "ru": "Микрофон выкл.",
+   "id": "Mik mati"
+  },
+  "Time's up": {
+   "zh-Hans": "时间到",
+   "hi": "समय पूरा",
+   "es": "Se acabó el tiempo",
+   "ar": "انتهى الوقت",
+   "fr": "C'est l'heure",
+   "bn": "সময় শেষ",
+   "pt-BR": "Acabou o tempo",
+   "ru": "Время вышло",
+   "id": "Waktu habis"
+  },
+  "Rain now": {
+   "zh-Hans": "正在下雨",
+   "hi": "अभी बारिश",
+   "es": "Lloviendo",
+   "ar": "تمطر الآن",
+   "fr": "Il pleut",
+   "bn": "এখন বৃষ্টি",
+   "pt-BR": "Chovendo",
+   "ru": "Идёт дождь",
+   "id": "Sedang hujan"
+  },
+  "Awake": {
+   "zh-Hans": "保持唤醒",
+   "hi": "जागा हुआ",
+   "es": "Despierto",
+   "ar": "مستيقظ",
+   "fr": "Éveillé",
+   "bn": "জেগে আছে",
+   "pt-BR": "Acordado",
+   "ru": "Не спит",
+   "id": "Terjaga"
+  },
+  "Forget what was copied": {
+   "zh-Hans": "清除已复制的内容",
+   "hi": "कॉपी की गई चीज़ें भूल जाएँ",
+   "es": "Olvidar lo copiado",
+   "ar": "نسيان ما تم نسخه",
+   "fr": "Oublier ce qui a été copié",
+   "bn": "কপি করা জিনিস ভুলে যান",
+   "pt-BR": "Esquecer o que foi copiado",
+   "ru": "Забыть скопированное",
+   "id": "Lupakan yang disalin"
+  },
+  "Forgotten": {
+   "zh-Hans": "已清除",
+   "hi": "भुला दिया",
+   "es": "Olvidado",
+   "ar": "تم النسيان",
+   "fr": "Oublié",
+   "bn": "ভুলে গেছে",
+   "pt-BR": "Esquecido",
+   "ru": "Забыто",
+   "id": "Dilupakan"
+  },
+  "Keep what I copy": {
+   "zh-Hans": "保留我复制的内容",
+   "hi": "जो मैं कॉपी करूँ उसे रखें",
+   "es": "Guardar lo que copio",
+   "ar": "الاحتفاظ بما أنسخه",
+   "fr": "Garder ce que je copie",
+   "bn": "আমি যা কপি করি তা রাখুন",
+   "pt-BR": "Guardar o que eu copio",
+   "ru": "Сохранять то, что я копирую",
+   "id": "Simpan yang saya salin"
+  },
+  "Text, links, pictures and files you copy, on this computer only and until Ciel quits; what you pin stays. Password managers' copies are never kept, one-time codes go after two minutes.": {
+   "zh-Hans": "你复制的文字、链接、图片和文件，只保存在这台电脑上，直到 Ciel 退出；固定的会保留。密码管理器复制的内容从不保存，一次性验证码两分钟后删除。",
+   "hi": "आप जो टेक्स्ट, लिंक, तस्वीरें और फ़ाइलें कॉपी करते हैं, सिर्फ़ इसी कंप्यूटर पर और Ciel बंद होने तक; जिन्हें आप पिन करें वे रहती हैं। पासवर्ड मैनेजर की कॉपी कभी नहीं रखी जाती, और वन-टाइम कोड दो मिनट बाद हट जाते हैं।",
+   "es": "El texto, los enlaces, las imágenes y los archivos que copias, solo en este ordenador y hasta que Ciel se cierre; lo que fijas se queda. Lo que copian los gestores de contraseñas nunca se guarda y los códigos de un solo uso se borran a los dos minutos.",
+   "ar": "النصوص والروابط والصور والملفات التي تنسخها، على هذا الحاسوب فقط وحتى يُغلق Ciel؛ وما تثبّته يبقى. لا يُحتفظ أبدًا بما تنسخه برامج إدارة كلمات المرور، وتُحذف الرموز لمرة واحدة بعد دقيقتين.",
+   "fr": "Le texte, les liens, les images et les fichiers que vous copiez, sur cet ordinateur seulement et jusqu'à ce que Ciel se ferme ; ce que vous épinglez reste. Ce que copient les gestionnaires de mots de passe n'est jamais gardé, et les codes à usage unique partent au bout de deux minutes.",
+   "bn": "আপনি যে লেখা, লিংক, ছবি আর ফাইল কপি করেন, শুধু এই কম্পিউটারে এবং Ciel বন্ধ হওয়া পর্যন্ত; যা পিন করেন তা থেকে যায়। পাসওয়ার্ড ম্যানেজারের কপি কখনও রাখা হয় না, আর এককালীন কোড দুই মিনিট পরে মুছে যায়।",
+   "pt-BR": "Texto, links, imagens e arquivos que você copia, só neste computador e até o Ciel fechar; o que você fixa fica. O que os gerenciadores de senhas copiam nunca é guardado, e códigos de uso único somem após dois minutos.",
+   "ru": "Текст, ссылки, изображения и файлы, которые вы копируете, — только на этом компьютере и до закрытия Ciel; закреплённое остаётся. Скопированное менеджерами паролей никогда не сохраняется, а одноразовые коды удаляются через две минуты.",
+   "id": "Teks, tautan, gambar, dan file yang Anda salin, hanya di komputer ini dan sampai Ciel ditutup; yang Anda sematkan tetap ada. Salinan dari pengelola kata sandi tidak pernah disimpan, dan kode sekali pakai hilang setelah dua menit."
+  },
+  "Lyrics": {
+   "zh-Hans": "歌词",
+   "hi": "गीत के बोल",
+   "es": "Letras",
+   "ar": "كلمات الأغاني",
+   "fr": "Paroles",
+   "bn": "গানের কথা",
+   "pt-BR": "Letras",
+   "ru": "Тексты песен",
+   "id": "Lirik"
+  },
+  "The words of the song playing, timed, from lrclib.net: only the song's title, artist, album and length are sent.": {
+   "zh-Hans": "正在播放的歌曲的同步歌词，来自 lrclib.net：只发送歌名、歌手、专辑和时长。",
+   "hi": "चल रहे गाने के समय के साथ बोल, lrclib.net से: सिर्फ़ गाने का नाम, कलाकार, एल्बम और अवधि भेजी जाती है।",
+   "es": "La letra de la canción que suena, sincronizada, desde lrclib.net: solo se envían el título, el artista, el álbum y la duración.",
+   "ar": "كلمات الأغنية التي تُشغَّل، متزامنة، من lrclib.net: لا يُرسل إلا عنوان الأغنية والفنان والألبوم والمدة.",
+   "fr": "Les paroles de la chanson en cours, synchronisées, depuis lrclib.net : seuls le titre, l'artiste, l'album et la durée sont envoyés.",
+   "bn": "যে গানটি বাজছে তার কথা, সময় মিলিয়ে, lrclib.net থেকে: শুধু গানের নাম, শিল্পী, অ্যালবাম আর দৈর্ঘ্য পাঠানো হয়।",
+   "pt-BR": "A letra da música que está tocando, sincronizada, do lrclib.net: só o título, o artista, o álbum e a duração são enviados.",
+   "ru": "Слова играющей песни, синхронно, с lrclib.net: отправляются только название, исполнитель, альбом и длительность.",
+   "id": "Lirik lagu yang diputar, tersinkron, dari lrclib.net: hanya judul, artis, album, dan durasi lagu yang dikirim."
+  },
+  "None yet: pick it in the island, Tools → Weather.": {
+   "zh-Hans": "还没有：请在岛上的 工具 → 天气 中选择。",
+   "hi": "अभी कोई नहीं: आइलैंड में टूल्स → मौसम में चुनें।",
+   "es": "Aún ninguno: elígelo en la isla, Herramientas → Tiempo.",
+   "ar": "لا شيء بعد: اختره في الجزيرة، الأدوات ← الطقس.",
+   "fr": "Aucun pour l'instant : choisissez-le dans l'île, Outils → Météo.",
+   "bn": "এখনও নেই: আইল্যান্ডে টুলস → আবহাওয়া থেকে বেছে নিন।",
+   "pt-BR": "Nenhum ainda: escolha na ilha, Ferramentas → Tempo.",
+   "ru": "Пока нет: выберите на острове, Инструменты → Погода.",
+   "id": "Belum ada: pilih di pulau, Alat → Cuaca."
+  },
+  "Forget the place": {
+   "zh-Hans": "删除地点",
+   "hi": "जगह भूल जाएँ",
+   "es": "Olvidar el lugar",
+   "ar": "نسيان المكان",
+   "fr": "Oublier le lieu",
+   "bn": "জায়গাটি ভুলে যান",
+   "pt-BR": "Esquecer o lugar",
+   "ru": "Забыть место",
+   "id": "Lupakan tempat"
+  },
+  "Place": {
+   "zh-Hans": "地点",
+   "hi": "जगह",
+   "es": "Lugar",
+   "ar": "المكان",
+   "fr": "Lieu",
+   "bn": "জায়গা",
+   "pt-BR": "Lugar",
+   "ru": "Место",
+   "id": "Tempat"
+  },
+  "Units": {
+   "zh-Hans": "单位",
+   "hi": "इकाइयाँ",
+   "es": "Unidades",
+   "ar": "الوحدات",
+   "fr": "Unités",
+   "bn": "একক",
+   "pt-BR": "Unidades",
+   "ru": "Единицы",
+   "id": "Satuan"
+  },
+  "Rain alerts": {
+   "zh-Hans": "降雨提醒",
+   "hi": "बारिश की चेतावनी",
+   "es": "Avisos de lluvia",
+   "ar": "تنبيهات المطر",
+   "fr": "Alertes pluie",
+   "bn": "বৃষ্টির সতর্কতা",
+   "pt-BR": "Alertas de chuva",
+   "ru": "Оповещения о дожде",
+   "id": "Peringatan hujan"
+  },
+  "A card when rain is about to start where you are.": {
+   "zh-Hans": "你所在的地方快要下雨时显示一张卡片。",
+   "hi": "जहाँ आप हैं वहाँ बारिश शुरू होने वाली हो तो एक कार्ड।",
+   "es": "Una tarjeta cuando está a punto de llover donde estás.",
+   "ar": "بطاقة عندما يوشك المطر أن يبدأ حيث أنت.",
+   "fr": "Une carte quand la pluie va commencer là où vous êtes.",
+   "bn": "আপনি যেখানে আছেন সেখানে বৃষ্টি শুরু হতে চললে একটি কার্ড।",
+   "pt-BR": "Um cartão quando estiver para chover onde você está.",
+   "ru": "Карточка, когда там, где вы, вот-вот начнётся дождь.",
+   "id": "Kartu saat hujan akan turun di tempat Anda."
+  },
+  "The sky wears the weather": {
+   "zh-Hans": "天空随天气变化",
+   "hi": "आसमान मौसम के रंग में",
+   "es": "El cielo viste el tiempo",
+   "ar": "السماء تلبس الطقس",
+   "fr": "Le ciel porte la météo",
+   "bn": "আকাশ আবহাওয়ার সাজে",
+   "pt-BR": "O céu veste o tempo",
+   "ru": "Небо в цвет погоды",
+   "id": "Langit mengikuti cuaca"
+  },
+  "Ciel's sky wallpaper turns grey or stormy with the weather outside; on clear days it follows his mood.": {
+   "zh-Hans": "Ciel 的天空壁纸会随外面的天气变灰或起风暴；晴天时则跟随他的心情。",
+   "hi": "Ciel का आसमान वाला वॉलपेपर बाहर के मौसम के साथ धूसर या तूफ़ानी हो जाता है; साफ़ दिनों में वह उसके मूड के साथ चलता है।",
+   "es": "El fondo de cielo de Ciel se vuelve gris o tormentoso con el tiempo de fuera; los días despejados sigue su humor.",
+   "ar": "تصبح خلفية سماء Ciel رمادية أو عاصفة مع الطقس في الخارج؛ وفي الأيام الصافية تتبع مزاجه.",
+   "fr": "Le fond d'écran de ciel de Ciel devient gris ou orageux avec le temps qu'il fait dehors ; les jours de beau temps, il suit son humeur.",
+   "bn": "বাইরের আবহাওয়ার সঙ্গে Ciel-এর আকাশের ওয়ালপেপার ধূসর বা ঝড়ো হয়ে যায়; পরিষ্কার দিনে সেটি তার মেজাজ অনুসরণ করে।",
+   "pt-BR": "O papel de parede de céu do Ciel fica cinza ou tempestuoso com o tempo lá fora; nos dias limpos, segue o humor dele.",
+   "ru": "Небо на обоях Ciel становится серым или грозовым вместе с погодой за окном; в ясные дни оно следует его настроению.",
+   "id": "Wallpaper langit Ciel menjadi kelabu atau berbadai mengikuti cuaca di luar; pada hari cerah ia mengikuti suasana hatinya."
+  },
+  "From Open-Meteo, free and without an account. Only the place you pick is ever sent.": {
+   "zh-Hans": "来自 Open-Meteo，免费且无需账号。只会发送你选择的地点。",
+   "hi": "Open-Meteo से, मुफ़्त और बिना खाते के। सिर्फ़ आपकी चुनी हुई जगह भेजी जाती है।",
+   "es": "De Open-Meteo, gratis y sin cuenta. Solo se envía el lugar que eliges.",
+   "ar": "من Open-Meteo، مجانًا ودون حساب. لا يُرسل إلا المكان الذي تختاره.",
+   "fr": "Par Open-Meteo, gratuit et sans compte. Seul le lieu choisi est envoyé.",
+   "bn": "Open-Meteo থেকে, বিনামূল্যে এবং অ্যাকাউন্ট ছাড়া। শুধু আপনার বেছে নেওয়া জায়গাটি পাঠানো হয়।",
+   "pt-BR": "Do Open-Meteo, grátis e sem conta. Só o lugar que você escolhe é enviado.",
+   "ru": "От Open-Meteo, бесплатно и без учётной записи. Отправляется только выбранное вами место.",
+   "id": "Dari Open-Meteo, gratis dan tanpa akun. Hanya tempat yang Anda pilih yang dikirim."
+  },
+  "Clipboard": {
+   "zh-Hans": "剪贴板",
+   "hi": "क्लिपबोर्ड",
+   "es": "Portapapeles",
+   "ar": "الحافظة",
+   "fr": "Presse-papiers",
+   "bn": "ক্লিপবোর্ড",
+   "pt-BR": "Área de transferência",
+   "ru": "Буфер обмена",
+   "id": "Papan klip"
+  },
+  "Music": {
+   "zh-Hans": "音乐",
+   "hi": "संगीत",
+   "es": "Música",
+   "ar": "الموسيقى",
+   "fr": "Musique",
+   "bn": "সংগীত",
+   "pt-BR": "Música",
+   "ru": "Музыка",
+   "id": "Musik"
+  },
+  "Weather": {
+   "zh-Hans": "天气",
+   "hi": "मौसम",
+   "es": "Tiempo",
+   "ar": "الطقس",
+   "fr": "Météo",
+   "bn": "আবহাওয়া",
+   "pt-BR": "Tempo",
+   "ru": "Погода",
+   "id": "Cuaca"
+  },
+  "Timers, the controls and the shelf need nothing set up: they are in the island's Tools tab. The microphone key is in Shortcuts.": {
+   "zh-Hans": "计时器、控制和文件架无需设置：它们在岛上的“工具”标签里。麦克风快捷键在“快捷键”中。",
+   "hi": "टाइमर, कंट्रोल और शेल्फ़ के लिए कुछ सेट नहीं करना होता: वे आइलैंड के टूल्स टैब में हैं। माइक्रोफ़ोन की कुंजी शॉर्टकट में है।",
+   "es": "Los temporizadores, los controles y el estante no necesitan configuración: están en la pestaña Herramientas de la isla. La tecla del micrófono está en Atajos.",
+   "ar": "لا تحتاج المؤقتات وعناصر التحكم والرف إلى أي إعداد: إنها في تبويب الأدوات في الجزيرة. ومفتاح الميكروفون في الاختصارات.",
+   "fr": "Les minuteurs, les réglages et l'étagère n'ont rien à régler : ils sont dans l'onglet Outils de l'île. La touche du micro est dans Raccourcis.",
+   "bn": "টাইমার, কন্ট্রোল আর শেলফের জন্য কিছু সেট করতে হয় না: সেগুলো আইল্যান্ডের টুলস ট্যাবে আছে। মাইক্রোফোনের কী শর্টকাটে আছে।",
+   "pt-BR": "Timers, controles e a prateleira não precisam de configuração: estão na aba Ferramentas da ilha. A tecla do microfone está em Atalhos.",
+   "ru": "Таймерам, управлению и полке ничего не нужно настраивать: они на вкладке «Инструменты» острова. Клавиша микрофона — в «Сочетаниях клавиш».",
+   "id": "Pengatur waktu, kontrol, dan rak tidak perlu diatur: semuanya ada di tab Alat pada pulau. Tombol mikrofon ada di Pintasan."
+  },
+  "None — I don't code": {
+   "zh-Hans": "无 — 我不写代码",
+   "hi": "कोई नहीं — मैं कोड नहीं करता",
+   "es": "Ninguna: no programo",
+   "ar": "لا شيء — لا أبرمج",
+   "fr": "Aucun — je ne code pas",
+   "bn": "কোনোটি নয় — আমি কোড করি না",
+   "pt-BR": "Nenhuma — não programo",
+   "ru": "Нет — я не программирую",
+   "id": "Tidak ada — saya tidak membuat kode"
+  },
+  "Shows whatever is playing: Spotify, a browser, VLC, Rhythmbox…": {
+   "zh-Hans": "显示正在播放的任何内容：Spotify、浏览器、VLC、Rhythmbox…",
+   "hi": "जो भी चल रहा हो वह दिखाता है: Spotify, ब्राउज़र, VLC, Rhythmbox…",
+   "es": "Muestra lo que esté sonando: Spotify, un navegador, VLC, Rhythmbox…",
+   "ar": "يعرض كل ما يُشغَّل: Spotify أو متصفح أو VLC أو Rhythmbox…",
+   "fr": "Affiche ce qui joue : Spotify, un navigateur, VLC, Rhythmbox…",
+   "bn": "যা-ই বাজুক তা দেখায়: Spotify, ব্রাউজার, VLC, Rhythmbox…",
+   "pt-BR": "Mostra o que estiver tocando: Spotify, um navegador, VLC, Rhythmbox…",
+   "ru": "Показывает всё, что играет: Spotify, браузер, VLC, Rhythmbox…",
+   "id": "Menampilkan apa pun yang diputar: Spotify, browser, VLC, Rhythmbox…"
+  },
+  "Clean link": {
+   "zh-Hans": "清理链接",
+   "hi": "लिंक साफ़ करें",
+   "es": "Limpiar enlace",
+   "ar": "تنظيف الرابط",
+   "fr": "Nettoyer le lien",
+   "bn": "লিংক পরিষ্কার",
+   "pt-BR": "Limpar link",
+   "ru": "Очистить ссылку",
+   "id": "Bersihkan tautan"
+  },
+  "Without what follows you around": {
+   "zh-Hans": "去掉跟踪你的参数",
+   "hi": "आपका पीछा करने वाली चीज़ों के बिना",
+   "es": "Sin lo que te sigue a todas partes",
+   "ar": "دون ما يتتبّعك",
+   "fr": "Sans ce qui vous suit partout",
+   "bn": "যা আপনাকে অনুসরণ করে তা ছাড়া",
+   "pt-BR": "Sem o que segue você por aí",
+   "ru": "Без того, что следит за вами",
+   "id": "Tanpa pelacak yang mengikuti Anda"
+  },
+  "Paste the result": {
+   "zh-Hans": "粘贴结果",
+   "hi": "परिणाम पेस्ट करें",
+   "es": "Pegar el resultado",
+   "ar": "لصق النتيجة",
+   "fr": "Coller le résultat",
+   "bn": "ফলাফল পেস্ট করুন",
+   "pt-BR": "Colar o resultado",
+   "ru": "Вставить результат",
+   "id": "Tempel hasilnya"
+  },
+  "Lay out": {
+   "zh-Hans": "排版",
+   "hi": "व्यवस्थित करें",
+   "es": "Ordenar",
+   "ar": "تنسيق",
+   "fr": "Mettre en forme",
+   "bn": "সাজান",
+   "pt-BR": "Formatar",
+   "ru": "Отформатировать",
+   "id": "Rapikan"
+  },
+  "Tidy spaces": {
+   "zh-Hans": "整理空格",
+   "hi": "स्पेस ठीक करें",
+   "es": "Ordenar espacios",
+   "ar": "ترتيب المسافات",
+   "fr": "Ranger les espaces",
+   "bn": "স্পেস গোছান",
+   "pt-BR": "Arrumar espaços",
+   "ru": "Убрать лишние пробелы",
+   "id": "Rapikan spasi"
+  },
+  "Picture · {width}×{height}": {
+   "zh-Hans": "图片 · {width}×{height}",
+   "hi": "तस्वीर · {width}×{height}",
+   "es": "Imagen · {width}×{height}",
+   "ar": "صورة · {width}×{height}",
+   "fr": "Image · {width}×{height}",
+   "bn": "ছবি · {width}×{height}",
+   "pt-BR": "Imagem · {width}×{height}",
+   "ru": "Изображение · {width}×{height}",
+   "id": "Gambar · {width}×{height}"
+  },
+  "{name} and {count} more": {
+   "zh-Hans": "{name} 及另外 {count} 个",
+   "hi": "{name} और {count} अन्य",
+   "es": "{name} y {count} más",
+   "ar": "{name} و{count} غيره",
+   "fr": "{name} et {count} de plus",
+   "bn": "{name} এবং আরও {count}টি",
+   "pt-BR": "{name} e mais {count}",
+   "ru": "{name} и ещё {count}",
+   "id": "{name} dan {count} lainnya"
+  },
+  "Search what you copied": {
+   "zh-Hans": "搜索复制过的内容",
+   "hi": "कॉपी की गई चीज़ें खोजें",
+   "es": "Buscar lo que copiaste",
+   "ar": "ابحث فيما نسخته",
+   "fr": "Chercher dans vos copies",
+   "bn": "কপি করা জিনিস খুঁজুন",
+   "pt-BR": "Buscar o que você copiou",
+   "ru": "Искать в скопированном",
+   "id": "Cari yang Anda salin"
+  },
+  "Forget everything but the pinned ones": {
+   "zh-Hans": "清除除固定项外的所有内容",
+   "hi": "पिन किए हुए छोड़कर सब भूल जाएँ",
+   "es": "Olvidar todo menos lo fijado",
+   "ar": "نسيان كل شيء عدا المثبّت",
+   "fr": "Tout oublier sauf les épinglés",
+   "bn": "পিন করা ছাড়া সব ভুলে যান",
+   "pt-BR": "Esquecer tudo menos os fixados",
+   "ru": "Забыть всё, кроме закреплённого",
+   "id": "Lupakan semua kecuali yang disematkan"
+  },
+  "Turn off": {
+   "zh-Hans": "关闭",
+   "hi": "बंद करें",
+   "es": "Desactivar",
+   "ar": "إيقاف",
+   "fr": "Désactiver",
+   "bn": "বন্ধ করুন",
+   "pt-BR": "Desativar",
+   "ru": "Выключить",
+   "id": "Matikan"
+  },
+  "Ciel can keep what you copy": {
+   "zh-Hans": "Ciel 可以保留你复制的内容",
+   "hi": "Ciel आपकी कॉपी की हुई चीज़ें रख सकता है",
+   "es": "Ciel puede guardar lo que copias",
+   "ar": "يمكن لـ Ciel الاحتفاظ بما تنسخه",
+   "fr": "Ciel peut garder ce que vous copiez",
+   "bn": "Ciel আপনার কপি করা জিনিস রাখতে পারে",
+   "pt-BR": "O Ciel pode guardar o que você copia",
+   "ru": "Ciel может сохранять то, что вы копируете",
+   "id": "Ciel dapat menyimpan yang Anda salin"
+  },
+  "Text, links, pictures and files, on this computer only and until Ciel quits; what you pin stays. Password managers' copies are never kept, and one-time codes go after two minutes.": {
+   "zh-Hans": "文字、链接、图片和文件，只保存在这台电脑上，直到 Ciel 退出；固定的会保留。密码管理器复制的内容从不保存，一次性验证码两分钟后删除。",
+   "hi": "टेक्स्ट, लिंक, तस्वीरें और फ़ाइलें, सिर्फ़ इसी कंप्यूटर पर और Ciel बंद होने तक; जिन्हें आप पिन करें वे रहती हैं। पासवर्ड मैनेजर की कॉपी कभी नहीं रखी जाती, और वन-टाइम कोड दो मिनट बाद हट जाते हैं।",
+   "es": "Texto, enlaces, imágenes y archivos, solo en este ordenador y hasta que Ciel se cierre; lo que fijas se queda. Lo que copian los gestores de contraseñas nunca se guarda, y los códigos de un solo uso se borran a los dos minutos.",
+   "ar": "نصوص وروابط وصور وملفات، على هذا الحاسوب فقط وحتى يُغلق Ciel؛ وما تثبّته يبقى. لا يُحتفظ أبدًا بما تنسخه برامج إدارة كلمات المرور، وتُحذف الرموز لمرة واحدة بعد دقيقتين.",
+   "fr": "Texte, liens, images et fichiers, sur cet ordinateur seulement et jusqu'à ce que Ciel se ferme ; ce que vous épinglez reste. Ce que copient les gestionnaires de mots de passe n'est jamais gardé, et les codes à usage unique partent au bout de deux minutes.",
+   "bn": "লেখা, লিংক, ছবি আর ফাইল, শুধু এই কম্পিউটারে এবং Ciel বন্ধ হওয়া পর্যন্ত; যা পিন করেন তা থেকে যায়। পাসওয়ার্ড ম্যানেজারের কপি কখনও রাখা হয় না, আর এককালীন কোড দুই মিনিট পরে মুছে যায়।",
+   "pt-BR": "Texto, links, imagens e arquivos, só neste computador e até o Ciel fechar; o que você fixa fica. O que os gerenciadores de senhas copiam nunca é guardado, e códigos de uso único somem após dois minutos.",
+   "ru": "Текст, ссылки, изображения и файлы — только на этом компьютере и до закрытия Ciel; закреплённое остаётся. Скопированное менеджерами паролей никогда не сохраняется, а одноразовые коды удаляются через две минуты.",
+   "id": "Teks, tautan, gambar, dan file, hanya di komputer ini dan sampai Ciel ditutup; yang Anda sematkan tetap ada. Salinan dari pengelola kata sandi tidak pernah disimpan, dan kode sekali pakai hilang setelah dua menit."
+  },
+  "This desktop doesn't tell apps what is copied. Install wl-clipboard and Ciel will see it.": {
+   "zh-Hans": "这个桌面不会告诉应用复制了什么。安装 wl-clipboard 后 Ciel 就能看到。",
+   "hi": "यह डेस्कटॉप ऐप्स को नहीं बताता कि क्या कॉपी हुआ। wl-clipboard इंस्टॉल करें और Ciel उसे देख पाएगा।",
+   "es": "Este escritorio no dice a las apps qué se copia. Instala wl-clipboard y Ciel lo verá.",
+   "ar": "لا يُخبر سطح المكتب هذا التطبيقات بما يُنسخ. ثبّت wl-clipboard وسيراه Ciel.",
+   "fr": "Ce bureau ne dit pas aux applis ce qui est copié. Installez wl-clipboard et Ciel le verra.",
+   "bn": "এই ডেস্কটপ অ্যাপগুলোকে জানায় না কী কপি হলো। wl-clipboard ইনস্টল করুন, Ciel দেখতে পাবে।",
+   "pt-BR": "Este desktop não informa aos apps o que é copiado. Instale o wl-clipboard e o Ciel verá.",
+   "ru": "Этот рабочий стол не сообщает приложениям, что скопировано. Установите wl-clipboard, и Ciel это увидит.",
+   "id": "Desktop ini tidak memberi tahu aplikasi apa yang disalin. Pasang wl-clipboard dan Ciel akan melihatnya."
+  },
+  "{count} words": {
+   "zh-Hans": "{count} 个词",
+   "hi": "{count} शब्द",
+   "es": "{count} palabras",
+   "ar": "{count} كلمة",
+   "fr": "{count} mots",
+   "bn": "{count}টি শব্দ",
+   "pt-BR": "{count} palavras",
+   "ru": "слов: {count}",
+   "id": "{count} kata"
+  },
+  "Paste it like this": {
+   "zh-Hans": "这样粘贴",
+   "hi": "ऐसे पेस्ट करें",
+   "es": "Pegarlo así",
+   "ar": "الصقه هكذا",
+   "fr": "Le coller ainsi",
+   "bn": "এভাবে পেস্ট করুন",
+   "pt-BR": "Colar assim",
+   "ru": "Вставить так",
+   "id": "Tempel seperti ini"
+  },
+  "Unpin": {
+   "zh-Hans": "取消固定",
+   "hi": "अनपिन करें",
+   "es": "Desfijar",
+   "ar": "إلغاء التثبيت",
+   "fr": "Désépingler",
+   "bn": "আনপিন",
+   "pt-BR": "Desafixar",
+   "ru": "Открепить",
+   "id": "Lepas sematan"
+  },
+  "Pin": {
+   "zh-Hans": "固定",
+   "hi": "पिन करें",
+   "es": "Fijar",
+   "ar": "تثبيت",
+   "fr": "Épingler",
+   "bn": "পিন",
+   "pt-BR": "Fixar",
+   "ru": "Закрепить",
+   "id": "Sematkan"
+  },
+  "Nothing copied matches.": {
+   "zh-Hans": "没有匹配的复制内容。",
+   "hi": "कोई कॉपी मेल नहीं खाती।",
+   "es": "Nada de lo copiado coincide.",
+   "ar": "لا شيء مما نُسخ يطابق.",
+   "fr": "Aucune copie ne correspond.",
+   "bn": "কপি করা কিছুই মেলে না।",
+   "pt-BR": "Nada copiado corresponde.",
+   "ru": "Ничего не найдено.",
+   "id": "Tidak ada salinan yang cocok."
+  },
+  "Copy something: it shows here.": {
+   "zh-Hans": "复制点什么：会显示在这里。",
+   "hi": "कुछ कॉपी करें: वह यहाँ दिखेगा।",
+   "es": "Copia algo: aparecerá aquí.",
+   "ar": "انسخ شيئًا: سيظهر هنا.",
+   "fr": "Copiez quelque chose : ça s'affiche ici.",
+   "bn": "কিছু কপি করুন: এখানে দেখাবে।",
+   "pt-BR": "Copie algo: aparece aqui.",
+   "ru": "Скопируйте что-нибудь — оно появится здесь.",
+   "id": "Salin sesuatu: akan muncul di sini."
+  },
+  "goes in {time}": {
+   "zh-Hans": "{time} 后消失",
+   "hi": "{time} में हट जाएगा",
+   "es": "se va en {time}",
+   "ar": "يزول بعد {time}",
+   "fr": "part dans {time}",
+   "bn": "{time} পরে মুছে যাবে",
+   "pt-BR": "some em {time}",
+   "ru": "исчезнет через {time}",
+   "id": "hilang dalam {time}"
+  },
+  "Microphones": {
+   "zh-Hans": "麦克风",
+   "hi": "माइक्रोफ़ोन",
+   "es": "Micrófonos",
+   "ar": "الميكروفونات",
+   "fr": "Micros",
+   "bn": "মাইক্রোফোন",
+   "pt-BR": "Microfones",
+   "ru": "Микрофоны",
+   "id": "Mikrofon"
+  },
+  "Wi-Fi": {
+   "zh-Hans": "Wi-Fi",
+   "hi": "वाई-फ़ाई",
+   "es": "Wi-Fi",
+   "ar": "واي فاي",
+   "fr": "Wi-Fi",
+   "bn": "ওয়াই-ফাই",
+   "pt-BR": "Wi-Fi",
+   "ru": "Wi-Fi",
+   "id": "Wi-Fi"
+  },
+  "Bluetooth": {
+   "zh-Hans": "蓝牙",
+   "hi": "ब्लूटूथ",
+   "es": "Bluetooth",
+   "ar": "بلوتوث",
+   "fr": "Bluetooth",
+   "bn": "ব্লুটুথ",
+   "pt-BR": "Bluetooth",
+   "ru": "Bluetooth",
+   "id": "Bluetooth"
+  },
+  "Night light": {
+   "zh-Hans": "夜间模式",
+   "hi": "नाइट लाइट",
+   "es": "Luz nocturna",
+   "ar": "الإضاءة الليلية",
+   "fr": "Éclairage nocturne",
+   "bn": "নাইট লাইট",
+   "pt-BR": "Luz noturna",
+   "ru": "Ночной свет",
+   "id": "Lampu malam"
+  },
+  "Keep awake": {
+   "zh-Hans": "保持唤醒",
+   "hi": "जगाए रखें",
+   "es": "Mantener despierto",
+   "ar": "إبقاء الجهاز مستيقظًا",
+   "fr": "Garder éveillé",
+   "bn": "জাগিয়ে রাখুন",
+   "pt-BR": "Manter acordado",
+   "ru": "Не засыпать",
+   "id": "Tetap terjaga"
+  },
+  "Not here": {
+   "zh-Hans": "不可用",
+   "hi": "यहाँ नहीं",
+   "es": "No disponible",
+   "ar": "غير متاح",
+   "fr": "Absent",
+   "bn": "এখানে নেই",
+   "pt-BR": "Indisponível",
+   "ru": "Нет",
+   "id": "Tidak ada"
+  },
+  "On": {
+   "zh-Hans": "开",
+   "hi": "चालू",
+   "es": "Activado",
+   "ar": "تشغيل",
+   "fr": "Activé",
+   "bn": "চালু",
+   "pt-BR": "Ligado",
+   "ru": "Вкл.",
+   "id": "Aktif"
+  },
+  "Off": {
+   "zh-Hans": "关",
+   "hi": "बंद",
+   "es": "Desactivado",
+   "ar": "إيقاف",
+   "fr": "Désactivé",
+   "bn": "বন্ধ",
+   "pt-BR": "Desligado",
+   "ru": "Выкл.",
+   "id": "Mati"
+  },
+  "Muted": {
+   "zh-Hans": "已静音",
+   "hi": "म्यूट",
+   "es": "Silenciado",
+   "ar": "مكتوم",
+   "fr": "Coupé",
+   "bn": "মিউট",
+   "pt-BR": "Mudo",
+   "ru": "Без звука",
+   "id": "Dibisukan"
+  },
+  "None plugged in": {
+   "zh-Hans": "未插入",
+   "hi": "कोई जुड़ा नहीं",
+   "es": "Ninguno conectado",
+   "ar": "لا شيء موصول",
+   "fr": "Aucun branché",
+   "bn": "কোনোটি সংযুক্ত নেই",
+   "pt-BR": "Nenhum conectado",
+   "ru": "Не подключены",
+   "id": "Tidak ada yang terpasang"
+  },
+  "All muted": {
+   "zh-Hans": "全部静音",
+   "hi": "सब म्यूट",
+   "es": "Todos silenciados",
+   "ar": "كلها مكتومة",
+   "fr": "Tous coupés",
+   "bn": "সব মিউট",
+   "pt-BR": "Todos mudos",
+   "ru": "Все выключены",
+   "id": "Semua dibisukan"
+  },
+  "On · {keys}": {
+   "zh-Hans": "开 · {keys}",
+   "hi": "चालू · {keys}",
+   "es": "Activados · {keys}",
+   "ar": "تعمل · {keys}",
+   "fr": "Activés · {keys}",
+   "bn": "চালু · {keys}",
+   "pt-BR": "Ligados · {keys}",
+   "ru": "Вкл. · {keys}",
+   "id": "Aktif · {keys}"
+  },
+  "Mute every microphone at once ({keys})": {
+   "zh-Hans": "一键静音所有麦克风（{keys}）",
+   "hi": "सभी माइक्रोफ़ोन एक साथ म्यूट करें ({keys})",
+   "es": "Silenciar todos los micrófonos a la vez ({keys})",
+   "ar": "كتم كل الميكروفونات دفعة واحدة ({keys})",
+   "fr": "Couper tous les micros d'un coup ({keys})",
+   "bn": "সব মাইক্রোফোন একসঙ্গে মিউট করুন ({keys})",
+   "pt-BR": "Silenciar todos os microfones de uma vez ({keys})",
+   "ru": "Выключить все микрофоны разом ({keys})",
+   "id": "Bisukan semua mikrofon sekaligus ({keys})"
+  },
+  "Mute every microphone at once": {
+   "zh-Hans": "一键静音所有麦克风",
+   "hi": "सभी माइक्रोफ़ोन एक साथ म्यूट करें",
+   "es": "Silenciar todos los micrófonos a la vez",
+   "ar": "كتم كل الميكروفونات دفعة واحدة",
+   "fr": "Couper tous les micros d'un coup",
+   "bn": "সব মাইক্রোফোন একসঙ্গে মিউট করুন",
+   "pt-BR": "Silenciar todos os microfones de uma vez",
+   "ru": "Выключить все микрофоны разом",
+   "id": "Bisukan semua mikrofon sekaligus"
+  },
+  "Until I say": {
+   "zh-Hans": "直到我说",
+   "hi": "जब तक मैं न कहूँ",
+   "es": "Hasta que yo diga",
+   "ar": "حتى أقول",
+   "fr": "Jusqu'à nouvel ordre",
+   "bn": "আমি না বলা পর্যন্ত",
+   "pt-BR": "Até eu dizer",
+   "ru": "Пока не скажу",
+   "id": "Sampai saya bilang"
+  },
+  "Until {time}": {
+   "zh-Hans": "直到 {time}",
+   "hi": "{time} तक",
+   "es": "Hasta las {time}",
+   "ar": "حتى {time}",
+   "fr": "Jusqu'à {time}",
+   "bn": "{time} পর্যন্ত",
+   "pt-BR": "Até {time}",
+   "ru": "До {time}",
+   "id": "Sampai {time}"
+  },
+  "Shelf": {
+   "zh-Hans": "文件架",
+   "hi": "शेल्फ़",
+   "es": "Estante",
+   "ar": "الرف",
+   "fr": "Étagère",
+   "bn": "শেলফ",
+   "pt-BR": "Prateleira",
+   "ru": "Полка",
+   "id": "Rak"
+  },
+  "Drag it into any app": {
+   "zh-Hans": "拖进任何应用",
+   "hi": "किसी भी ऐप में खींचें",
+   "es": "Arrástralo a cualquier app",
+   "ar": "اسحبه إلى أي تطبيق",
+   "fr": "Glissez-le dans n'importe quelle appli",
+   "bn": "যেকোনো অ্যাপে টেনে নিন",
+   "pt-BR": "Arraste para qualquer app",
+   "ru": "Перетащите в любое приложение",
+   "id": "Seret ke aplikasi mana pun"
+  },
+  "{picked} of {count}": {
+   "zh-Hans": "{count} 中的 {picked}",
+   "hi": "{count} में से {picked}",
+   "es": "{picked} de {count}",
+   "ar": "{picked} من {count}",
+   "fr": "{picked} sur {count}",
+   "bn": "{count}টির মধ্যে {picked}টি",
+   "pt-BR": "{picked} de {count}",
+   "ru": "{picked} из {count}",
+   "id": "{picked} dari {count}"
+  },
+  "Copy all": {
+   "zh-Hans": "全部复制",
+   "hi": "सब कॉपी करें",
+   "es": "Copiar todo",
+   "ar": "نسخ الكل",
+   "fr": "Tout copier",
+   "bn": "সব কপি",
+   "pt-BR": "Copiar tudo",
+   "ru": "Копировать все",
+   "id": "Salin semua"
+  },
+  "Remove all": {
+   "zh-Hans": "全部移除",
+   "hi": "सब हटाएँ",
+   "es": "Quitar todo",
+   "ar": "إزالة الكل",
+   "fr": "Tout retirer",
+   "bn": "সব সরান",
+   "pt-BR": "Remover tudo",
+   "ru": "Убрать все",
+   "id": "Hapus semua"
+  },
+  "Tomorrow {time}": {
+   "zh-Hans": "明天 {time}",
+   "hi": "कल {time}",
+   "es": "Mañana {time}",
+   "ar": "غدًا {time}",
+   "fr": "Demain {time}",
+   "bn": "আগামীকাল {time}",
+   "pt-BR": "Amanhã {time}",
+   "ru": "Завтра {time}",
+   "id": "Besok {time}"
+  },
+  "Once": {
+   "zh-Hans": "一次",
+   "hi": "एक बार",
+   "es": "Una vez",
+   "ar": "مرة واحدة",
+   "fr": "Une fois",
+   "bn": "একবার",
+   "pt-BR": "Uma vez",
+   "ru": "Один раз",
+   "id": "Sekali"
+  },
+  "Every day": {
+   "zh-Hans": "每天",
+   "hi": "हर दिन",
+   "es": "Cada día",
+   "ar": "كل يوم",
+   "fr": "Tous les jours",
+   "bn": "প্রতিদিন",
+   "pt-BR": "Todo dia",
+   "ru": "Каждый день",
+   "id": "Setiap hari"
+  },
+  "Weekdays": {
+   "zh-Hans": "工作日",
+   "hi": "सप्ताह के कामकाजी दिन",
+   "es": "Entre semana",
+   "ar": "أيام العمل",
+   "fr": "En semaine",
+   "bn": "কর্মদিবসে",
+   "pt-BR": "Dias úteis",
+   "ru": "По будням",
+   "id": "Hari kerja"
+  },
+  "Every week": {
+   "zh-Hans": "每周",
+   "hi": "हर हफ़्ते",
+   "es": "Cada semana",
+   "ar": "كل أسبوع",
+   "fr": "Chaque semaine",
+   "bn": "প্রতি সপ্তাহে",
+   "pt-BR": "Toda semana",
+   "ru": "Каждую неделю",
+   "id": "Setiap minggu"
+  },
+  "Break": {
+   "zh-Hans": "休息",
+   "hi": "ब्रेक",
+   "es": "Descanso",
+   "ar": "استراحة",
+   "fr": "Pause",
+   "bn": "বিরতি",
+   "pt-BR": "Pausa",
+   "ru": "Перерыв",
+   "id": "Istirahat"
+  },
+  "Focus": {
+   "zh-Hans": "专注",
+   "hi": "फ़ोकस",
+   "es": "Concentración",
+   "ar": "تركيز",
+   "fr": "Concentration",
+   "bn": "ফোকাস",
+   "pt-BR": "Foco",
+   "ru": "Фокус",
+   "id": "Fokus"
+  },
+  "Reminder": {
+   "zh-Hans": "提醒",
+   "hi": "रिमाइंडर",
+   "es": "Recordatorio",
+   "ar": "تذكير",
+   "fr": "Rappel",
+   "bn": "রিমাইন্ডার",
+   "pt-BR": "Lembrete",
+   "ru": "Напоминание",
+   "id": "Pengingat"
+  },
+  "Timer": {
+   "zh-Hans": "计时器",
+   "hi": "टाइमर",
+   "es": "Temporizador",
+   "ar": "مؤقّت",
+   "fr": "Minuteur",
+   "bn": "টাইমার",
+   "pt-BR": "Timer",
+   "ru": "Таймер",
+   "id": "Pengatur waktu"
+  },
+  "5, 25m tea, 18:30 call mum…": {
+   "zh-Hans": "5、25m 泡茶、18:30 给妈妈打电话…",
+   "hi": "5, 25m चाय, 18:30 माँ को फ़ोन…",
+   "es": "5, 25m té, 18:30 llamar a mamá…",
+   "ar": "5، 25m شاي، 18:30 الاتصال بأمي…",
+   "fr": "5, 25m thé, 18:30 appeler maman…",
+   "bn": "5, 25m চা, 18:30 মাকে ফোন…",
+   "pt-BR": "5, 25m chá, 18:30 ligar pra mãe…",
+   "ru": "5, 25m чай, 18:30 позвонить маме…",
+   "id": "5, 25m teh, 18:30 telepon ibu…"
+  },
+  "Repeat": {
+   "zh-Hans": "重复",
+   "hi": "दोहराएँ",
+   "es": "Repetir",
+   "ar": "تكرار",
+   "fr": "Répéter",
+   "bn": "পুনরাবৃত্তি",
+   "pt-BR": "Repetir",
+   "ru": "Повтор",
+   "id": "Ulangi"
+  },
+  "Start": {
+   "zh-Hans": "开始",
+   "hi": "शुरू करें",
+   "es": "Iniciar",
+   "ar": "ابدأ",
+   "fr": "Lancer",
+   "bn": "শুরু",
+   "pt-BR": "Iniciar",
+   "ru": "Старт",
+   "id": "Mulai"
+  },
+  "{minutes} min": {
+   "zh-Hans": "{minutes} 分钟",
+   "hi": "{minutes} मिनट",
+   "es": "{minutes} min",
+   "ar": "{minutes} د",
+   "fr": "{minutes} min",
+   "bn": "{minutes} মিনিট",
+   "pt-BR": "{minutes} min",
+   "ru": "{minutes} мин",
+   "id": "{minutes} mnt"
+  },
+  "25 minutes of focus, 5 of break, and a longer break every fourth round": {
+   "zh-Hans": "专注 25 分钟，休息 5 分钟，每四轮一次长休息",
+   "hi": "25 मिनट फ़ोकस, 5 मिनट ब्रेक, और हर चौथे राउंड पर लंबा ब्रेक",
+   "es": "25 minutos de concentración, 5 de descanso y un descanso más largo cada cuatro rondas",
+   "ar": "25 دقيقة تركيز و5 استراحة، واستراحة أطول كل أربع جولات",
+   "fr": "25 minutes de concentration, 5 de pause, et une pause plus longue toutes les quatre séances",
+   "bn": "25 মিনিট ফোকাস, 5 মিনিট বিরতি, আর প্রতি চতুর্থ রাউন্ডে লম্বা বিরতি",
+   "pt-BR": "25 minutos de foco, 5 de pausa e uma pausa mais longa a cada quatro rodadas",
+   "ru": "25 минут фокуса, 5 минут перерыва и длинный перерыв каждый четвёртый раунд",
+   "id": "25 menit fokus, 5 menit istirahat, dan istirahat lebih lama setiap putaran keempat"
+  },
+  "Focus 25 / 5": {
+   "zh-Hans": "专注 25 / 5",
+   "hi": "फ़ोकस 25 / 5",
+   "es": "Concentración 25 / 5",
+   "ar": "تركيز 25 / 5",
+   "fr": "Concentration 25 / 5",
+   "bn": "ফোকাস 25 / 5",
+   "pt-BR": "Foco 25 / 5",
+   "ru": "Фокус 25 / 5",
+   "id": "Fokus 25 / 5"
+  },
+  "Remind me": {
+   "zh-Hans": "提醒我",
+   "hi": "मुझे याद दिलाएँ",
+   "es": "Recordármelo",
+   "ar": "ذكّرني",
+   "fr": "Me le rappeler",
+   "bn": "আমাকে মনে করিয়ে দিন",
+   "pt-BR": "Me lembrar",
+   "ru": "Напомнить",
+   "id": "Ingatkan saya"
+  },
+  "A length (5, 25m, 1h30) or a time (18:30, 6pm).": {
+   "zh-Hans": "时长（5、25m、1h30）或时间（18:30、6pm）。",
+   "hi": "अवधि (5, 25m, 1h30) या समय (18:30, 6pm)।",
+   "es": "Una duración (5, 25m, 1h30) o una hora (18:30, 6pm).",
+   "ar": "مدة (5، 25m، 1h30) أو وقت (18:30، 6pm).",
+   "fr": "Une durée (5, 25m, 1h30) ou une heure (18:30, 18h30).",
+   "bn": "সময়কাল (5, 25m, 1h30) বা সময় (18:30, 6pm)।",
+   "pt-BR": "Uma duração (5, 25m, 1h30) ou um horário (18:30, 6pm).",
+   "ru": "Длительность (5, 25m, 1h30) или время (18:30, 6pm).",
+   "id": "Durasi (5, 25m, 1h30) atau waktu (18:30, 6pm)."
+  },
+  "Snooze 10 min": {
+   "zh-Hans": "10 分钟后再提醒",
+   "hi": "10 मिनट बाद याद दिलाएँ",
+   "es": "Posponer 10 min",
+   "ar": "غفوة 10 د",
+   "fr": "Reporter de 10 min",
+   "bn": "10 মিনিট পরে",
+   "pt-BR": "Adiar 10 min",
+   "ru": "Отложить на 10 мин",
+   "id": "Tunda 10 mnt"
+  },
+  "+{minutes} min": {
+   "zh-Hans": "+{minutes} 分钟",
+   "hi": "+{minutes} मिनट",
+   "es": "+{minutes} min",
+   "ar": "+{minutes} د",
+   "fr": "+{minutes} min",
+   "bn": "+{minutes} মিনিট",
+   "pt-BR": "+{minutes} min",
+   "ru": "+{minutes} мин",
+   "id": "+{minutes} mnt"
+  },
+  "One more minute": {
+   "zh-Hans": "再加一分钟",
+   "hi": "एक मिनट और",
+   "es": "Un minuto más",
+   "ar": "دقيقة أخرى",
+   "fr": "Une minute de plus",
+   "bn": "আর এক মিনিট",
+   "pt-BR": "Mais um minuto",
+   "ru": "Ещё минута",
+   "id": "Satu menit lagi"
+  },
+  "Resume": {
+   "zh-Hans": "继续",
+   "hi": "फिर से शुरू करें",
+   "es": "Reanudar",
+   "ar": "استئناف",
+   "fr": "Reprendre",
+   "bn": "আবার শুরু",
+   "pt-BR": "Retomar",
+   "ru": "Продолжить",
+   "id": "Lanjutkan"
+  },
+  "Round {round}": {
+   "zh-Hans": "第 {round} 轮",
+   "hi": "राउंड {round}",
+   "es": "Ronda {round}",
+   "ar": "الجولة {round}",
+   "fr": "Séance {round}",
+   "bn": "রাউন্ড {round}",
+   "pt-BR": "Rodada {round}",
+   "ru": "Раунд {round}",
+   "id": "Putaran {round}"
+  },
+  "Nothing ticking. Type a length or a time, or pick one.": {
+   "zh-Hans": "没有在计时。输入时长或时间，或选一个。",
+   "hi": "कुछ नहीं चल रहा। अवधि या समय लिखें, या कोई चुनें।",
+   "es": "Nada en marcha. Escribe una duración o una hora, o elige una.",
+   "ar": "لا شيء يعمل. اكتب مدة أو وقتًا، أو اختر واحدًا.",
+   "fr": "Rien ne tourne. Tapez une durée ou une heure, ou choisissez-en une.",
+   "bn": "কিছু চলছে না। সময়কাল বা সময় লিখুন, বা একটি বেছে নিন।",
+   "pt-BR": "Nada correndo. Digite uma duração ou um horário, ou escolha um.",
+   "ru": "Ничего не тикает. Введите длительность или время или выберите.",
+   "id": "Tidak ada yang berjalan. Ketik durasi atau waktu, atau pilih salah satu."
+  },
+  "Rain clock": {
+   "zh-Hans": "雨钟",
+   "hi": "बारिश घड़ी",
+   "es": "Reloj de lluvia",
+   "ar": "ساعة المطر",
+   "fr": "Horloge de pluie",
+   "bn": "বৃষ্টির ঘড়ি",
+   "pt-BR": "Relógio de chuva",
+   "ru": "Дождевые часы",
+   "id": "Jam hujan"
+  },
+  "Timers": {
+   "zh-Hans": "计时器",
+   "hi": "टाइमर",
+   "es": "Temporizadores",
+   "ar": "المؤقتات",
+   "fr": "Minuteurs",
+   "bn": "টাইমার",
+   "pt-BR": "Timers",
+   "ru": "Таймеры",
+   "id": "Pengatur waktu"
+  },
+  "Controls": {
+   "zh-Hans": "控制",
+   "hi": "कंट्रोल",
+   "es": "Controles",
+   "ar": "التحكم",
+   "fr": "Réglages",
+   "bn": "কন্ট্রোল",
+   "pt-BR": "Controles",
+   "ru": "Управление",
+   "id": "Kontrol"
+  },
+  "Your town or city": {
+   "zh-Hans": "你的城镇或城市",
+   "hi": "आपका शहर या कस्बा",
+   "es": "Tu pueblo o ciudad",
+   "ar": "بلدتك أو مدينتك",
+   "fr": "Votre ville",
+   "bn": "আপনার শহর",
+   "pt-BR": "Sua cidade",
+   "ru": "Ваш город",
+   "id": "Kota Anda"
+  },
+  "The weather where you are": {
+   "zh-Hans": "你所在地的天气",
+   "hi": "जहाँ आप हैं वहाँ का मौसम",
+   "es": "El tiempo donde estás",
+   "ar": "الطقس حيث أنت",
+   "fr": "La météo là où vous êtes",
+   "bn": "আপনি যেখানে আছেন সেখানকার আবহাওয়া",
+   "pt-BR": "O tempo onde você está",
+   "ru": "Погода там, где вы",
+   "id": "Cuaca di tempat Anda"
+  },
+  "Looking…": {
+   "zh-Hans": "查找中…",
+   "hi": "खोज रहे हैं…",
+   "es": "Buscando…",
+   "ar": "جارٍ البحث…",
+   "fr": "Recherche…",
+   "bn": "খুঁজছি…",
+   "pt-BR": "Procurando…",
+   "ru": "Ищем…",
+   "id": "Mencari…"
+  },
+  "No place by that name.": {
+   "zh-Hans": "没有这个名字的地方。",
+   "hi": "इस नाम की कोई जगह नहीं।",
+   "es": "No hay ningún lugar con ese nombre.",
+   "ar": "لا مكان بهذا الاسم.",
+   "fr": "Aucun lieu de ce nom.",
+   "bn": "এই নামে কোনো জায়গা নেই।",
+   "pt-BR": "Nenhum lugar com esse nome.",
+   "ru": "Места с таким названием нет.",
+   "id": "Tidak ada tempat dengan nama itu."
+  },
+  "Open-Meteo can't be reached right now.": {
+   "zh-Hans": "现在无法连接 Open-Meteo。",
+   "hi": "अभी Open-Meteo तक नहीं पहुँच पा रहे।",
+   "es": "No se puede contactar con Open-Meteo ahora.",
+   "ar": "يتعذّر الوصول إلى Open-Meteo الآن.",
+   "fr": "Open-Meteo est injoignable pour le moment.",
+   "bn": "এই মুহূর্তে Open-Meteo-তে পৌঁছানো যাচ্ছে না।",
+   "pt-BR": "Não dá para acessar o Open-Meteo agora.",
+   "ru": "Open-Meteo сейчас недоступен.",
+   "id": "Open-Meteo tidak dapat dijangkau saat ini."
+  },
+  "Change the place": {
+   "zh-Hans": "更改地点",
+   "hi": "जगह बदलें",
+   "es": "Cambiar el lugar",
+   "ar": "تغيير المكان",
+   "fr": "Changer de lieu",
+   "bn": "জায়গা বদলান",
+   "pt-BR": "Mudar o lugar",
+   "ru": "Сменить место",
+   "id": "Ubah tempat"
+  },
+  "Weather data by Open-Meteo.com (CC BY 4.0)": {
+   "zh-Hans": "天气数据来自 Open-Meteo.com（CC BY 4.0）",
+   "hi": "मौसम डेटा Open-Meteo.com से (CC BY 4.0)",
+   "es": "Datos meteorológicos de Open-Meteo.com (CC BY 4.0)",
+   "ar": "بيانات الطقس من Open-Meteo.com (CC BY 4.0)",
+   "fr": "Données météo par Open-Meteo.com (CC BY 4.0)",
+   "bn": "আবহাওয়ার তথ্য Open-Meteo.com থেকে (CC BY 4.0)",
+   "pt-BR": "Dados do tempo por Open-Meteo.com (CC BY 4.0)",
+   "ru": "Данные о погоде: Open-Meteo.com (CC BY 4.0)",
+   "id": "Data cuaca oleh Open-Meteo.com (CC BY 4.0)"
+  },
+  "A card when rain is about to start": {
+   "zh-Hans": "快要下雨时显示卡片",
+   "hi": "बारिश शुरू होने वाली हो तो एक कार्ड",
+   "es": "Una tarjeta cuando está a punto de llover",
+   "ar": "بطاقة عندما يوشك المطر أن يبدأ",
+   "fr": "Une carte quand la pluie va commencer",
+   "bn": "বৃষ্টি শুরু হতে চললে একটি কার্ড",
+   "pt-BR": "Um cartão quando estiver para chover",
+   "ru": "Карточка перед началом дождя",
+   "id": "Kartu saat hujan akan turun"
+  },
+  "Ciel's sky wallpaper wears the real weather": {
+   "zh-Hans": "Ciel 的天空壁纸显示真实天气",
+   "hi": "Ciel का आसमान वाला वॉलपेपर असली मौसम दिखाता है",
+   "es": "El fondo de cielo de Ciel muestra el tiempo real",
+   "ar": "خلفية سماء Ciel تُظهر الطقس الحقيقي",
+   "fr": "Le ciel de Ciel prend la vraie météo",
+   "bn": "Ciel-এর আকাশের ওয়ালপেপার আসল আবহাওয়া দেখায়",
+   "pt-BR": "O céu do Ciel mostra o tempo real",
+   "ru": "Небо Ciel показывает настоящую погоду",
+   "id": "Langit Ciel mengikuti cuaca sebenarnya"
+  },
+  "Sky": {
+   "zh-Hans": "天空",
+   "hi": "आसमान",
+   "es": "Cielo",
+   "ar": "السماء",
+   "fr": "Ciel",
+   "bn": "আকাশ",
+   "pt-BR": "Céu",
+   "ru": "Небо",
+   "id": "Langit"
+  },
+  "Asking Open-Meteo…": {
+   "zh-Hans": "正在询问 Open-Meteo…",
+   "hi": "Open-Meteo से पूछ रहे हैं…",
+   "es": "Consultando Open-Meteo…",
+   "ar": "جارٍ سؤال Open-Meteo…",
+   "fr": "On demande à Open-Meteo…",
+   "bn": "Open-Meteo-কে জিজ্ঞেস করছি…",
+   "pt-BR": "Consultando o Open-Meteo…",
+   "ru": "Спрашиваем Open-Meteo…",
+   "id": "Menanyakan Open-Meteo…"
+  },
+  "Feels {temp}° · wind {wind} {unit}": {
+   "zh-Hans": "体感 {temp}° · 风 {wind} {unit}",
+   "hi": "महसूस {temp}° · हवा {wind} {unit}",
+   "es": "Sensación {temp}° · viento {wind} {unit}",
+   "ar": "المحسوسة {temp}° · رياح {wind} {unit}",
+   "fr": "Ressenti {temp}° · vent {wind} {unit}",
+   "bn": "অনুভূত {temp}° · বাতাস {wind} {unit}",
+   "pt-BR": "Sensação {temp}° · vento {wind} {unit}",
+   "ru": "Ощущается {temp}° · ветер {wind} {unit}",
+   "id": "Terasa {temp}° · angin {wind} {unit}"
+  },
+  "Lyrics on (from lrclib.net)": {
+   "zh-Hans": "歌词已开启（来自 lrclib.net）",
+   "hi": "बोल चालू (lrclib.net से)",
+   "es": "Letras activadas (de lrclib.net)",
+   "ar": "الكلمات مفعّلة (من lrclib.net)",
+   "fr": "Paroles activées (depuis lrclib.net)",
+   "bn": "গানের কথা চালু (lrclib.net থেকে)",
+   "pt-BR": "Letras ativadas (do lrclib.net)",
+   "ru": "Тексты включены (с lrclib.net)",
+   "id": "Lirik aktif (dari lrclib.net)"
+  },
+  "Show the lyrics (asks lrclib.net)": {
+   "zh-Hans": "显示歌词（会询问 lrclib.net）",
+   "hi": "बोल दिखाएँ (lrclib.net से पूछता है)",
+   "es": "Mostrar la letra (consulta lrclib.net)",
+   "ar": "إظهار الكلمات (يسأل lrclib.net)",
+   "fr": "Afficher les paroles (demande à lrclib.net)",
+   "bn": "গানের কথা দেখান (lrclib.net-কে জিজ্ঞেস করে)",
+   "pt-BR": "Mostrar a letra (consulta o lrclib.net)",
+   "ru": "Показать текст (запрос к lrclib.net)",
+   "id": "Tampilkan lirik (bertanya ke lrclib.net)"
+  },
+  "Still up?": {
+   "zh-Hans": "还没睡？",
+   "hi": "अभी तक जागे हो?",
+   "es": "¿Todavía despierto?",
+   "ar": "ما زلت مستيقظًا؟",
+   "fr": "Toujours debout ?",
+   "bn": "এখনও জেগে?",
+   "pt-BR": "Ainda acordado?",
+   "ru": "Ещё не спите?",
+   "id": "Masih bangun?"
+  },
+  "Add your town": {
+   "zh-Hans": "添加你的城市",
+   "hi": "अपना शहर जोड़ें",
+   "es": "Añade tu ciudad",
+   "ar": "أضف مدينتك",
+   "fr": "Ajoutez votre ville",
+   "bn": "আপনার শহর যোগ করুন",
+   "pt-BR": "Adicione sua cidade",
+   "ru": "Добавьте свой город",
+   "id": "Tambahkan kota Anda"
+  },
+  "Sound, microphones, screen": {
+   "zh-Hans": "声音、麦克风、屏幕",
+   "hi": "आवाज़, माइक्रोफ़ोन, स्क्रीन",
+   "es": "Sonido, micrófonos, pantalla",
+   "ar": "الصوت والميكروفونات والشاشة",
+   "fr": "Son, micros, écran",
+   "bn": "সাউন্ড, মাইক্রোফোন, স্ক্রিন",
+   "pt-BR": "Som, microfones, tela",
+   "ru": "Звук, микрофоны, экран",
+   "id": "Suara, mikrofon, layar"
+  },
+  "{minutes} min to stretch, drink, look far away.": {
+   "zh-Hans": "{minutes} 分钟：伸展一下、喝点水、看看远处。",
+   "hi": "{minutes} मिनट: स्ट्रेच करें, पानी पिएँ, दूर देखें।",
+   "es": "{minutes} min para estirarte, beber y mirar a lo lejos.",
+   "ar": "{minutes} د للتمدّد والشرب والنظر بعيدًا.",
+   "fr": "{minutes} min pour s'étirer, boire, regarder au loin.",
+   "bn": "{minutes} মিনিট: শরীর টানটান করুন, পানি খান, দূরে তাকান।",
+   "pt-BR": "{minutes} min para se alongar, beber água, olhar ao longe.",
+   "ru": "{minutes} мин: потянуться, попить, посмотреть вдаль.",
+   "id": "{minutes} mnt untuk peregangan, minum, memandang jauh."
+  },
+  "Round {round}: {minutes} min.": {
+   "zh-Hans": "第 {round} 轮：{minutes} 分钟。",
+   "hi": "राउंड {round}: {minutes} मिनट।",
+   "es": "Ronda {round}: {minutes} min.",
+   "ar": "الجولة {round}: {minutes} د.",
+   "fr": "Séance {round} : {minutes} min.",
+   "bn": "রাউন্ড {round}: {minutes} মিনিট।",
+   "pt-BR": "Rodada {round}: {minutes} min.",
+   "ru": "Раунд {round}: {minutes} мин.",
+   "id": "Putaran {round}: {minutes} mnt."
+  },
+  "Rain is coming": {
+   "zh-Hans": "快下雨了",
+   "hi": "बारिश आने वाली है",
+   "es": "Va a llover",
+   "ar": "المطر قادم",
+   "fr": "La pluie arrive",
+   "bn": "বৃষ্টি আসছে",
+   "pt-BR": "Vai chover",
+   "ru": "Скоро дождь",
+   "id": "Hujan akan turun"
+  },
+  "In about {minutes} min in {place}.": {
+   "zh-Hans": "大约 {minutes} 分钟后，{place}。",
+   "hi": "{place} में लगभग {minutes} मिनट में।",
+   "es": "En unos {minutes} min en {place}.",
+   "ar": "بعد نحو {minutes} د في {place}.",
+   "fr": "Dans environ {minutes} min à {place}.",
+   "bn": "{place}-এ প্রায় {minutes} মিনিটে।",
+   "pt-BR": "Em cerca de {minutes} min em {place}.",
+   "ru": "{place}: примерно через {minutes} мин.",
+   "id": "Sekitar {minutes} mnt lagi di {place}."
+  },
+  "This timer ended while Ciel was closed.": {
+   "zh-Hans": "这个计时器在 Ciel 关闭时结束了。",
+   "hi": "यह टाइमर Ciel बंद रहते हुए पूरा हो गया।",
+   "es": "Este temporizador terminó mientras Ciel estaba cerrado.",
+   "ar": "انتهى هذا المؤقّت بينما كان Ciel مغلقًا.",
+   "fr": "Ce minuteur s'est terminé pendant que Ciel était fermé.",
+   "bn": "Ciel বন্ধ থাকার সময় এই টাইমারটি শেষ হয়েছে।",
+   "pt-BR": "Este timer terminou enquanto o Ciel estava fechado.",
+   "ru": "Этот таймер закончился, пока Ciel был закрыт.",
+   "id": "Pengatur waktu ini selesai saat Ciel ditutup."
+  },
+  "Your timer is done.": {
+   "zh-Hans": "你的计时器结束了。",
+   "hi": "आपका टाइमर पूरा हुआ।",
+   "es": "Tu temporizador ha terminado.",
+   "ar": "انتهى مؤقّتك.",
+   "fr": "Votre minuteur est terminé.",
+   "bn": "আপনার টাইমার শেষ।",
+   "pt-BR": "Seu timer terminou.",
+   "ru": "Ваш таймер закончился.",
+   "id": "Pengatur waktu Anda selesai."
+  },
+  "Missed while Ciel was closed.": {
+   "zh-Hans": "Ciel 关闭时错过了。",
+   "hi": "Ciel बंद रहते हुए छूट गया।",
+   "es": "Se pasó mientras Ciel estaba cerrado.",
+   "ar": "فات بينما كان Ciel مغلقًا.",
+   "fr": "Manqué pendant que Ciel était fermé.",
+   "bn": "Ciel বন্ধ থাকার সময় মিস হয়েছে।",
+   "pt-BR": "Perdido enquanto o Ciel estava fechado.",
+   "ru": "Пропущено, пока Ciel был закрыт.",
+   "id": "Terlewat saat Ciel ditutup."
+  },
+  "Time for a break": {
+   "zh-Hans": "该休息了",
+   "hi": "ब्रेक का समय",
+   "es": "Hora de descansar",
+   "ar": "حان وقت الاستراحة",
+   "fr": "C'est la pause",
+   "bn": "বিরতির সময়",
+   "pt-BR": "Hora da pausa",
+   "ru": "Время перерыва",
+   "id": "Waktunya istirahat"
+  },
+  "Stop Focus": {
+   "zh-Hans": "停止专注",
+   "hi": "फ़ोकस रोकें",
+   "es": "Detener la concentración",
+   "ar": "إيقاف التركيز",
+   "fr": "Arrêter la concentration",
+   "bn": "ফোকাস বন্ধ করুন",
+   "pt-BR": "Parar o foco",
+   "ru": "Остановить фокус",
+   "id": "Hentikan fokus"
+  },
+  "Back to focus": {
+   "zh-Hans": "回到专注",
+   "hi": "फ़ोकस पर वापस",
+   "es": "De vuelta a la concentración",
+   "ar": "العودة إلى التركيز",
+   "fr": "Retour à la concentration",
+   "bn": "আবার ফোকাসে",
+   "pt-BR": "De volta ao foco",
+   "ru": "Снова фокус",
+   "id": "Kembali fokus"
+  },
+  "{count} files copied": {
+   "zh-Hans": {
+    "other": "已复制 {count} 个文件"
+   },
+   "hi": {
+    "one": "फ़ाइल कॉपी हुई",
+    "other": "{count} फ़ाइलें कॉपी हुईं"
+   },
+   "es": {
+    "one": "Archivo copiado",
+    "other": "{count} archivos copiados"
+   },
+   "ar": {
+    "zero": "لم يُنسخ أي ملف",
+    "one": "نُسخ الملف",
+    "two": "نُسخ ملفان",
+    "few": "نُسخت {count} ملفات",
+    "many": "نُسخ {count} ملفًا",
+    "other": "نُسخ {count} ملف"
+   },
+   "fr": {
+    "one": "Fichier copié",
+    "other": "{count} fichiers copiés"
+   },
+   "bn": {
+    "one": "ফাইল কপি হয়েছে",
+    "other": "{count}টি ফাইল কপি হয়েছে"
+   },
+   "pt-BR": {
+    "one": "Arquivo copiado",
+    "other": "{count} arquivos copiados"
+   },
+   "ru": {
+    "one": "Скопирован {count} файл",
+    "few": "Скопировано {count} файла",
+    "many": "Скопировано {count} файлов",
+    "other": "Скопировано {count} файла"
+   },
+   "id": {
+    "other": "{count} file disalin"
+   }
+  },
+  "and {count} more": {
+   "zh-Hans": {
+    "other": "还有 {count} 个"
+   },
+   "hi": {
+    "one": "और एक",
+    "other": "और {count}"
+   },
+   "es": {
+    "one": "y uno más",
+    "other": "y {count} más"
+   },
+   "ar": {
+    "zero": "ولا شيء غيره",
+    "one": "وواحد آخر",
+    "two": "واثنان آخران",
+    "few": "و{count} أخرى",
+    "many": "و{count} أخرى",
+    "other": "و{count} أخرى"
+   },
+   "fr": {
+    "one": "et un autre",
+    "other": "et {count} autres"
+   },
+   "bn": {
+    "one": "আর একটি",
+    "other": "আর {count}টি"
+   },
+   "pt-BR": {
+    "one": "e mais um",
+    "other": "e mais {count}"
+   },
+   "ru": {
+    "one": "и ещё {count}",
+    "few": "и ещё {count}",
+    "many": "и ещё {count}",
+    "other": "и ещё {count}"
+   },
+   "id": {
+    "other": "dan {count} lagi"
+   }
+  },
+  "{count} files on the shelf": {
+   "zh-Hans": {
+    "other": "文件架上有 {count} 个文件"
+   },
+   "hi": {
+    "one": "शेल्फ़ पर एक फ़ाइल",
+    "other": "शेल्फ़ पर {count} फ़ाइलें"
+   },
+   "es": {
+    "one": "Un archivo en el estante",
+    "other": "{count} archivos en el estante"
+   },
+   "ar": {
+    "zero": "لا ملفات على الرف",
+    "one": "ملف واحد على الرف",
+    "two": "ملفان على الرف",
+    "few": "{count} ملفات على الرف",
+    "many": "{count} ملفًا على الرف",
+    "other": "{count} ملف على الرف"
+   },
+   "fr": {
+    "one": "Un fichier sur l'étagère",
+    "other": "{count} fichiers sur l'étagère"
+   },
+   "bn": {
+    "one": "শেলফে একটি ফাইল",
+    "other": "শেলফে {count}টি ফাইল"
+   },
+   "pt-BR": {
+    "one": "Um arquivo na prateleira",
+    "other": "{count} arquivos na prateleira"
+   },
+   "ru": {
+    "one": "{count} файл на полке",
+    "few": "{count} файла на полке",
+    "many": "{count} файлов на полке",
+    "other": "{count} файла на полке"
+   },
+   "id": {
+    "other": "{count} file di rak"
+   }
+  },
+  "{count} things copied": {
+   "zh-Hans": {
+    "other": "已复制 {count} 项"
+   },
+   "hi": {
+    "one": "एक चीज़ कॉपी हुई",
+    "other": "{count} चीज़ें कॉपी हुईं"
+   },
+   "es": {
+    "one": "Una cosa copiada",
+    "other": "{count} cosas copiadas"
+   },
+   "ar": {
+    "zero": "لم يُنسخ شيء",
+    "one": "نُسخ شيء واحد",
+    "two": "نُسخ شيئان",
+    "few": "نُسخت {count} أشياء",
+    "many": "نُسخ {count} شيئًا",
+    "other": "نُسخ {count} شيء"
+   },
+   "fr": {
+    "one": "Une chose copiée",
+    "other": "{count} choses copiées"
+   },
+   "bn": {
+    "one": "একটি জিনিস কপি হয়েছে",
+    "other": "{count}টি জিনিস কপি হয়েছে"
+   },
+   "pt-BR": {
+    "one": "Uma coisa copiada",
+    "other": "{count} coisas copiadas"
+   },
+   "ru": {
+    "one": "Скопирован {count} элемент",
+    "few": "Скопировано {count} элемента",
+    "many": "Скопировано {count} элементов",
+    "other": "Скопировано {count} элемента"
+   },
+   "id": {
+    "other": "{count} hal disalin"
+   }
+  },
+  "{count} pinned": {
+   "zh-Hans": {
+    "other": "{count} 项已固定"
+   },
+   "hi": {
+    "one": "एक पिन की गई",
+    "other": "{count} पिन की गईं"
+   },
+   "es": {
+    "one": "una fijada",
+    "other": "{count} fijadas"
+   },
+   "ar": {
+    "zero": "لا شيء مثبّت",
+    "one": "واحد مثبّت",
+    "two": "اثنان مثبّتان",
+    "few": "{count} مثبّتة",
+    "many": "{count} مثبّتًا",
+    "other": "{count} مثبّت"
+   },
+   "fr": {
+    "one": "une épinglée",
+    "other": "{count} épinglées"
+   },
+   "bn": {
+    "one": "একটি পিন করা",
+    "other": "{count}টি পিন করা"
+   },
+   "pt-BR": {
+    "one": "uma fixada",
+    "other": "{count} fixadas"
+   },
+   "ru": {
+    "one": "{count} закреплён",
+    "few": "{count} закреплено",
+    "many": "{count} закреплено",
+    "other": "{count} закреплено"
+   },
+   "id": {
+    "other": "{count} disematkan"
+   }
+  },
+  "Your day": {
+   "zh-Hans": "你的一天",
+   "hi": "आपका दिन",
+   "es": "Tu día",
+   "ar": "يومك",
+   "fr": "Ta journée",
+   "bn": "আপনার দিন",
+   "pt-BR": "Seu dia",
+   "ru": "Ваш день",
+   "id": "Harimu"
+  },
+  "A flip clock when you step away, and the screens off at night.": {
+   "zh-Hans": "离开时显示翻页时钟，夜里关闭屏幕。",
+   "hi": "जब आप दूर जाएँ तो एक फ़्लिप घड़ी, और रात में स्क्रीन बंद।",
+   "es": "Un reloj de tarjetas cuando te alejas, y las pantallas apagadas de noche.",
+   "ar": "ساعة قلّابة حين تبتعد، وإطفاء الشاشات ليلًا.",
+   "fr": "Une horloge à palettes quand vous vous éloignez, et les écrans éteints la nuit.",
+   "bn": "আপনি সরে গেলে একটি ফ্লিপ ঘড়ি, আর রাতে স্ক্রিন বন্ধ।",
+   "pt-BR": "Um relógio de virar quando você se afasta, e as telas apagadas à noite.",
+   "ru": "Перекидные часы, когда вы отходите, и экраны выключены ночью.",
+   "id": "Jam balik saat Anda menjauh, dan layar mati di malam hari."
+  },
+  "Preferences": {
+   "zh-Hans": "偏好设置",
+   "hi": "प्राथमिकताएँ",
+   "es": "Preferencias",
+   "ar": "التفضيلات",
+   "fr": "Préférences",
+   "bn": "পছন্দসমূহ",
+   "pt-BR": "Preferências",
+   "ru": "Параметры",
+   "id": "Preferensi"
+  },
+  "Updates and privacy": {
+   "zh-Hans": "更新与隐私",
+   "hi": "अपडेट और गोपनीयता",
+   "es": "Actualizaciones y privacidad",
+   "ar": "التحديثات والخصوصية",
+   "fr": "Mises à jour et confidentialité",
+   "bn": "আপডেট ও গোপনীয়তা",
+   "pt-BR": "Atualizações e privacidade",
+   "ru": "Обновления и конфиденциальность",
+   "id": "Pembaruan dan privasi"
+  },
+  "New versions of Ciel, and what reaches the network.": {
+   "zh-Hans": "Ciel 的新版本，以及哪些内容会发送到网络。",
+   "hi": "Ciel के नए संस्करण, और क्या नेटवर्क तक पहुँचता है।",
+   "es": "Las nuevas versiones de Ciel, y lo que sale a la red.",
+   "ar": "إصدارات Ciel الجديدة، وما يصل إلى الشبكة.",
+   "fr": "Les nouvelles versions de Ciel, et ce qui part sur le réseau.",
+   "bn": "Ciel-এর নতুন সংস্করণ, আর কী নেটওয়ার্কে যায়।",
+   "pt-BR": "As novas versões do Ciel, e o que vai para a rede.",
+   "ru": "Новые версии Ciel и то, что уходит в сеть.",
+   "id": "Versi baru Ciel, dan apa yang dikirim ke jaringan."
+  },
+  "Set up Ciel": {
+   "zh-Hans": "设置 Ciel",
+   "hi": "Ciel सेट करें",
+   "es": "Configurar Ciel",
+   "ar": "إعداد Ciel",
+   "fr": "Configurer Ciel",
+   "bn": "Ciel সেট আপ করুন",
+   "pt-BR": "Configurar o Ciel",
+   "ru": "Настроить Ciel",
+   "id": "Siapkan Ciel"
+  },
+  "{0} of {1} done": {
+   "zh-Hans": "已完成 {0}/{1}",
+   "hi": "{1} में से {0} पूरे",
+   "es": "{0} de {1} hechos",
+   "ar": "تم {0} من {1}",
+   "fr": "{0} sur {1} faits",
+   "bn": "{1}টির মধ্যে {0}টি হয়েছে",
+   "pt-BR": "{0} de {1} feitos",
+   "ru": "Готово {0} из {1}",
+   "id": "{0} dari {1} selesai"
+  },
+  "Continue the setup": {
+   "zh-Hans": "继续设置",
+   "hi": "सेटअप जारी रखें",
+   "es": "Seguir con la configuración",
+   "ar": "متابعة الإعداد",
+   "fr": "Reprendre la configuration",
+   "bn": "সেটআপ চালিয়ে যান",
+   "pt-BR": "Continuar a configuração",
+   "ru": "Продолжить настройку",
+   "id": "Lanjutkan penyiapan"
+  },
+  "Go through the setup again": {
+   "zh-Hans": "重新进行设置",
+   "hi": "सेटअप फिर से करें",
+   "es": "Repetir la configuración",
+   "ar": "إعادة الإعداد",
+   "fr": "Refaire la configuration",
+   "bn": "আবার সেটআপ করুন",
+   "pt-BR": "Refazer a configuração",
+   "ru": "Пройти настройку заново",
+   "id": "Ulangi penyiapan"
+  },
+  "Window": {
+   "zh-Hans": "窗口",
+   "hi": "विंडो",
+   "es": "Ventana",
+   "ar": "النافذة",
+   "fr": "Fenêtre",
+   "bn": "উইন্ডো",
+   "pt-BR": "Janela",
+   "ru": "Окно",
+   "id": "Jendela"
+  },
+  "Colours": {
+   "zh-Hans": "颜色",
+   "hi": "रंग",
+   "es": "Colores",
+   "ar": "الألوان",
+   "fr": "Couleurs",
+   "bn": "রং",
+   "pt-BR": "Cores",
+   "ru": "Цвета",
+   "id": "Warna"
+  },
+  "Setup": {
+   "zh-Hans": "设置向导",
+   "hi": "सेटअप",
+   "es": "Configuración",
+   "ar": "الإعداد",
+   "fr": "Configuration",
+   "bn": "সেটআপ",
+   "pt-BR": "Configuração",
+   "ru": "Настройка",
+   "id": "Penyiapan"
+  },
+  "The questions of the first launch: what Ciel follows, how the island opens, your tools, your voice.": {
+   "zh-Hans": "首次启动时的问题：Ciel 关注什么、岛如何打开、你的工具和语音。",
+   "hi": "पहली बार खोलने के सवाल: Ciel क्या देखे, आइलैंड कैसे खुले, आपके टूल, आपकी आवाज़।",
+   "es": "Las preguntas del primer arranque: qué sigue Ciel, cómo se abre la isla, tus herramientas, tu voz.",
+   "ar": "أسئلة التشغيل الأول: ما يتابعه Ciel، وكيف تُفتح الجزيرة، وأدواتك، وصوتك.",
+   "fr": "Les questions du premier lancement : ce que Ciel suit, comment l'île s'ouvre, vos outils, votre voix.",
+   "bn": "প্রথম চালুর প্রশ্নগুলো: Ciel কী অনুসরণ করবে, আইল্যান্ড কীভাবে খুলবে, আপনার টুল, আপনার কণ্ঠ।",
+   "pt-BR": "As perguntas da primeira abertura: o que o Ciel acompanha, como a ilha abre, suas ferramentas, sua voz.",
+   "ru": "Вопросы первого запуска: за чем следит Ciel, как открывается остров, ваши инструменты, ваш голос.",
+   "id": "Pertanyaan saat pertama dibuka: apa yang diikuti Ciel, cara pulau terbuka, alat Anda, suara Anda."
+  },
+  "Your work": {
+   "zh-Hans": "你的工作",
+   "hi": "आपका काम",
+   "es": "Tu trabajo",
+   "ar": "عملك",
+   "fr": "Votre travail",
+   "bn": "আপনার কাজ",
+   "pt-BR": "Seu trabalho",
+   "ru": "Ваша работа",
+   "id": "Pekerjaan Anda"
+  },
+  "The island": {
+   "zh-Hans": "岛",
+   "hi": "आइलैंड",
+   "es": "La isla",
+   "ar": "الجزيرة",
+   "fr": "L'île",
+   "bn": "আইল্যান্ড",
+   "pt-BR": "A ilha",
+   "ru": "Остров",
+   "id": "Pulau"
+  },
+  "Everyday tools": {
+   "zh-Hans": "日常工具",
+   "hi": "रोज़ के टूल",
+   "es": "Herramientas del día a día",
+   "ar": "أدوات كل يوم",
+   "fr": "Outils du quotidien",
+   "bn": "দৈনন্দিন টুল",
+   "pt-BR": "Ferramentas do dia a dia",
+   "ru": "Повседневные инструменты",
+   "id": "Alat sehari-hari"
+  },
+  "Your voice": {
+   "zh-Hans": "你的语音",
+   "hi": "आपकी आवाज़",
+   "es": "Tu voz",
+   "ar": "صوتك",
+   "fr": "Votre voix",
+   "bn": "আপনার কণ্ঠ",
+   "pt-BR": "Sua voz",
+   "ru": "Ваш голос",
+   "id": "Suara Anda"
+  },
+  "Pills": {
+   "zh-Hans": "胶囊",
+   "hi": "पिल",
+   "es": "Píldoras",
+   "ar": "الحبوب",
+   "fr": "Pastilles",
+   "bn": "পিল",
+   "pt-BR": "Pílulas",
+   "ru": "Пилюли",
+   "id": "Pil"
+  },
+  "Your sky": {
+   "zh-Hans": "你的天空",
+   "hi": "आपका आसमान",
+   "es": "Tu cielo",
+   "ar": "سماؤك",
+   "fr": "Votre ciel",
+   "bn": "আপনার আকাশ",
+   "pt-BR": "Seu céu",
+   "ru": "Ваше небо",
+   "id": "Langit Anda"
+  },
+  "Set up later": {
+   "zh-Hans": "稍后设置",
+   "hi": "बाद में सेट करें",
+   "es": "Configurar más tarde",
+   "ar": "الإعداد لاحقًا",
+   "fr": "Configurer plus tard",
+   "bn": "পরে সেট আপ করুন",
+   "pt-BR": "Configurar depois",
+   "ru": "Настроить позже",
+   "id": "Siapkan nanti"
+  },
+  "Continue": {
+   "zh-Hans": "继续",
+   "hi": "जारी रखें",
+   "es": "Continuar",
+   "ar": "متابعة",
+   "fr": "Continuer",
+   "bn": "চালিয়ে যান",
+   "pt-BR": "Continuar",
+   "ru": "Продолжить",
+   "id": "Lanjut"
+  },
+  "All set": {
+   "zh-Hans": "一切就绪",
+   "hi": "सब तैयार",
+   "es": "Todo listo",
+   "ar": "كل شيء جاهز",
+   "fr": "C'est prêt",
+   "bn": "সব তৈরি",
+   "pt-BR": "Tudo pronto",
+   "ru": "Всё готово",
+   "id": "Semua siap"
+  },
+  "Ciel is up there now": {
+   "zh-Hans": "Ciel 已经在上面了",
+   "hi": "Ciel अब ऊपर है",
+   "es": "Ciel ya está ahí arriba",
+   "ar": "Ciel هناك في الأعلى الآن",
+   "fr": "Ciel est là-haut maintenant",
+   "bn": "Ciel এখন ওপরে আছে",
+   "pt-BR": "O Ciel já está lá em cima",
+   "ru": "Ciel уже наверху",
+   "id": "Ciel sudah ada di atas"
+  },
+  "He waits at the top of your screen. The keys worth knowing:": {
+   "zh-Hans": "他在屏幕顶部等你。值得记住的按键：",
+   "hi": "वह आपकी स्क्रीन के ऊपर इंतज़ार करता है। जानने लायक कुंजियाँ:",
+   "es": "Te espera arriba de la pantalla. Las teclas que conviene saber:",
+   "ar": "ينتظر في أعلى شاشتك. مفاتيح تستحق المعرفة:",
+   "fr": "Il vous attend en haut de l'écran. Les touches à connaître :",
+   "bn": "সে আপনার স্ক্রিনের ওপরে অপেক্ষা করে। জানার মতো কী-গুলো:",
+   "pt-BR": "Ele espera no topo da tela. As teclas que vale a pena saber:",
+   "ru": "Он ждёт наверху экрана. Клавиши, которые стоит знать:",
+   "id": "Ia menunggu di atas layar Anda. Tombol yang perlu diketahui:"
+  },
+  "Change anything in Preferences": {
+   "zh-Hans": "可在偏好设置中更改任何内容",
+   "hi": "प्राथमिकताओं में कुछ भी बदलें",
+   "es": "Cambia lo que quieras en Preferencias",
+   "ar": "غيّر أي شيء من التفضيلات",
+   "fr": "Tout se change dans Préférences",
+   "bn": "পছন্দসমূহে যেকোনো কিছু বদলান",
+   "pt-BR": "Mude o que quiser em Preferências",
+   "ru": "Всё можно изменить в параметрах",
+   "id": "Ubah apa saja di Preferensi"
+  },
+  "Open Today": {
+   "zh-Hans": "打开今天",
+   "hi": "आज खोलें",
+   "es": "Abrir Hoy",
+   "ar": "افتح اليوم",
+   "fr": "Ouvrir Aujourd'hui",
+   "bn": "আজ খুলুন",
+   "pt-BR": "Abrir Hoje",
+   "ru": "Открыть «Сегодня»",
+   "id": "Buka Hari ini"
+  },
+  "Step {0} of {1}": {
+   "zh-Hans": "第 {0} 步，共 {1} 步",
+   "hi": "चरण {0} / {1}",
+   "es": "Paso {0} de {1}",
+   "ar": "الخطوة {0} من {1}",
+   "fr": "Étape {0} sur {1}",
+   "bn": "ধাপ {0}/{1}",
+   "pt-BR": "Etapa {0} de {1}",
+   "ru": "Шаг {0} из {1}",
+   "id": "Langkah {0} dari {1}"
+  },
+  "Ciel lives at the top of your screen": {
+   "zh-Hans": "Ciel 住在你的屏幕顶部",
+   "hi": "Ciel आपकी स्क्रीन के ऊपर रहता है",
+   "es": "Ciel vive arriba de tu pantalla",
+   "ar": "Ciel يعيش في أعلى شاشتك",
+   "fr": "Ciel vit en haut de votre écran",
+   "bn": "Ciel আপনার স্ক্রিনের ওপরে থাকে",
+   "pt-BR": "O Ciel mora no topo da sua tela",
+   "ru": "Ciel живёт наверху вашего экрана",
+   "id": "Ciel tinggal di atas layar Anda"
+  },
+  "A few questions and he is ready: what he follows, how he opens, the tools and the voice you want. All of it can be changed later.": {
+   "zh-Hans": "回答几个问题他就准备好了：关注什么、如何打开、你想要的工具和语音。之后都可以更改。",
+   "hi": "कुछ सवाल और वह तैयार: वह क्या देखे, कैसे खुले, आपको कौन से टूल और आवाज़ चाहिए। बाद में सब बदला जा सकता है।",
+   "es": "Unas preguntas y está listo: qué sigue, cómo se abre, las herramientas y la voz que quieres. Todo se puede cambiar después.",
+   "ar": "بضعة أسئلة ويصبح جاهزًا: ما يتابعه، وكيف يُفتح، والأدوات والصوت الذي تريده. يمكن تغيير كل ذلك لاحقًا.",
+   "fr": "Quelques questions et il est prêt : ce qu'il suit, comment il s'ouvre, les outils et la voix que vous voulez. Tout pourra se changer ensuite.",
+   "bn": "কয়েকটি প্রশ্ন, তারপর সে তৈরি: সে কী অনুসরণ করবে, কীভাবে খুলবে, আপনি কোন টুল আর কণ্ঠ চান। পরে সবই বদলানো যায়।",
+   "pt-BR": "Algumas perguntas e ele está pronto: o que acompanha, como abre, as ferramentas e a voz que você quer. Tudo pode ser mudado depois.",
+   "ru": "Несколько вопросов — и он готов: за чем следить, как открываться, какие инструменты и голос вам нужны. Всё можно изменить потом.",
+   "id": "Beberapa pertanyaan dan ia siap: apa yang diikuti, cara terbuka, alat dan suara yang Anda mau. Semuanya bisa diubah nanti."
+  },
+  "Ciel and his window speak it.": {
+   "zh-Hans": "Ciel 和他的窗口都使用它。",
+   "hi": "Ciel और उसकी विंडो यही भाषा बोलते हैं।",
+   "es": "Ciel y su ventana lo hablan.",
+   "ar": "يتحدث بها Ciel ونافذته.",
+   "fr": "Ciel et sa fenêtre la parlent.",
+   "bn": "Ciel আর তার উইন্ডো এই ভাষায় কথা বলে।",
+   "pt-BR": "O Ciel e a janela dele falam esse idioma.",
+   "ru": "На нём говорят Ciel и его окно.",
+   "id": "Ciel dan jendelanya memakainya."
+  },
+  "Pitch black or white.": {
+   "zh-Hans": "纯黑或纯白。",
+   "hi": "गहरा काला या सफ़ेद।",
+   "es": "Negro puro o blanco.",
+   "ar": "أسود حالك أو أبيض.",
+   "fr": "Noir profond ou blanc.",
+   "bn": "গাঢ় কালো বা সাদা।",
+   "pt-BR": "Preto profundo ou branco.",
+   "ru": "Глубокий чёрный или белый.",
+   "id": "Hitam pekat atau putih."
+  },
+  "I don't code": {
+   "zh-Hans": "我不写代码",
+   "hi": "मैं कोड नहीं करता",
+   "es": "No programo",
+   "ar": "لا أبرمج",
+   "fr": "Je ne code pas",
+   "bn": "আমি কোড করি না",
+   "pt-BR": "Não programo",
+   "ru": "Я не программирую",
+   "id": "Saya tidak ngoding"
+  },
+  "Ciel keeps your day, your voice and your tools.": {
+   "zh-Hans": "Ciel 照看你的一天、语音和工具。",
+   "hi": "Ciel आपका दिन, आपकी आवाज़ और आपके टूल संभालता है।",
+   "es": "Ciel se ocupa de tu día, tu voz y tus herramientas.",
+   "ar": "يعتني Ciel بيومك وصوتك وأدواتك.",
+   "fr": "Ciel garde votre journée, votre voix et vos outils.",
+   "bn": "Ciel আপনার দিন, কণ্ঠ আর টুল সামলায়।",
+   "pt-BR": "O Ciel cuida do seu dia, da sua voz e das suas ferramentas.",
+   "ru": "Ciel держит ваш день, голос и инструменты.",
+   "id": "Ciel menjaga hari, suara, dan alat Anda."
+  },
+  "Ciel adds his hooks to the agent's own config. You see the exact change and where the backup goes before anything is written.": {
+   "zh-Hans": "Ciel 会把他的钩子加入该代理自己的配置。写入任何内容之前，你会看到确切的更改和备份位置。",
+   "hi": "Ciel अपने हुक एजेंट की अपनी कॉन्फ़िग में जोड़ता है। कुछ भी लिखे जाने से पहले आप सटीक बदलाव और बैकअप की जगह देखते हैं।",
+   "es": "Ciel añade sus hooks a la configuración del propio agente. Ves el cambio exacto y adónde va la copia de seguridad antes de que se escriba nada.",
+   "ar": "يضيف Ciel خطافاته إلى إعدادات الوكيل نفسه. ترى التغيير الدقيق ومكان النسخة الاحتياطية قبل كتابة أي شيء.",
+   "fr": "Ciel ajoute ses hooks à la config de l'agent lui-même. Vous voyez le changement exact et où va la sauvegarde avant que rien ne soit écrit.",
+   "bn": "Ciel তার হুক এজেন্টের নিজস্ব কনফিগে যোগ করে। কিছু লেখার আগে আপনি সঠিক পরিবর্তন আর ব্যাকআপ কোথায় যাবে দেখতে পান।",
+   "pt-BR": "O Ciel adiciona os hooks dele à configuração do próprio agente. Você vê a mudança exata e onde fica o backup antes de qualquer coisa ser escrita.",
+   "ru": "Ciel добавляет свои хуки в собственный конфиг агента. Перед любой записью вы видите точное изменение и куда уходит резервная копия.",
+   "id": "Ciel menambahkan hook-nya ke konfigurasi agen itu sendiri. Anda melihat perubahan persisnya dan lokasi cadangan sebelum apa pun ditulis."
+  },
+  "What do you code with?": {
+   "zh-Hans": "你用什么写代码？",
+   "hi": "आप किससे कोड करते हैं?",
+   "es": "¿Con qué programas?",
+   "ar": "بماذا تبرمج؟",
+   "fr": "Avec quoi codez-vous ?",
+   "bn": "আপনি কী দিয়ে কোড করেন?",
+   "pt-BR": "Com o que você programa?",
+   "ru": "Чем вы программируете?",
+   "id": "Anda ngoding pakai apa?"
+  },
+  "Ciel follows its sessions in the island, and you answer it from there. Other agents can be added later in Island → Agents.": {
+   "zh-Hans": "Ciel 在岛中关注它的会话，你可以直接在那里回复。其他代理之后可在「岛 → 代理」中添加。",
+   "hi": "Ciel आइलैंड में इसके सेशन दिखाता है, और आप वहीं से जवाब देते हैं। दूसरे एजेंट बाद में आइलैंड → एजेंट में जोड़े जा सकते हैं।",
+   "es": "Ciel sigue sus sesiones en la isla, y le respondes desde ahí. Puedes añadir otros agentes después en Isla → Agentes.",
+   "ar": "يتابع Ciel جلساته في الجزيرة، وتجيبه من هناك. يمكن إضافة وكلاء آخرين لاحقًا من الشريط ← الوكلاء.",
+   "fr": "Ciel suit ses sessions dans l'île, et vous lui répondez de là. D'autres agents s'ajoutent ensuite dans Île → Agents.",
+   "bn": "Ciel আইল্যান্ডে এর সেশন অনুসরণ করে, আর আপনি সেখান থেকেই উত্তর দেন। অন্য এজেন্ট পরে আইল্যান্ড → এজেন্ট-এ যোগ করা যায়।",
+   "pt-BR": "O Ciel acompanha as sessões dele na ilha, e você responde por ali. Outros agentes podem ser adicionados depois em Ilha → Agentes.",
+   "ru": "Ciel показывает его сессии на острове, и вы отвечаете прямо оттуда. Другие агенты добавляются позже в «Остров → Агенты».",
+   "id": "Ciel mengikuti sesinya di pulau, dan Anda menjawabnya dari sana. Agen lain bisa ditambahkan nanti di Pulau → Agen."
+  },
+  "When I click it": {
+   "zh-Hans": "点击时",
+   "hi": "जब मैं क्लिक करूँ",
+   "es": "Al hacer clic",
+   "ar": "عند النقر عليه",
+   "fr": "Quand je clique",
+   "bn": "আমি ক্লিক করলে",
+   "pt-BR": "Quando eu clico",
+   "ru": "По щелчку",
+   "id": "Saat saya klik"
+  },
+  "He stays folded until you click him.": {
+   "zh-Hans": "他会一直收起，直到你点击他。",
+   "hi": "जब तक आप क्लिक न करें, वह मुड़ा रहता है।",
+   "es": "Se queda plegado hasta que haces clic.",
+   "ar": "يبقى مطويًا حتى تنقر عليه.",
+   "fr": "Il reste replié jusqu'à ce que vous cliquiez dessus.",
+   "bn": "আপনি ক্লিক না করা পর্যন্ত সে ভাঁজ হয়ে থাকে।",
+   "pt-BR": "Ele fica recolhido até você clicar.",
+   "ru": "Он остаётся свёрнутым, пока вы не щёлкнете.",
+   "id": "Ia tetap terlipat sampai Anda mengekliknya."
+  },
+  "When I point at it": {
+   "zh-Hans": "指针指向时",
+   "hi": "जब मैं पॉइंटर ले जाऊँ",
+   "es": "Al pasar el puntero",
+   "ar": "عند الإشارة إليه",
+   "fr": "Quand je pointe dessus",
+   "bn": "পয়েন্টার নিলে",
+   "pt-BR": "Quando aponto para ele",
+   "ru": "При наведении",
+   "id": "Saat saya arahkan"
+  },
+  "He opens under the pointer and folds once it leaves.": {
+   "zh-Hans": "指针移上去就打开，移开后收起。",
+   "hi": "पॉइंटर के नीचे खुलता है और हटते ही मुड़ जाता है।",
+   "es": "Se abre bajo el puntero y se pliega cuando se va.",
+   "ar": "يُفتح تحت المؤشر ويُطوى حين يبتعد.",
+   "fr": "Il s'ouvre sous le pointeur et se replie quand il part.",
+   "bn": "পয়েন্টারের নিচে খোলে আর সরে গেলে ভাঁজ হয়।",
+   "pt-BR": "Ele abre sob o ponteiro e recolhe quando ele sai.",
+   "ru": "Открывается под указателем и сворачивается, когда тот уходит.",
+   "id": "Terbuka di bawah penunjuk dan terlipat saat penunjuk pergi."
+  },
+  "How should the island open?": {
+   "zh-Hans": "岛应该如何打开？",
+   "hi": "आइलैंड कैसे खुले?",
+   "es": "¿Cómo debe abrirse la isla?",
+   "ar": "كيف تُفتح الجزيرة؟",
+   "fr": "Comment l'île doit-elle s'ouvrir ?",
+   "bn": "আইল্যান্ড কীভাবে খুলবে?",
+   "pt-BR": "Como a ilha deve abrir?",
+   "ru": "Как должен открываться остров?",
+   "id": "Bagaimana pulau harus terbuka?"
+  },
+  "He waits folded at the top of the screen. Pick how he opens; the rest starts well as it is.": {
+   "zh-Hans": "他收起在屏幕顶部等待。选择打开方式即可，其余默认就很好。",
+   "hi": "वह स्क्रीन के ऊपर मुड़ा इंतज़ार करता है। चुनें कि वह कैसे खुले; बाकी जैसा है, अच्छा है।",
+   "es": "Espera plegado arriba de la pantalla. Elige cómo se abre; lo demás ya viene bien.",
+   "ar": "ينتظر مطويًا في أعلى الشاشة. اختر كيف يُفتح؛ والباقي جيد كما هو.",
+   "fr": "Il attend replié en haut de l'écran. Choisissez comment il s'ouvre ; le reste part bien tel quel.",
+   "bn": "সে স্ক্রিনের ওপরে ভাঁজ হয়ে অপেক্ষা করে। কীভাবে খুলবে বেছে নিন; বাকিটা যেমন আছে ঠিক আছে।",
+   "pt-BR": "Ele espera recolhido no topo da tela. Escolha como ele abre; o resto já começa bem.",
+   "ru": "Он ждёт свёрнутым наверху экрана. Выберите, как он открывается; остальное уже настроено хорошо.",
+   "id": "Ia menunggu terlipat di atas layar. Pilih cara ia terbuka; sisanya sudah baik apa adanya."
+  },
+  "Pick your town for the forecast and the rain alerts.": {
+   "zh-Hans": "选择你的城市，获取天气预报和降雨提醒。",
+   "hi": "पूर्वानुमान और बारिश की चेतावनी के लिए अपना शहर चुनें।",
+   "es": "Elige tu ciudad para el pronóstico y los avisos de lluvia.",
+   "ar": "اختر مدينتك للتوقعات وتنبيهات المطر.",
+   "fr": "Choisissez votre ville pour les prévisions et les alertes pluie.",
+   "bn": "পূর্বাভাস আর বৃষ্টির সতর্কতার জন্য আপনার শহর বেছে নিন।",
+   "pt-BR": "Escolha sua cidade para a previsão e os alertas de chuva.",
+   "ru": "Выберите свой город для прогноза и предупреждений о дожде.",
+   "id": "Pilih kota Anda untuk prakiraan dan peringatan hujan."
+  },
+  "Your town": {
+   "zh-Hans": "你的城市",
+   "hi": "आपका शहर",
+   "es": "Tu ciudad",
+   "ar": "مدينتك",
+   "fr": "Votre ville",
+   "bn": "আপনার শহর",
+   "pt-BR": "Sua cidade",
+   "ru": "Ваш город",
+   "id": "Kota Anda"
+  },
+  "No town by that name.": {
+   "zh-Hans": "没有这个名字的城市。",
+   "hi": "इस नाम का कोई शहर नहीं।",
+   "es": "Ninguna ciudad con ese nombre.",
+   "ar": "لا توجد مدينة بهذا الاسم.",
+   "fr": "Aucune ville de ce nom.",
+   "bn": "এই নামে কোনো শহর নেই।",
+   "pt-BR": "Nenhuma cidade com esse nome.",
+   "ru": "Города с таким названием нет.",
+   "id": "Tidak ada kota dengan nama itu."
+  },
+  "Each stays off until you turn it on here or in the island's Tools. What you copy never leaves this computer.": {
+   "zh-Hans": "每一项在你于此处或岛的「工具」中打开之前都保持关闭。你复制的内容绝不会离开这台电脑。",
+   "hi": "हर एक तब तक बंद रहता है जब तक आप उसे यहाँ या आइलैंड के टूल में चालू न करें। आप जो कॉपी करते हैं वह कभी इस कंप्यूटर से बाहर नहीं जाता।",
+   "es": "Cada una sigue apagada hasta que la activas aquí o en las Herramientas de la isla. Lo que copias nunca sale de este ordenador.",
+   "ar": "تبقى كل أداة مطفأة حتى تشغّلها هنا أو في أدوات الجزيرة. ما تنسخه لا يغادر هذا الكمبيوتر أبدًا.",
+   "fr": "Chacun reste éteint jusqu'à ce que vous l'allumiez ici ou dans les Outils de l'île. Ce que vous copiez ne quitte jamais cet ordinateur.",
+   "bn": "প্রতিটি বন্ধ থাকে যতক্ষণ না আপনি এখানে বা আইল্যান্ডের টুলে চালু করেন। আপনি যা কপি করেন তা কখনো এই কম্পিউটারের বাইরে যায় না।",
+   "pt-BR": "Cada uma fica desligada até você ligar aqui ou nas Ferramentas da ilha. O que você copia nunca sai deste computador.",
+   "ru": "Каждый остаётся выключенным, пока вы не включите его здесь или в инструментах острова. То, что вы копируете, никогда не покидает этот компьютер.",
+   "id": "Masing-masing tetap mati sampai Anda menyalakannya di sini atau di Alat pulau. Yang Anda salin tidak pernah keluar dari komputer ini."
+  },
+  "A history of what you copy, in the island's Tools; what you pin stays.": {
+   "zh-Hans": "你复制内容的历史，位于岛的「工具」中；固定的内容会保留。",
+   "hi": "आप जो कॉपी करते हैं उसका इतिहास, आइलैंड के टूल में; जो पिन करें वह रहता है।",
+   "es": "Un historial de lo que copias, en las Herramientas de la isla; lo que fijas se queda.",
+   "ar": "سجلّ لما تنسخه، في أدوات الجزيرة؛ وما تثبّته يبقى.",
+   "fr": "Un historique de ce que vous copiez, dans les Outils de l'île ; ce que vous épinglez reste.",
+   "bn": "আপনি যা কপি করেন তার ইতিহাস, আইল্যান্ডের টুলে; যা পিন করেন তা থেকে যায়।",
+   "pt-BR": "Um histórico do que você copia, nas Ferramentas da ilha; o que você fixa fica.",
+   "ru": "История того, что вы копируете, в инструментах острова; закреплённое остаётся.",
+   "id": "Riwayat yang Anda salin, di Alat pulau; yang Anda sematkan tetap ada."
+  },
+  "The words of the song playing, from lrclib.net.": {
+   "zh-Hans": "正在播放歌曲的歌词，来自 lrclib.net。",
+   "hi": "चल रहे गाने के बोल, lrclib.net से।",
+   "es": "La letra de la canción que suena, de lrclib.net.",
+   "ar": "كلمات الأغنية التي تُشغَّل، من lrclib.net.",
+   "fr": "Les paroles de la chanson en cours, depuis lrclib.net.",
+   "bn": "যে গান চলছে তার কথা, lrclib.net থেকে।",
+   "pt-BR": "A letra da música que está tocando, do lrclib.net.",
+   "ru": "Слова играющей песни, с lrclib.net.",
+   "id": "Lirik lagu yang sedang diputar, dari lrclib.net."
+  },
+  "Talk instead of typing": {
+   "zh-Hans": "用说的代替打字",
+   "hi": "टाइप करने की जगह बोलें",
+   "es": "Habla en lugar de escribir",
+   "ar": "تحدّث بدل الكتابة",
+   "fr": "Parlez au lieu de taper",
+   "bn": "টাইপ না করে বলুন",
+   "pt-BR": "Fale em vez de digitar",
+   "ru": "Говорите вместо того, чтобы печатать",
+   "id": "Bicara, bukan mengetik"
+  },
+  "Hold a key in any app, speak, let go: your words are typed where you are. It all runs on this computer, offline.": {
+   "zh-Hans": "在任何应用中按住一个键，说话，松开：你的话会被输入到光标处。全部在这台电脑上离线运行。",
+   "hi": "किसी भी ऐप में एक कुंजी दबाए रखें, बोलें, छोड़ दें: आपके शब्द वहीं टाइप हो जाते हैं जहाँ आप हैं। सब कुछ इसी कंप्यूटर पर, ऑफ़लाइन चलता है।",
+   "es": "Mantén una tecla en cualquier app, habla, suelta: tus palabras se escriben donde estás. Todo funciona en este ordenador, sin conexión.",
+   "ar": "اضغط مفتاحًا مطولًا في أي تطبيق، وتكلّم، ثم اتركه: تُكتب كلماتك حيث أنت. كل شيء يعمل على هذا الكمبيوتر دون اتصال.",
+   "fr": "Maintenez une touche dans n'importe quelle app, parlez, relâchez : vos mots s'écrivent là où vous êtes. Tout tourne sur cet ordinateur, hors ligne.",
+   "bn": "যেকোনো অ্যাপে একটি কী চেপে ধরুন, বলুন, ছেড়ে দিন: আপনার কথা যেখানে আছেন সেখানে টাইপ হয়ে যায়। সব এই কম্পিউটারে, অফলাইনে চলে।",
+   "pt-BR": "Segure uma tecla em qualquer app, fale, solte: suas palavras são digitadas onde você está. Tudo roda neste computador, offline.",
+   "ru": "Удерживайте клавишу в любом приложении, говорите, отпустите: ваши слова печатаются там, где вы. Всё работает на этом компьютере, без сети.",
+   "id": "Tahan satu tombol di aplikasi apa pun, bicara, lepaskan: kata-kata Anda diketik di tempat Anda berada. Semuanya berjalan di komputer ini, offline."
+  },
+  "Pills beside Ciel": {
+   "zh-Hans": "Ciel 旁边的胶囊",
+   "hi": "Ciel के पास पिल",
+   "es": "Píldoras junto a Ciel",
+   "ar": "حبوب بجانب Ciel",
+   "fr": "Des pastilles à côté de Ciel",
+   "bn": "Ciel-এর পাশে পিল",
+   "pt-BR": "Pílulas ao lado do Ciel",
+   "ru": "Пилюли рядом с Ciel",
+   "id": "Pil di samping Ciel"
+  },
+  "Up to four small clouds next to him: your music, GitHub, your calendar and more. Their keys go in Island → Integrations.": {
+   "zh-Hans": "他旁边最多四朵小云：你的音乐、GitHub、日历等等。它们的密钥在「岛 → 集成」中填写。",
+   "hi": "उसके पास चार तक छोटे बादल: आपका संगीत, GitHub, आपका कैलेंडर और भी। उनकी कुंजियाँ आइलैंड → इंटीग्रेशन में जाती हैं।",
+   "es": "Hasta cuatro nubecitas a su lado: tu música, GitHub, tu calendario y más. Sus claves van en Isla → Integraciones.",
+   "ar": "حتى أربع غيمات صغيرة بجانبه: موسيقاك وGitHub وتقويمك وغير ذلك. تُضاف مفاتيحها في الشريط ← التكاملات.",
+   "fr": "Jusqu'à quatre petits nuages à côté de lui : votre musique, GitHub, votre agenda et d'autres. Leurs clés se mettent dans Île → Intégrations.",
+   "bn": "তার পাশে চারটি পর্যন্ত ছোট মেঘ: আপনার গান, GitHub, আপনার ক্যালেন্ডার আর আরও। তাদের কী আইল্যান্ড → ইন্টিগ্রেশন-এ দিন।",
+   "pt-BR": "Até quatro nuvenzinhas ao lado dele: sua música, GitHub, sua agenda e mais. As chaves delas ficam em Ilha → Integrações.",
+   "ru": "До четырёх облачков рядом с ним: ваша музыка, GitHub, календарь и другое. Их ключи вводятся в «Остров → Интеграции».",
+   "id": "Hingga empat awan kecil di sampingnya: musik Anda, GitHub, kalender Anda, dan lainnya. Kuncinya diisi di Pulau → Integrasi."
+  },
+  "Ciel can paint the sky of the hour on your desktop, with him in it, and he makes small sounds when something happens.": {
+   "zh-Hans": "Ciel 可以把此刻的天空画在你的桌面上，他也在其中；有事发生时他会发出小小的声音。",
+   "hi": "Ciel आपके डेस्कटॉप पर इस घड़ी का आसमान बना सकता है, खुद उसमें, और कुछ होने पर वह छोटी-छोटी आवाज़ें करता है।",
+   "es": "Ciel puede pintar el cielo de la hora en tu escritorio, con él dentro, y hace pequeños sonidos cuando pasa algo.",
+   "ar": "يستطيع Ciel أن يرسم سماء الساعة على سطح مكتبك، وهو فيها، ويُصدر أصواتًا صغيرة حين يحدث شيء.",
+   "fr": "Ciel peut peindre le ciel de l'heure sur votre bureau, avec lui dedans, et il fait de petits sons quand il se passe quelque chose.",
+   "bn": "Ciel আপনার ডেস্কটপে এই মুহূর্তের আকাশ আঁকতে পারে, নিজেও তাতে থেকে, আর কিছু ঘটলে সে ছোট ছোট শব্দ করে।",
+   "pt-BR": "O Ciel pode pintar o céu da hora na sua área de trabalho, com ele dentro, e faz pequenos sons quando algo acontece.",
+   "ru": "Ciel может нарисовать небо этого часа на рабочем столе, вместе с собой, и издаёт тихие звуки, когда что-то происходит.",
+   "id": "Ciel bisa melukis langit saat ini di desktop Anda, dengan dirinya di dalamnya, dan ia bersuara kecil saat sesuatu terjadi."
+  },
+  "Sky on the desktop": {
+   "zh-Hans": "桌面上的天空",
+   "hi": "डेस्कटॉप पर आसमान",
+   "es": "El cielo en el escritorio",
+   "ar": "السماء على سطح المكتب",
+   "fr": "Le ciel sur le bureau",
+   "bn": "ডেস্কটপে আকাশ",
+   "pt-BR": "O céu na área de trabalho",
+   "ru": "Небо на рабочем столе",
+   "id": "Langit di desktop"
+  },
+  "The real sky of the hour as your wallpaper. Turning it off puts your own picture back.": {
+   "zh-Hans": "以此刻真实的天空作为壁纸。关闭后会换回你自己的图片。",
+   "hi": "इस घड़ी का असली आसमान आपके वॉलपेपर के रूप में। बंद करने पर आपकी अपनी तस्वीर वापस आ जाती है।",
+   "es": "El cielo real de la hora como fondo de pantalla. Al apagarlo vuelve tu propia imagen.",
+   "ar": "سماء الساعة الحقيقية خلفيةً لشاشتك. إيقافها يعيد صورتك أنت.",
+   "fr": "Le vrai ciel de l'heure en fond d'écran. L'éteindre remet votre propre image.",
+   "bn": "এই মুহূর্তের আসল আকাশ আপনার ওয়ালপেপার হিসেবে। বন্ধ করলে আপনার নিজের ছবি ফিরে আসে।",
+   "pt-BR": "O céu real da hora como papel de parede. Desligar devolve a sua própria imagem.",
+   "ru": "Настоящее небо этого часа как обои. Если выключить, вернётся ваша картинка.",
+   "id": "Langit asli saat ini sebagai wallpaper Anda. Mematikannya mengembalikan gambar Anda sendiri."
+  },
+  "Finish": {
+   "zh-Hans": "完成",
+   "hi": "पूरा करें",
+   "es": "Terminar",
+   "ar": "إنهاء",
+   "fr": "Terminer",
+   "bn": "শেষ করুন",
+   "pt-BR": "Concluir",
+   "ru": "Готово",
+   "id": "Selesai"
+  },
+  "Install it from Preferences → Updates and privacy.": {
+   "zh-Hans": "在「偏好设置 → 更新与隐私」中安装。",
+   "hi": "प्राथमिकताएँ → अपडेट और गोपनीयता से इंस्टॉल करें।",
+   "es": "Instálala desde Preferencias → Actualizaciones y privacidad.",
+   "ar": "ثبّته من التفضيلات ← التحديثات والخصوصية.",
+   "fr": "Installez-la depuis Préférences → Mises à jour et confidentialité.",
+   "bn": "পছন্দসমূহ → আপডেট ও গোপনীয়তা থেকে ইনস্টল করুন।",
+   "pt-BR": "Instale em Preferências → Atualizações e privacidade.",
+   "ru": "Установите её в «Параметры → Обновления и конфиденциальность».",
+   "id": "Pasang dari Preferensi → Pembaruan dan privasi."
+  },
+  "With Claude, the transcript (never the audio) goes to Anthropic with your key from Island → Chat.": {
+   "zh-Hans": "使用 Claude 时，文字记录（绝不包括音频）会通过你在“岛 → 聊天”中设置的密钥发送给 Anthropic。",
+   "hi": "Claude के साथ, ट्रांसक्रिप्ट (ऑडियो कभी नहीं) आइलैंड → चैट में दी गई आपकी कुंजी के साथ Anthropic को जाता है।",
+   "es": "Con Claude, la transcripción (nunca el audio) va a Anthropic con tu clave de Isla → Chat.",
+   "ar": "مع Claude، يذهب النص المكتوب (لا الصوت أبدًا) إلى Anthropic بمفتاحك من الشريط ← الدردشة.",
+   "fr": "Avec Claude, la transcription (jamais l'audio) part chez Anthropic avec ta clé de Île → Chat.",
+   "bn": "Claude-এ, ট্রান্সক্রিপ্ট (অডিও কখনো নয়) আইল্যান্ড → চ্যাট থেকে আপনার কী দিয়ে Anthropic-এ যায়।",
+   "pt-BR": "Com o Claude, a transcrição (nunca o áudio) vai para a Anthropic com sua chave de Ilha → Chat.",
+   "ru": "С Claude расшифровка (но никогда не звук) уходит в Anthropic с вашим ключом из Остров → Чат.",
+   "id": "Dengan Claude, transkrip (tidak pernah audionya) dikirim ke Anthropic dengan kuncimu dari Pulau → Obrolan."
+  },
+  "The clean-up uses your Claude key. Add it in Island → Chat.": {
+   "zh-Hans": "清理功能使用你的 Claude 密钥。请在“岛 → 聊天”中添加。",
+   "hi": "सफ़ाई आपकी Claude कुंजी इस्तेमाल करती है। इसे आइलैंड → चैट में जोड़ें।",
+   "es": "La limpieza usa tu clave de Claude. Añádela en Isla → Chat.",
+   "ar": "يستخدم التنظيف مفتاح Claude الخاص بك. أضفه في الشريط ← الدردشة.",
+   "fr": "Le nettoyage utilise ta clé Claude. Ajoute-la dans Île → Chat.",
+   "bn": "পরিষ্কার করতে আপনার Claude কী লাগে। আইল্যান্ড → চ্যাট-এ যোগ করুন।",
+   "pt-BR": "A limpeza usa sua chave do Claude. Adicione-a em Ilha → Chat.",
+   "ru": "Для очистки нужен ваш ключ Claude. Добавьте его в Остров → Чат.",
+   "id": "Pembersihan memakai kunci Claude-mu. Tambahkan di Pulau → Obrolan."
+  },
+  "The clean-up needs Claude or a local model: set one up in Island → Chat.": {
+   "zh-Hans": "清理功能需要 Claude 或本地模型：请在“岛 → 聊天”中设置一个。",
+   "hi": "सफ़ाई के लिए Claude या एक स्थानीय मॉडल चाहिए: आइलैंड → चैट में एक सेट करें।",
+   "es": "La limpieza necesita Claude o un modelo local: configura uno en Isla → Chat.",
+   "ar": "يحتاج التنظيف إلى Claude أو نموذج محلي: اضبط أحدهما في الشريط ← الدردشة.",
+   "fr": "Le nettoyage a besoin de Claude ou d'un modèle local : configure-en un dans Île → Chat.",
+   "bn": "পরিষ্কার করতে Claude বা একটি স্থানীয় মডেল লাগে: আইল্যান্ড → চ্যাট-এ একটি সেট আপ করুন।",
+   "pt-BR": "A limpeza precisa do Claude ou de um modelo local: configure um em Ilha → Chat.",
+   "ru": "Для очистки нужен Claude или локальная модель: настройте одно из них в Остров → Чат.",
+   "id": "Pembersihan butuh Claude atau model lokal: atur salah satunya di Pulau → Obrolan."
+  },
+  "Ciel answers with Claude: add your Claude key in Island → Chat.": {
+   "zh-Hans": "Ciel 用 Claude 回答：请在 岛 → 聊天 中添加你的 Claude 密钥。",
+   "hi": "Ciel Claude से जवाब देता है: आइलैंड → चैट में अपनी Claude कुंजी जोड़ें।",
+   "es": "Ciel responde con Claude: añade tu clave de Claude en Isla → Chat.",
+   "ar": "يجيب Ciel باستخدام Claude: أضف مفتاح Claude الخاص بك في الشريط ← الدردشة.",
+   "fr": "Ciel répond avec Claude : ajoute ta clé Claude dans Île → Chat.",
+   "bn": "Ciel Claude দিয়ে উত্তর দেয়: আইল্যান্ড → চ্যাট-এ আপনার Claude কী যোগ করুন।",
+   "pt-BR": "O Ciel responde com o Claude: adicione sua chave do Claude em Ilha → Chat.",
+   "ru": "Ciel отвечает с помощью Claude: добавьте свой ключ Claude в Остров → Чат.",
+   "id": "Ciel menjawab dengan Claude: tambahkan kunci Claude-mu di Pulau → Obrolan."
+  },
+  "Ciel needs a brain to answer: add your Claude key or connect a local model in Island → Chat.": {
+   "zh-Hans": "Ciel 需要一个大脑才能回答：请在 岛 → 聊天 中添加你的 Claude 密钥或连接本地模型。",
+   "hi": "जवाब देने के लिए Ciel को एक दिमाग चाहिए: आइलैंड → चैट में अपनी Claude कुंजी जोड़ें या एक स्थानीय मॉडल कनेक्ट करें।",
+   "es": "Ciel necesita un cerebro para responder: añade tu clave de Claude o conecta un modelo local en Isla → Chat.",
+   "ar": "يحتاج Ciel إلى عقل ليجيب: أضف مفتاح Claude الخاص بك أو صِل نموذجًا محليًا في الشريط ← الدردشة.",
+   "fr": "Ciel a besoin d'un cerveau pour répondre : ajoute ta clé Claude ou connecte un modèle local dans Île → Chat.",
+   "bn": "উত্তর দিতে Ciel-এর একটি মস্তিষ্ক দরকার: আইল্যান্ড → চ্যাট-এ আপনার Claude কী যোগ করুন বা একটি স্থানীয় মডেল সংযুক্ত করুন।",
+   "pt-BR": "O Ciel precisa de um cérebro para responder: adicione sua chave do Claude ou conecte um modelo local em Ilha → Chat.",
+   "ru": "Чтобы отвечать, Ciel нужен мозг: добавьте ключ Claude или подключите локальную модель в Остров → Чат.",
+   "id": "Ciel butuh otak untuk menjawab: tambahkan kunci Claude-mu atau hubungkan model lokal di Pulau → Obrolan."
+  },
+  "The history is off. Turn it on in Voice → Settings → Privacy.": {
+   "zh-Hans": "历史记录已关闭。请在“声音”→“设置”→“隐私”中打开。",
+   "hi": "इतिहास बंद है। इसे आवाज़ → सेटिंग्स → गोपनीयता में चालू करें।",
+   "es": "El historial está desactivado. Actívalo en Voz → Ajustes → Privacidad.",
+   "ar": "السجل متوقف. شغّله من الصوت ← الإعدادات ← الخصوصية.",
+   "fr": "L'historique est désactivé. Active-le dans Voix → Réglages → Confidentialité.",
+   "bn": "ইতিহাস বন্ধ আছে। কণ্ঠ → সেটিংস → গোপনীয়তা-য় চালু করুন।",
+   "pt-BR": "O histórico está desligado. Ative-o em Voz → Ajustes → Privacidade.",
+   "ru": "История выключена. Включите её в Голос → Настройки → Конфиденциальность.",
+   "id": "Riwayat nonaktif. Aktifkan di Suara → Pengaturan → Privasi."
+  },
+  "Drop files on Ciel: they wait here for a week, to ask him about or drag into any app.": {
+   "zh-Hans": "把文件拖到 Ciel 上：它们会在这里保留一周，可以问他相关问题，或拖到任何应用中。",
+   "hi": "फ़ाइलें Ciel पर छोड़ें: वे यहाँ एक हफ़्ते रहती हैं, उनके बारे में पूछने या किसी भी ऐप में खींचने के लिए।",
+   "es": "Suelta archivos sobre Ciel: esperan aquí una semana, para preguntarle sobre ellos o arrastrarlos a cualquier app.",
+   "ar": "أفلت الملفات على Ciel: تنتظر هنا أسبوعًا، لتسأله عنها أو تسحبها إلى أي تطبيق.",
+   "fr": "Déposez des fichiers sur Ciel : ils attendent ici une semaine, pour lui poser une question ou les glisser dans n'importe quelle app.",
+   "bn": "Ciel-এর ওপর ফাইল ছাড়ুন: সেগুলো এখানে এক সপ্তাহ থাকে, তাকে জিজ্ঞেস করতে বা যেকোনো অ্যাপে টেনে নিতে।",
+   "pt-BR": "Solte arquivos no Ciel: eles esperam aqui por uma semana, para perguntar a ele sobre eles ou arrastar para qualquer app.",
+   "ru": "Перетащите файлы на Ciel: они ждут здесь неделю, чтобы спросить его о них или перетащить в любое приложение.",
+   "id": "Jatuhkan file ke Ciel: file menunggu di sini seminggu, untuk ditanyakan kepadanya atau diseret ke aplikasi mana pun."
+  },
+  "{name} is on the shelf.": {
+   "zh-Hans": "{name} 已放到文件架上。",
+   "hi": "{name} शेल्फ़ पर है।",
+   "es": "{name} está en el estante.",
+   "ar": "{name} على الرف.",
+   "fr": "{name} est sur l'étagère.",
+   "bn": "{name} শেলফে আছে।",
+   "pt-BR": "{name} está na prateleira.",
+   "ru": "{name} на полке.",
+   "id": "{name} ada di rak."
+  },
+  "Drop files on the shelf": {
+   "zh-Hans": "把文件放到文件架上",
+   "hi": "फ़ाइलें शेल्फ़ पर छोड़ें",
+   "es": "Suelta archivos en el estante",
+   "ar": "أفلت الملفات على الرف",
+   "fr": "Déposez des fichiers sur l'étagère",
+   "bn": "ফাইল শেলফে ছাড়ুন",
+   "pt-BR": "Solte arquivos na prateleira",
+   "ru": "Положите файлы на полку",
+   "id": "Jatuhkan file ke rak"
+  },
+  "Open the shelf": {
+   "zh-Hans": "打开文件架",
+   "hi": "शेल्फ़ खोलें",
+   "es": "Abrir el estante",
+   "ar": "افتح الرف",
+   "fr": "Ouvrir l'étagère",
+   "bn": "শেলফ খুলুন",
+   "pt-BR": "Abrir a prateleira",
+   "ru": "Открыть полку",
+   "id": "Buka rak"
+  },
+  "{name} and {count} more are on the shelf.": {
+   "zh-Hans": {
+    "other": "{name} 和另外 {count} 个文件已放到文件架上。"
+   },
+   "hi": {
+    "one": "{name} और एक और फ़ाइल शेल्फ़ पर हैं।",
+    "other": "{name} और {count} और फ़ाइलें शेल्फ़ पर हैं।"
+   },
+   "es": {
+    "one": "{name} y otro más están en el estante.",
+    "other": "{name} y {count} más están en el estante."
+   },
+   "ar": {
+    "zero": "{name} على الرف.",
+    "one": "{name} وملف آخر على الرف.",
+    "two": "{name} وملفان آخران على الرف.",
+    "few": "{name} و{count} ملفات أخرى على الرف.",
+    "many": "{name} و{count} ملفًا آخر على الرف.",
+    "other": "{name} و{count} ملف آخر على الرف."
+   },
+   "fr": {
+    "one": "{name} et un autre sont sur l'étagère.",
+    "other": "{name} et {count} autres sont sur l'étagère."
+   },
+   "bn": {
+    "one": "{name} আর আরও একটি শেলফে আছে।",
+    "other": "{name} আর আরও {count}টি শেলফে আছে।"
+   },
+   "pt-BR": {
+    "one": "{name} e mais um estão na prateleira.",
+    "other": "{name} e mais {count} estão na prateleira."
+   },
+   "ru": {
+    "one": "{name} и ещё {count} файл на полке.",
+    "few": "{name} и ещё {count} файла на полке.",
+    "many": "{name} и ещё {count} файлов на полке.",
+    "other": "{name} и ещё {count} файла на полке."
+   },
+   "id": {
+    "other": "{name} dan {count} lainnya ada di rak."
+   }
   }
  }
 }

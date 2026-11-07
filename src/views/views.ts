@@ -28,11 +28,13 @@ import { FINANCE_ID } from "../core/finance";
 import { language, t, tl, type Msg } from "../i18n/i18n";
 import type { ViewCommand } from "../island/shortcuts";
 import { buildInbox } from "./inbox";
+import { buildToday } from "./today";
+import { buildTools } from "../tools/view";
 
 export interface ViewActions {
   setView(v: IslandViewName): void;
-  /** "Cancel" on a dropped file: forgets it and goes back home. */
-  cancelDrop(): void;
+  /** The Tools view on the shelf, where dropped files wait. */
+  openShelf(): void;
   collapse(): void;
   /** Folds a waiting card to the compact island without answering it. */
   foldApproval(): void;
@@ -109,7 +111,7 @@ function stack(padLeft: number, padRight: number, ...children: Node[]): HTMLElem
 export function buildHeader(actions: ViewActions): ViewHost {
   const tabHome = h("button", { class: "tab", title: tl("Overview"), onclick: () => go("overview") }, svg(ICONS.house, 13));
   const tabChat = h("button", { class: "tab", title: tl("Ask"), onclick: () => go("prompt") }, svg(ICONS.bubble, 13));
-  const tabDrop = h("button", { class: "tab", title: tl("Drop"), onclick: () => go("upload") }, svg(ICONS.plus, 13));
+  const tabTools = h("button", { class: "tab", title: tl("Tools"), onclick: () => go("tools") }, svg(ICONS.tools, 12));
   // The notifications Ciel keeps: there while some wait, or while on their list.
   const tabBadge = h("span", { class: "tab-badge" });
   const tabNotes = h("button", { class: "tab tab-notes", title: tl("Notifications"), onclick: () => go("notifications") }, svg(ICONS.bell, 13), tabBadge);
@@ -130,7 +132,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
   const el = h(
     "div",
     { id: "header" },
-    h("div", { class: "tabs" }, tabHome, tabChat, tabDrop, tabNotes),
+    h("div", { class: "tabs" }, tabHome, tabChat, tabTools, tabNotes),
     h("div", { class: "header-actions" }, planPills, gearBtn, soundBtn),
   );
   const headerActions = el.lastElementChild as HTMLElement;
@@ -141,7 +143,7 @@ export function buildHeader(actions: ViewActions): ViewHost {
       const v = State.view;
       tabHome.classList.toggle("on", v === "overview" || v === "empty");
       tabChat.classList.toggle("on", v === "prompt");
-      tabDrop.classList.toggle("on", v === "upload");
+      tabTools.classList.toggle("on", v === "tools");
       const waiting = State.notifications.length;
       tabNotes.classList.toggle("on", v === "notifications");
       tabNotes.style.display = waiting || v === "notifications" ? "" : "none";
@@ -644,24 +646,6 @@ function lighten(hex: string, amount: number): string {
   return `rgb(${c[0]},${c[1]},${c[2]})`;
 }
 
-// ── Empty ─────────────────────────────────────────────────────────────────────
-
-function buildEmpty(actions: ViewActions): ViewHost {
-  const body = h(
-    "div",
-    { class: "stack", style: "padding:0 18px 0 118px;flex-direction:row;align-items:center;gap:16px" },
-    h(
-      "div",
-      { style: "display:flex;flex-direction:column;gap:5px" },
-      h("div", { class: "title", text: tl("Nothing running right now.") }),
-      h("div", { class: "sub", text: tl("Drop a file or window, or ask me anything.") }),
-    ),
-    h("div", { class: "grow" }),
-    btn(tl("Ask Claude"), "primary", () => actions.setView("prompt")),
-  );
-  return { el: h("div", { class: "view" }, card(null, body)), sync() {} };
-}
-
 // ── Approval ──────────────────────────────────────────────────────────────────
 
 /** How long a fresh permission card ignores clicks on its buttons. */
@@ -990,7 +974,8 @@ export function buildViews(
 ): Map<IslandViewName, ViewHost> {
   const map = new Map<IslandViewName, ViewHost>();
   map.set("overview", buildOverview(actions));
-  map.set("empty", buildEmpty(actions));
+  map.set("empty", buildToday(actions));
+  map.set("tools", buildTools(actions));
   map.set("approval", buildApproval(actions));
   map.set("question", buildQuestion(actions));
   map.set("error", buildError(actions));

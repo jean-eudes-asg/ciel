@@ -6,13 +6,15 @@ import { UploadSeq } from "../src/upload/sequence";
 import { State } from "../src/core/state";
 
 State.droppedFile = { name: "rapport-q3.pdf", path: "C:/tmp/rapport-q3.pdf" };
+// ?more=2: two more files dropped with it, on the shelf too.
+State.droppedMore = Number(new URLSearchParams(location.search).get("more") ?? 0);
 
 const stage = document.getElementById("stage")!;
 const clock = document.getElementById("clock")!;
 
 const canvas = new UploadCanvas({
   ask: () => (clock.textContent = "ASK clicked"),
-  cancel: () => (clock.textContent = "CANCEL clicked"),
+  shelf: () => (clock.textContent = "SHELF clicked"),
 });
 canvas.el.classList.add("on");
 canvas.el.style.position = "absolute";

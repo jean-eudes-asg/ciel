@@ -35,7 +35,7 @@ function describe(): string {
   const name = (id: string) => pillDefinition(id)?.name ?? id;
   const all = availablePills(State.os).filter((p) => p.support !== "soon").map((p) => p.name);
   return JSON.stringify({
-    main: name(d.mainPill),
+    main: d.mainPill ? name(d.mainPill) : "none",
     shown: d.activeIntegrations.map(name),
     maxBesidesMain: MAX_DECLARED,
     // Spelled out so a small local model never has to count.

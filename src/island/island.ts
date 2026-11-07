@@ -32,6 +32,9 @@ import { refreshHookPills } from "./integrations";
 import { DesktopLink } from "./desktop";
 import type { ViewCommand } from "./shortcuts";
 import { DRAG_THRESHOLD } from "../cloud/desktop-logic";
+import { buildLiveChip, type LiveChip } from "./live";
+import { holdsIsland } from "../core/live";
+import { Tools } from "../tools/store";
 
 const BOT_OVERHANG = 40;
 const CLAUDE_DESKTOP_ID = "agent_claude-desktop";
@@ -69,6 +72,9 @@ export class Island {
   private clock!: HTMLElement;
   private flip = buildFlipClock("island-flip");
   private noteStack!: NoteStack;
+  private liveChip!: LiveChip;
+  /** The live activity held the island last time: a new one reveals it once. */
+  private liveWasHolding = false;
   private clockTimer = 0;
   private wakeStrip!: HTMLElement;
 
@@ -177,7 +183,7 @@ export class Island {
   private build() {
     const actions: ViewActions = {
       setView: (v) => this.setView(v),
-      cancelDrop: () => this.discardDrop(),
+      openShelf: () => this.openShelf(),
       collapse: () => this.collapse(),
       foldApproval: () => this.foldApproval(),
       setFocus: (id) => {
@@ -281,6 +287,26 @@ export class Island {
     this.countdown = h("div", { id: "countdown" });
     this.clock = h("div", { id: "island-clock" }, this.flip.el);
     this.noteStack = buildNoteStack();
+    // A timer, the microphones off, rain coming: in place of the clock (island/live.ts).
+    this.liveChip = buildLiveChip((tool) => {
+      Tools.want(tool);
+      this.alert("tools");
+    });
+    // A timer or reminder rang: Ciel looks up and chimes, the island comes out for it.
+    Tools.onRang = (timer) => {
+      if (State.mode === "hidden") this.revealSilently();
+      this.engine.triggerEmote(timer.kind === "focus" ? "happy" : "surprised");
+      Sound.play(timer.kind === "focus" ? "finish" : "approval");
+      if (timer.kind !== "focus") {
+        // Twice more, unless it was answered meanwhile.
+        for (const delay of [1400, 2800]) {
+          window.setTimeout(() => {
+            if (Tools.timers.some((x) => x.id === timer.id && x.ringing)) Sound.play("approval");
+          }, delay);
+        }
+      }
+      this.ensureRunning();
+    };
 
     this.header = buildHeader(actions);
     this.views = buildViews(actions, () => this.animateGeometry(false), () => this.fitInbox());
@@ -297,7 +323,7 @@ export class Island {
           : null;
         this.setView("prompt");
       },
-      cancel: () => this.discardDrop(),
+      shelf: () => this.openShelf(),
     });
 
     this.clipEl = h(
@@ -315,6 +341,7 @@ export class Island {
       this.botCanvas,
       this.miniGrid,
       this.clock,
+      this.liveChip.el,
       this.noteStack.el,
       this.planRings.el,
       this.planRings.pop,
@@ -523,11 +550,18 @@ export class Island {
     this.views.get(State.view)?.command?.(command);
   }
 
+  /** The view on screen's text field gets the keys (island/shortcuts.ts). */
+  focusView() {
+    this.views.get(State.view)?.focus?.();
+  }
+
   // ── File drop ───────────────────────────────────────────────────────────────
 
   private onDragDrop(e: { type: string; paths?: string[] }) {
     if (e.type !== "over") void Bridge.log(`drag ${e.type} ${e.paths?.length ?? 0} file(s)`);
     if (State.paused) return;
+    // A file dragged out of the shelf passing over the island: not a new drop.
+    if (Tools.draggingOut) return;
     switch (e.type) {
       case "enter":
       case "over": {
@@ -551,26 +585,30 @@ export class Island {
       }
       case "drop": {
         State.fileDragOver = false;
-        const path = e.paths?.[0];
-        if (!path) {
+        const paths = e.paths ?? [];
+        if (!paths.length) {
           this.engine.animateMorph(0);
           this.setView(State.defaultView());
           return;
         }
-        this.swallow(path);
+        this.swallow(paths);
         break;
       }
     }
   }
 
   /**
-   * Ciel eats the file. Nothing here waits on the file system: the copy into
-   * the inbox runs in the background and swaps the path in when it lands, so a
-   * slow disk can never stall the animation — same as FileDropHandler on macOS.
+   * Ciel eats the files and puts them on the shelf. Nothing here waits on the
+   * file system: the copies into the inbox run in the background and the first
+   * one's path is swapped in when it lands, so a slow disk can never stall the
+   * animation — same as FileDropHandler on macOS. The first file is the one
+   * the chat can ask about; the others wait on the shelf with it.
    */
-  private swallow(path: string) {
+  private swallow(paths: string[]) {
+    const [path, ...others] = paths;
     const name = path.split(/[\\/]/).pop() || "file";
     State.droppedFile = { name, path };
+    State.droppedMore = others.length;
     State.promptContext = { kind: "file", name, path };
     State.chatHistory = [];
     void Bridge.chatReset();
@@ -590,7 +628,9 @@ export class Island {
 
     void Bridge.ingestFile(path)
       .then((file) => {
-        // Cancelled (or replaced by another drop) while the copy was running.
+        // On the shelf, whatever happens to the card.
+        void Tools.refreshShelf();
+        // Gone elsewhere (or replaced by another drop) while the copy was running.
         if (State.droppedFile?.path !== path) return;
         State.droppedFile = { name: file.name, path: file.path };
         State.promptContext = { kind: "file", name: file.name, path: file.path };
@@ -605,13 +645,19 @@ export class Island {
         Sound.play("error");
         window.setTimeout(() => this.setView(State.defaultView()), 2400);
       });
+    // The others go straight to the shelf; one that can't be copied (a folder) stays out.
+    for (const other of others) {
+      void Bridge.ingestFile(other).then(() => Tools.refreshShelf(), () => {});
+    }
   }
 
-  /** "Cancel" on the dropped file: forget it, so the chat does not pick it up. */
-  private discardDrop() {
+  /** "Open the shelf" after a drop: the files are there, to drag out or ask about later. */
+  private openShelf() {
     State.droppedFile = null;
+    State.droppedMore = 0;
     State.promptContext = null;
-    this.setView(State.defaultView());
+    Tools.want("shelf");
+    this.setView("tools");
   }
 
   /**
@@ -1217,10 +1263,16 @@ export class Island {
       }
     }
 
+    // A live activity takes the clock's place in the folded island.
+    this.liveChip.sync(State.mode === "compact" && !busy);
+    const liveShown = this.liveChip.live != null;
     // Open, it sits in the header row, between the tabs and the buttons.
     this.clock.classList.toggle("open", expanded);
-    this.syncClock((State.mode === "compact" && !busy) || (live && State.view !== "confused"));
+    this.syncClock((State.mode === "compact" && !busy && !liveShown) || (live && State.view !== "confused"));
     this.noteStack.sync(State.mode === "compact" && !busy);
+    // The microphones just went off, a timer rang: the folded island comes out to say so.
+    if (State.mode === "hidden" && this.liveHolds() && !this.liveWasHolding) this.revealSilently();
+    this.liveWasHolding = this.liveHolds();
     this.fsm.hold(this.mustStay());
 
     // Plan usage rings: beside the mini grid, or at the end when it is empty.
@@ -1242,9 +1294,18 @@ export class Island {
     this.clockTimer = window.setTimeout(() => this.syncClock(true), 60_000 - (now.getTime() % 60_000));
   }
 
-  /** Dictation, a notification showing, or some waiting in the list: the folded island stays on screen. */
+  /**
+   * Dictation, a notification showing, some waiting in the list, or a timer
+   * running or rung: the folded island stays on screen. (The microphones off
+   * show when it does, but don't keep it: they may stay off for hours.)
+   */
   private mustStay(): boolean {
-    return this.flowStrip.active || this.notes.active || State.notifications.length > 0;
+    return this.flowStrip.active || this.notes.active || State.notifications.length > 0 || this.liveHolds();
+  }
+
+  /** What the live chip would show holds the island (asked whatever the mode). */
+  private liveHolds(): boolean {
+    return holdsIsland(this.liveChip?.live ?? null) || Tools.timers.some((x) => x.ringing);
   }
 
   /** Dictation or a notification in the folded island: it shows them, and stays while they do. */

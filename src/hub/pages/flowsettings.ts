@@ -148,7 +148,7 @@ export async function flowSettingsPage(page: HTMLElement, ctx: HubContext) {
   const ai = status.ai;
   const local = ai.engine === "local" ? localName(ai) : null;
   const summaryNote = !local
-    ? t("With Claude, the transcript (never the audio) goes to Anthropic with your key from Notch → Chat.")
+    ? t("With Claude, the transcript (never the audio) goes to Anthropic with your key from Island → Chat.")
     : staysHere(ai)
       ? t("With {model}, the transcript stays on this computer.", { model: local })
       : t("With {model}, the transcript (never the audio) goes to {url}, your model server.", { model: local, url: ai.url ?? "" });

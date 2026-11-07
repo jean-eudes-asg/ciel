@@ -27,7 +27,7 @@ use tokio::sync::mpsc;
 #[serde(rename_all = "camelCase")]
 pub struct Notification {
     pub id: String,
-    /// "chrome", "gmail", "desktop" or "alerts".
+    /// "chrome", "gmail", "desktop", "alerts", "system" or "timers".
     pub source: String,
     /// The app or site: "Gmail", "WhatsApp"…
     pub app: String,
@@ -77,6 +77,8 @@ pub enum Target {
     Meeting { join: Option<String>, meeting: crate::notes::Meeting },
     /// Nothing to open: an alert that came without a page (alerts.rs).
     None,
+    /// A timer or reminder that rang (timers.rs): its buttons stop, snooze or restart it.
+    Timer(String),
     /// The app that notified: its desktop entry id, the process that sent it
     /// (whose window comes forward), and GNOME's own copy of it once known.
     #[cfg(target_os = "linux")]
@@ -215,6 +217,9 @@ fn act(id: &str, action: &str, open_settings: impl FnOnce(&str), take_notes: imp
         (Target::Settings(page), "open") => open_settings(&page),
         (Target::Meeting { join: Some(url), .. }, "join" | "open") => crate::platform::open_url(&url),
         (Target::Meeting { meeting, .. }, "notes") => take_notes(meeting),
+        (Target::Timer(id), action) => {
+            crate::timers::act(&id, action, None);
+        }
         // D-Bus, X11 and a launch: off the UI thread.
         #[cfg(target_os = "linux")]
         (Target::App { entry, pid, shell }, action) => {

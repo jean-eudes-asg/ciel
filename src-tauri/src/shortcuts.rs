@@ -67,6 +67,10 @@ pub const ACTIONS: &[ActionDef] = &[
     action("prevPill", "Ctrl+Alt+Left", true, true),
     action("muteToggle", "Ctrl+Alt+S", true, true),
     action("desktopToggle", "Ctrl+Alt+D", true, true),
+    // Not the Mac's: every microphone at once (controls.rs). M would type µ on German keyboards.
+    action("micToggle", "Ctrl+Alt+U", true, true),
+    // The clipboard history (clipboard.rs). Off until turned on: Word's Paste Special is on these keys.
+    action("clipboardOpen", "Ctrl+Alt+V", false, true),
 ];
 
 /// Linux desktops keep these Ctrl+Alt keys for themselves (GNOME and others: a
@@ -105,6 +109,8 @@ pub fn description(id: &str) -> &'static str {
         "prevPill" => n_("Previous pill"),
         "muteToggle" => n_("Mute or unmute Ciel"),
         "desktopToggle" => n_("Send Ciel to the desktop"),
+        "micToggle" => n_("Mute or unmute every microphone"),
+        "clipboardOpen" => n_("Open the clipboard history"),
         _ => "Ciel",
     }
 }
@@ -697,9 +703,9 @@ mod wayland {
 mod tests {
     use super::*;
 
-    const MAC_IDS: [&str; 9] = [
+    const MAC_IDS: [&str; 11] = [
         "toggleIsland", "openChat", "goToAlert", "jumpToTerminal", "attachFrontWindow",
-        "nextPill", "prevPill", "muteToggle", "desktopToggle",
+        "nextPill", "prevPill", "muteToggle", "desktopToggle", "micToggle", "clipboardOpen",
     ];
 
     fn never(_: &Shortcut) -> Option<String> {
@@ -741,11 +747,11 @@ mod tests {
         }
     }
 
-    // testEnabledByDefault
+    // testEnabledByDefault, and the clipboard history's keys, which Word uses too.
     #[test]
-    fn only_the_island_toggle_is_off_by_default() {
+    fn only_the_island_toggle_and_the_clipboard_are_off_by_default() {
         for def in ACTIONS {
-            assert_eq!(def.enabled_by_default, def.id != "toggleIsland", "{}", def.id);
+            assert_eq!(def.enabled_by_default, !matches!(def.id, "toggleIsland" | "clipboardOpen"), "{}", def.id);
         }
     }
 
@@ -758,7 +764,10 @@ mod tests {
             match outcome {
                 Ok(_) => assert!(def.ported && def.enabled_by_default, "{}", def.id),
                 Err(s) if reserved => assert_eq!(s.status, Status::NotPorted),
-                Err(s) => assert_eq!((def.id, s.status), ("toggleIsland", Status::Off)),
+                Err(s) => {
+                    assert!(matches!(def.id, "toggleIsland" | "clipboardOpen"), "{}", def.id);
+                    assert_eq!(s.status, Status::Off);
+                }
             }
         }
     }
@@ -816,7 +825,7 @@ mod tests {
         // Same key, other modifiers: not a duplicate.
         stored.insert("jumpToTerminal".into(), Binding { keys: "Ctrl+Shift+A".into(), enabled: true });
         let plan = super::plan(&stored, never);
-        assert!(plan.iter().all(|(d, o)| o.is_ok() || !d.ported || d.id == "toggleIsland"));
+        assert!(plan.iter().all(|(d, o)| o.is_ok() || !d.ported || matches!(d.id, "toggleIsland" | "clipboardOpen")));
 
         // A disabled action doesn't hold its keys.
         stored.insert("goToAlert".into(), Binding { keys: "Ctrl+Alt+A".into(), enabled: false });

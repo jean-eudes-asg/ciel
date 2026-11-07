@@ -183,7 +183,7 @@ pub fn sync(active_integrations: &[String]) {
     }
 }
 
-/// Windows' music pill leaves the browsers' sessions to this one meanwhile.
+/// The music pill leaves the browsers' sessions to this one meanwhile.
 pub fn claims_browsers() -> bool {
     PILL_ON.load(Ordering::Relaxed) && PLAYER.lock().unwrap().is_some()
 }

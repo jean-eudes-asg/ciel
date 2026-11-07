@@ -9,6 +9,7 @@ import type { Settings } from "./state";
 import type { RecapHistory, RecapPrefs } from "../recap/summary";
 import type { SpotifyState } from "./spotify";
 import type { FinanceFolderInfo, FinancePoll, NewExpense } from "./finance";
+import type { ClipState, Controls, Lyrics, Place, ShelfFile, TimerItem, Weather } from "./tools";
 
 export const IS_TAURI =
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -275,6 +276,44 @@ export const Bridge = {
   gnomeExtensionStatus: () => call<GnomeExtStatus>("gnome_extension_status"),
   /** Installs it (its files, GNOME's list of enabled extensions) or takes it out. */
   gnomeExtensionSet: (on: boolean) => callOrThrow<GnomeExtStatus>("gnome_extension_set", { on }),
+  // ── Tools (src/tools) ──
+  /** The clipboard history as it is (src-tauri/src/clipboard.rs). */
+  clipboardState: () => call<ClipState>("clipboard_state"),
+  /** An item back on the clipboard, and pasted in the app in front with `paste`. */
+  clipboardUse: (id: number, paste: boolean) => call<boolean>("clipboard_use", { id, paste }),
+  /** Text of the island's own (an item turned plain, cleaned…), copied and maybe pasted. */
+  clipboardPut: (text: string, paste: boolean) => call<boolean>("clipboard_put", { text, paste }),
+  clipboardPin: (id: number, pinned: boolean) => call<boolean>("clipboard_pin", { id, pinned }),
+  clipboardRemove: (id: number) => call<boolean>("clipboard_remove", { id }),
+  clipboardClear: () => call<void>("clipboard_clear"),
+  /** Timers, reminders and Focus (src-tauri/src/timers.rs). */
+  timersList: () => call<TimerItem[]>("timers_list"),
+  timerStart: (label: string, durationMs: number) => call<TimerItem>("timer_start", { label, durationMs }),
+  reminderAdd: (label: string, due: number, repeat: string) => call<TimerItem>("reminder_add", { label, due, repeat }),
+  focusStart: (focusMs: number, breakMs: number) => call<TimerItem>("focus_start", { focusMs, breakMs }),
+  /** "pause", "resume", "cancel", "done", "snooze", "again", "add" (`value` ms). */
+  timerAction: (id: string, action: string, value?: number) => call<boolean>("timer_action", { id, action, value }),
+  /** Volume, microphones, brightness, radios, keep awake (src-tauri/src/controls.rs). */
+  /** `light`: the sound and the microphones only (at launch). */
+  controlsState: (light = false) => call<Controls>("controls_state", { light }),
+  controlSet: (what: string, value: number) => call<Controls>("control_set", { what, value }),
+  micToggle: () => call<boolean>("mic_toggle"),
+  /** Minutes awake; 0 lets it sleep, a negative number until turned off. */
+  awakeSet: (minutes: number) => call<Controls>("awake_set", { minutes }),
+  /** Open-Meteo (src-tauri/src/weather.rs). */
+  weatherSearch: (query: string, language: string) => callOrThrow<Place[]>("weather_search", { query, language }),
+  weatherNow: (force: boolean) => call<Weather>("weather_now", { force }),
+  /** The song's words from lrclib.net, once lyrics are on (src-tauri/src/lyrics.rs). */
+  lyricsGet: (title: string, artist: string, album: string, duration: number) =>
+    call<Lyrics>("lyrics_get", { title, artist, album, duration }),
+  /** The files dropped on the island (src-tauri/src/shelf.rs). */
+  shelfList: () => call<ShelfFile[]>("shelf_list"),
+  shelfRemove: (paths: string[]) => call<number>("shelf_remove", { paths }),
+  shelfOpen: (path: string) => call<boolean>("shelf_open", { path }),
+  shelfReveal: (path: string) => call<boolean>("shelf_reveal", { path }),
+  shelfCopy: (paths: string[]) => call<boolean>("shelf_copy", { paths }),
+  /** Windows' own drag of the files, while the button is down; false: the page drags them (Linux). */
+  shelfDrag: (paths: string[]) => call<boolean>("shelf_drag", { paths }),
   /** The System card is on screen, or no longer: Rust looks every 2 s meanwhile (src-tauri/src/system.rs). */
   systemWatch: (watching: boolean) => call<void>("system_watch", { watching }),
   /** Ends one of the user's processes (the card's End, clicked twice). */

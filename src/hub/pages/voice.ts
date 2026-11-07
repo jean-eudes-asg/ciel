@@ -68,8 +68,8 @@ export async function voicePage(page: HTMLElement, ctx: HubContext) {
     main.append(h("div", {
       class: "hub-warn",
       text: status.ai.pref === "claude"
-        ? t("Ciel answers with Claude: add your Claude key in Notch → Chat.")
-        : t("Ciel needs a brain to answer: add your Claude key or connect a local model in Notch → Chat."),
+        ? t("Ciel answers with Claude: add your Claude key in Island → Chat.")
+        : t("Ciel needs a brain to answer: add your Claude key or connect a local model in Island → Chat."),
     }));
   } else if (prefs.voice && !ready) {
     main.append(h("div", { class: "hub-warn", text: t("Download the voice model so Ciel can hear you.") }));

@@ -33,9 +33,79 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   - **Sounds**: pieces on wood, captures, check, steps, stars, the
     countdown, a tune at the end, the wind and the storm, all made in code
     and following Ciel's sound switch and volume.
+- **Tools**, a new tab in the open island (the four squares), for the
+  everyday things, whether you code or not:
+  - **Timers and reminders**: type "5", "25m tea", "1h30" or "18:30 call
+    mum", or pick a length. A little cloud of Ciel's shape rains into a
+    glass as the time runs out. Reminders can come back every day, on
+    weekdays or every week, with Snooze. **Focus**: 25 minutes, 5 of break,
+    a longer break every fourth round. They ring with the island shut, and
+    one missed while Ciel was closed rings when it starts.
+  - **Clipboard history**, off until you turn it on: text, links, pictures
+    and files, kept in memory on this computer, the pinned ones on disk. A
+    click pastes it where you were. Links lose their trackers, colours show
+    their HEX, RGB and HSL, sums their result, JSON can be laid out and text
+    can change case. What password managers copy is never kept, and
+    one-time codes go after two minutes. **Ctrl+Alt+V** opens it, once
+    turned on in Preferences → Shortcuts (Word's Paste Special is on the same
+    keys).
+  - **Shelf**: what you drop on Ciel goes there and waits a week, several
+    files at once too. A drop and the shelf are one place: after a drop,
+    ask a question about the file or open the shelf; from the shelf, ask
+    about any file, drag it out into any app, show it in its folder or copy
+    it (a double click opens it).
+  - **Controls**: the volume, the screens' brightness (a laptop's own, and
+    monitors through DDC/CI), Wi-Fi, Bluetooth, night light on GNOME, and
+    **Keep awake** for half an hour up to until you say. **Every microphone
+    at once**: **Ctrl+Alt+U** mutes them all, and the folded island says
+    "Mic off".
+  - **Weather** from Open-Meteo, free and without an account, once you pick
+    your town: now, the next hours and the week. **Rain alerts** (off by
+    default): a card when rain is about to start. **The sky wears the
+    weather** (off by default): Ciel's sky wallpaper turns grey or stormy
+    with the weather outside, and follows his mood on clear days.
+- **Live activities in the folded island**, in place of the clock: a timer's
+  ring counting down, "Mic off", rain coming, a cup while the computer is
+  kept awake, and the line of the song being sung.
+- **Today**: with nothing running, the island opens on a greeting, the date,
+  the weather, the next timer and what waits on the shelf or in the
+  clipboard, each a door into its tool.
+- **Ciel without a coding tool** (Island → Active pills → Main tool →
+  None): no pill is always on, and the island is yours for the rest.
+- **Lyrics** (off by default, the speech-bubble button on the music card):
+  the words of the song playing, timed, from lrclib.net, under its title.
+- **Linux: music from any player**, VLC, a browser, Rhythmbox…: the one
+  playing, Spotify first when none plays.
+- **« OK Ciel »** sets timers and reminders, says the weather where you are,
+  mutes the microphones, sets the volume and keeps the computer awake.
+- **Island → Tools** in the Ciel window: the clipboard, lyrics and weather
+  options together.
+- **A setup**, the first time the Ciel window opens: seven short steps over
+  the whole window (the language and the window's colours, what you code
+  with and its hooks, how the island opens, the everyday tools, dictation,
+  the pills, the sky on your desktop) and the keys worth knowing. Each step
+  you finish lights a star on Ciel's outline in the night beside it; at the
+  end he is drawn whole and opens his eyes. Put off, it waits at the foot of
+  the menu until it is done (Preferences → General → Setup to go through it
+  again).
+
+### Changed
+- **The Ciel window, redesigned.** Five places instead of eighteen pages
+  under "Flow" and "Notch": **Today** (your day, the games), **Island** (the
+  pills, the agents, the tools, the integrations, the chat), **Voice**
+  (dictation, the Notetaker, « OK Ciel », the statistics, the dictionary,
+  the snippets, the styles and their settings), **Sky** (wallpaper,
+  screensaver) and **Preferences** (general, shortcuts, updates and
+  privacy). Every page has the same plain title and the same rows: the
+  setting on the left, its control on the right, the explanation beneath.
+  Pitch black, or white (Preferences → General → Window), in Ciel's rounded
+  type; no coloured bands or glows any more, a small Ciel beside the page
+  you are on.
+- **No more + tab in the island**: drop files on Ciel and they go on the
+  shelf (Tools → Shelf), where you can ask about them or drag them out.
 
 ### Fixed
-- Turning off the desktop or the lock screen (Settings → Wallpaper) puts
+- Turning off the desktop or the lock screen (Sky → Wallpaper) puts
   your own picture back. Ciel's last one stayed there, like a flip clock
   stopped at the minute it was drawn, until **Restore my previous
   wallpaper**. A picture left behind that way goes the next time Ciel
