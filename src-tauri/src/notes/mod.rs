@@ -387,8 +387,6 @@ fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>, meeting: Option<Meeting>
     speech::preload();
     spawn_live(app.clone(), taker.clone(), id.clone(), mic_channel, system_channel, stop_live);
     pill::update(app, |s| s.note_started_at = Some(note.start));
-    // Listening, Ciel isn't left out of screen shares (capture.rs).
-    crate::capture::recording(app, true);
     let _ = app.emit_to(crate::HUB_LABEL, "notes-changed", &id);
     crate::log::line("notes: recording");
     Ok(id)
@@ -403,7 +401,7 @@ const FOLDER_BUDGET: usize = 6000;
 const ANSWER_MODEL: &str = "claude-haiku-4-5";
 const ANSWER_TIMEOUT: Duration = Duration::from_secs(30);
 const ANSWER_LOCAL_TIMEOUT: Duration = Duration::from_secs(90);
-/// The card stays this long, or until dismissed.
+/// The card stays this long, or until dismissed; an answer is in screen shares meanwhile.
 const ANSWER_SHOWN_MS: u64 = 3 * 60_000;
 
 /// The last minutes of the call as the brain reads them: "Me:" and "Them:".
@@ -453,8 +451,15 @@ pub fn parse_answer(reply: &str) -> (String, String) {
     }
 }
 
+/// A word from the answer key that isn't an answer: it takes an answer's
+/// place in the island, and Ciel is left out of screen shares again, if so set.
 fn answer_card(app: &AppHandle, title: String, body: String) {
-    use crate::notify::{self, Notification, Target};
+    crate::capture::answer_gone(app);
+    card(app, title, body, Vec::new(), crate::notify::Target::None);
+}
+
+fn card(app: &AppHandle, title: String, body: String, buttons: Vec<crate::notify::Button>, target: crate::notify::Target) {
+    use crate::notify::{self, Notification};
     let now = now_ms();
     notify::show(
         app,
@@ -468,26 +473,42 @@ fn answer_card(app: &AppHandle, title: String, body: String) {
             at: now as f64,
             // A new answer takes the place of the last.
             tag: Some("meeting-answer".into()),
-            buttons: Vec::new(),
+            buttons,
             until: Some((now + ANSWER_SHOWN_MS) as f64),
             time: None,
         },
-        Target::None,
+        target,
     );
+}
+
+/// The card's Take notes, when the answer key was pressed with no call noted.
+pub fn start_for_answers(app: &AppHandle) {
+    if is_recording(app) {
+        return;
+    }
+    match start(app) {
+        Ok(_) => answer_card(app, t("Ciel is listening"), t("The call is being noted. Press the key again when you're asked something.")),
+        Err(err) => say_why(app, err),
+    }
 }
 
 /// The answer key, during a call the Notetaker records: Ciel finds the last
 /// question the others put to the user in the live transcript, and suggests
-/// an answer on a card in the island, kept in the note. Ciel stays visible
-/// in screen shares meanwhile. Not recording yet: the Notetaker starts.
+/// an answer on a card in the island, kept in the note. While the card is
+/// there, Ciel is in screen shares (capture.rs). No call noted yet: a card
+/// asks first, and only its Take notes starts the Notetaker.
 pub async fn answer(app: &AppHandle) {
     let Some(taker) = get(app) else { return };
     let id = taker.recording.lock().unwrap().as_ref().map(|r| r.id.clone());
     let Some(id) = id else {
-        match start(app) {
-            Ok(_) => answer_card(app, t("Ciel is listening"), t("The call is being noted. Press the key again when you're asked something.")),
-            Err(err) => say_why(app, err),
-        }
+        let take = crate::notify::Button { id: "notes".into(), label: t("Take notes") };
+        card(
+            app,
+            t("Take notes of this call?"),
+            t("Ciel records both sides of the call, and suggests an answer when you press the key again. Let the others know it is recorded."),
+            vec![take],
+            crate::notify::Target::Notetaker,
+        );
         return;
     };
     let Some(engine) = crate::ai::current(app) else {
@@ -588,7 +609,10 @@ pub async fn answer(app: &AppHandle) {
         return;
     }
     taker.change(app, &id, |n| n.answers.push(Answer { at: now_s, question: question.clone(), answer: answer.clone() }));
-    answer_card(app, if question.is_empty() { t("Answer") } else { question }, answer);
+    // In the share before it shows, so the others see it as the user does.
+    crate::capture::answer_shown(app, ANSWER_SHOWN_MS);
+    let title = if question.is_empty() { t("Answer") } else { question };
+    card(app, title, answer, Vec::new(), crate::notify::Target::Answer);
 }
 
 /// Every second while recording: the stretches ending on a pause go to
@@ -630,7 +654,7 @@ fn spawn_live(
 pub fn stop(app: &AppHandle) {
     let Some(taker) = get(app) else { return };
     let Some(mut rec) = taker.recording.lock().unwrap().take() else { return };
-    crate::capture::recording(app, false);
+    crate::capture::answer_gone(app);
     rec.stop_live.store(true, Ordering::Relaxed);
     rec.mic.stop();
     if let Some(s) = rec.system.as_mut() {
@@ -655,7 +679,7 @@ pub fn stop(app: &AppHandle) {
 pub fn shutdown(app: &AppHandle) {
     let Some(taker) = get(app) else { return };
     let Some(mut rec) = taker.recording.lock().unwrap().take() else { return };
-    crate::capture::recording(app, false);
+    crate::capture::answer_gone(app);
     rec.stop_live.store(true, Ordering::Relaxed);
     rec.mic.stop();
     if let Some(s) = rec.system.as_mut() {

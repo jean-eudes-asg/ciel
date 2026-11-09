@@ -5,8 +5,8 @@
 // the taskbar on Windows, with their icons, opened in one click.
 //
 // The island asks the user to click twice before restart, power off and log
-// out; here they are done at once, the desktop's own way (GNOME lets the apps
-// save first).
+// out; here they are done at once, the desktop's own way (GNOME, and the other
+// desktops' log out, let the apps save first).
 
 use serde::Serialize;
 
@@ -117,9 +117,36 @@ mod platform {
             "suspend" => ok("systemctl", &["suspend"]),
             "restart" => gnome_quit("--reboot") || ok("systemctl", &["reboot"]),
             "powerOff" => gnome_quit("--power-off") || ok("systemctl", &["poweroff"]),
-            "logOut" => gnome_quit("--logout") || ok("loginctl", &["terminate-user", &std::env::var("USER").unwrap_or_default()]),
+            "logOut" => gnome_quit("--logout") || log_out(&std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default()),
             _ => false,
         }
+    }
+
+    /// Log out with the desktop's own session manager, which lets the apps
+    /// save first. Without one, logind ends this session only: never the
+    /// user's others (an SSH login, a tmux), as `terminate-user` would.
+    fn log_out(desktop: &str) -> bool {
+        let kde = desktop.split(':').any(|d| d.eq_ignore_ascii_case("KDE"));
+        let kde_call = |dest: &str, path: &str, method: &str, args: &[&str]| {
+            let dest = format!("--dest={dest}");
+            let mut all = vec!["--session", "--print-reply", dest.as_str(), path, method];
+            all.extend_from_slice(args);
+            ok("dbus-send", &all)
+        };
+        (kde && has("dbus-send")
+            // Plasma 6 (and 5.25 on), then the older Plasma's session manager.
+            && (kde_call("org.kde.Shutdown", "/Shutdown", "org.kde.Shutdown.logout", &[])
+                || kde_call("org.kde.ksmserver", "/KSMServer", "org.kde.KSMServerInterface.logout", &["int32:0", "int32:0", "int32:0"])))
+            || (has("cinnamon-session-quit") && ok("cinnamon-session-quit", &["--logout", "--no-prompt"]))
+            || (has("xfce4-session-logout") && ok("xfce4-session-logout", &["--logout"]))
+            || (has("mate-session-save") && ok("mate-session-save", &["--logout"]))
+            || (has("lxqt-leave") && ok("lxqt-leave", &["--logout"]))
+            || this_session().is_some_and(|id| ok("loginctl", &["terminate-session", &id]))
+    }
+
+    /// logind's id for the session Ciel runs in, as the desktop gave it.
+    fn this_session() -> Option<String> {
+        std::env::var("XDG_SESSION_ID").ok().map(|id| id.trim().to_string()).filter(|id| !id.is_empty())
     }
 
     fn gsettings(args: &[&str]) -> Option<String> {

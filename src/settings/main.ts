@@ -1477,6 +1477,8 @@ function screenSharingRows(): HTMLElement[] {
       toggle(settings.hideFromScreenSharing, (v) => { settings.hideFromScreenSharing = v; void save(); }),
     ),
     h("div", { class: "hint", text: t("Ciel stays on your screen but is left out of screen shares, recordings and screenshots, yours included. A camera pointed at the screen still sees everything.") }),
+    // The answer key's cards are seen by the others too (src-tauri/src/capture.rs).
+    h("div", { class: "hint", text: t("While it shows an answer during a call, Ciel is in screen shares like the rest of your screen, so the others see it too.") }),
   ];
 }
 

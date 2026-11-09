@@ -9,9 +9,10 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   Notetaker records, Ciel finds the last question the others put to you in
   the live transcript and suggests an answer on a card in the island, with
   your Claude key or a local model. Pressed before the call is noted, it
-  starts the Notetaker. Each question and answer stays in the call's note
-  (Ciel window → Notetaker). While the Notetaker records, Ciel shows in
-  screen shares even with Hide from screen sharing on, its answers included.
+  asks first: Take notes on its card starts the Notetaker. Each question and
+  answer stays in the call's note (Ciel window → Notetaker). While an answer
+  is on screen, Ciel shows in screen shares even with Hide from screen
+  sharing on, so the others see it too; the rest of the call it stays out.
   - **Your company folder** (Settings → Island → Chat): the answer key reads
     it as it is at that moment, and the passages that fit the question go
     to the brain with it. Text files for now (Markdown, text, CSV, JSON,
@@ -21,6 +22,12 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   - **Quicker**: the last words said are transcribed the moment the key is
     pressed, without waiting for a pause. A button on the Notetaker's strip
     in the island does the same as the key.
+
+### Fixed
+- Linux: Log out in the power menu (Tools → Controls) uses the desktop's own
+  on KDE Plasma, Cinnamon, Xfce, MATE and LXQt, so apps can save first.
+  Elsewhere it ends only Ciel's session, no longer every session you have
+  (an SSH login, a tmux).
 
 ## [0.4.1] - 2026-11-09
 

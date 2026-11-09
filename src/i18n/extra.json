@@ -6928,6 +6928,17 @@
    "ru": "Ciel остаётся на вашем экране, но не попадает в демонстрацию экрана, записи и снимки экрана, в том числе ваши собственные. Камера, направленная на экран, всё равно видит всё.",
    "id": "Ciel tetap ada di layarmu, tetapi tidak ikut dalam berbagi layar, rekaman, dan tangkapan layar, termasuk milikmu sendiri. Kamera yang diarahkan ke layar tetap melihat semuanya."
   },
+  "While it shows an answer during a call, Ciel is in screen shares like the rest of your screen, so the others see it too.": {
+   "zh-Hans": "在通话中显示回答时，Ciel 会像屏幕上的其他内容一样出现在屏幕共享中，其他人也能看到。",
+   "hi": "कॉल के दौरान जब Ciel कोई जवाब दिखाता है, तो वह आपकी स्क्रीन के बाकी हिस्से की तरह स्क्रीन शेयर में दिखता है, ताकि दूसरे भी उसे देख सकें।",
+   "es": "Mientras muestra una respuesta durante una llamada, Ciel aparece al compartir pantalla como el resto de tu pantalla, así que los demás también la ven.",
+   "ar": "عندما يعرض Ciel إجابة أثناء مكالمة، يظهر في مشاركة الشاشة مثل بقية شاشتك، فيراها الآخرون أيضًا.",
+   "fr": "Quand il affiche une réponse pendant un appel, Ciel apparaît dans les partages d'écran comme le reste de ton écran : les autres la voient aussi.",
+   "bn": "কলের সময় Ciel কোনো উত্তর দেখালে, আপনার স্ক্রিনের বাকি অংশের মতো সেটিও স্ক্রিন শেয়ারে দেখা যায়, তাই অন্যরাও তা দেখতে পান।",
+   "pt-BR": "Enquanto mostra uma resposta durante uma chamada, o Ciel aparece no compartilhamento de tela como o resto da sua tela, então os outros também a veem.",
+   "ru": "Пока Ciel показывает ответ во время звонка, он виден при демонстрации экрана, как и всё остальное на экране, — остальные тоже его видят.",
+   "id": "Saat menampilkan jawaban selama panggilan, Ciel ikut dalam berbagi layar seperti bagian layarmu yang lain, jadi orang lain juga melihatnya."
+  },
   "This computer": {
    "zh-Hans": "这台电脑",
    "hi": "यह कंप्यूटर",
@@ -10567,6 +10578,28 @@
    "pt-BR": "A chamada está sendo anotada. Pressione a tecla de novo quando te perguntarem algo.",
    "ru": "Звонок записывается. Нажмите клавишу ещё раз, когда вам зададут вопрос.",
    "id": "Panggilan sedang dicatat. Tekan tombol lagi saat Anda ditanya sesuatu."
+  },
+  "Take notes of this call?": {
+   "zh-Hans": "要为这次通话记笔记吗？",
+   "hi": "क्या इस कॉल के नोट्स लें?",
+   "es": "¿Tomar notas de esta llamada?",
+   "ar": "هل تريد تدوين ملاحظات هذه المكالمة؟",
+   "fr": "Prendre des notes de cet appel ?",
+   "bn": "এই কলের নোট নেবেন?",
+   "pt-BR": "Fazer anotações desta chamada?",
+   "ru": "Записать этот звонок?",
+   "id": "Catat panggilan ini?"
+  },
+  "Ciel records both sides of the call, and suggests an answer when you press the key again. Let the others know it is recorded.": {
+   "zh-Hans": "Ciel 会录下通话双方的声音，你再按一次快捷键时，它会给出建议的回答。请告诉其他人通话正在录音。",
+   "hi": "Ciel कॉल के दोनों तरफ़ की आवाज़ रिकॉर्ड करता है, और जब आप फिर से कुंजी दबाते हैं तो एक जवाब सुझाता है। दूसरों को बता दें कि कॉल रिकॉर्ड हो रही है।",
+   "es": "Ciel graba a ambas partes de la llamada y sugiere una respuesta cuando vuelves a pulsar la tecla. Avisa a los demás de que se está grabando.",
+   "ar": "يسجّل Ciel طرفي المكالمة، ويقترح إجابة عندما تضغط المفتاح مرة أخرى. أخبر الآخرين بأن المكالمة تُسجَّل.",
+   "fr": "Ciel enregistre les deux côtés de l'appel et suggère une réponse quand vous appuyez de nouveau sur la touche. Prévenez les autres que l'appel est enregistré.",
+   "bn": "Ciel কলের দুই পক্ষকেই রেকর্ড করে, আর আপনি আবার কী চাপলে একটি উত্তর সাজেস্ট করে। অন্যদের জানিয়ে দিন যে কলটি রেকর্ড হচ্ছে।",
+   "pt-BR": "O Ciel grava os dois lados da chamada e sugere uma resposta quando você pressiona a tecla de novo. Avise os outros que a chamada está sendo gravada.",
+   "ru": "Ciel записывает обе стороны звонка и предлагает ответ, когда вы снова нажимаете клавишу. Предупредите остальных, что звонок записывается.",
+   "id": "Ciel merekam kedua sisi panggilan, dan menyarankan jawaban saat Anda menekan tombol lagi. Beri tahu yang lain bahwa panggilan ini direkam."
   },
   "Ciel needs Claude or a local model for this: set one up in Island → Chat.": {
    "zh-Hans": "这需要 Claude 或本地模型：请在“岛 → 聊天”中设置一个。",

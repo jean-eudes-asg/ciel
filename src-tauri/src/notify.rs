@@ -79,6 +79,11 @@ pub enum Target {
     None,
     /// A timer or reminder that rang (timers.rs): its buttons stop, snooze or restart it.
     Timer(String),
+    /// The answer key pressed with no call noted (notes/mod.rs): Take notes starts the Notetaker.
+    Notetaker,
+    /// An answer of the answer key's: once it leaves the island, Ciel is left
+    /// out of screen shares again, if so set (capture.rs).
+    Answer,
     /// The app that notified: its desktop entry id, the process that sent it
     /// (whose window comes forward), and GNOME's own copy of it once known.
     #[cfg(target_os = "linux")]
@@ -191,35 +196,50 @@ pub fn from_bridge(payload: &Value) -> Option<(Notification, Target)> {
     Some((notification, Target::Bridge { bridge, key: clip(key, 300) }))
 }
 
+/// What a card asks of Ciel itself, which `act` hands back.
+#[derive(Debug, PartialEq)]
+enum Own {
+    /// A page of Ciel's settings (its own notifications' Open).
+    Settings(String),
+    /// The Notetaker, on a meeting of the calendar or on the call going on.
+    Notes(Option<crate::notes::Meeting>),
+    /// An answer left the island.
+    AnswerGone,
+}
+
 /// The island's Open or Dismiss, or one of the card's own buttons.
 #[tauri::command]
 pub fn notification_action(app: AppHandle, id: String, action: String) {
-    act(
-        &id,
-        &action,
-        |page| crate::open_settings(&app, page),
-        |meeting| {
+    act(&id, &action, |own| match own {
+        Own::Settings(page) => crate::open_settings(&app, &page),
+        Own::Notes(meeting) => {
             // The microphone and the computer's sound take a moment to open:
             // not on the window's thread.
             let app = app.clone();
-            std::thread::spawn(move || crate::notes::start_meeting(&app, meeting));
-        },
-    );
+            std::thread::spawn(move || match meeting {
+                Some(meeting) => crate::notes::start_meeting(&app, meeting),
+                None => crate::notes::start_for_answers(&app),
+            });
+        }
+        Own::AnswerGone => crate::capture::answer_gone(&app),
+    });
 }
 
-/// Open, Dismiss or a button on the notification `id`; `open_settings` shows
-/// a page of Ciel's settings (its own notifications' Open), `take_notes`
-/// starts the Notetaker on a meeting.
-fn act(id: &str, action: &str, open_settings: impl FnOnce(&str), take_notes: impl FnOnce(crate::notes::Meeting)) {
+/// Open, Dismiss or a button on the notification `id`; what is Ciel's own
+/// to do goes to `ciel`.
+fn act(id: &str, action: &str, ciel: impl FnOnce(Own)) {
     let target = TARGETS.lock().unwrap().iter().find(|(i, _)| *i == id).map(|(_, t)| t.clone());
     let Some(target) = target else { return };
     match (target, action) {
         (Target::Bridge { bridge, key }, "open") => tell_bridge(&bridge, json!({"type": "click", "key": key})),
         (Target::Bridge { bridge, key }, "dismiss") => tell_bridge(&bridge, json!({"type": "close", "key": key})),
         (Target::Url(url), "open") => crate::platform::open_url(&url),
-        (Target::Settings(page), "open") => open_settings(&page),
+        (Target::Settings(page), "open") => ciel(Own::Settings(page)),
         (Target::Meeting { join: Some(url), .. }, "join" | "open") => crate::platform::open_url(&url),
-        (Target::Meeting { meeting, .. }, "notes") => take_notes(meeting),
+        (Target::Meeting { meeting, .. }, "notes") => ciel(Own::Notes(Some(meeting))),
+        (Target::Notetaker, "notes") => ciel(Own::Notes(None)),
+        // Whatever was pressed, the card leaves the island.
+        (Target::Answer, _) => ciel(Own::AnswerGone),
         (Target::Timer(id), action) => {
             crate::timers::act(&id, action, None);
         }
@@ -718,12 +738,12 @@ mod tests {
         let next = |rx: &mut mpsc::UnboundedReceiver<String>| serde_json::from_str::<Value>(rx.try_recv().unwrap().trim()).unwrap();
         assert_eq!(next(&mut rx), json!({"type": "status", "ciel": true}));
         TARGETS.lock().unwrap().push_back(("chrome-x".into(), Target::Bridge { bridge: "test-bridge".into(), key: "7:t".into() }));
-        act("chrome-x", "open", |_| panic!("not a settings page"), |_| panic!("not a meeting"));
+        act("chrome-x", "open", |own| panic!("nothing of Ciel's: {own:?}"));
         assert_eq!(next(&mut rx), json!({"type": "click", "key": "7:t"}));
-        act("chrome-x", "dismiss", |_| {}, |_| {});
+        act("chrome-x", "dismiss", |_| {});
         assert_eq!(next(&mut rx), json!({"type": "close", "key": "7:t"}));
         forget("test-bridge");
-        act("chrome-x", "open", |_| {}, |_| {});
+        act("chrome-x", "open", |_| {});
         assert!(rx.try_recv().is_err(), "a bridge gone hears nothing");
     }
 
@@ -731,9 +751,9 @@ mod tests {
     fn a_new_ciel_opens_settings_and_is_only_dismissed_otherwise() {
         TARGETS.lock().unwrap().push_back(("ciel-x".into(), Target::Settings("general".into())));
         let mut opened = None;
-        act("ciel-x", "open", |page| opened = Some(page.to_string()), |_| {});
-        assert_eq!(opened.as_deref(), Some("general"));
-        act("ciel-x", "dismiss", |_| panic!("a dismissal opens nothing"), |_| {});
+        act("ciel-x", "open", |own| opened = Some(own));
+        assert_eq!(opened, Some(Own::Settings("general".into())));
+        act("ciel-x", "dismiss", |own| panic!("a dismissal opens nothing: {own:?}"));
     }
 
     #[test]
@@ -741,10 +761,26 @@ mod tests {
         let meeting = crate::notes::Meeting { title: "Q4".into(), attendees: vec!["Ana".into()], agenda: None };
         TARGETS.lock().unwrap().push_back(("calendar-x".into(), Target::Meeting { join: None, meeting: meeting.clone() }));
         let mut taken = None;
-        act("calendar-x", "notes", |_| panic!("no settings"), |m| taken = Some(m));
-        assert_eq!(taken, Some(meeting));
+        act("calendar-x", "notes", |own| taken = Some(own));
+        assert_eq!(taken, Some(Own::Notes(Some(meeting))));
         // Without a room to join, Join and Open do nothing.
-        act("calendar-x", "join", |_| panic!("no settings"), |_| panic!("not notes"));
-        act("calendar-x", "dismiss", |_| panic!("no settings"), |_| panic!("not notes"));
+        act("calendar-x", "join", |own| panic!("not {own:?}"));
+        act("calendar-x", "dismiss", |own| panic!("not {own:?}"));
+    }
+
+    #[test]
+    fn the_answer_key_records_only_on_a_click_and_an_answer_leaves_the_share_with_its_card() {
+        TARGETS.lock().unwrap().push_back(("answer-x".into(), Target::Notetaker));
+        act("answer-x", "dismiss", |own| panic!("a dismissal records nothing: {own:?}"));
+        let mut taken = None;
+        act("answer-x", "notes", |own| taken = Some(own));
+        assert_eq!(taken, Some(Own::Notes(None)));
+
+        TARGETS.lock().unwrap().push_back(("answer-y".into(), Target::Answer));
+        for action in ["dismiss", "open"] {
+            let mut gone = None;
+            act("answer-y", action, |own| gone = Some(own));
+            assert_eq!(gone, Some(Own::AnswerGone), "{action}");
+        }
     }
 }
