@@ -2,15 +2,6 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
-
-### Fixed
-- **Weather in °F outside the US**: on an English (US) system, Automatic
-  units showed Fahrenheit wherever you were. Picking a place now sets the
-  units its country uses, the setup asks for °C or °F, and the temperature
-  says which it is. A place picked before keeps its units: click °F on the
-  weather card to switch.
-
 ## [0.4.0] - 2026-11-07
 
 ### Added
@@ -114,6 +105,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   shelf (Tools → Shelf), where you can ask about them or drag them out.
 
 ### Fixed
+- **Weather in °F outside the US**: on an English (US) system, Automatic
+  units showed Fahrenheit wherever you were. Picking a place now sets the
+  units its country uses, the setup asks for °C or °F, and the temperature
+  says which it is. A place picked before keeps its units: click °F on the
+  weather card to switch.
 - Turning off the desktop or the lock screen (Sky → Wallpaper) puts
   your own picture back. Ciel's last one stayed there, like a flip clock
   stopped at the minute it was drawn, until **Restore my previous
