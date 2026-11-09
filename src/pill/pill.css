@@ -224,6 +224,37 @@ body {
   cursor: pointer;
 }
 
+/* The answer key, while a call is noted; lit when an answer is ready. */
+.answer {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.16);
+  color: #e8e9ec;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.answer svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.answer.ready {
+  background: #fbbf24;
+  color: #1a1300;
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.35), 0 0 10px rgba(251, 191, 36, 0.55);
+}
+
 .stop i {
   width: 8px;
   height: 8px;

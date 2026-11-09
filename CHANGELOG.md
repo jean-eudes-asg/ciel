@@ -12,15 +12,29 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   starts the Notetaker. Each question and answer stays in the call's note
   (Ciel window → Notetaker). While the Notetaker records, Ciel shows in
   screen shares even with Hide from screen sharing on, its answers included.
-  - **Your company folder** (Settings → Island → Chat): the answer key reads
-    it as it is at that moment, and the passages that fit the question go
-    to the brain with it. Text files for now (Markdown, text, CSV, JSON,
-    YAML, HTML).
+  - **At once**: the card shows the moment the key is pressed, and the answer
+    is written into it as it comes: first a sentence you can say as it is,
+    then a figure or what to check. The last words said are transcribed at
+    the press, after what the live transcript is still writing, so the
+    question just asked is never left out. A button on the Notetaker's strip,
+    in the island and on the pill, does the same as the key.
+  - **Prepare answers ahead** (Settings → Island → Chat, off by default): when
+    the others ask you a question, Ciel writes the answer before you press
+    the key, and the key's button lights up; the press then shows it at once.
+    With Claude, up to the last half hour of the call goes to Anthropic with
+    each question, pressed or not.
+  - **Your company folder** (Settings → Island → Chat): read when the call
+    starts, then again only where a file changed, so the answers are always
+    in step with it. The passages that fit the question go to the brain with
+    it, a rare word counting for more than a common one. Text files for now
+    (Markdown, text, CSV, JSON, YAML, HTML).
   - **Earlier calls** on the same subject help too: their summary and what
     is still to do (with Claude, when Ciel's brain may read the notes).
-  - **Quicker**: the last words said are transcribed the moment the key is
-    pressed, without waiting for a pause. A button on the Notetaker's strip
-    in the island does the same as the key.
+  - With Claude, the answer key reads up to the last half hour of the call
+    (the part already said is cached from one question to the next); with a
+    local model, the last three minutes.
+  - The live transcript keeps up better with the others: it looks for a pause
+    four times a second, and writes their words at least every six seconds.
 
 ## [0.4.1] - 2026-11-09
 

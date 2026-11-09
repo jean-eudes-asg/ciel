@@ -145,6 +145,20 @@ pub fn show(app: &AppHandle, n: Notification, target: Target) {
     let _ = app.emit_to(crate::island::WINDOW_LABEL, "notification", &n);
 }
 
+/// What a card shown already says now: the island changes it in place, without
+/// announcing it again (the answer key's, as the answer is written).
+#[derive(Serialize, Clone, Debug, PartialEq)]
+pub struct Update {
+    pub id: String,
+    pub title: String,
+    pub body: String,
+}
+
+pub fn update(app: &AppHandle, id: &str, title: String, body: String) {
+    let update = Update { id: id.to_string(), title: clip(&title, MAX_TEXT), body: clip(&body, MAX_TEXT) };
+    let _ = app.emit_to(crate::island::WINDOW_LABEL, "notification-update", &update);
+}
+
 /// GNOME's id for a notification already shown, once the server has answered.
 #[cfg(target_os = "linux")]
 fn set_shell(id: &str, server: ShellRef) {

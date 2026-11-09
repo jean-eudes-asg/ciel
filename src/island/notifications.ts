@@ -7,10 +7,14 @@
 // notification that arrives meanwhile waits for it to end.
 //
 // Open goes back to where it came from (Rust: the tab in Chrome, the mail in
-// Gmail, the app); Dismiss only takes it out of the island and the list.
+// Gmail, the app); Dismiss only takes it out of the island and the list. A
+// card can change in place (the answer key's, as its answer is written):
+// what it says is updated without announcing it again.
 
 import { onEvent } from "../core/bridge";
-import { addNotification, MAX_UNSEEN, parseNotification, showFor, timeSpan, type CielNotification } from "../core/notifications";
+import {
+  addNotification, applyUpdate, MAX_UNSEEN, parseNotification, parseNotificationUpdate, showFor, timeSpan, type CielNotification,
+} from "../core/notifications";
 import { State } from "../core/state";
 import { Tools } from "../tools/store";
 import { language, t } from "../i18n/i18n";
@@ -46,11 +50,16 @@ function own(e: HTMLElement): HTMLElement {
 export type NotificationSource = (deliver: (raw: unknown) => void) => void;
 
 const FROM_RUST: NotificationSource = (deliver) => void onEvent<unknown>("notification", deliver);
+const UPDATES_FROM_RUST: NotificationSource = (deliver) => void onEvent<unknown>("notification-update", deliver);
+
+/** The answer key's card (src-tauri/src/notes/answer.rs): its answer shows whole. */
+const ANSWER_TAG = "meeting-answer";
 
 export function buildNotificationCard(
   onChange: () => void,
   onArrive: (n: CielNotification) => void,
   source: NotificationSource = FROM_RUST,
+  updates: NotificationSource = UPDATES_FROM_RUST,
 ): NotificationCard {
   let queue: CielNotification[] = [];
   /** The one showing, if any. */
@@ -102,6 +111,7 @@ export function buildNotificationCard(
     const n = free ? showing : null;
     strip.classList.toggle("on", !!n);
     pop.classList.toggle("on", !!n);
+    pop.classList.toggle("answer", n?.tag === ANSWER_TAG);
     if (!n) {
       strip.replaceChildren();
       pop.replaceChildren();
@@ -156,6 +166,18 @@ export function buildNotificationCard(
     showing = null;
     onArrive(n);
     next();
+  });
+
+  // A card that says something new: in place, no sound, no new arrival.
+  updates((raw) => {
+    const u = parseNotificationUpdate(raw);
+    if (!u) return;
+    State.notifications = applyUpdate(State.notifications, u);
+    queue = applyUpdate(queue, u);
+    if (showing?.id !== u.id) return;
+    showing = queue.find((q) => q.id === u.id) ?? { ...showing, title: u.title, body: u.body };
+    render();
+    onChange();
   });
 
   return {

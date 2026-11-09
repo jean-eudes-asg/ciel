@@ -7,7 +7,7 @@ import { buildFlowStrip, type FlowSource } from "../src/island/flow";
 import type { PillState } from "../src/core/flow";
 
 const base: PillState = {
-  phase: "idle", edge: "island", key: "right_ctrl", noteStartedAt: null, announcement: null, enabled: true, voice: null,
+  phase: "idle", edge: "island", key: "right_ctrl", noteStartedAt: null, noteAnswer: null, announcement: null, enabled: true, voice: null,
 };
 
 const CASES: [string, Partial<PillState>, boolean?][] = [

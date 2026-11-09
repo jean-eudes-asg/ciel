@@ -94,3 +94,37 @@ test("an alert from a monitoring tool comes as a notification of its own source"
   assert.equal(n.app, "Grafana");
   assert.equal(parseNotification(raw({ source: "alerts", app: "" })).app, "Alerts");
 });
+
+test("an update keeps its lines and reaches only the notification it names", async () => {
+  const { applyUpdate, parseNotificationUpdate } = await import("../src/core/notifications.ts");
+  const u = parseNotificationUpdate({ id: "answer-1", title: " Price ", body: "It's 90 euros a seat.\n\n  Discounts   start at twenty." });
+  assert.deepEqual(u, { id: "answer-1", title: "Price", body: "It's 90 euros a seat.\nDiscounts start at twenty." });
+  assert.equal(parseNotificationUpdate({ id: "", title: "x" }), null);
+  assert.equal(parseNotificationUpdate({ id: "a", title: "", body: "" }), null);
+  const list = [parseNotification(raw({ id: "answer-1", source: "ciel" })), parseNotification(raw({ id: "chrome-2" }))];
+  const next = applyUpdate(list, u);
+  assert.equal(next[0].title, "Price");
+  assert.equal(next[1].title, "Ana");
+  assert.deepEqual(applyUpdate(list, { ...u, id: "gone" }), list);
+});
+
+test("the answer key's card changes in place: no new arrival, the answer whole", async () => {
+  const { installFakeDom } = await import("./fakedom.mjs");
+  installFakeDom();
+  const { buildNotificationCard } = await import("../src/island/notifications.ts");
+  let deliver = () => {};
+  let update = () => {};
+  const arrived = [];
+  const card = buildNotificationCard(() => {}, (n) => arrived.push(n.id), (d) => (deliver = d), (u) => (update = u));
+  card.sync(true);
+  deliver(raw({ id: "answer-1", source: "ciel", app: "Ciel", title: "Answer", body: "Thinking…", tag: "meeting-answer", until: Date.now() + 1000 }));
+  assert.ok(card.pop.classList.contains("answer"));
+  update({ id: "answer-1", title: "Price for ten seats", body: "It's 90 euros a seat.\nDiscounts start at twenty." });
+  assert.deepEqual(arrived, ["answer-1"], "an update is not a new notification");
+  assert.match(card.pop.textContent, /Price for ten seats/);
+  assert.match(card.pop.textContent, /Discounts start at twenty/);
+  // One that isn't showing changes nothing on the card.
+  update({ id: "chrome-9", title: "Other", body: "x" });
+  assert.doesNotMatch(card.pop.textContent, /Other/);
+  card.sync(false);
+});

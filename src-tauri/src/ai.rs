@@ -203,7 +203,8 @@ pub struct Request<'a> {
     pub context: Option<u32>,
 }
 
-/// The request's body. Never streamed: these answers are short, and read whole.
+/// The request's body. Not streamed: these answers are short, and read whole
+/// (the answer key alone streams its own, `stream_complete`).
 pub fn request_body(dialect: Dialect, model: &str, req: &Request) -> Value {
     let mut messages = vec![json!({ "role": "system", "content": req.system })];
     messages.extend(req.messages.iter().cloned());
@@ -481,6 +482,106 @@ pub async fn complete(local: &Local, system: &str, user: &str, how: Ask) -> Resu
     Ok(turn.text)
 }
 
+/// One line of a streamed answer: `Some(Ok(text))` for a piece of it,
+/// `Some(Err(message))` for an error, None for anything else. Ollama's own API
+/// streams one JSON object a line, the others server-sent events.
+fn stream_line(dialect: Dialect, line: &str) -> Option<Result<String, String>> {
+    match dialect {
+        Dialect::OpenAi => local_chat::parse_sse_line(line),
+        Dialect::Ollama => {
+            let json: Value = serde_json::from_str(line).ok()?;
+            if let Some(err) = json.get("error").and_then(Value::as_str) {
+                return Some(Err(err.to_string()));
+            }
+            json.pointer("/message/content")?.as_str().filter(|s| !s.is_empty()).map(|s| Ok(s.to_string()))
+        }
+    }
+}
+
+/// One question, one answer streamed: `on_text` gets the visible text so far
+/// (the thinking left out) each time it grows; the result is the whole of it.
+/// The answer key's, while the call goes on (notes/answer.rs).
+pub async fn stream_complete(local: &Local, system: &str, user: &str, how: Ask, mut on_text: impl FnMut(&str)) -> Result<String, String> {
+    if local.model.trim().is_empty() {
+        return Err(t("Pick a model above the chat box first."));
+    }
+    let base = net::normalise_server_url(&local.url)?;
+    let dialect = local.dialect();
+    let messages = [json!({ "role": "user", "content": user })];
+    let req = Request { system, messages: &messages, tools: &[], max_tokens: how.max_tokens, json: false, context: how.context };
+    let mut body = request_body(dialect, &local.model, &req);
+    body["stream"] = json!(true);
+    // An older model refuses `think`: asked again without it.
+    for _ in 0..2 {
+        let response = net::client(&base, how.timeout)?
+            .post(net::join(&base, dialect.path()))
+            .header("Authorization", local_chat::bearer(local.key.as_deref()))
+            .json(&body)
+            .send()
+            .await
+            .map_err(|e| {
+                if e.is_timeout() {
+                    format!("no answer from the local model within {} s", how.timeout.as_secs())
+                } else {
+                    local_chat::unreachable(&base)
+                }
+            })?;
+        let status = response.status();
+        if status.as_u16() == 404 {
+            return Err(tf("{model} isn't installed. Pick another model above the chat box.", &[("model", &local.model)]));
+        }
+        if !status.is_success() {
+            let detail = net::error_detail(&net::read_capped(response, net::MAX_ERROR_BODY).await.unwrap_or_default());
+            if status.as_u16() == 400 && detail.contains("does not support thinking") && body.get("think").is_some() {
+                body.as_object_mut().map(|b| b.remove("think"));
+                continue;
+            }
+            return Err(if detail.is_empty() { format!("HTTP {}", status.as_u16()) } else { detail });
+        }
+        return read_stream(response, dialect, &base, &mut on_text).await;
+    }
+    Err(t("Unexpected API response."))
+}
+
+async fn read_stream(mut response: reqwest::Response, dialect: Dialect, base: &Url, on_text: &mut impl FnMut(&str)) -> Result<String, String> {
+    const MAX_LINE: usize = 1024 * 1024;
+    const MAX_TEXT: usize = 256 * 1024;
+    let mut text = String::new();
+    let mut shown = String::new();
+    let mut pending = Vec::<u8>::new();
+    let mut take = |line: &str, text: &mut String, shown: &mut String| -> Result<(), String> {
+        match stream_line(dialect, line.trim_end()) {
+            Some(Ok(piece)) => {
+                text.push_str(&piece);
+                let visible = visible_text(text);
+                if visible != *shown {
+                    *shown = visible;
+                    on_text(shown);
+                }
+                Ok(())
+            }
+            Some(Err(message)) => Err(message),
+            None => Ok(()),
+        }
+    };
+    while let Some(chunk) = response.chunk().await.map_err(|_| local_chat::unreachable(base))? {
+        pending.extend_from_slice(&chunk);
+        while let Some(end) = pending.iter().position(|b| *b == b'\n') {
+            let line: Vec<u8> = pending.drain(..=end).collect();
+            take(&String::from_utf8_lossy(&line), &mut text, &mut shown)?;
+        }
+        if pending.len() > MAX_LINE || text.len() > MAX_TEXT {
+            return Err(t("The server's answer is too large."));
+        }
+    }
+    take(&String::from_utf8_lossy(&pending), &mut text, &mut shown)?;
+    let answer = visible_text(&text);
+    if answer.trim().is_empty() {
+        return Err("empty answer".into());
+    }
+    Ok(answer)
+}
+
 /// The context a prompt of `chars` characters needs, with room for the
 /// answer, when that is more than Ollama's usual one.
 pub fn context_for(chars: usize, max_tokens: u32) -> Option<u32> {
@@ -537,6 +638,35 @@ mod tests {
 
     fn ollama() -> Local {
         test_local("ollama", "http://127.0.0.1:11434", "qwen3.5:9b")
+    }
+
+    // ── A streamed answer ──
+
+    #[test]
+    fn a_streamed_answer_reads_ollamas_lines_and_the_others_events_without_the_thinking() {
+        assert_eq!(stream_line(Dialect::Ollama, r#"{"message":{"role":"assistant","content":"Hi"},"done":false}"#), Some(Ok("Hi".into())));
+        assert_eq!(stream_line(Dialect::Ollama, r#"{"message":{"content":""},"done":true}"#), None);
+        assert_eq!(stream_line(Dialect::Ollama, r#"{"error":"model not found"}"#), Some(Err("model not found".into())));
+        assert_eq!(stream_line(Dialect::OpenAi, r#"data: {"choices":[{"delta":{"content":"Hi"}}]}"#), Some(Ok("Hi".into())));
+
+        let lines = [
+            r#"{"message":{"content":"<think>hmm"}}"#,
+            r#"{"message":{"content":"</think>Q: Price"}}"#,
+            r#"{"message":{"content":"\nA: 90 euros."},"done":true}"#,
+        ]
+        .join("\n");
+        let url = crate::net::tests::serve_once("200 OK", "", lines.into_bytes());
+        let local = test_local("ollama", &url, "m");
+        let how = || Ask { max_tokens: 100, json: false, context: None, timeout: Duration::from_secs(5) };
+        let mut seen = Vec::new();
+        let answer = block_on(stream_complete(&local, "sys", "user", how(), |t| seen.push(t.to_string()))).unwrap();
+        assert_eq!(answer, "Q: Price\nA: 90 euros.");
+        assert_eq!(seen, vec!["Q: Price".to_string(), "Q: Price\nA: 90 euros.".to_string()], "nothing of the thinking shows");
+
+        let events = "data: {\"choices\":[{\"delta\":{\"content\":\"A: yes\"}}]}\n\ndata: [DONE]\n";
+        let url = crate::net::tests::serve_once("200 OK", "", events.as_bytes().to_vec());
+        let local = test_local("lmstudio", &url, "m");
+        assert_eq!(block_on(stream_complete(&local, "sys", "user", how(), |_| {})).unwrap(), "A: yes");
     }
 
     // ── Which engine ──

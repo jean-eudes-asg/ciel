@@ -567,6 +567,11 @@ function companyFolderSection(): HTMLElement {
     h("div", { class: "row" }, input, saveBtn, dotEl),
     status,
     h("div", { class: "hint", text: t("During a call the Notetaker records, the answer key ({keys}) reads this folder as it is then: the passages that fit the question go to the brain with it, with Claude to Anthropic. Text files: Markdown, text, CSV, JSON, YAML, HTML.", { keys: answerKeys() }) }),
+    // Off by default: it sends the call's words without a press (notes/answer.rs).
+    h("div", { class: "row", style: "margin-top:12px" },
+      h("label", { text: t("Prepare answers ahead") }),
+      toggle(settings.prepareAnswers, (on) => { settings.prepareAnswers = on; void save(); })),
+    h("div", { class: "hint", text: t("When the others ask you a question during a call, Ciel writes the answer before you press the key, and the key's button lights up. With Claude, up to the last half hour of the call goes to Anthropic with each question, pressed or not.") }),
   );
 }
 

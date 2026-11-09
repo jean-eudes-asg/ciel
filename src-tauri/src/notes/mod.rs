@@ -7,6 +7,7 @@
 // deleted once the transcript is written. No bot joins the call: the other
 // people should be told it is recorded.
 
+pub mod answer;
 pub mod builder;
 pub mod folder;
 
@@ -103,11 +104,21 @@ struct Channel {
     /// Where `live` starts, in samples from the start of the recording.
     live_start: usize,
     total: usize,
+    /// The longest stretch the live transcript waits for, in seconds, when
+    /// nobody pauses: shorter for the others, whose questions the answer key
+    /// waits for.
+    longest: usize,
 }
 
+/// Your side's longest live stretch, and the others'.
+const MIC_LONGEST_S: usize = 12;
+const OTHERS_LONGEST_S: usize = 6;
+/// How often the live transcript looks for a stretch ending on a pause.
+const LIVE_POLL: Duration = Duration::from_millis(250);
+
 impl Channel {
-    fn new(path: &std::path::Path) -> std::io::Result<Channel> {
-        Ok(Channel { writer: Some(audio::WavWriter::create(path)?), live: Vec::new(), live_start: 0, total: 0 })
+    fn new(path: &std::path::Path, longest: usize) -> std::io::Result<Channel> {
+        Ok(Channel { writer: Some(audio::WavWriter::create(path)?), live: Vec::new(), live_start: 0, total: 0, longest })
     }
 
     fn push(&mut self, samples: &[f32]) {
@@ -126,7 +137,7 @@ impl Channel {
         }
         let tail = &self.live[self.live.len().saturating_sub(rate / 2)..];
         let quiet = tail.iter().fold(0.0f32, |m, &s| m.max(s.abs())) < 0.01;
-        if !quiet && self.live.len() < rate * 12 {
+        if !quiet && self.live.len() < rate * self.longest {
             return None;
         }
         let start = self.live_start as f64 / rate as f64;
@@ -166,6 +177,10 @@ struct Recording {
     mic_channel: Arc<Mutex<Channel>>,
     system_channel: Option<Arc<Mutex<Channel>>>,
     stop_live: Arc<AtomicBool>,
+    /// Held from a stretch taken off a channel until its words are in the
+    /// note: the answer key, holding it too, finds every word said before the
+    /// press in the transcript, the question included.
+    gate: Arc<Mutex<()>>,
 }
 
 pub struct NoteTaker {
@@ -174,6 +189,8 @@ pub struct NoteTaker {
     /// Notes whose transcript or summary is being written.
     working: Mutex<Vec<String>>,
     starting: AtomicBool,
+    /// The answer key's answer and folder (answer.rs).
+    desk: answer::Desk,
 }
 
 pub fn folder() -> PathBuf {
@@ -264,6 +281,7 @@ pub fn setup(app: &AppHandle) {
         recording: Mutex::new(None),
         working: Mutex::new(Vec::new()),
         starting: AtomicBool::new(false),
+        desk: answer::Desk::default(),
     });
     app.manage(taker.clone());
     for id in unfinished {
@@ -346,7 +364,7 @@ fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>, meeting: Option<Meeting>
     };
     let dir = note_dir(&id);
     crate::platform::ensure_private_dir(&dir).map_err(|e| e.to_string())?;
-    let mic_channel = Arc::new(Mutex::new(Channel::new(&dir.join("mic.wav")).map_err(|e| e.to_string())?));
+    let mic_channel = Arc::new(Mutex::new(Channel::new(&dir.join("mic.wav"), MIC_LONGEST_S).map_err(|e| e.to_string())?));
     let mic_pref = crate::flow::get(app).map(|f| f.store.lock().unwrap().prefs.mic.clone()).unwrap_or_default();
     let sink = mic_channel.clone();
     let mic = audio::Capture::start(audio::Source::Mic(if mic_pref.is_empty() { None } else { Some(mic_pref) }), move |s| {
@@ -358,7 +376,7 @@ fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>, meeting: Option<Meeting>
         t("Ciel can't hear you: the microphone is not allowed or not available.")
     })?;
     // Without the computer's sound, the call is noted from the microphone alone.
-    let (system, system_channel) = match Channel::new(&dir.join("system.wav")) {
+    let (system, system_channel) = match Channel::new(&dir.join("system.wav"), OTHERS_LONGEST_S) {
         Ok(channel) => {
             let channel = Arc::new(Mutex::new(channel));
             let sink = channel.clone();
@@ -374,6 +392,7 @@ fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>, meeting: Option<Meeting>
         Err(_) => (None, None),
     };
     let stop_live = Arc::new(AtomicBool::new(false));
+    let gate = Arc::new(Mutex::new(()));
     taker.notes.lock().unwrap().insert(0, note.clone());
     taker.save(&note);
     *taker.recording.lock().unwrap() = Some(Recording {
@@ -383,9 +402,11 @@ fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>, meeting: Option<Meeting>
         mic_channel: mic_channel.clone(),
         system_channel: system_channel.clone(),
         stop_live: stop_live.clone(),
+        gate: gate.clone(),
     });
     speech::preload();
-    spawn_live(app.clone(), taker.clone(), id.clone(), mic_channel, system_channel, stop_live);
+    spawn_live(app.clone(), taker.clone(), id.clone(), mic_channel, system_channel, stop_live, gate);
+    answer::started(app, taker);
     pill::update(app, |s| s.note_started_at = Some(note.start));
     // Listening, Ciel isn't left out of screen shares (capture.rs).
     crate::capture::recording(app, true);
@@ -394,206 +415,9 @@ fn start_inner(app: &AppHandle, taker: &Arc<NoteTaker>, meeting: Option<Meeting>
     Ok(id)
 }
 
-// ── The answer key ────────────────────────────────────────────────────────────
-
-/// How far back in the call the question is looked for.
-const ANSWER_WINDOW_S: f64 = 180.0;
-/// The company folder's passages sent with the question, at most (characters).
-const FOLDER_BUDGET: usize = 6000;
-const ANSWER_MODEL: &str = "claude-haiku-4-5";
-const ANSWER_TIMEOUT: Duration = Duration::from_secs(30);
-const ANSWER_LOCAL_TIMEOUT: Duration = Duration::from_secs(90);
-/// The card stays this long, or until dismissed.
-const ANSWER_SHOWN_MS: u64 = 3 * 60_000;
-
-/// The last minutes of the call as the brain reads them: "Me:" and "Them:".
-pub fn recent_transcript(lines: &[Line], now_s: f64) -> String {
-    lines
-        .iter()
-        .filter(|l| l.end >= now_s - ANSWER_WINDOW_S)
-        .map(|l| format!("{}: {}", if l.speaker == builder::ME { "Me" } else { "Them" }, l.text.trim()))
-        .collect::<Vec<_>>()
-        .join("\n")
-}
-
-/// The earlier calls that share the most words with the question: their
-/// summary and what is still to do, three at most.
-pub fn related_calls(notes: &[Note], current: &str, words: &[String]) -> String {
-    let mut scored: Vec<(usize, &Note)> = notes
-        .iter()
-        .filter(|n| n.id != current && n.status == Status::Ready)
-        .map(|n| {
-            let text = searchable(n);
-            (words.iter().filter(|w| text.contains(w.as_str())).count(), n)
-        })
-        .filter(|(score, _)| *score > 0)
-        .collect();
-    scored.sort_by(|a, b| b.0.cmp(&a.0).then(b.1.start.cmp(&a.1.start)));
-    scored
-        .into_iter()
-        .take(3)
-        .map(|(_, n)| {
-            let todo: Vec<&str> = n.todos.iter().filter(|t| !t.done).map(|t| t.text.as_str()).collect();
-            let todo = if todo.is_empty() { String::new() } else { format!("\nStill to do: {}", todo.join("; ")) };
-            format!("{} ({}): {}{todo}", n.title, n.start_local, n.summary.as_deref().unwrap_or(""))
-        })
-        .collect::<Vec<_>>()
-        .join("\n")
-}
-
-/// "Q: …" then "A: …" → (question, answer); without them, the whole reply is the answer.
-pub fn parse_answer(reply: &str) -> (String, String) {
-    let reply = reply.trim();
-    let q = reply.find("Q:");
-    let a = reply.find("A:");
-    match (q, a) {
-        (Some(q), Some(a)) if q < a => (reply[q + 2..a].trim().to_string(), reply[a + 2..].trim().to_string()),
-        (None, Some(a)) => (String::new(), reply[a + 2..].trim().to_string()),
-        _ => (String::new(), reply.to_string()),
-    }
-}
-
-fn answer_card(app: &AppHandle, title: String, body: String) {
-    use crate::notify::{self, Notification, Target};
-    let now = now_ms();
-    notify::show(
-        app,
-        Notification {
-            id: notify::next_id("answer"),
-            source: "ciel".into(),
-            app: "Ciel".into(),
-            title,
-            body,
-            icon: None,
-            at: now as f64,
-            // A new answer takes the place of the last.
-            tag: Some("meeting-answer".into()),
-            buttons: Vec::new(),
-            until: Some((now + ANSWER_SHOWN_MS) as f64),
-            time: None,
-        },
-        Target::None,
-    );
-}
-
-/// The answer key, during a call the Notetaker records: Ciel finds the last
-/// question the others put to the user in the live transcript, and suggests
-/// an answer on a card in the island, kept in the note. Ciel stays visible
-/// in screen shares meanwhile. Not recording yet: the Notetaker starts.
-pub async fn answer(app: &AppHandle) {
-    let Some(taker) = get(app) else { return };
-    let id = taker.recording.lock().unwrap().as_ref().map(|r| r.id.clone());
-    let Some(id) = id else {
-        match start(app) {
-            Ok(_) => answer_card(app, t("Ciel is listening"), t("The call is being noted. Press the key again when you're asked something.")),
-            Err(err) => say_why(app, err),
-        }
-        return;
-    };
-    let Some(engine) = crate::ai::current(app) else {
-        answer_card(app, t("Answer"), t("Ciel needs Claude or a local model for this: set one up in Island → Chat."));
-        return;
-    };
-    // The words just said, at once, rather than at the next pause.
-    let channels: Vec<(Arc<Mutex<Channel>>, &str)> = {
-        let rec = taker.recording.lock().unwrap();
-        let Some(rec) = rec.as_ref() else { return };
-        std::iter::once((rec.mic_channel.clone(), builder::ME)).chain(rec.system_channel.clone().map(|c| (c, "others"))).collect()
-    };
-    let heard = tauri::async_runtime::spawn_blocking(move || {
-        channels
-            .into_iter()
-            .filter_map(|(channel, speaker)| {
-                let (start, samples) = channel.lock().unwrap().take_rest()?;
-                let text = speech::transcribe(&samples)?.text.trim().to_string();
-                let end = start + samples.len() as f64 / speech::SAMPLE_RATE as f64;
-                (!text.is_empty()).then(|| Line { id: crate::flow::text::new_id(), speaker: speaker.into(), start, end, text })
-            })
-            .collect::<Vec<_>>()
-    })
-    .await
-    .unwrap_or_default();
-    if !heard.is_empty() {
-        taker.change(app, &id, |n| {
-            n.lines.extend(heard);
-            n.lines.sort_by(|a, b| a.start.partial_cmp(&b.start).unwrap_or(std::cmp::Ordering::Equal));
-        });
-    }
-    let Some(note) = taker.note(&id) else { return };
-    let now_s = now_ms().saturating_sub(note.start) as f64 / 1000.0;
-    let transcript = recent_transcript(&note.lines, now_s);
-    if !transcript.contains("Them:") {
-        answer_card(app, t("Answer"), t("Ciel hasn't heard the others ask anything in the last minutes."));
-        return;
-    }
-    let meeting = note.meeting.as_ref().map(|m| {
-        let agenda = m.agenda.as_deref().map(|a| format!("\nAgenda: {a}")).unwrap_or_default();
-        format!("The meeting: {}{agenda}\n", m.title)
-    });
-    // What to look for: the others' last words, and the meeting's title.
-    let recent_them: String = note.lines.iter().rev().filter(|l| l.speaker != builder::ME).take(4).map(|l| l.text.as_str()).collect::<Vec<_>>().join(" ");
-    let question_words = folder::words(&format!("{recent_them} {}", note.meeting.as_ref().map(|m| m.title.as_str()).unwrap_or("")));
-    let (company, reads_notes) = {
-        let shared = app.state::<crate::Shared>();
-        let s = shared.settings.lock().unwrap();
-        (s.company_folder.trim().to_string(), s.brain_reads.notes)
-    };
-    let files = if company.is_empty() {
-        String::new()
-    } else {
-        let words = question_words.clone();
-        let found = tauri::async_runtime::spawn_blocking(move || folder::search(std::path::Path::new(&company), &words, FOLDER_BUDGET))
-            .await
-            .unwrap_or_default();
-        found.iter().map(|(name, p)| format!("[{name}]\n{p}")).collect::<Vec<_>>().join("\n\n")
-    };
-    // Earlier calls on the same subject: with Claude, only if the user lets the brain read the notes.
-    let earlier = if matches!(engine, crate::ai::Engine::Local(_)) || reads_notes {
-        let notes = taker.notes.lock().unwrap().clone();
-        related_calls(&notes, &id, &question_words)
-    } else {
-        String::new()
-    };
-    let system = "You help the user during a live call, which they are recording with the other people's knowledge. \
-        From the transcript (\"Me\" is the user, \"Them\" the others), find the most recent question or request put to the user, \
-        and suggest what the user can answer: plain, factual, in the first person, two to four sentences, in the language of the call. \
-        Use the company's files and earlier calls when they hold the answer, and never invent a figure, a date or a promise. \
-        If the answer needs facts you don't have, say in a few words what to check and give a sensible answer meanwhile. \
-        Reply in exactly two parts: \"Q:\" and the question in a few words, then \"A:\" and the answer.";
-    let mut ask = meeting.unwrap_or_default();
-    if !files.is_empty() {
-        ask.push_str(&format!("From the company's files:\n{files}\n\n"));
-    }
-    if !earlier.is_empty() {
-        ask.push_str(&format!("Earlier calls:\n{earlier}\n\n"));
-    }
-    ask.push_str(&format!("Transcript of the last minutes:\n{transcript}"));
-    let reply = match &engine {
-        crate::ai::Engine::Claude => crate::claude::complete(ANSWER_MODEL, system, &ask, 400, ANSWER_TIMEOUT).await,
-        crate::ai::Engine::Local(local) => {
-            let how = crate::ai::Ask { max_tokens: 400, json: false, context: None, timeout: ANSWER_LOCAL_TIMEOUT };
-            crate::ai::complete(local, system, &ask, how).await
-        }
-    };
-    let reply = match reply {
-        Ok(r) => crate::ai::visible_text(&r).trim().to_string(),
-        Err(err) => {
-            crate::log::line(format!("notes: no answer from the brain: {err}"));
-            answer_card(app, t("Answer"), t("Ciel's brain didn't answer. Try the key again."));
-            return;
-        }
-    };
-    let (question, answer) = parse_answer(&reply);
-    if answer.is_empty() {
-        return;
-    }
-    taker.change(app, &id, |n| n.answers.push(Answer { at: now_s, question: question.clone(), answer: answer.clone() }));
-    answer_card(app, if question.is_empty() { t("Answer") } else { question }, answer);
-}
-
-/// Every second while recording: the stretches ending on a pause go to
+/// Four times a second while recording: the stretches ending on a pause go to
 /// Parakeet for the live transcript (the final one is written again from the
-/// whole recording).
+/// whole recording). A question the others ask goes to the answer key.
 fn spawn_live(
     app: AppHandle,
     taker: Arc<NoteTaker>,
@@ -601,36 +425,77 @@ fn spawn_live(
     mic: Arc<Mutex<Channel>>,
     system: Option<Arc<Mutex<Channel>>>,
     stop: Arc<AtomicBool>,
+    gate: Arc<Mutex<()>>,
 ) {
     std::thread::spawn(move || {
         while !stop.load(Ordering::Relaxed) {
-            std::thread::sleep(Duration::from_secs(1));
+            std::thread::sleep(LIVE_POLL);
             let mut channels = vec![(mic.clone(), builder::ME)];
             if let Some(s) = &system {
                 channels.push((s.clone(), "others"));
             }
             for (channel, speaker) in channels {
-                let chunk = channel.lock().unwrap().take_chunk();
-                let Some((start, samples)) = chunk else { continue };
-                let Some(transcript) = speech::transcribe(&samples) else { continue };
-                let text = transcript.text.trim().to_string();
-                if text.is_empty() || stop.load(Ordering::Relaxed) {
-                    continue;
-                }
-                let end = start + samples.len() as f64 / speech::SAMPLE_RATE as f64;
-                taker.change(&app, &id, |n| {
-                    n.lines.push(Line { id: crate::flow::text::new_id(), speaker: speaker.into(), start, end, text });
-                    n.lines.sort_by(|a, b| a.start.partial_cmp(&b.start).unwrap_or(std::cmp::Ordering::Equal));
-                });
+                let line = {
+                    let _held = gate.lock().unwrap();
+                    let chunk = channel.lock().unwrap().take_chunk();
+                    let Some((start, samples)) = chunk else { continue };
+                    if stop.load(Ordering::Relaxed) {
+                        continue;
+                    }
+                    match heard_line(&samples, start, speaker) {
+                        Some(line) => {
+                            taker.change(&app, &id, |n| add_line(n, line.clone()));
+                            line
+                        }
+                        None => continue,
+                    }
+                };
+                answer::heard(&app, &taker, &id, &line);
             }
         }
     });
+}
+
+/// A stretch of one side of the call, as a line of the transcript.
+fn heard_line(samples: &[f32], start: f64, speaker: &str) -> Option<Line> {
+    let text = speech::transcribe(samples)?.text.trim().to_string();
+    let end = start + samples.len() as f64 / speech::SAMPLE_RATE as f64;
+    (!text.is_empty()).then(|| Line { id: crate::flow::text::new_id(), speaker: speaker.into(), start, end, text })
+}
+
+fn add_line(note: &mut Note, line: Line) {
+    note.lines.push(line);
+    note.lines.sort_by(|a, b| a.start.partial_cmp(&b.start).unwrap_or(std::cmp::Ordering::Equal));
+}
+
+/// The answer key's press: what the live transcript hasn't taken yet, pause
+/// or not, goes into the note now, after what it is transcribing.
+fn flush_live(app: &AppHandle, taker: &NoteTaker) {
+    let (id, gate, channels) = {
+        let rec = taker.recording.lock().unwrap();
+        let Some(rec) = rec.as_ref() else { return };
+        let channels: Vec<(Arc<Mutex<Channel>>, &str)> =
+            std::iter::once((rec.mic_channel.clone(), builder::ME)).chain(rec.system_channel.clone().map(|c| (c, "others"))).collect();
+        (rec.id.clone(), rec.gate.clone(), channels)
+    };
+    let _held = gate.lock().unwrap();
+    let heard: Vec<Line> = channels
+        .into_iter()
+        .filter_map(|(channel, speaker)| {
+            let (start, samples) = channel.lock().unwrap().take_rest()?;
+            heard_line(&samples, start, speaker)
+        })
+        .collect();
+    if !heard.is_empty() {
+        taker.change(app, &id, |n| heard.into_iter().for_each(|line| add_line(n, line)));
+    }
 }
 
 pub fn stop(app: &AppHandle) {
     let Some(taker) = get(app) else { return };
     let Some(mut rec) = taker.recording.lock().unwrap().take() else { return };
     crate::capture::recording(app, false);
+    answer::stopped(app, &taker);
     rec.stop_live.store(true, Ordering::Relaxed);
     rec.mic.stop();
     if let Some(s) = rec.system.as_mut() {
@@ -656,6 +521,7 @@ pub fn shutdown(app: &AppHandle) {
     let Some(taker) = get(app) else { return };
     let Some(mut rec) = taker.recording.lock().unwrap().take() else { return };
     crate::capture::recording(app, false);
+    answer::stopped(app, &taker);
     rec.stop_live.store(true, Ordering::Relaxed);
     rec.mic.stop();
     if let Some(s) = rec.system.as_mut() {
@@ -993,7 +859,7 @@ pub async fn notes_start(app: AppHandle) -> Result<String, String> {
 
 #[tauri::command]
 pub async fn notes_answer(app: AppHandle) {
-    answer(&app).await;
+    answer::press(&app).await;
 }
 
 /// The company folder: is it there, and how many files Ciel can read in it.
@@ -1114,18 +980,6 @@ mod tests {
             meeting: None,
             answers: Vec::new(),
         }
-    }
-
-    #[test]
-    fn the_answer_key_reads_the_last_minutes_and_a_two_part_reply() {
-        let line = |speaker: &str, end: f64, text: &str| Line { id: "l".into(), speaker: speaker.into(), start: end - 2.0, end, text: text.into() };
-        let lines = vec![line("1", 10.0, "Old talk"), line(builder::ME, 300.0, "Hello"), line("1", 305.0, "What's the price for ten seats?")];
-        assert_eq!(recent_transcript(&lines, 310.0), "Me: Hello\nThem: What's the price for ten seats?");
-        assert_eq!(
-            parse_answer("Q: Price for ten seats\nA: It's 90 euros a seat, so 900 a month."),
-            ("Price for ten seats".to_string(), "It's 90 euros a seat, so 900 a month.".to_string())
-        );
-        assert_eq!(parse_answer("Just this."), (String::new(), "Just this.".to_string()));
     }
 
     #[test]

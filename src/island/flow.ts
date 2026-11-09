@@ -16,7 +16,7 @@ import { t } from "../i18n/i18n";
 
 const BANDS = 9;
 const IDLE: PillState = {
-  phase: "idle", edge: "island", key: "right_ctrl", noteStartedAt: null, announcement: null, enabled: false, voice: null,
+  phase: "idle", edge: "island", key: "right_ctrl", noteStartedAt: null, noteAnswer: null, announcement: null, enabled: false, voice: null,
 };
 
 export interface FlowStrip {
@@ -111,8 +111,10 @@ export function buildFlowStrip(onChange: () => void, source: FlowSource = FROM_R
         return [
           el("span", "flow-rec"),
           time,
-          // The answer key, for a hand on the mouse (notes/mod.rs).
-          button("flow-btn", t("Answer the last question in the call"), () => void Bridge.notesAnswer(), icon("bolt")),
+          // The answer key, for a hand on the mouse (notes/answer.rs); lit when an answer is ready.
+          state.noteAnswer === "ready"
+            ? button("flow-btn ready", t("An answer is ready · press to see it"), () => void Bridge.notesAnswer(), icon("bolt"))
+            : button("flow-btn", t("Answer the last question in the call"), () => void Bridge.notesAnswer(), icon("bolt")),
           button("flow-btn stop", t("Stop"), () => void FlowBridge.pillAction("stopNote"), el("i")),
         ];
       }
@@ -152,7 +154,7 @@ export function buildFlowStrip(onChange: () => void, source: FlowSource = FROM_R
     el_.classList.toggle("on", on);
     const look = pillLook(state);
     const a = state.announcement;
-    const key = `${on}|${look}|${state.phase}|${state.key}|${a?.id ?? ""}|${a?.text ?? ""}|${state.voice?.heard ?? ""}|${state.voice?.answer ?? ""}|${state.voice ? "v" : ""}`;
+    const key = `${on}|${look}|${state.phase}|${state.key}|${state.noteAnswer ?? ""}|${a?.id ?? ""}|${a?.text ?? ""}|${state.voice?.heard ?? ""}|${state.voice?.answer ?? ""}|${state.voice ? "v" : ""}`;
     if (key === lastKey) return;
     lastKey = key;
     el_.replaceChildren(...(on ? content() : []));

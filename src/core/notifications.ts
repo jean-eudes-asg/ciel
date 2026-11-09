@@ -53,6 +53,34 @@ const clip = (s: unknown, max: number) => {
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 };
 
+/** Its lines kept: the answer key's sentence to say, then its detail. */
+const clipLines = (s: unknown, max: number) => {
+  const text = typeof s === "string" ? s.split("\n").map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean).join("\n") : "";
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+};
+
+/** What a card shown already says now: the answer key's, as the answer is written (src-tauri/src/notify.rs). */
+export interface NotificationUpdate {
+  id: string;
+  title: string;
+  body: string;
+}
+
+/** An update as Rust sent it, checked and trimmed; null when it has nothing to show. */
+export function parseNotificationUpdate(raw: unknown): NotificationUpdate | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  const title = clip(r.title, MAX_TITLE);
+  const body = clipLines(r.body, MAX_BODY);
+  if (typeof r.id !== "string" || !r.id || (!title && !body)) return null;
+  return { id: r.id, title: title || body, body: title ? body : "" };
+}
+
+/** The list with the update on its notification; unchanged when it isn't there. */
+export function applyUpdate<T extends CielNotification>(list: readonly T[], u: NotificationUpdate): T[] {
+  return list.map((n) => (n.id === u.id ? { ...n, title: u.title, body: u.body } : n));
+}
+
 /** A notification as Rust sent it, checked and trimmed; null when it has nothing to show. */
 export function parseNotification(raw: unknown): CielNotification | null {
   if (!raw || typeof raw !== "object") return null;

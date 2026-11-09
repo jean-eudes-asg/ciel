@@ -36,6 +36,9 @@ pub struct PillState {
     pub key: String,
     /// When the call being recorded started (ms since 1970), or none.
     pub note_started_at: Option<u64>,
+    /// "ready": the answer key has an answer prepared for the last question
+    /// (notes/answer.rs), and its button lights up.
+    pub note_answer: Option<&'static str>,
     pub announcement: Option<Announcement>,
     /// Dictation is on (the resting pill shows).
     pub enabled: bool,
