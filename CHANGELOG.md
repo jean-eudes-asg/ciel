@@ -2,6 +2,15 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+- **Weather in °F outside the US**: on an English (US) system, Automatic
+  units showed Fahrenheit wherever you were. Picking a place now sets the
+  units its country uses, the setup asks for °C or °F, and the temperature
+  says which it is. A place picked before keeps its units: click °F on the
+  weather card to switch.
+
 ## [0.4.0] - 2026-11-07
 
 ### Added

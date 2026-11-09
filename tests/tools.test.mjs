@@ -7,7 +7,7 @@ import {
   classify, cleanLink, colorForms, counts, evalMath, linkHost, matches, parseColor, preview, transform,
 } from "../src/core/clip.ts";
 import { clock, msLeft, ordered, parseQuick, progress } from "../src/core/timers.ts";
-import { rainLine, skyOf, temp, themeForWeather, unitsFor, wind } from "../src/core/weather.ts";
+import { rainLine, skyOf, temp, themeForWeather, unitsFor, unitsOnPick, wind } from "../src/core/weather.ts";
 import { lineAt, parseLrc } from "../src/core/lyrics.ts";
 import { holdsIsland, pickLive, ticks } from "../src/core/live.ts";
 import {
@@ -160,6 +160,13 @@ test("°F where the region writes them, and the units follow", () => {
   assert.equal(temp(20, "f"), 68);
   assert.equal(temp(-0.4, "c"), -0);
   assert.deepEqual(wind(16.09, "f"), { value: 10, unit: "mph" });
+});
+
+test("a place picked sets automatic units from its country, never chosen ones", () => {
+  assert.deepEqual(unitsOnPick("auto", "CY"), { weatherUnits: "c" });
+  assert.deepEqual(unitsOnPick("auto", "us"), { weatherUnits: "f" });
+  assert.deepEqual(unitsOnPick("auto", ""), {});
+  assert.deepEqual(unitsOnPick("f", "CY"), {});
 });
 
 test("what is said about rain: when it starts, when it stops", () => {

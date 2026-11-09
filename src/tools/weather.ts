@@ -5,7 +5,7 @@
 import { Bridge } from "../core/bridge";
 import { State } from "../core/state";
 import type { Place, Weather } from "../core/tools";
-import { SKY_TEXT, rainLine, skyOf, stale, temp, unitsFor, wind } from "../core/weather";
+import { SKY_TEXT, rainLine, skyOf, stale, temp, unitsFor, unitsOnPick, wind } from "../core/weather";
 import { h, svg } from "../views/dom";
 import { ICONS } from "../views/icons";
 import { twelveHours } from "../views/clockformat";
@@ -73,7 +73,10 @@ export function buildWeather(actions: ViewActions): ToolPanel {
         picking = false;
         search.value = "";
         results.replaceChildren();
-        Tools.setPrefs({ weatherPlace: p.detail ? `${p.name}, ${p.detail.split(", ").pop()}` : p.name, weatherLat: p.lat, weatherLon: p.lon });
+        Tools.setPrefs({
+          weatherPlace: p.detail ? `${p.name}, ${p.detail.split(", ").pop()}` : p.name, weatherLat: p.lat, weatherLon: p.lon,
+          ...unitsOnPick(Tools.prefs.weatherUnits, p.countryCode),
+        });
         Tools.weather = null;
         window.setTimeout(() => void Tools.refreshWeather(true), 300);
       },
@@ -133,7 +136,7 @@ export function buildWeather(actions: ViewActions): ToolPanel {
     const now = Date.now();
     const sky = skyOf(w.now.code);
     nowIcon.replaceChildren(weatherIcon(sky, w.now.isDay, 46));
-    nowTemp.textContent = `${temp(w.now.temp, units)}°`;
+    nowTemp.textContent = `${temp(w.now.temp, units)}°${units === "c" ? "C" : "F"}`;
     nowSky.textContent = t(SKY_TEXT[sky]);
     const wd = wind(w.now.wind, units);
     nowMore.textContent = t("Feels {temp}° · wind {wind} {unit}", { temp: temp(w.now.feels, units), wind: wd.value, unit: wd.unit });

@@ -13,7 +13,7 @@ export interface ToolPrefs {
   weatherPlace: string;
   weatherLat: number;
   weatherLon: number;
-  /** "auto" follows the language's region. */
+  /** "auto" follows the language's region, until a place is picked: then its country's. */
   weatherUnits: "auto" | "c" | "f";
   /** A card when rain is about to start. */
   rainWarnings: boolean;
@@ -97,6 +97,8 @@ export interface Place {
   detail: string;
   lat: number;
   lon: number;
+  /** "FR"; "" when Open-Meteo doesn't say. */
+  countryCode: string;
 }
 
 export interface WeatherNow {

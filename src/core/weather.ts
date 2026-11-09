@@ -44,6 +44,15 @@ export function unitsFor(pref: "auto" | "c" | "f", locales: readonly string[]): 
   return "c";
 }
 
+/**
+ * The units a picked place's country writes, when they are still automatic:
+ * someone in Cyprus on an en-US system wants °C. Nothing to change otherwise.
+ */
+export function unitsOnPick(pref: "auto" | "c" | "f", countryCode: string): { weatherUnits?: "c" | "f" } {
+  if (pref !== "auto" || !countryCode) return {};
+  return { weatherUnits: FAHRENHEIT.has(countryCode.toUpperCase()) ? "f" : "c" };
+}
+
 export function temp(celsius: number, units: "c" | "f"): number {
   return Math.round(units === "f" ? celsius * 1.8 + 32 : celsius);
 }

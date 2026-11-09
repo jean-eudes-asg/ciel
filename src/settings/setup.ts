@@ -14,6 +14,7 @@ import type { Settings } from "../core/state";
 import type { FlowKey } from "../core/flow";
 import type { Place } from "../core/tools";
 import { DEFAULT_TOOL_PREFS } from "../core/tools";
+import { unitsFor, unitsOnPick } from "../core/weather";
 import { NO_MAIN_PILL, chooseMainPill, mainPillChoices } from "../core/pills";
 import { SHORTCUTS, SHORTCUT_TEXT, displayKeys, effective } from "../core/shortcuts";
 import { h, clear } from "../views/dom";
@@ -350,6 +351,9 @@ const STEP_DRAW: Record<SetupStep, StepDraw> = {
     const placeLine = h("span", { text: tools().weatherPlace || t("Pick your town for the forecast and the rain alerts.") });
     const field = h("input", { class: "hub-input", type: "search", placeholder: t("Your town") }) as HTMLInputElement;
     const found = h("div", { class: "found" });
+    const makeUnits = () => segmented<"c" | "f">([["c", "°C"], ["f", "°F"]], unitsFor(tools().weatherUnits, navigator.languages),
+      (v) => set({ weatherUnits: v }));
+    let units = makeUnits();
     let timer = 0;
     field.addEventListener("input", () => {
       window.clearTimeout(timer);
@@ -371,8 +375,12 @@ const STEP_DRAW: Record<SetupStep, StepDraw> = {
             text: p.detail ? `${p.name}, ${p.detail}` : p.name,
             onclick: () => {
               const name = p.detail ? `${p.name}, ${p.detail}` : p.name;
-              set({ weatherPlace: name, weatherLat: p.lat, weatherLon: p.lon });
+              set({ weatherPlace: name, weatherLat: p.lat, weatherLon: p.lon, ...unitsOnPick(tools().weatherUnits, p.countryCode) });
               placeLine.textContent = name;
+              // The place's country may have picked the units.
+              const next = makeUnits();
+              units.replaceWith(next);
+              units = next;
               field.value = "";
               clear(found);
             },
@@ -396,6 +404,7 @@ const STEP_DRAW: Record<SetupStep, StepDraw> = {
           settingRow(t("Lyrics"), t("The words of the song playing, from lrclib.net."),
             toggle(tools().lyrics, (v) => set({ lyrics: v }))),
           weather,
+          settingRow(t("Units"), null, units),
           settingRow(t("Rain alerts"), t("A card when rain is about to start where you are."),
             toggle(tools().rainWarnings, (v) => set({ rainWarnings: v }))),
         ),
