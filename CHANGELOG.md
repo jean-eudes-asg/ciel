@@ -2,6 +2,37 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **Quick settings in the island** (Tools → Controls), everything GNOME's
+  menu in the top bar holds, and more, on Linux and Windows:
+  - **Screenshot**, **Settings**, **Lock**, and a **power menu** (suspend,
+    restart, power off, log out; a second click confirms the last three).
+  - The sound with **the speakers to choose from**, and the screens'
+    brightness.
+  - **Network** (wired, or Wi-Fi by its name) with its connections to bring
+    up or down on Linux, **VPN**, **power mode** (power saver, balanced,
+    performance), **night light**, **dark style**, **do not disturb** (GNOME's
+    banners and Ciel's own cards wait; they stay in the list), the
+    **battery** on a laptop, Bluetooth, the microphones and keep awake.
+  - **Your apps** in one click: GNOME's dock favourites on Linux, the apps
+    pinned to the taskbar on Windows, with their icons.
+  With the GNOME top bar hidden (Settings → General), the island takes its
+  place. Install Ciel's GNOME extension again (Settings) for the screenshot
+  button on Wayland.
+- **Calendar** (Tools → Calendar, or the date on the Today card), as the
+  desktop's clock menu: the month with a dot on each day that has events
+  from your calendars (the Calendar pill's links), a day's events, and
+  **world clocks** for the cities you add, with the hours between you.
+
+### Fixed
+- Linux: the volume and the microphones work on systems with PipeWire but
+  without PulseAudio's tools (Ubuntu 24.04 and Fedora by default).
+- The lyrics come back in the folded island when the song changes, without
+  opening the island, and after a song's intro or a solo.
+- A long line of lyrics no longer pushes the music card past the island's edge.
+
 ## [0.4.0] - 2026-11-07
 
 ### Added

@@ -98,6 +98,9 @@ pub enum ShellRef {
 
 /// The last notifications' targets, newest last.
 const KEPT: usize = 64;
+/// In Ciel's folder while Ciel has GNOME's banners off to show the notifications itself.
+#[cfg(target_os = "linux")]
+pub const BANNERS_MARKER: &str = "banners-off-by-ciel";
 /// A browser's notification can't carry more than this into the island.
 const MAX_ICON: usize = 200 * 1024;
 const MAX_TEXT: usize = 2_000;
@@ -556,7 +559,7 @@ pub mod desktop {
     /// (back on at its next start), and after a crash the file still says so.
     /// Elsewhere than GNOME, nothing happens.
     pub fn quiet_desktop(on: bool) {
-        let marker = crate::platform::config_dir().join("banners-off-by-ciel");
+        let marker = crate::platform::config_dir().join(crate::notify::BANNERS_MARKER);
         if on {
             if gsettings(&["get", BANNERS[0], BANNERS[1]]).as_deref() == Some("true")
                 && gsettings(&["set", BANNERS[0], BANNERS[1], "false"]).is_some()

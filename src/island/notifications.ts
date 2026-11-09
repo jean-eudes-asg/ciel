@@ -12,6 +12,7 @@
 import { onEvent } from "../core/bridge";
 import { addNotification, MAX_UNSEEN, parseNotification, showFor, timeSpan, type CielNotification } from "../core/notifications";
 import { State } from "../core/state";
+import { Tools } from "../tools/store";
 import { language, t } from "../i18n/i18n";
 import { noteIcon as appIcon, settle } from "../views/inbox";
 
@@ -147,8 +148,10 @@ export function buildNotificationCard(
     const n = parseNotification(raw);
     // Paused from the tray: Ciel says nothing.
     if (!n || State.paused) return;
-    queue = addNotification(queue, n);
     State.notifications = addNotification(State.notifications, n, MAX_UNSEEN);
+    // Do not disturb (Tools → Controls): kept in the list, not shown.
+    if (Tools.controls?.dnd) return onChange();
+    queue = addNotification(queue, n);
     // A newer one takes the place of the one showing.
     showing = null;
     onArrive(n);

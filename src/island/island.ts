@@ -6,7 +6,7 @@ import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
 import {
   EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W,
   ROUNDED_CORNER, VIEW_LAYOUTS, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
-  inboxHeight, islandSize, panelHeightFor,
+  TALL_TOOL_H, TALL_TOOLS, inboxHeight, islandSize, panelHeightFor,
   QUESTION_PICKER_H,
   type BotEmoteName, type IslandMode, type IslandViewName,
 } from "../core/layout";
@@ -695,6 +695,7 @@ export class Island {
       h = QUESTION_PICKER_H;
     }
     if (State.mode === "expanded" && State.view === "notifications") h = this.inboxH;
+    if (State.mode === "expanded" && State.view === "tools" && TALL_TOOLS.includes(Tools.tab)) h = TALL_TOOL_H;
     const r = State.mode === "expanded" ? EXPANDED_CORNER : ROUNDED_CORNER;
     return { w, h, r };
   }

@@ -38,6 +38,7 @@ mod openai_compat;
 mod pipe;
 mod platform;
 mod play;
+mod quick;
 #[cfg(target_os = "linux")]
 mod portal;
 mod recap;
@@ -852,6 +853,10 @@ pub fn run() {
             timers::timer_action,
             controls::controls_state,
             controls::control_set,
+            controls::control_choose,
+            quick::system_action,
+            quick::launcher_apps,
+            quick::launcher_open,
             controls::mic_toggle,
             controls::awake_set,
             weather::weather_search,

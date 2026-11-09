@@ -11,6 +11,7 @@ import { buildLiveChip } from "../src/island/live";
 import type { ViewActions } from "../src/views/views";
 import type { ToolId } from "../src/core/tools";
 import { setLanguage, isLanguage } from "../src/i18n/i18n";
+import { TALL_TOOL_H, TALL_TOOLS } from "../src/core/layout";
 
 const lang = new URLSearchParams(location.search).get("lang");
 if (lang && isLanguage(lang)) setLanguage(lang);
@@ -19,7 +20,22 @@ const now = Date.now();
 const MIN = 60_000;
 State.mode = "expanded";
 State.view = "tools";
-State.settings.tools = { ...State.settings.tools, clipboard: true, weatherPlace: "Lyon, France", weatherLat: 45.75, weatherLon: 4.85, rainWarnings: true };
+State.settings.tools = {
+  ...State.settings.tools, clipboard: true, weatherPlace: "Lyon, France", weatherLat: 45.75, weatherLon: 4.85, rainWarnings: true,
+  worldClocks: [{ name: "Cotonou", tz: "Africa/Porto-Novo" }, { name: "Istanbul", tz: "Europe/Istanbul" }],
+};
+// The Calendar pill's month: a few meetings around today.
+{
+  const at = (days: number, h: number, m = 0) => { const d = new Date(); d.setDate(d.getDate() + days); d.setHours(h, m, 0, 0); return d.getTime(); };
+  State.settings.activeIntegrations = [...State.settings.activeIntegrations, "integration_calendar"];
+  State.integrations["integration_calendar"] = { loaded: true, configured: true, error: null, data: { month: [
+    { title: "Stand-up", start: at(0, 9), end: at(0, 9, 15), allDay: false },
+    { title: "Review RC 2.2 with the team", start: at(0, 14), end: at(0, 15), allDay: false },
+    { title: "Holiday", start: at(3, 0), end: at(4, 0), allDay: true },
+    { title: "Sprint planning", start: at(6, 10), end: at(6, 11, 30), allDay: false },
+    { title: "Dentist", start: at(-2, 16), end: at(-2, 17), allDay: false },
+  ] } };
+}
 
 Tools.timers = [
   { id: "a", kind: "timer", label: "Tea", due: now + 3 * MIN + 12_000, duration: 4 * MIN, repeat: "", ringing: false, phase: "", round: 0, focusMs: 0, breakMs: 0 },
@@ -44,7 +60,32 @@ Tools.shelf = [
   { name: "sky.png", path: "C:/Users/me/AppData/Local/Ciel/inbox/sky.png", size: 2_400_000, at: now - 3_600_000, preview: swatch },
   { name: "notes.md", path: "C:/Users/me/AppData/Local/Ciel/inbox/notes.md", size: 4_200, at: now - 30 * MIN, preview: null },
 ];
-Tools.controls = { volume: 0.46, muted: false, micMuted: false, mics: 2, brightness: 0.7, wifi: true, bluetooth: false, nightLight: null, awake: true, awakeUntil: now + 54 * MIN };
+Tools.controls = {
+  volume: 0.46, muted: false, micMuted: false, mics: 2, brightness: 0.7, wifi: true, bluetooth: false, nightLight: false, awake: true, awakeUntil: now + 54 * MIN,
+  outputs: [
+    { id: "50", name: "AERO ULTRA_2.4G", default: true },
+    { id: "52", name: "PHL 273V7", default: false },
+    { id: "57", name: "HDMI 0", default: false },
+  ],
+  network: { kind: "wifi", name: "Home 5G" },
+  connections: [
+    { id: "a", name: "Home 5G", kind: "wifi", active: true },
+    { id: "b", name: "netplan-enp12s0", kind: "wired", active: false },
+    { id: "c", name: "Office VPN", kind: "vpn", active: false },
+  ],
+  powerMode: "performance", powerModes: ["power-saver", "balanced", "performance"],
+  dark: true, dnd: false, battery: { percent: 64, charging: false },
+};
+// The dock's apps: made-up icons, one without (its initial shows).
+const appIcon = (c1: string, c2: string, glyph: string) => "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="11" fill="url(#g)"/><text x="24" y="31" font-family="sans-serif" font-size="20" font-weight="700" fill="#fff" text-anchor="middle">${glyph}</text></svg>`);
+Tools.apps = [
+  { id: "files", name: "Files", icon: appIcon("#7aa7d9", "#3d6fb0", "F") },
+  { id: "terminal", name: "Terminal", icon: appIcon("#4a4f57", "#22252a", ">_") },
+  { id: "chrome", name: "Google Chrome", icon: appIcon("#f2b33d", "#d9483b", "C") },
+  { id: "editor", name: "Text Editor", icon: appIcon("#8fd18a", "#3e9b52", "T") },
+  { id: "storm", name: "PhpStorm", icon: appIcon("#c86bd6", "#6b47d6", "PS") },
+  { id: "discord", name: "Discord", icon: null },
+];
 const hour = (i: number) => ({ t: now + i * 3_600_000, temp: 12 + Math.sin(i / 3) * 4, code: i > 2 && i < 6 ? 61 : i > 7 ? 2 : 3, pop: i > 2 && i < 6 ? 80 : 10, isDay: i < 6 });
 Tools.weather = {
   place: "Lyon, France", lat: 45.75, lon: 4.85, at: now - 8 * MIN,
@@ -77,12 +118,14 @@ function show(label: string, height: number, el: HTMLElement, bot = { x: 46, y: 
   return el;
 }
 
-const tools = buildTools(actions);
-show("Tools", 216, tools.el);
+// The island's height less its header (52): taller on Controls, as island.ts makes it.
+const toolsHeight = () => (TALL_TOOLS.includes(Tools.tab) ? TALL_TOOL_H - 52 : 216);
+const tools = buildTools(actions, () => ((tools.el.parentElement as HTMLElement).style.height = `${toolsHeight()}px`));
+show("Tools", toolsHeight(), tools.el);
 const today = buildToday(actions);
 show("Today (nothing running)", 118, today.el, { x: 70, y: 59, d: 62 });
 
-const tabs: ToolId[] = ["timers", "clipboard", "shelf", "controls", "weather"];
+const tabs: ToolId[] = ["timers", "clipboard", "shelf", "controls", "calendar", "weather"];
 const bar = document.getElementById("tabs")!;
 for (const id of tabs) {
   const b = document.createElement("button");

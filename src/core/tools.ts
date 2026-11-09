@@ -2,7 +2,7 @@
 // controls.rs, weather.rs, lyrics.rs, shelf.rs). Types only: no DOM, no
 // Tauri, so the pure parts can be tested in Node.
 
-export type ToolId = "clipboard" | "shelf" | "timers" | "controls" | "weather";
+export type ToolId = "clipboard" | "shelf" | "timers" | "controls" | "weather" | "calendar";
 
 export interface ToolPrefs {
   /** Keep what is copied (clipboard.rs). */
@@ -19,6 +19,14 @@ export interface ToolPrefs {
   rainWarnings: boolean;
   /** The sky wallpaper wears the real weather rather than Ciel's mood. */
   skyWeather: boolean;
+  /** Tools → Calendar's other cities. */
+  worldClocks: WorldClock[];
+}
+
+export interface WorldClock {
+  name: string;
+  /** IANA: "Africa/Porto-Novo". */
+  tz: string;
 }
 
 export const DEFAULT_TOOL_PREFS: ToolPrefs = {
@@ -30,6 +38,7 @@ export const DEFAULT_TOOL_PREFS: ToolPrefs = {
   weatherUnits: "auto",
   rainWarnings: false,
   skyWeather: false,
+  worldClocks: [],
 };
 
 // ── Clipboard ─────────────────────────────────────────────────────────────────
@@ -88,6 +97,39 @@ export interface Controls {
   nightLight: boolean | null;
   awake: boolean;
   awakeUntil: number | null;
+  /** Speakers to choose from; empty when there is no choice to make here. */
+  outputs: Device[];
+  /** null: no network manager to ask. */
+  network: { kind: "wired" | "wifi" | "mobile" | ""; name: string } | null;
+  connections: Connection[];
+  powerMode: PowerMode | null;
+  powerModes: PowerMode[];
+  dark: boolean | null;
+  /** Notifications held: GNOME's banners and Ciel's own cards. */
+  dnd: boolean;
+  battery: { percent: number; charging: boolean } | null;
+}
+
+export type PowerMode = "power-saver" | "balanced" | "performance";
+
+export interface Device {
+  id: string;
+  name: string;
+  default: boolean;
+}
+
+export interface Connection {
+  id: string;
+  name: string;
+  kind: "wired" | "wifi" | "vpn";
+  active: boolean;
+}
+
+/** One of the user's own apps (GNOME's dock favourites, the taskbar's pins). */
+export interface LauncherApp {
+  id: string;
+  name: string;
+  icon: string | null;
 }
 
 // ── Weather ───────────────────────────────────────────────────────────────────
@@ -99,6 +141,8 @@ export interface Place {
   lon: number;
   /** "FR"; "" when Open-Meteo doesn't say. */
   countryCode: string;
+  /** "Europe/Paris"; "" when Open-Meteo doesn't say. */
+  timezone: string;
 }
 
 export interface WeatherNow {

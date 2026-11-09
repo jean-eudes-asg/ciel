@@ -1088,10 +1088,13 @@ body {
 .overview > .left {
   flex: 0 0 322px;
   width: 322px;
+  min-width: 0;
 }
 
+/* min-width: a long line (a song's lyrics) is cut short, never widens the card past the island. */
 .overview > .right {
   flex: 1 1 auto;
+  min-width: 0;
 }
 
 .pane-holder {
@@ -4776,7 +4779,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 /* Controls. */
 
 .tool-controls {
-  gap: 8px;
+  gap: 7px;
 }
 
 .ctl-sliders {
@@ -4831,7 +4834,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .ctl-tiles {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 6px;
 }
 
@@ -4840,8 +4843,8 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   align-items: center;
   gap: 8px;
   min-width: 0;
-  height: 40px;
-  padding: 0 10px;
+  height: 38px;
+  padding: 0 8px;
   border: 0;
   border-radius: 13px;
   background: rgba(255, 255, 255, 0.06);
@@ -4911,6 +4914,600 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   text-overflow: ellipsis;
   white-space: nowrap;
   font: 500 10px var(--font);
+  color: var(--dim-2);
+}
+
+/* The quick settings' top: the battery, then round buttons, as GNOME's. */
+
+.ctl-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.ctl-top .grow {
+  flex: 1 1 auto;
+}
+
+.ctl-round {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: #d4d7dc;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.08s ease;
+}
+
+.ctl-round:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.ctl-round:active {
+  transform: scale(0.94);
+}
+
+.ctl-round.on {
+  background: #7fb4ea;
+  color: #0b1a2b;
+}
+
+.ctl-round.small {
+  width: 24px;
+  height: 24px;
+  flex-basis: 24px;
+}
+
+/* The battery: a little cell filling to its level, the percentage beside. */
+.ctl-battery {
+  --level: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 2px;
+  font: 600 11px var(--font);
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+}
+
+.ctl-battery::before {
+  content: "";
+  width: 20px;
+  height: 10px;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  background: linear-gradient(90deg, currentColor var(--level), transparent var(--level)) content-box;
+  padding: 1px;
+  box-sizing: border-box;
+}
+
+.ctl-battery.charging {
+  color: #7ad28c;
+}
+
+.ctl-battery.low {
+  color: var(--red-text);
+}
+
+.ctl-main {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-height: 0;
+}
+
+.tool-controls.listing .ctl-main,
+.tool-controls:not(.listing) .ctl-list {
+  display: none;
+}
+
+/* A tile with a list: its arrow on the right, a button of its own. */
+.ctl-tile.split {
+  padding-right: 0;
+}
+
+.ctl-tile .ctl-text {
+  flex: 1 1 auto;
+}
+
+.ctl-more {
+  align-self: stretch;
+  width: 26px;
+  flex: 0 0 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 0 13px 13px 0;
+  background: transparent;
+  color: var(--dim-2);
+  cursor: pointer;
+}
+
+.ctl-more:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+}
+
+.ctl-tile.on .ctl-more {
+  border-left-color: rgba(127, 180, 234, 0.25);
+}
+
+.ctl-tile.dnd.on .ctl-icon {
+  background: #b9a3f5;
+  color: #170d33;
+}
+
+.ctl-tile:focus-visible,
+.ctl-row:focus-visible {
+  outline: 2px solid rgba(127, 180, 234, 0.7);
+  outline-offset: 1px;
+}
+
+.ctl-knob.on {
+  background: rgba(127, 180, 234, 0.2);
+  color: var(--ink);
+}
+
+/* The user's apps: their own icons, in a row. */
+.ctl-apps {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-top: 1px;
+}
+
+.ctl-app {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
+  font: 700 13px var(--font);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.ctl-app:hover {
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateY(-1px);
+}
+
+.ctl-app:active {
+  transform: scale(0.92);
+}
+
+.ctl-app img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.ctl-app span {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* A tile's list, in place of the tiles. */
+.ctl-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ctl-list-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ctl-list-title {
+  font: 600 12px var(--font);
+  color: var(--ink);
+}
+
+.ctl-list-rows {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-content: start;
+  gap: 5px;
+}
+
+.ctl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ctl-row:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ctl-row .ctl-text {
+  flex: 1 1 auto;
+}
+
+.ctl-row.on .ctl-icon {
+  background: #7fb4ea;
+  color: #0b1a2b;
+}
+
+.ctl-row.armed {
+  background: rgba(244, 80, 94, 0.16);
+}
+
+.ctl-row.armed .ctl-icon {
+  background: var(--red);
+  color: #fff;
+}
+
+.ctl-row.armed .ctl-sub {
+  color: var(--red-text);
+}
+
+.ctl-check {
+  display: grid;
+  color: #7fb4ea;
+}
+
+.ctl-list-foot {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Calendar (Tools → Calendar): the month on the left, the day and the world clocks beside it. */
+
+.tool-calendar {
+  flex-direction: row;
+  gap: 12px;
+}
+
+.cal-month-box {
+  flex: 0 0 236px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cal-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 2px;
+}
+
+.cal-weekday {
+  font: 500 11px var(--font);
+  color: var(--dim);
+}
+
+.cal-full {
+  font: 600 13px var(--font);
+  color: var(--ink);
+}
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cal-month {
+  padding: 2px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 12px var(--font);
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.cal-month:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  row-gap: 1px;
+}
+
+.cal-dow {
+  height: 18px;
+  display: grid;
+  place-items: center;
+  font: 600 9.5px var(--font);
+  color: var(--dim-2);
+  text-transform: uppercase;
+}
+
+.cal-day {
+  position: relative;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: 500 11px var(--font);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.cal-day span {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  transition: background 0.12s ease;
+}
+
+.cal-day:hover span {
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.cal-day.weekend {
+  color: var(--dim);
+}
+
+.cal-day.out {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.cal-day.picked span {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.cal-day.today span {
+  background: #7fb4ea;
+  color: #0b1a2b;
+  font-weight: 700;
+}
+
+/* A day with something: a dot under its number. */
+.cal-day.busy::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.75;
+}
+
+.cal-side {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 0;
+  padding: 8px 10px;
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cal-card:first-child {
+  flex: 1 1 auto;
+}
+
+.cal-card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 11px var(--font);
+  color: var(--dim);
+}
+
+.cal-card-title .grow {
+  flex: 1 1 auto;
+}
+
+.cal-events {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cal-none {
+  font: italic 500 11.5px var(--font);
+  color: var(--dim-2);
+}
+
+.cal-events .tool-link {
+  align-self: flex-start;
+  padding-left: 0;
+}
+
+.cal-event {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  font: 500 11.5px var(--font);
+  color: var(--ink);
+}
+
+.cal-event i {
+  width: 3px;
+  height: 14px;
+  flex: 0 0 3px;
+  border-radius: 2px;
+  background: #f472b6;
+}
+
+.cal-event.past {
+  opacity: 0.5;
+}
+
+.cal-event-title {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cal-event-time {
+  flex: 0 0 auto;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+}
+
+.cal-clocks {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 96px;
+  overflow-y: auto;
+}
+
+.cal-clock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px;
+  font: 500 12px var(--font);
+  color: var(--ink);
+}
+
+.cal-clock-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cal-clock-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.cal-clock-apart {
+  flex: 0 0 34px;
+  text-align: right;
+  font: 600 10.5px var(--font);
+  color: var(--dim-2);
+}
+
+.cal-clock-remove {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dim-2);
+  opacity: 0;
+  cursor: pointer;
+}
+
+.cal-clock:hover .cal-clock-remove {
+  opacity: 1;
+}
+
+.cal-clock-remove:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+}
+
+.cal-adding {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cal-search {
+  height: 26px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+  font: 500 11.5px var(--font);
+  outline: none;
+}
+
+.cal-found {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cal-place {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  font: 500 11px var(--font);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cal-place:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.cal-place span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--dim-2);
 }
 
@@ -5155,9 +5752,19 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .today-date {
+  display: block;
   margin-top: 1px;
+  padding: 0;
+  border: 0;
+  background: none;
   font: 500 11.5px var(--font);
   color: var(--dim);
+  text-align: left;
+  cursor: pointer;
+}
+
+.today-date:hover {
+  color: var(--ink);
 }
 
 .today-buttons {

@@ -85,6 +85,9 @@ export function buildLiveChip(open: (tool: ToolId) => void): LiveChip {
 
   function sync(on: boolean) {
     const playing = Spotify.state.playing ? Spotify.state : YtMusic.state.playing ? YtMusic.state : null;
+    // The next song's words are asked here too: the music card that asks
+    // for them is only there while the island is open.
+    if (playing && on) Lyrics.want(playing);
     const lyric = playing ? Lyrics.current(playing) : null;
     current = on ? pickLive({ timers: Tools.timers, controls: Tools.controls, weather: Tools.weather, now: Date.now(), lyric }) : null;
     const visible = current != null;
@@ -99,7 +102,8 @@ export function buildLiveChip(open: (tool: ToolId) => void): LiveChip {
     el.style.pointerEvents = visible ? "auto" : "none";
     // A countdown moves each second, and only while it shows.
     window.clearTimeout(timer);
-    if (visible && current?.kind === "lyric") timer = window.setTimeout(() => sync(true), 400);
+    // Between two lines (a song's intro, a solo) nothing shows, but the next line will.
+    if ((visible && current?.kind === "lyric") || (on && !visible && lyric === "")) timer = window.setTimeout(() => sync(true), 400);
     else if (visible && ticks(current)) timer = window.setTimeout(() => sync(true), 1000 - (Date.now() % 1000) + 5);
     else if (visible && current?.kind === "rain") timer = window.setTimeout(() => sync(true), 60_000);
   }

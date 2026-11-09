@@ -26,13 +26,14 @@ export function greetingFor(hour: number): string {
 
 export function buildToday(actions: ViewActions): ViewHost {
   const hello = h("div", { class: "today-hello" });
-  const date = h("div", { class: "today-date" });
   const glances = h("div", { class: "today-glances" });
   const open = (tool: ToolId) => {
     actions.blip();
     Tools.want(tool);
     actions.setView("tools");
   };
+  // The date opens the month, as the desktop's clock does.
+  const date = h("button", { class: "today-date", title: tl("Calendar"), onclick: () => open("calendar") });
   const buttons = h("div", { class: "today-buttons" },
     h("button", { class: "btn secondary", onclick: () => open("timers") }, svg(ICONS.timer, 11), h("span", { text: tl("Timer") })),
     h("button", { class: "btn primary", onclick: () => actions.setView("prompt") }, h("span", { text: tl("Ask") })),

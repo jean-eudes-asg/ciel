@@ -118,6 +118,13 @@ export function panelHeightFor(islandH: number): number {
   return Math.max(PANEL_H, Math.ceil(islandH) + 8);
 }
 
+/**
+ * The Tools view on Controls (the buttons, the sliders, three rows of tiles,
+ * the apps) and on Calendar (six weeks beside a day and the world clocks).
+ */
+export const TALL_TOOL_H = 380;
+export const TALL_TOOLS: readonly string[] = ["controls", "calendar"];
+
 /** The question view with options to pick from: room for two rows of them. */
 export const QUESTION_PICKER_H = 200;
 

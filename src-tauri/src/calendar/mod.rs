@@ -37,10 +37,12 @@ const EVERY_MS: i64 = 10 * 60_000;
 const TIMEOUT: Duration = Duration::from_secs(30);
 /// A calendar with years behind it is a few megabytes; past this it is refused.
 const MAX_FEED: usize = 25 * 1024 * 1024;
-/// What is read: today and the six days after.
+/// What the pill and the cards know: today and the six days after.
 const DAYS: i64 = 7;
 /// The most meetings the island is sent.
 const MAX_SHOWN: usize = 60;
+/// Tools → Calendar's month and the next, a week either side: what is read.
+const MONTH_MAX: usize = 400;
 /// A meeting's card stays this long after it began…
 const CARD_STAYS_MS: i64 = 5 * 60_000;
 /// …and is still shown when Ciel learns of the meeting this long after its start.
@@ -200,12 +202,15 @@ async fn poll(app: &AppHandle) {
     let today = Local::now().date_naive();
     let from = local_ms(today.and_time(NaiveTime::MIN));
     let to = local_ms((today + chrono::Duration::days(DAYS)).and_time(NaiveTime::MIN));
+    // Read for the calendar's month view: this month and the next, a week either side.
+    let (wide_from, wide_to) = month_span(today);
+    let (wide_from, wide_to) = (local_ms(wide_from.and_time(NaiveTime::MIN)), local_ms(wide_to.and_time(NaiveTime::MIN)));
     let http = reqwest::Client::builder().timeout(TIMEOUT).https_only(true).build().unwrap_or_default();
 
     let mut events: Vec<Occurrence> = Vec::new();
     let mut problems: Vec<(usize, String)> = Vec::new();
     for (n, link) in &links {
-        match read(&http, link, from, to).await {
+        match read(&http, link, wide_from.min(from), wide_to.max(to)).await {
             Ok(found) => events.extend(found.into_iter().filter(|o| !o.declined)),
             Err(err) => {
                 log::line(format!("calendar {n}: {err}"));
@@ -223,6 +228,9 @@ async fn poll(app: &AppHandle) {
         integrations::emit(app, IntegrationUpdate { id: PILL_ID, data: json!({}), error: Some(problems[0].1.clone()), event: None });
         return;
     }
+    let month: Vec<Value> = events.iter().take(MONTH_MAX).map(|o| json!({ "title": o.title, "start": o.start, "end": o.end, "allDay": o.all_day })).collect();
+    // The pill, the cards and « OK Ciel » keep to the week, as before.
+    events.retain(|o| o.end > from && o.start < to);
     let shown: Vec<Value> = events.iter().take(MAX_SHOWN).map(event_json).collect();
     {
         let mut known = KNOWN.lock().unwrap();
@@ -233,10 +241,18 @@ async fn poll(app: &AppHandle) {
     let problems: Vec<Value> = problems.into_iter().map(|(n, error)| json!({ "calendar": n, "error": error })).collect();
     integrations::emit(app, IntegrationUpdate {
         id: PILL_ID,
-        data: json!({ "events": shown, "calendars": links.len(), "problems": problems }),
+        data: json!({ "events": shown, "month": month, "calendars": links.len(), "problems": problems }),
         error: None,
         event: None,
     });
+}
+
+/// From a week before this month's first day to a week after the next month's last.
+fn month_span(today: NaiveDate) -> (NaiveDate, NaiveDate) {
+    use chrono::Datelike;
+    let first = today.with_day(1).unwrap_or(today);
+    let after_next = (first + chrono::Duration::days(62)).with_day(1).unwrap_or(first);
+    (first - chrono::Duration::days(7), after_next + chrono::Duration::days(7))
 }
 
 /// What the island is told of a meeting: no one's name, no description.
@@ -370,6 +386,13 @@ fn brain_text(events: &[Occurrence], day: Option<&str>, now: i64, clock: &dyn Fn
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_month_view_reads_this_month_and_the_next_a_week_either_side() {
+        let d = |y, m, day| NaiveDate::from_ymd_opt(y, m, day).unwrap();
+        assert_eq!(month_span(d(2026, 11, 9)), (d(2026, 10, 25), d(2027, 1, 8)));
+        assert_eq!(month_span(d(2026, 1, 31)), (d(2025, 12, 25), d(2026, 3, 8)));
+    }
 
     #[test]
     fn ok_ciel_is_told_whats_next_or_one_days_meetings_without_links_or_addresses() {

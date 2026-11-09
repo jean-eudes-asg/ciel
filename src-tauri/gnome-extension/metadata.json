@@ -1,7 +1,7 @@
 {
   "uuid": "ciel@jeaneudesasg.github.io",
   "name": "Ciel",
-  "description": "Lets Ciel open and dismiss the notifications it shows as GNOME's own list does, show its picture on the lock screen, and hide the top bar.",
+  "description": "Lets Ciel open and dismiss the notifications it shows as GNOME's own list does, show its picture on the lock screen, hide the top bar, and open GNOME's screenshot tool.",
   "shell-version": ["45", "46", "47", "48"],
   "session-modes": ["user", "unlock-dialog"],
   "url": "https://github.com/jean-eudes-asg/ciel"

@@ -31,6 +31,7 @@ const XK_SUPER_L: u32 = 0xffeb;
 const XK_ISO_LEVEL3_SHIFT: u32 = 0xfe03;
 const XK_ESCAPE: u32 = 0xff1b;
 const XK_V: u32 = 0x0076;
+const XK_PRINT: u32 = 0xff61;
 
 /// Whether this session is Wayland (where X11 sees only XWayland's windows).
 pub fn is_wayland() -> bool {
@@ -199,6 +200,21 @@ pub fn send_paste(shift: bool) -> Result<(), String> {
     }
     conn.sync().map_err(|e| e.to_string())?;
     Ok(())
+}
+
+/// The Print key, as if pressed, for the island's Screenshot button where
+/// Ciel's GNOME extension isn't running: GNOME opens its screenshot tool. X11 only.
+pub fn send_print() -> bool {
+    if is_wayland() {
+        return false;
+    }
+    let Ok((conn, screen)) = x11rb::connect(None) else { return false };
+    let root = conn.setup().roots[screen].root;
+    let Some(code) = Keymap::read(&conn).and_then(|k| k.keycode(XK_PRINT)) else { return false };
+    let press = |down: bool| {
+        conn.xtest_fake_input(if down { xproto::KEY_PRESS_EVENT } else { xproto::KEY_RELEASE_EVENT }, code, 0, root, 0, 0, 0)
+    };
+    press(true).is_ok() && press(false).is_ok() && conn.sync().is_ok()
 }
 
 fn atom(conn: &RustConnection, name: &str) -> Option<u32> {

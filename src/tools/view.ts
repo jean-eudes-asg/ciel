@@ -15,6 +15,7 @@ import { buildClipboard } from "./clipboard";
 import { buildShelf } from "./shelf";
 import { buildControls } from "./controls";
 import { buildWeather } from "./weather";
+import { buildCalendar } from "./calendar";
 
 export interface ToolPanel {
   el: HTMLElement;
@@ -32,19 +33,22 @@ const TABS: readonly { id: ToolId; icon: string; label: Msg }[] = [
   { id: "clipboard", icon: ICONS.clipboard, label: tl("Clipboard") },
   { id: "shelf", icon: ICONS.shelf, label: tl("Shelf") },
   { id: "controls", icon: ICONS.sliders, label: tl("Controls") },
+  { id: "calendar", icon: ICONS.calendar, label: tl("Calendar") },
   { id: "weather", icon: ICONS.cloudSun, label: tl("Weather") },
 ];
 
 /** The timer icon is a filled one; the others are drawn as lines. */
 const FILLED = new Set<ToolId>(["timers"]);
 
-export function buildTools(actions: ViewActions): ViewHost {
+/** `resize`: the island takes its height again (Controls is taller). */
+export function buildTools(actions: ViewActions, resize: () => void = () => {}): ViewHost {
   const panels: Record<ToolId, ToolPanel> = {
     timers: buildTimers(actions),
     clipboard: buildClipboard(actions),
     shelf: buildShelf(actions),
     controls: buildControls(actions),
     weather: buildWeather(actions),
+    calendar: buildCalendar(actions),
   };
   const holder = h("div", { class: "tools-panel" });
   const buttons = new Map<ToolId, HTMLElement>();
@@ -91,7 +95,10 @@ export function buildTools(actions: ViewActions): ViewHost {
       if (current !== id) {
         current = id;
         holder.replaceChildren(panel.el);
-        if (on) panel.shown?.();
+        if (on) {
+          panel.shown?.();
+          resize();
+        }
       } else if (on && !wasOn) {
         panel.shown?.();
       }

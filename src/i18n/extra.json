@@ -10215,6 +10215,314 @@
    "id": {
     "other": "{name} dan {count} lainnya ada di rak."
    }
+  },
+  "More": {
+   "zh-Hans": "更多",
+   "hi": "और",
+   "es": "Más",
+   "ar": "المزيد",
+   "fr": "Plus",
+   "bn": "আরও",
+   "pt-BR": "Mais",
+   "ru": "Ещё",
+   "id": "Lainnya"
+  },
+  "Power saver": {
+   "zh-Hans": "省电",
+   "hi": "पावर सेवर",
+   "es": "Ahorro de energía",
+   "ar": "توفير الطاقة",
+   "fr": "Économie d'énergie",
+   "bn": "পাওয়ার সেভার",
+   "pt-BR": "Economia de energia",
+   "ru": "Энергосбережение",
+   "id": "Hemat daya"
+  },
+  "Balanced": {
+   "zh-Hans": "平衡",
+   "hi": "संतुलित",
+   "es": "Equilibrado",
+   "ar": "متوازن",
+   "fr": "Équilibré",
+   "bn": "ভারসাম্যপূর্ণ",
+   "pt-BR": "Equilibrado",
+   "ru": "Сбалансированный",
+   "id": "Seimbang"
+  },
+  "Performance": {
+   "zh-Hans": "性能",
+   "hi": "प्रदर्शन",
+   "es": "Rendimiento",
+   "ar": "الأداء",
+   "fr": "Performances",
+   "bn": "পারফরম্যান্স",
+   "pt-BR": "Desempenho",
+   "ru": "Производительность",
+   "id": "Performa"
+  },
+  "Suspend": {
+   "zh-Hans": "睡眠",
+   "hi": "सस्पेंड",
+   "es": "Suspender",
+   "ar": "إسبات",
+   "fr": "Mettre en veille",
+   "bn": "সাসপেন্ড",
+   "pt-BR": "Suspender",
+   "ru": "Ждущий режим",
+   "id": "Tangguhkan"
+  },
+  "Power off": {
+   "zh-Hans": "关机",
+   "hi": "बंद करें",
+   "es": "Apagar",
+   "ar": "إيقاف التشغيل",
+   "fr": "Éteindre",
+   "bn": "বন্ধ করুন",
+   "pt-BR": "Desligar",
+   "ru": "Выключить",
+   "id": "Matikan"
+  },
+  "Log out": {
+   "zh-Hans": "注销",
+   "hi": "लॉग आउट",
+   "es": "Cerrar sesión",
+   "ar": "تسجيل الخروج",
+   "fr": "Se déconnecter",
+   "bn": "লগ আউট",
+   "pt-BR": "Sair",
+   "ru": "Выйти",
+   "id": "Keluar"
+  },
+  "Power": {
+   "zh-Hans": "电源",
+   "hi": "पावर",
+   "es": "Energía",
+   "ar": "الطاقة",
+   "fr": "Alimentation",
+   "bn": "পাওয়ার",
+   "pt-BR": "Energia",
+   "ru": "Питание",
+   "id": "Daya"
+  },
+  "Lock": {
+   "zh-Hans": "锁定",
+   "hi": "लॉक करें",
+   "es": "Bloquear",
+   "ar": "قفل",
+   "fr": "Verrouiller",
+   "bn": "লক করুন",
+   "pt-BR": "Bloquear",
+   "ru": "Заблокировать",
+   "id": "Kunci"
+  },
+  "Sound output": {
+   "zh-Hans": "声音输出",
+   "hi": "ध्वनि आउटपुट",
+   "es": "Salida de sonido",
+   "ar": "إخراج الصوت",
+   "fr": "Sortie audio",
+   "bn": "শব্দ আউটপুট",
+   "pt-BR": "Saída de som",
+   "ru": "Вывод звука",
+   "id": "Keluaran suara"
+  },
+  "Network": {
+   "zh-Hans": "网络",
+   "hi": "नेटवर्क",
+   "es": "Red",
+   "ar": "الشبكة",
+   "fr": "Réseau",
+   "bn": "নেটওয়ার্ক",
+   "pt-BR": "Rede",
+   "ru": "Сеть",
+   "id": "Jaringan"
+  },
+  "Power mode": {
+   "zh-Hans": "电源模式",
+   "hi": "पावर मोड",
+   "es": "Modo de energía",
+   "ar": "وضع الطاقة",
+   "fr": "Mode d'alimentation",
+   "bn": "পাওয়ার মোড",
+   "pt-BR": "Modo de energia",
+   "ru": "Режим питания",
+   "id": "Mode daya"
+  },
+  "Dark style": {
+   "zh-Hans": "深色风格",
+   "hi": "डार्क स्टाइल",
+   "es": "Estilo oscuro",
+   "ar": "النمط الداكن",
+   "fr": "Style sombre",
+   "bn": "ডার্ক স্টাইল",
+   "pt-BR": "Estilo escuro",
+   "ru": "Тёмный стиль",
+   "id": "Gaya gelap"
+  },
+  "Do not disturb": {
+   "zh-Hans": "勿扰",
+   "hi": "परेशान न करें",
+   "es": "No molestar",
+   "ar": "عدم الإزعاج",
+   "fr": "Ne pas déranger",
+   "bn": "বিরক্ত করবেন না",
+   "pt-BR": "Não perturbe",
+   "ru": "Не беспокоить",
+   "id": "Jangan ganggu"
+  },
+  "VPN": {
+   "zh-Hans": "VPN",
+   "hi": "VPN",
+   "es": "VPN",
+   "ar": "VPN",
+   "fr": "VPN",
+   "bn": "VPN",
+   "pt-BR": "VPN",
+   "ru": "VPN",
+   "id": "VPN"
+  },
+  "Sound settings": {
+   "zh-Hans": "声音设置",
+   "hi": "ध्वनि सेटिंग्स",
+   "es": "Ajustes de sonido",
+   "ar": "إعدادات الصوت",
+   "fr": "Paramètres audio",
+   "bn": "শব্দ সেটিংস",
+   "pt-BR": "Configurações de som",
+   "ru": "Настройки звука",
+   "id": "Pengaturan suara"
+  },
+  "Wired": {
+   "zh-Hans": "有线",
+   "hi": "वायर्ड",
+   "es": "Cableada",
+   "ar": "سلكي",
+   "fr": "Filaire",
+   "bn": "তারযুক্ত",
+   "pt-BR": "Cabeada",
+   "ru": "Проводное",
+   "id": "Kabel"
+  },
+  "Network settings": {
+   "zh-Hans": "网络设置",
+   "hi": "नेटवर्क सेटिंग्स",
+   "es": "Ajustes de red",
+   "ar": "إعدادات الشبكة",
+   "fr": "Paramètres réseau",
+   "bn": "নেটওয়ার্ক সেটিংস",
+   "pt-BR": "Configurações de rede",
+   "ru": "Настройки сети",
+   "id": "Pengaturan jaringan"
+  },
+  "Power settings": {
+   "zh-Hans": "电源设置",
+   "hi": "पावर सेटिंग्स",
+   "es": "Ajustes de energía",
+   "ar": "إعدادات الطاقة",
+   "fr": "Paramètres d'alimentation",
+   "bn": "পাওয়ার সেটিংস",
+   "pt-BR": "Configurações de energia",
+   "ru": "Настройки питания",
+   "id": "Pengaturan daya"
+  },
+  "Click again to confirm": {
+   "zh-Hans": "再次点击以确认",
+   "hi": "पुष्टि के लिए फिर क्लिक करें",
+   "es": "Haz clic otra vez para confirmar",
+   "ar": "انقر مرة أخرى للتأكيد",
+   "fr": "Cliquez encore pour confirmer",
+   "bn": "নিশ্চিত করতে আবার ক্লিক করুন",
+   "pt-BR": "Clique de novo para confirmar",
+   "ru": "Нажмите ещё раз для подтверждения",
+   "id": "Klik lagi untuk konfirmasi"
+  },
+  "Mobile": {
+   "zh-Hans": "移动网络",
+   "hi": "मोबाइल",
+   "es": "Móvil",
+   "ar": "الجوال",
+   "fr": "Mobile",
+   "bn": "মোবাইল",
+   "pt-BR": "Celular",
+   "ru": "Мобильная сеть",
+   "id": "Seluler"
+  },
+  "Search a city": {
+   "zh-Hans": "搜索城市",
+   "hi": "शहर खोजें",
+   "es": "Buscar una ciudad",
+   "ar": "ابحث عن مدينة",
+   "fr": "Chercher une ville",
+   "bn": "শহর খুঁজুন",
+   "pt-BR": "Buscar uma cidade",
+   "ru": "Найти город",
+   "id": "Cari kota"
+  },
+  "Add a city": {
+   "zh-Hans": "添加城市",
+   "hi": "शहर जोड़ें",
+   "es": "Añadir una ciudad",
+   "ar": "أضف مدينة",
+   "fr": "Ajouter une ville",
+   "bn": "শহর যোগ করুন",
+   "pt-BR": "Adicionar uma cidade",
+   "ru": "Добавить город",
+   "id": "Tambah kota"
+  },
+  "World clocks": {
+   "zh-Hans": "世界时钟",
+   "hi": "विश्व घड़ियाँ",
+   "es": "Relojes mundiales",
+   "ar": "ساعات العالم",
+   "fr": "Horloges mondiales",
+   "bn": "বিশ্ব ঘড়ি",
+   "pt-BR": "Relógios mundiais",
+   "ru": "Мировое время",
+   "id": "Jam dunia"
+  },
+  "No events": {
+   "zh-Hans": "没有日程",
+   "hi": "कोई कार्यक्रम नहीं",
+   "es": "Sin eventos",
+   "ar": "لا توجد أحداث",
+   "fr": "Aucun événement",
+   "bn": "কোনো ইভেন্ট নেই",
+   "pt-BR": "Nenhum evento",
+   "ru": "Нет событий",
+   "id": "Tidak ada acara"
+  },
+  "Add your calendars": {
+   "zh-Hans": "添加你的日历",
+   "hi": "अपने कैलेंडर जोड़ें",
+   "es": "Añade tus calendarios",
+   "ar": "أضف تقاويمك",
+   "fr": "Ajoutez vos agendas",
+   "bn": "আপনার ক্যালেন্ডার যোগ করুন",
+   "pt-BR": "Adicione seus calendários",
+   "ru": "Добавьте свои календари",
+   "id": "Tambahkan kalender Anda"
+  },
+  "Add the cities you work with.": {
+   "zh-Hans": "添加与你合作的城市。",
+   "hi": "जिन शहरों के साथ आप काम करते हैं, उन्हें जोड़ें।",
+   "es": "Añade las ciudades con las que trabajas.",
+   "ar": "أضف المدن التي تعمل معها.",
+   "fr": "Ajoutez les villes avec lesquelles vous travaillez.",
+   "bn": "যেসব শহরের সাথে কাজ করেন সেগুলো যোগ করুন।",
+   "pt-BR": "Adicione as cidades com que você trabalha.",
+   "ru": "Добавьте города, с которыми вы работаете.",
+   "id": "Tambahkan kota-kota tempat Anda bekerja sama."
+  },
+  "Calendar": {
+   "zh-Hans": "日历",
+   "hi": "कैलेंडर",
+   "es": "Calendario",
+   "ar": "التقويم",
+   "fr": "Agenda",
+   "bn": "ক্যালেন্ডার",
+   "pt-BR": "Calendário",
+   "ru": "Календарь",
+   "id": "Kalender"
   }
  }
 }

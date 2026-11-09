@@ -969,13 +969,13 @@ function buildPlaceholder(title: Msg, sub: string): ViewHost {
 
 export function buildViews(
   actions: ViewActions,
-  onChatHeightChange: () => void,
+  onHeightChange: () => void,
   onInboxRows: () => void = () => {},
 ): Map<IslandViewName, ViewHost> {
   const map = new Map<IslandViewName, ViewHost>();
   map.set("overview", buildOverview(actions));
   map.set("empty", buildToday(actions));
-  map.set("tools", buildTools(actions));
+  map.set("tools", buildTools(actions, onHeightChange));
   map.set("approval", buildApproval(actions));
   map.set("question", buildQuestion(actions));
   map.set("error", buildError(actions));
@@ -983,7 +983,7 @@ export function buildViews(
   map.set("confused", buildConfused());
   map.set("note", buildNote());
   map.set("settings", buildSettings(actions));
-  map.set("prompt", buildPrompt(onChatHeightChange));
+  map.set("prompt", buildPrompt(onHeightChange));
   map.set("upload", buildUpload());
   map.set("uploading", buildUploading());
   map.set("choose", buildChoose(actions));

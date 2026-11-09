@@ -1,14 +1,20 @@
-// Quick controls (Tools → Controls): the speakers' volume, every microphone at
-// once (with a key of its own, Settings → Shortcuts), the screens' brightness,
-// Wi-Fi, Bluetooth, night light where the desktop has one, and keeping the
-// computer awake.
+// Quick controls (Tools → Controls), what a desktop's quick settings hold and
+// more: the speakers' volume and which speakers, every microphone at once
+// (with a key of its own, Settings → Shortcuts), the screens' brightness,
+// the network and its connections, Wi-Fi, Bluetooth, the power mode, night
+// light, dark style, do not disturb, the battery, and keeping the computer
+// awake. The buttons beside them (screenshot, lock, power) are quick.rs.
 //
 // Read when the island asks (the controls coming on screen, the island
-// opening), never on a timer. Windows: the Core Audio endpoints, WMI for a
-// laptop's screen and DDC/CI for the monitors, Windows.Devices.Radios, and an
-// execution state held by a thread of its own. Linux: PulseAudio's pactl,
-// logind's SetBrightness on /sys/class/backlight, NetworkManager's nmcli,
-// bluetoothctl, GNOME's night light, and systemd-inhibit.
+// opening), never on a timer. Windows: the Core Audio endpoints (and the
+// policy object the sound settings use to pick the speakers), WMI for a
+// laptop's screen and DDC/CI for the monitors, Windows.Devices.Radios, the
+// connection profile, the power mode overlays, the theme in the registry,
+// and an execution state held by a thread of its own. Linux: PipeWire's wpctl
+// (PulseAudio's pactl without it), logind's SetBrightness on
+// /sys/class/backlight, NetworkManager's nmcli, bluetoothctl,
+// power-profiles-daemon, GNOME's settings, /sys/class/power_supply, and
+// systemd-inhibit.
 
 use std::sync::{Mutex, OnceLock};
 
@@ -35,6 +41,60 @@ pub struct Controls {
     /// Kept awake: until then (Unix ms), or for good (f64::MAX → `awakeForever`).
     pub awake: bool,
     pub awake_until: Option<f64>,
+    /// The speakers to choose from (empty: none to choose, or the system's own settings choose).
+    pub outputs: Vec<Device>,
+    /// None: no network manager to ask.
+    pub network: Option<Network>,
+    /// The connections set up (wired, Wi-Fi, VPN), to bring up or down.
+    pub connections: Vec<Connection>,
+    /// "power-saver", "balanced" or "performance", and those this computer has.
+    pub power_mode: Option<String>,
+    pub power_modes: Vec<String>,
+    pub dark: Option<bool>,
+    /// Notifications held: the desktop's banners (GNOME) and Ciel's own cards.
+    pub dnd: bool,
+    pub battery: Option<Battery>,
+}
+
+#[derive(Serialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Device {
+    pub id: String,
+    pub name: String,
+    pub default: bool,
+}
+
+#[derive(Serialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Network {
+    /// "wired", "wifi", "mobile", or "" when not connected.
+    pub kind: String,
+    pub name: String,
+}
+
+#[derive(Serialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Connection {
+    pub id: String,
+    pub name: String,
+    /// "wired", "wifi" or "vpn".
+    pub kind: String,
+    pub active: bool,
+}
+
+#[derive(Serialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct Battery {
+    /// 0…100.
+    pub percent: f64,
+    pub charging: bool,
+}
+
+/// Do not disturb where the desktop has no switch of its own (Windows): Ciel's cards only.
+static DND: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn dnd() -> bool {
+    platform::dnd().unwrap_or_else(|| DND.load(std::sync::atomic::Ordering::Relaxed))
 }
 
 static APP: OnceLock<AppHandle> = OnceLock::new();
@@ -57,6 +117,8 @@ fn read_all() -> Controls {
     let (mic_muted, mics) = platform::mics();
     let (wifi, bluetooth) = platform::radios();
     let awake = *AWAKE.lock().unwrap();
+    let (network, connections) = platform::network();
+    let (power_mode, power_modes) = platform::power_mode().map_or((None, Vec::new()), |(m, all)| (Some(m), all));
     let c = Controls {
         volume,
         muted,
@@ -68,6 +130,14 @@ fn read_all() -> Controls {
         night_light: platform::night_light(),
         awake: awake.is_some(),
         awake_until: awake.map(|(until, _)| until).filter(|u| *u < f64::MAX),
+        outputs: platform::outputs(),
+        network,
+        connections,
+        power_mode,
+        power_modes,
+        dark: platform::dark(),
+        dnd: dnd(),
+        battery: platform::battery(),
     };
     *LAST.lock().unwrap() = Some(c.clone());
     c
@@ -97,12 +167,14 @@ fn read_light() -> Controls {
         c.muted = Some(m);
     }
     (c.mic_muted, c.mics) = platform::mics();
+    // Ciel's cards wait from the start when it is on.
+    c.dnd = dnd();
     *LAST.lock().unwrap() = Some(c.clone());
     c
 }
 
 /// "volume" (0…1), "muted", "mic", "brightness" (0…1), "wifi", "bluetooth",
-/// "nightLight" (1 on, 0 off). Returns the controls as they are after.
+/// "nightLight", "dark", "dnd" (1 on, 0 off). Returns the controls as they are after.
 #[tauri::command]
 pub async fn control_set(what: String, value: f64) -> Controls {
     let c = tauri::async_runtime::spawn_blocking(move || {
@@ -115,6 +187,12 @@ pub async fn control_set(what: String, value: f64) -> Controls {
             "wifi" => platform::set_wifi(on),
             "bluetooth" => platform::set_bluetooth(on),
             "nightLight" => platform::set_night_light(on),
+            "dark" => platform::set_dark(on),
+            "dnd" => {
+                DND.store(on, std::sync::atomic::Ordering::Relaxed);
+                platform::set_dnd(on);
+                true
+            }
             _ => false,
         };
         if !done {
@@ -133,6 +211,45 @@ pub async fn control_set(what: String, value: f64) -> Controls {
             "brightness" if done => c.brightness = Some(value.clamp(0.0, 1.0)),
             "wifi" | "bluetooth" => (c.wifi, c.bluetooth) = platform::radios(),
             "nightLight" => c.night_light = platform::night_light(),
+            "dark" => c.dark = platform::dark(),
+            "dnd" => c.dnd = dnd(),
+            _ => {}
+        }
+        *LAST.lock().unwrap() = Some(c.clone());
+        c
+    })
+    .await
+    .unwrap_or_default();
+    emit(&c);
+    c
+}
+
+/// A choice from a list: "output" (the speakers' id), "powerMode" (its name),
+/// "connection" (brought up, or down when it is up). Only what the list holds
+/// is taken. Returns the controls as they are after.
+#[tauri::command]
+pub async fn control_choose(what: String, id: String) -> Controls {
+    let c = tauri::async_runtime::spawn_blocking(move || {
+        let done = match what.as_str() {
+            "output" => platform::outputs().iter().any(|d| d.id == id) && platform::set_output(&id),
+            "powerMode" => platform::power_mode().is_some_and(|(_, all)| all.contains(&id)) && platform::set_power_mode(&id),
+            "connection" => platform::network().1.iter().find(|x| x.id == id).is_some_and(|x| platform::set_connection(&x.id, !x.active)),
+            _ => false,
+        };
+        if !done {
+            crate::log::line(format!("controls: could not choose {what}"));
+        }
+        let mut c = LAST.lock().unwrap().clone().unwrap_or_else(read_all);
+        match what.as_str() {
+            "output" => {
+                c.outputs = platform::outputs();
+                if let Some((v, m)) = platform::volume() {
+                    c.volume = Some(v);
+                    c.muted = Some(m);
+                }
+            }
+            "powerMode" => (c.power_mode, c.power_modes) = platform::power_mode().map_or((None, Vec::new()), |(m, all)| (Some(m), all)),
+            "connection" => (c.network, c.connections) = platform::network(),
             _ => {}
         }
         *LAST.lock().unwrap() = Some(c.clone());
@@ -220,6 +337,9 @@ pub fn for_brain(input: &serde_json::Value) -> (String, bool) {
         serde_json::json!({
             "volume": pct(c.volume), "soundMuted": c.muted, "microphonesMuted": c.mic_muted, "microphones": c.mics,
             "brightness": pct(c.brightness), "wifi": c.wifi, "bluetooth": c.bluetooth, "keptAwake": c.awake,
+            "powerMode": c.power_mode, "darkStyle": c.dark, "doNotDisturb": c.dnd,
+            "network": c.network.as_ref().map(|n| if n.kind.is_empty() { "not connected".to_string() } else { format!("{} {}", n.kind, n.name) }),
+            "battery": c.battery.as_ref().map(|b| format!("{}%{}", b.percent.round(), if b.charging { " charging" } else { "" })),
         })
         .to_string(),
         false,
@@ -230,8 +350,16 @@ pub fn for_brain(input: &serde_json::Value) -> (String, bool) {
 
 #[cfg(windows)]
 mod platform {
-    use windows::core::{w, BSTR};
+    use windows::core::{s, w, BSTR, GUID, HSTRING, PCSTR, PCWSTR};
     use windows::Devices::Radios::{Radio, RadioAccessStatus, RadioKind, RadioState};
+    use windows::Networking::Connectivity::NetworkInformation;
+    use windows::Win32::Devices::FunctionDiscovery::PKEY_Device_FriendlyName;
+    use windows::Win32::Foundation::WPARAM;
+    use windows::Win32::System::Com::{CoTaskMemFree, STGM_READ};
+    use windows::Win32::System::LibraryLoader::{GetProcAddress, LoadLibraryW};
+    use windows::Win32::System::Power::{GetSystemPowerStatus, SYSTEM_POWER_STATUS};
+    use windows::Win32::System::Registry::{RegGetValueW, RegSetKeyValueW, HKEY_CURRENT_USER, REG_DWORD, RRF_RT_REG_DWORD};
+    use windows::Win32::UI::WindowsAndMessaging::{SendMessageTimeoutW, HWND_BROADCAST, SMTO_ABORTIFHUNG, WM_SETTINGCHANGE};
     use windows::Win32::Devices::Display::{
         DestroyPhysicalMonitors, GetMonitorBrightness, GetNumberOfPhysicalMonitorsFromHMONITOR,
         GetPhysicalMonitorsFromHMONITOR, SetMonitorBrightness, PHYSICAL_MONITOR,
@@ -240,7 +368,8 @@ mod platform {
     use windows::Win32::Graphics::Gdi::{EnumDisplayMonitors, HDC, HMONITOR};
     use windows::Win32::Media::Audio::Endpoints::IAudioEndpointVolume;
     use windows::Win32::Media::Audio::{
-        eCapture, eCommunications, eMultimedia, eRender, IMMDeviceEnumerator, MMDeviceEnumerator, DEVICE_STATE_ACTIVE,
+        eCapture, eCommunications, eConsole, eMultimedia, eRender, IMMDevice, IMMDeviceEnumerator, MMDeviceEnumerator,
+        DEVICE_STATE_ACTIVE,
     };
     use windows::Win32::System::Com::{
         CoCreateInstance, CoInitializeEx, CoSetProxyBlanket, CLSCTX_ALL, CLSCTX_INPROC_SERVER, COINIT_MULTITHREADED,
@@ -525,6 +654,184 @@ mod platform {
         set_radio(RadioKind::Bluetooth, on)
     }
 
+    // The speakers: the active ones by name, and the default one. Picking one
+    // goes through the policy object Windows' own sound settings use: not
+    // documented, but the same since Windows 7 (EarTrumpet and SoundSwitch use it).
+
+    pub fn outputs() -> Vec<super::Device> {
+        let Some(devices) = devices() else { return Vec::new() };
+        let id_of = |d: &IMMDevice| unsafe {
+            let p = d.GetId().ok()?;
+            let id = p.to_string().ok();
+            CoTaskMemFree(Some(p.0 as _));
+            id
+        };
+        unsafe {
+            let default = devices.GetDefaultAudioEndpoint(eRender, eMultimedia).ok().and_then(|d| id_of(&d));
+            let Ok(list) = devices.EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE) else { return Vec::new() };
+            let all: Vec<super::Device> = (0..list.GetCount().unwrap_or(0))
+                .filter_map(|i| {
+                    let d = list.Item(i).ok()?;
+                    let id = id_of(&d)?;
+                    let value = d.OpenPropertyStore(STGM_READ).ok()?.GetValue(&PKEY_Device_FriendlyName).ok()?;
+                    let name = BSTR::try_from(&value).ok()?.to_string();
+                    Some(super::Device { default: default.as_deref() == Some(id.as_str()), id, name })
+                })
+                .collect();
+            if all.len() < 2 { Vec::new() } else { all }
+        }
+    }
+
+    #[allow(non_snake_case)]
+    mod policy {
+        use std::ffi::c_void;
+
+        use windows::core::{HRESULT, PCWSTR};
+        use windows::Win32::Media::Audio::ERole;
+
+        #[windows::core::interface("f8679f50-850a-41cf-9c72-430f290290c8")]
+        pub unsafe trait IPolicyConfig: windows::core::IUnknown {
+            // Only SetDefaultEndpoint is called; the others hold their places.
+            fn GetMixFormat(&self, id: PCWSTR, format: *mut *mut c_void) -> HRESULT;
+            fn GetDeviceFormat(&self, id: PCWSTR, default: i32, format: *mut *mut c_void) -> HRESULT;
+            fn ResetDeviceFormat(&self, id: PCWSTR) -> HRESULT;
+            fn SetDeviceFormat(&self, id: PCWSTR, endpoint: *mut c_void, mix: *mut c_void) -> HRESULT;
+            fn GetProcessingPeriod(&self, id: PCWSTR, default: i32, period: *mut i64, minimum: *mut i64) -> HRESULT;
+            fn SetProcessingPeriod(&self, id: PCWSTR, period: *mut i64) -> HRESULT;
+            fn GetShareMode(&self, id: PCWSTR, mode: *mut c_void) -> HRESULT;
+            fn SetShareMode(&self, id: PCWSTR, mode: *mut c_void) -> HRESULT;
+            fn GetPropertyValue(&self, id: PCWSTR, key: *const c_void, value: *mut c_void) -> HRESULT;
+            fn SetPropertyValue(&self, id: PCWSTR, key: *const c_void, value: *mut c_void) -> HRESULT;
+            fn SetDefaultEndpoint(&self, id: PCWSTR, role: ERole) -> HRESULT;
+            fn SetEndpointVisibility(&self, id: PCWSTR, visible: i32) -> HRESULT;
+        }
+
+        /// The macro keeps the methods to this module.
+        pub fn set_default(policy: &IPolicyConfig, id: PCWSTR, role: ERole) -> bool {
+            unsafe { policy.SetDefaultEndpoint(id, role).is_ok() }
+        }
+    }
+    use policy::IPolicyConfig;
+
+    const POLICY_CONFIG: GUID = GUID::from_u128(0x870af99c_171d_4f9e_af0d_e63df40c2bc9);
+
+    pub fn set_output(id: &str) -> bool {
+        com();
+        let Ok(policy) = (unsafe { CoCreateInstance::<_, IPolicyConfig>(&POLICY_CONFIG, None, CLSCTX_ALL) }) else { return false };
+        let id = HSTRING::from(id);
+        // For music, for calls, and for the rest: as the sound settings do.
+        [eConsole, eMultimedia, eCommunications]
+            .into_iter()
+            .all(|role| policy::set_default(&policy, PCWSTR(id.as_ptr()), role))
+    }
+
+    /// The connection to the internet: Wi-Fi by its name, or wired. Windows'
+    /// own list of networks does the choosing (quick.rs opens it).
+    pub fn network() -> (Option<super::Network>, Vec<super::Connection>) {
+        let network = match NetworkInformation::GetInternetConnectionProfile() {
+            Ok(p) => {
+                let kind = if p.IsWlanConnectionProfile().unwrap_or(false) {
+                    "wifi"
+                } else if p.IsWwanConnectionProfile().unwrap_or(false) {
+                    "mobile"
+                } else {
+                    "wired"
+                };
+                super::Network { kind: kind.into(), name: p.ProfileName().map(|n| n.to_string()).unwrap_or_default() }
+            }
+            Err(_) => super::Network { kind: String::new(), name: String::new() },
+        };
+        (Some(network), Vec::new())
+    }
+
+    pub fn set_connection(_: &str, _: bool) -> bool {
+        false
+    }
+
+    // The power mode (Settings → System → Power): the overlays powrprof.dll
+    // switches for the Settings app, looked up by name since they aren't in
+    // the headers. They apply on the Balanced plan, which most computers use.
+
+    const BEST_EFFICIENCY: GUID = GUID::from_u128(0x961cc777_2547_4f9d_8174_7d86181b8a7a);
+    const BEST_PERFORMANCE: GUID = GUID::from_u128(0xded574b5_45a0_4f42_8737_46345c09c238);
+    const MODES: [(&str, GUID); 3] = [("power-saver", BEST_EFFICIENCY), ("balanced", GUID::zeroed()), ("performance", BEST_PERFORMANCE)];
+
+    fn powrprof(name: PCSTR) -> Option<unsafe extern "system" fn() -> isize> {
+        unsafe { GetProcAddress(LoadLibraryW(w!("powrprof.dll")).ok()?, name) }
+    }
+
+    pub fn power_mode() -> Option<(String, Vec<String>)> {
+        type Get = unsafe extern "system" fn(*mut GUID) -> u32;
+        let get: Get = unsafe { std::mem::transmute(powrprof(s!("PowerGetEffectiveOverlayScheme"))?) };
+        let mut guid = GUID::zeroed();
+        if unsafe { get(&mut guid) } != 0 {
+            return None;
+        }
+        let mode = MODES.iter().find(|(_, g)| *g == guid).map_or("balanced", |(m, _)| m);
+        Some((mode.to_string(), MODES.iter().map(|(m, _)| m.to_string()).collect()))
+    }
+
+    pub fn set_power_mode(mode: &str) -> bool {
+        type Set = unsafe extern "system" fn(GUID) -> u32;
+        let Some(&(_, guid)) = MODES.iter().find(|(m, _)| *m == mode) else { return false };
+        let Some(set) = powrprof(s!("PowerSetActiveOverlayScheme")) else { return false };
+        let set: Set = unsafe { std::mem::transmute(set) };
+        unsafe { set(guid) == 0 }
+    }
+
+    // Dark style: the theme's two values in the registry (apps, and the
+    // taskbar with the Start menu), then every window is told, as Settings does.
+
+    const PERSONALIZE: PCWSTR = w!("Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize");
+
+    pub fn dark() -> Option<bool> {
+        let mut value = 0u32;
+        let mut size = std::mem::size_of::<u32>() as u32;
+        let read = unsafe {
+            RegGetValueW(HKEY_CURRENT_USER, PERSONALIZE, w!("AppsUseLightTheme"), RRF_RT_REG_DWORD, None, Some(&mut value as *mut u32 as _), Some(&mut size))
+        };
+        read.is_ok().then_some(value == 0)
+    }
+
+    pub fn set_dark(on: bool) -> bool {
+        let light = u32::from(!on);
+        let bytes = light.to_le_bytes();
+        let mut done = true;
+        for name in [w!("AppsUseLightTheme"), w!("SystemUsesLightTheme")] {
+            done &= unsafe { RegSetKeyValueW(HKEY_CURRENT_USER, PERSONALIZE, name, REG_DWORD.0, Some(bytes.as_ptr() as _), 4) }.is_ok();
+        }
+        unsafe {
+            let _ = SendMessageTimeoutW(
+                HWND_BROADCAST,
+                WM_SETTINGCHANGE,
+                WPARAM(0),
+                LPARAM(w!("ImmersiveColorSet").as_ptr() as isize),
+                SMTO_ABORTIFHUNG,
+                200,
+                None,
+            );
+        }
+        done
+    }
+
+    // Windows' own do not disturb has no switch for apps: Ciel's cards only (controls.rs).
+
+    pub fn dnd() -> Option<bool> {
+        None
+    }
+
+    pub fn set_dnd(_: bool) {}
+
+    pub fn battery() -> Option<super::Battery> {
+        let mut s = SYSTEM_POWER_STATUS::default();
+        unsafe { GetSystemPowerStatus(&mut s) }.ok()?;
+        // 128: no battery; 255: unknown.
+        if s.BatteryFlag & 128 != 0 || s.BatteryLifePercent == 255 {
+            return None;
+        }
+        Some(super::Battery { percent: s.BatteryLifePercent as f64, charging: s.ACLineStatus == 1 })
+    }
+
     // Windows has no night light for apps to switch.
 
     pub fn night_light() -> Option<bool> {
@@ -592,13 +899,70 @@ mod platform {
         digits.parse::<f64>().ok().map(|p| p / 100.0)
     }
 
+    /// PipeWire's own wpctl, which Ubuntu and Fedora ship without pactl.
+    fn pipewire() -> bool {
+        static HAS: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
+        *HAS.get_or_init(|| crate::platform::find_on_path("wpctl").is_some())
+    }
+
+    /// "Volume: 0.84 [MUTED]" → (0.84, true).
+    pub fn wp_volume(text: &str) -> Option<(f64, bool)> {
+        let level = text.trim().strip_prefix("Volume:")?.split_whitespace().next()?.parse::<f64>().ok()?;
+        Some((level.min(1.0), text.contains("[MUTED]")))
+    }
+
+    /// The Audio section's sinks or sources in `wpctl status`: id, name, the default one.
+    pub fn wp_nodes(status: &str, section: &str) -> Vec<(u32, String, bool)> {
+        let mut out = Vec::new();
+        let (mut audio, mut inside) = (false, false);
+        for line in status.lines() {
+            // "Audio", "Video", "Settings": the top level, at the margin.
+            if !line.starts_with([' ', '│', '├', '└']) {
+                audio = line.trim() == "Audio";
+                inside = false;
+                continue;
+            }
+            let body = line.trim_start_matches([' ', '│', '├', '└', '─']).trim_end();
+            if body.ends_with(':') {
+                inside = audio && body.strip_suffix(':') == Some(section);
+                continue;
+            }
+            if body.is_empty() {
+                inside = false;
+                continue;
+            }
+            if !inside {
+                continue;
+            }
+            let default = body.starts_with('*');
+            let Some((id, rest)) = body.trim_start_matches('*').trim_start().split_once(". ") else { continue };
+            let Ok(id) = id.parse::<u32>() else { continue };
+            let name = rest.split(" [vol:").next().unwrap_or(rest).trim().to_string();
+            out.push((id, name, default));
+        }
+        out
+    }
+
+    fn wp_status() -> String {
+        run("wpctl", &["status", "--nick"]).or_else(|| run("wpctl", &["status"])).unwrap_or_default()
+    }
+
     pub fn volume() -> Option<(f64, bool)> {
+        if pipewire() {
+            return wp_volume(&run("wpctl", &["get-volume", "@DEFAULT_AUDIO_SINK@"])?);
+        }
         let level = first_percent(&run("pactl", &["get-sink-volume", "@DEFAULT_SINK@"])?)?;
         let muted = run("pactl", &["get-sink-mute", "@DEFAULT_SINK@"])?.contains("yes");
         Some((level, muted))
     }
 
     pub fn set_volume(level: f64) -> bool {
+        if pipewire() {
+            if level > 0.0 {
+                ok("wpctl", &["set-mute", "@DEFAULT_AUDIO_SINK@", "0"]);
+            }
+            return ok("wpctl", &["set-volume", "@DEFAULT_AUDIO_SINK@", &format!("{level:.2}")]);
+        }
         let percent = format!("{}%", (level * 100.0).round() as u32);
         if level > 0.0 {
             ok("pactl", &["set-sink-mute", "@DEFAULT_SINK@", "0"]);
@@ -607,11 +971,18 @@ mod platform {
     }
 
     pub fn set_muted(on: bool) -> bool {
-        ok("pactl", &["set-sink-mute", "@DEFAULT_SINK@", if on { "1" } else { "0" }])
+        let flag = if on { "1" } else { "0" };
+        if pipewire() {
+            return ok("wpctl", &["set-mute", "@DEFAULT_AUDIO_SINK@", flag]);
+        }
+        ok("pactl", &["set-sink-mute", "@DEFAULT_SINK@", flag])
     }
 
     /// The microphones: every source that is not a speaker's monitor.
     fn sources() -> Vec<String> {
+        if pipewire() {
+            return wp_nodes(&wp_status(), "Sources").into_iter().map(|(id, _, _)| id.to_string()).collect();
+        }
         run("pactl", &["list", "short", "sources"])
             .unwrap_or_default()
             .lines()
@@ -622,7 +993,11 @@ mod platform {
 
     pub fn mics() -> (Option<bool>, u32) {
         let count = sources().len() as u32;
-        let muted = run("pactl", &["get-source-mute", "@DEFAULT_SOURCE@"]).map(|o| o.contains("yes"));
+        let muted = if pipewire() {
+            run("wpctl", &["get-volume", "@DEFAULT_AUDIO_SOURCE@"]).map(|o| o.contains("[MUTED]"))
+        } else {
+            run("pactl", &["get-source-mute", "@DEFAULT_SOURCE@"]).map(|o| o.contains("yes"))
+        };
         (muted, count)
     }
 
@@ -630,9 +1005,139 @@ mod platform {
         let flag = if on { "1" } else { "0" };
         let mut done = false;
         for name in sources() {
-            done |= ok("pactl", &["set-source-mute", &name, flag]);
+            done |= if pipewire() { ok("wpctl", &["set-mute", &name, flag]) } else { ok("pactl", &["set-source-mute", &name, flag]) };
         }
         done
+    }
+
+    /// The speakers, from PipeWire. Plain PulseAudio has only the system's settings for that.
+    pub fn outputs() -> Vec<super::Device> {
+        if !pipewire() {
+            return Vec::new();
+        }
+        let sinks = wp_nodes(&wp_status(), "Sinks");
+        // One pair of speakers: nothing to choose.
+        if sinks.len() < 2 {
+            return Vec::new();
+        }
+        sinks.into_iter().map(|(id, name, default)| super::Device { id: id.to_string(), name, default }).collect()
+    }
+
+    pub fn set_output(id: &str) -> bool {
+        ok("wpctl", &["set-default", id])
+    }
+
+    /// `nmcli -t` fields: ':' between them, "\:" inside one.
+    pub fn nm_fields(line: &str) -> Vec<String> {
+        let mut out = vec![String::new()];
+        let mut chars = line.chars();
+        while let Some(c) = chars.next() {
+            match c {
+                '\\' => out.last_mut().unwrap().extend(chars.next()),
+                ':' => out.push(String::new()),
+                _ => out.last_mut().unwrap().push(c),
+            }
+        }
+        out
+    }
+
+    /// What the computer is connected through, and the connections set up.
+    pub fn network() -> (Option<super::Network>, Vec<super::Connection>) {
+        let Some(text) = run("nmcli", &["-t", "-f", "NAME,UUID,TYPE,ACTIVE", "connection", "show"]) else { return (None, Vec::new()) };
+        let connections: Vec<super::Connection> = text
+            .lines()
+            .filter_map(|line| {
+                let f = nm_fields(line);
+                let kind = match f.get(2)?.as_str() {
+                    "802-3-ethernet" => "wired",
+                    "802-11-wireless" => "wifi",
+                    "vpn" | "wireguard" => "vpn",
+                    _ => return None,
+                };
+                Some(super::Connection { name: f[0].clone(), id: f[1].clone(), kind: kind.into(), active: f.get(3)?.as_str() == "yes" })
+            })
+            .collect();
+        let up = connections.iter().find(|c| c.active && c.kind != "vpn");
+        let network = super::Network {
+            kind: up.map(|c| c.kind.clone()).unwrap_or_default(),
+            name: up.map(|c| c.name.clone()).unwrap_or_default(),
+        };
+        (Some(network), connections)
+    }
+
+    pub fn set_connection(id: &str, up: bool) -> bool {
+        ok("nmcli", &["--wait", "20", "connection", if up { "up" } else { "down" }, id])
+    }
+
+    /// power-profiles-daemon: the mode, and the ones this computer has ("* performance:" lines).
+    pub fn power_mode() -> Option<(String, Vec<String>)> {
+        let mode = run("powerprofilesctl", &["get"])?.trim().to_string();
+        let all = run("powerprofilesctl", &["list"])?
+            .lines()
+            .filter_map(|l| l.trim().trim_start_matches('*').trim().strip_suffix(':').map(str::to_string))
+            .collect::<Vec<_>>();
+        // power-saver, balanced, performance: from the lightest.
+        let order = ["power-saver", "balanced", "performance"];
+        let mut all: Vec<String> = all.into_iter().filter(|m| order.contains(&m.as_str())).collect();
+        all.sort_by_key(|m| order.iter().position(|o| o == m));
+        (!all.is_empty()).then_some((mode, all))
+    }
+
+    pub fn set_power_mode(mode: &str) -> bool {
+        ok("powerprofilesctl", &["set", mode])
+    }
+
+    const INTERFACE: &str = "org.gnome.desktop.interface";
+
+    pub fn dark() -> Option<bool> {
+        run("gsettings", &["get", INTERFACE, "color-scheme"]).map(|o| o.contains("prefer-dark"))
+    }
+
+    /// GNOME's dark style; on Ubuntu the Yaru theme of older GTK apps follows, as Settings does.
+    pub fn set_dark(on: bool) -> bool {
+        let done = ok("gsettings", &["set", INTERFACE, "color-scheme", if on { "prefer-dark" } else { "default" }]);
+        if let Some(theme) = run("gsettings", &["get", INTERFACE, "gtk-theme"]) {
+            let theme = theme.trim().trim_matches('\'');
+            if theme.starts_with("Yaru") {
+                let light = theme.strip_suffix("-dark").unwrap_or(theme);
+                let next = if on { format!("{light}-dark") } else { light.to_string() };
+                if next != theme {
+                    ok("gsettings", &["set", INTERFACE, "gtk-theme", &next]);
+                }
+            }
+        }
+        done
+    }
+
+    const BANNERS: [&str; 2] = ["org.gnome.desktop.notifications", "show-banners"];
+
+    /// GNOME's banners off, unless Ciel turned them off itself to show the
+    /// notifications in the island (notify.rs): that is not do not disturb.
+    pub fn dnd() -> Option<bool> {
+        let off = run("gsettings", &["get", BANNERS[0], BANNERS[1]])?.trim() == "false";
+        Some(off && !crate::platform::config_dir().join(crate::notify::BANNERS_MARKER).exists())
+    }
+
+    pub fn set_dnd(on: bool) {
+        // Ciel showing the notifications keeps GNOME's banners off either way.
+        if crate::platform::config_dir().join(crate::notify::BANNERS_MARKER).exists() {
+            return;
+        }
+        ok("gsettings", &["set", BANNERS[0], BANNERS[1], if on { "false" } else { "true" }]);
+    }
+
+    /// The computer's own battery, not a mouse's.
+    pub fn battery() -> Option<super::Battery> {
+        for entry in std::fs::read_dir("/sys/class/power_supply").ok()?.flatten() {
+            let read = |f: &str| std::fs::read_to_string(entry.path().join(f)).map(|s| s.trim().to_string()).unwrap_or_default();
+            if read("type") != "Battery" || read("scope") == "Device" {
+                continue;
+            }
+            let Ok(percent) = read("capacity").parse::<f64>() else { continue };
+            let status = read("status");
+            return Some(super::Battery { percent, charging: status == "Charging" || status == "Full" });
+        }
+        None
     }
 
     /// The first backlight: its name, level and maximum.
@@ -670,7 +1175,9 @@ mod platform {
     }
 
     pub fn radios() -> (Option<bool>, Option<bool>) {
-        let wifi = run("nmcli", &["radio", "wifi"]).map(|o| o.trim() == "enabled");
+        // The radio says "enabled" on a computer without Wi-Fi: a device of that kind first.
+        let has_wifi = run("nmcli", &["-t", "-f", "TYPE", "device"]).is_some_and(|o| o.lines().any(|l| l == "wifi"));
+        let wifi = if has_wifi { run("nmcli", &["radio", "wifi"]).map(|o| o.trim() == "enabled") } else { None };
         let bt = run("bluetoothctl", &["show"]).filter(|o| o.contains("Controller")).map(|o| o.contains("Powered: yes"));
         (wifi, bt)
     }
@@ -724,6 +1231,49 @@ mod platform {
             assert_eq!(super::first_percent("Volume: front-left: 26214 /  40% / -23.88 dB,"), Some(0.4));
             assert_eq!(super::first_percent("Volume: mono: 65536 / 100% / 0.00 dB"), Some(1.0));
             assert_eq!(super::first_percent("nothing"), None);
+        }
+
+        #[test]
+        fn wpctl_volumes_and_nodes() {
+            assert_eq!(super::wp_volume("Volume: 0.84\n"), Some((0.84, false)));
+            assert_eq!(super::wp_volume("Volume: 1.30 [MUTED]\n"), Some((1.0, true)));
+            assert_eq!(super::wp_volume("nothing"), None);
+            let status = "PipeWire 'pipewire-0' [1.0.5, jean@pc, cookie:1]
+ └─ Clients:
+        32. pipewire                            [1.0.5, jean@pc, pid:7355]
+
+Audio
+ ├─ Devices:
+ │      46. Rembrandt Radeon High Definition Audio Controller [alsa]
+ │  
+ ├─ Sinks:
+ │  *   50. AERO ULTRA_2.4G Analog Stereo       [vol: 0.84]
+ │      52. Radeon HDMI Digital Stereo (HDMI) [vol: 0.90 MUTED]
+ │  
+ ├─ Sink endpoints:
+ │  
+ ├─ Sources:
+ │  *   51. AERO ULTRA_2.4G Mono                [vol: 1.00]
+ │  
+ └─ Source endpoints:
+
+Video
+ ├─ Sources:
+ │  *   60. Integrated Camera (V4L2)
+ │  
+";
+            assert_eq!(
+                super::wp_nodes(status, "Sinks"),
+                vec![(50, "AERO ULTRA_2.4G Analog Stereo".to_string(), true), (52, "Radeon HDMI Digital Stereo (HDMI)".to_string(), false)]
+            );
+            // The camera is a Video source, not a microphone.
+            assert_eq!(super::wp_nodes(status, "Sources"), vec![(51, "AERO ULTRA_2.4G Mono".to_string(), true)]);
+        }
+
+        #[test]
+        fn nmcli_fields_keep_escaped_colons() {
+            assert_eq!(super::nm_fields(r"Office\:2:abc-1:802-11-wireless:yes"), vec!["Office:2", "abc-1", "802-11-wireless", "yes"]);
+            assert_eq!(super::nm_fields("Wired:u:802-3-ethernet:no"), vec!["Wired", "u", "802-3-ethernet", "no"]);
         }
     }
 }

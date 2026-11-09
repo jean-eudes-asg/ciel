@@ -18,6 +18,9 @@
 // instead, the picture Ciel sets there (and saved the user's before), unblurred.
 // Option off, GNOME's own. That is why it also runs while the screen is locked.
 //
+// And it opens GNOME's own screenshot tool, for the island's Screenshot
+// button: nothing else can, on Wayland.
+//
 // Nothing else is exposed: these calls, on the session bus.
 
 import Gio from 'gi://Gio';
@@ -37,6 +40,7 @@ const IFACE = `<node>
     <method name="ActivateGtk"><arg type="s" name="app" direction="in"/><arg type="s" name="id" direction="in"/><arg type="b" direction="out"/></method>
     <method name="DismissGtk"><arg type="s" name="app" direction="in"/><arg type="s" name="id" direction="in"/><arg type="b" direction="out"/></method>
     <method name="SetPanelHidden"><arg type="b" name="hidden" direction="in"/><arg type="b" direction="out"/></method>
+    <method name="Screenshot"><arg type="b" direction="out"/></method>
     <property name="Version" type="u" access="read"/>
   </interface>
 </node>`;
@@ -151,7 +155,13 @@ export default class CielExtension extends Extension {
                 this._panel.set(hidden && !Main.sessionMode.isLocked);
                 return true;
             },
-            Version: 3,
+            Screenshot: () => {
+                if (Main.sessionMode.isLocked)
+                    return false;
+                Main.screenshotUI.open();
+                return true;
+            },
+            Version: 4,
         });
         this._dbus.export(Gio.DBus.session, PATH);
     }

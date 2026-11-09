@@ -35,6 +35,9 @@ pub struct Place {
     /// "FR": the island writes its temperatures in °C or °F from it.
     #[serde(default)]
     pub country_code: String,
+    /// "Europe/Paris": a world clock's (Tools → Calendar).
+    #[serde(default)]
+    pub timezone: String,
 }
 
 #[derive(Serialize, Clone, Debug, Default, PartialEq)]
@@ -132,8 +135,8 @@ pub fn parse_places(v: &Value) -> Vec<Place> {
             let lat = r.get("latitude")?.as_f64()?;
             let lon = r.get("longitude")?.as_f64()?;
             let parts: Vec<&str> = ["admin1", "country"].iter().filter_map(|k| r.get(*k).and_then(Value::as_str)).collect();
-            let country_code = r.get("country_code").and_then(Value::as_str).unwrap_or_default().to_string();
-            Some(Place { name, detail: parts.join(", "), lat, lon, country_code })
+            let text = |k: &str| r.get(k).and_then(Value::as_str).unwrap_or_default().to_string();
+            Some(Place { name, detail: parts.join(", "), lat, lon, country_code: text("country_code"), timezone: text("timezone") })
         })
         .collect()
 }
@@ -427,7 +430,7 @@ mod tests {
     #[test]
     fn places_read_with_their_region_and_country() {
         let v = json!({"results": [
-            {"name": "Lyon", "latitude": 45.75, "longitude": 4.85, "admin1": "Auvergne-Rhône-Alpes", "country": "France", "country_code": "FR"},
+            {"name": "Lyon", "latitude": 45.75, "longitude": 4.85, "admin1": "Auvergne-Rhône-Alpes", "country": "France", "country_code": "FR", "timezone": "Europe/Paris"},
             {"name": "Lyons", "latitude": 43.1, "longitude": -77.0, "country": "United States"},
             {"name": "broken"}
         ]});
@@ -435,6 +438,7 @@ mod tests {
         assert_eq!(places.len(), 2);
         assert_eq!(places[0].detail, "Auvergne-Rhône-Alpes, France");
         assert_eq!(places[0].country_code, "FR");
+        assert_eq!(places[0].timezone, "Europe/Paris");
         assert_eq!(places[1].detail, "United States");
         assert_eq!(places[1].country_code, "");
         assert!(parse_places(&json!({})).is_empty());

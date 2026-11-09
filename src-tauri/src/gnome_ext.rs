@@ -129,6 +129,11 @@ mod imp {
         call("SetPanelHidden", (hidden,)).unwrap_or(false)
     }
 
+    /// GNOME's screenshot tool, as the Print key opens it; false without the extension.
+    pub fn screenshot() -> bool {
+        call("Screenshot", ()).unwrap_or(false)
+    }
+
     /// Open or dismiss GNOME's own notification; false when the extension
     /// isn't running or GNOME no longer has it.
     pub fn act(shell: &crate::notify::ShellRef, open: bool) -> bool {
@@ -142,7 +147,7 @@ mod imp {
 }
 
 #[cfg(target_os = "linux")]
-pub use imp::{act, set_panel, version};
+pub use imp::{act, screenshot, set_panel, version};
 
 /// The first version that draws the lock screen from Ciel's picture.
 pub const LOCK_SCREEN_VERSION: u32 = 3;

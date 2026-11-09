@@ -4,7 +4,7 @@
 
 import { Bridge, onEvent } from "../core/bridge";
 import { State } from "../core/state";
-import type { ClipState, Controls, ShelfFile, TimerItem, ToolId, Weather } from "../core/tools";
+import type { ClipState, Controls, LauncherApp, ShelfFile, TimerItem, ToolId, Weather } from "../core/tools";
 import { DEFAULT_TOOL_PREFS, type ToolPrefs } from "../core/tools";
 
 class ToolStore {
@@ -12,6 +12,8 @@ class ToolStore {
   shelf: ShelfFile[] = [];
   timers: TimerItem[] = [];
   controls: Controls | null = null;
+  /** The user's own apps, beside the controls; read once, again when the controls come back. */
+  apps: LauncherApp[] = [];
   weather: Weather | null = null;
   /** The tab the Tools view opens on: the last one used. */
   tab: ToolId = "timers";
@@ -73,6 +75,14 @@ class ToolStore {
     const c = await Bridge.controlsState(light);
     if (c) {
       this.controls = c;
+      State.notify();
+    }
+  }
+
+  async refreshApps() {
+    const apps = await Bridge.launcherApps();
+    if (apps) {
+      this.apps = apps;
       State.notify();
     }
   }

@@ -9,7 +9,7 @@ import type { Settings } from "./state";
 import type { RecapHistory, RecapPrefs } from "../recap/summary";
 import type { SpotifyState } from "./spotify";
 import type { FinanceFolderInfo, FinancePoll, NewExpense } from "./finance";
-import type { ClipState, Controls, Lyrics, Place, ShelfFile, TimerItem, Weather } from "./tools";
+import type { ClipState, Controls, LauncherApp, Lyrics, Place, ShelfFile, TimerItem, Weather } from "./tools";
 
 export const IS_TAURI =
   typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -122,7 +122,8 @@ export const Bridge = {
 
   quit: () => call<void>("quit_app"),
 
-  openSettingsWindow: () => call<void>("open_settings_window"),
+  /** On a page ("integrations"…), or General. */
+  openSettingsWindow: (page?: string) => call<void>("open_settings_window", { page }),
 
   /** Writes to %LOCALAPPDATA%\Ciel\ciel.log, next to the Rust lines. */
   log: (message: string) => call<void>("log_line", { message }),
@@ -297,6 +298,12 @@ export const Bridge = {
   /** `light`: the sound and the microphones only (at launch). */
   controlsState: (light = false) => call<Controls>("controls_state", { light }),
   controlSet: (what: string, value: number) => call<Controls>("control_set", { what, value }),
+  /** "output", "powerMode", "connection" (up, or down when up). */
+  controlChoose: (what: string, id: string) => call<Controls>("control_choose", { what, id }),
+  /** The buttons beside the controls (src-tauri/src/quick.rs): "screenshot", "lock", "powerOff"… */
+  systemAction: (what: string) => call<boolean>("system_action", { what }),
+  launcherApps: () => call<LauncherApp[]>("launcher_apps"),
+  launcherOpen: (id: string) => call<boolean>("launcher_open", { id }),
   micToggle: () => call<boolean>("mic_toggle"),
   /** Minutes awake; 0 lets it sleep, a negative number until turned off. */
   awakeSet: (minutes: number) => call<Controls>("awake_set", { minutes }),

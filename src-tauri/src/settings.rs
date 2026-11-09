@@ -148,6 +148,16 @@ pub struct ToolsPrefs {
     pub rain_warnings: bool,
     /// The sky wallpaper wears the real weather rather than Ciel's mood (src/sky).
     pub sky_weather: bool,
+    /// Tools → Calendar's other cities, in the user's order.
+    pub world_clocks: Vec<WorldClock>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WorldClock {
+    pub name: String,
+    /// The IANA time zone: "Africa/Porto-Novo".
+    pub tz: String,
 }
 
 impl Default for ToolsPrefs {
@@ -161,6 +171,7 @@ impl Default for ToolsPrefs {
             weather_units: "auto".into(),
             rain_warnings: false,
             sky_weather: false,
+            world_clocks: Vec::new(),
         }
     }
 }
@@ -650,7 +661,8 @@ mod tests {
   "brainReads": { "calendar": false, "notes": true, "finance": true },
   "tools": {
     "clipboard": true, "lyrics": true, "weatherPlace": "Lyon, France", "weatherLat": 45.75, "weatherLon": 4.85,
-    "weatherUnits": "c", "rainWarnings": true, "skyWeather": true
+    "weatherUnits": "c", "rainWarnings": true, "skyWeather": true,
+    "worldClocks": [{ "name": "Cotonou", "tz": "Africa/Porto-Novo" }]
   },
   "windowTheme": "white",
   "setupSteps": ["hello", "work", "later"]

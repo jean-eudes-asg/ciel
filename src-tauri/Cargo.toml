@@ -69,6 +69,9 @@ keyring = { version = "3", features = ["windows-native"] }
 # Same versions as wry, so nothing new is compiled.
 webview2-com = "0.39"
 wv2_core = { package = "windows-core", version = "0.62" }
+# The windows crate's own core, which its interface macro names: the speakers'
+# policy object (controls.rs). Already in the tree with windows.
+windows-core = "0.61"
 windows = { version = "0.61", features = [
   # The Spotify pill: the system media controls Spotify publishes to.
   "Foundation",
@@ -115,6 +118,12 @@ windows = { version = "0.61", features = [
   "Win32_System_Rpc",
   "Win32_Devices_Display",
   "Devices_Radios",
+  # The speakers' names, the connection to the internet (controls.rs).
+  "Win32_Devices_FunctionDiscovery",
+  "Win32_UI_Shell_PropertiesSystem",
+  "Networking_Connectivity",
+  # The taskbar's apps and their icons (quick.rs).
+  "Win32_Storage_FileSystem",
 ] }
 # The clipboard for Flow dictation, kept out of the clipboard history, and the
 # clipboard history's text, files and pictures (clipboard.rs). MIT/Apache-2.0.
