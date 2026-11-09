@@ -30,6 +30,7 @@ export const SHORTCUT_TEXT = {
   desktopToggle: N_("Send Ciel to the desktop"),
   micToggle: N_("Mute or unmute every microphone"),
   clipboardOpen: N_("Open the clipboard history"),
+  meetingAnswer: N_("Answer the last question in the call"),
   island: {
     nextPrev: N_("Next or previous pill"),
     byNumber: N_("Go to pill 1 to 9"),
@@ -61,7 +62,8 @@ export type ShortcutId =
   | "muteToggle"
   | "desktopToggle"
   | "micToggle"
-  | "clipboardOpen";
+  | "clipboardOpen"
+  | "meetingAnswer";
 
 export interface ShortcutDef {
   id: ShortcutId;
@@ -89,6 +91,8 @@ export const SHORTCUTS: readonly ShortcutDef[] = [
   def("micToggle", "Ctrl+Alt+U", true, true),
   // Off until turned on: Word's Paste Special is on the same keys.
   def("clipboardOpen", "Ctrl+Alt+V", false, true),
+  // During a call the Notetaker records: Ciel answers the last question put to you.
+  def("meetingAnswer", "Ctrl+Alt+K", true, true),
 ];
 
 /**

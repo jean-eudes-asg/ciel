@@ -9,7 +9,7 @@
 // The pill's page still runs, hidden: it speaks « OK Ciel »'s answers. The
 // dots move only while something shows; nothing runs otherwise.
 
-import { onEvent } from "../core/bridge";
+import { Bridge, onEvent } from "../core/bridge";
 import { FlowBridge, clock, dotGoal, islandFlowActive, pillLook, pillMessage, type PillState } from "../core/flow";
 import { HUB_ICONS, keyLabel } from "../hub/ui";
 import { t } from "../i18n/i18n";
@@ -111,6 +111,8 @@ export function buildFlowStrip(onChange: () => void, source: FlowSource = FROM_R
         return [
           el("span", "flow-rec"),
           time,
+          // The answer key, for a hand on the mouse (notes/mod.rs).
+          button("flow-btn", t("Answer the last question in the call"), () => void Bridge.notesAnswer(), icon("bolt")),
           button("flow-btn stop", t("Stop"), () => void FlowBridge.pillAction("stopNote"), el("i")),
         ];
       }

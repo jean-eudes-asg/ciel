@@ -71,6 +71,8 @@ pub const ACTIONS: &[ActionDef] = &[
     action("micToggle", "Ctrl+Alt+U", true, true),
     // The clipboard history (clipboard.rs). Off until turned on: Word's Paste Special is on these keys.
     action("clipboardOpen", "Ctrl+Alt+V", false, true),
+    // During a call the Notetaker records: Ciel answers the last question put to you (notes/mod.rs).
+    action("meetingAnswer", "Ctrl+Alt+K", true, true),
 ];
 
 /// Linux desktops keep these Ctrl+Alt keys for themselves (GNOME and others: a
@@ -111,6 +113,7 @@ pub fn description(id: &str) -> &'static str {
         "desktopToggle" => n_("Send Ciel to the desktop"),
         "micToggle" => n_("Mute or unmute every microphone"),
         "clipboardOpen" => n_("Open the clipboard history"),
+        "meetingAnswer" => n_("Answer the last question in the call"),
         _ => "Ciel",
     }
 }
@@ -703,9 +706,9 @@ mod wayland {
 mod tests {
     use super::*;
 
-    const MAC_IDS: [&str; 11] = [
+    const MAC_IDS: [&str; 12] = [
         "toggleIsland", "openChat", "goToAlert", "jumpToTerminal", "attachFrontWindow",
-        "nextPill", "prevPill", "muteToggle", "desktopToggle", "micToggle", "clipboardOpen",
+        "nextPill", "prevPill", "muteToggle", "desktopToggle", "micToggle", "clipboardOpen", "meetingAnswer",
     ];
 
     fn never(_: &Shortcut) -> Option<String> {

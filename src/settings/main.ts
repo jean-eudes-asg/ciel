@@ -516,6 +516,60 @@ function brain(): HTMLElement {
   return section;
 }
 
+// ── The company folder (notes/folder.rs) ──────────────────────────────────────
+
+/** The answer key as the user has it, or "off". */
+function answerKeys(): string {
+  const def = SHORTCUTS.find((d) => d.id === "meetingAnswer");
+  const b = def && effective(def, settings.shortcuts);
+  return b?.enabled && b.keys ? displayKeys(b.keys) : t("Off");
+}
+
+/**
+ * The folder the answer key reads during a call: the passages that fit the
+ * question go to the brain with it. Saved as `companyFolder`; empty is none.
+ */
+function companyFolderSection(): HTMLElement {
+  const input = h("input", {
+    type: "text", value: settings.companyFolder, autocomplete: "off", spellcheck: "false",
+    placeholder: t("The full path of a folder"), style: "flex:1 1 auto;min-width:0",
+  }) as HTMLInputElement;
+  const saveBtn = h("button", { text: t("Save") });
+  const dotEl = statusDot(false);
+  const status = h("div", { class: "hint", style: "padding-top:5px" });
+  const describe = async () => {
+    const path = settings.companyFolder;
+    if (!path) {
+      dotEl.style.background = "#6b7079";
+      status.textContent = t("No folder yet.");
+      return;
+    }
+    const info = await Bridge.notesFolderInfo(path);
+    dotEl.style.background = info?.exists && info.files > 0 ? "#22c55e" : "#f5a524";
+    status.textContent = !info?.exists
+      ? t("This folder doesn't exist.")
+      : tn("{count} file Ciel can read here.", "{count} files Ciel can read here.", info.files);
+  };
+  void describe();
+  saveBtn.addEventListener("click", async () => {
+    const value = input.value.trim();
+    if (value && !isFullPath(value)) {
+      dotEl.style.background = "#f4505e";
+      status.textContent = t("Enter the full path of a folder.");
+      return;
+    }
+    settings.companyFolder = value;
+    await save();
+    await describe();
+  });
+  return h("section", {},
+    h("h2", {}, h("span", { text: t("Company folder") })),
+    h("div", { class: "row" }, input, saveBtn, dotEl),
+    status,
+    h("div", { class: "hint", text: t("During a call the Notetaker records, the answer key ({keys}) reads this folder as it is then: the passages that fit the question go to the brain with it, with Claude to Anthropic. Text files: Markdown, text, CSV, JSON, YAML, HTML.", { keys: answerKeys() }) }),
+  );
+}
+
 // ── Active pills section ──────────────────────────────────────────────────────
 
 /**
@@ -1906,7 +1960,7 @@ async function render() {
     ],
     pills: () => [activePillsSection(connected)],
     agents: () => [claudeSection(status), agentsSection(agents), planSection(status)],
-    chat: () => [apiSection(hasKey), brain(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
+    chat: () => [apiSection(hasKey), brain(), companyFolderSection(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
     integrations: () => [
       notificationsSection({
         seconds: settings.notificationSeconds,

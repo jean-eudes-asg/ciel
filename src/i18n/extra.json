@@ -10523,6 +10523,191 @@
    "pt-BR": "Calendário",
    "ru": "Календарь",
    "id": "Kalender"
+  },
+  "Answer the last question in the call": {
+   "zh-Hans": "回答通话中的最后一个问题",
+   "hi": "कॉल में पूछे गए आखिरी सवाल का जवाब दें",
+   "es": "Responder a la última pregunta de la llamada",
+   "ar": "أجب عن آخر سؤال في المكالمة",
+   "fr": "Répondre à la dernière question de l'appel",
+   "bn": "কলের শেষ প্রশ্নের উত্তর দিন",
+   "pt-BR": "Responder à última pergunta da chamada",
+   "ru": "Ответить на последний вопрос в звонке",
+   "id": "Jawab pertanyaan terakhir dalam panggilan"
+  },
+  "Asked during the call": {
+   "zh-Hans": "通话中被问到的问题",
+   "hi": "कॉल के दौरान पूछा गया",
+   "es": "Preguntado durante la llamada",
+   "ar": "سُئل أثناء المكالمة",
+   "fr": "Demandé pendant l'appel",
+   "bn": "কলের সময় জিজ্ঞাসা করা হয়েছে",
+   "pt-BR": "Perguntado durante a chamada",
+   "ru": "Спросили во время звонка",
+   "id": "Ditanyakan selama panggilan"
+  },
+  "Ciel is listening": {
+   "zh-Hans": "Ciel 正在聆听",
+   "hi": "Ciel सुन रहा है",
+   "es": "Ciel está escuchando",
+   "ar": "Ciel يستمع",
+   "fr": "Ciel écoute",
+   "bn": "Ciel শুনছে",
+   "pt-BR": "Ciel está ouvindo",
+   "ru": "Ciel слушает",
+   "id": "Ciel sedang mendengarkan"
+  },
+  "The call is being noted. Press the key again when you're asked something.": {
+   "zh-Hans": "正在记录这次通话。有人问你问题时，再按一次快捷键。",
+   "hi": "कॉल नोट की जा रही है। जब आपसे कुछ पूछा जाए, तो फिर से कुंजी दबाएँ।",
+   "es": "Se está tomando nota de la llamada. Pulsa la tecla otra vez cuando te pregunten algo.",
+   "ar": "يتم تدوين المكالمة. اضغط المفتاح مرة أخرى عندما يُطرح عليك سؤال.",
+   "fr": "L'appel est en cours de prise de notes. Appuyez de nouveau sur la touche quand on vous pose une question.",
+   "bn": "কলটি নোট করা হচ্ছে। আপনাকে কিছু জিজ্ঞাসা করা হলে আবার কী চাপুন।",
+   "pt-BR": "A chamada está sendo anotada. Pressione a tecla de novo quando te perguntarem algo.",
+   "ru": "Звонок записывается. Нажмите клавишу ещё раз, когда вам зададут вопрос.",
+   "id": "Panggilan sedang dicatat. Tekan tombol lagi saat Anda ditanya sesuatu."
+  },
+  "Ciel needs Claude or a local model for this: set one up in Island → Chat.": {
+   "zh-Hans": "这需要 Claude 或本地模型：请在“岛 → 聊天”中设置一个。",
+   "hi": "इसके लिए Ciel को Claude या लोकल मॉडल चाहिए: आइलैंड → चैट में सेट करें।",
+   "es": "Para esto Ciel necesita Claude o un modelo local: configura uno en Isla → Chat.",
+   "ar": "يحتاج Ciel إلى Claude أو نموذج محلي لهذا: اضبط أحدهما في الشريط ← الدردشة.",
+   "fr": "Pour cela, Ciel a besoin de Claude ou d'un modèle local : configurez-en un dans Île → Chat.",
+   "bn": "এর জন্য Ciel-এর Claude বা একটি লোকাল মডেল দরকার: আইল্যান্ড → চ্যাট-এ সেট করুন।",
+   "pt-BR": "Para isso, o Ciel precisa do Claude ou de um modelo local: configure um em Ilha → Chat.",
+   "ru": "Для этого Ciel нужен Claude или локальная модель: настройте её в разделе Остров → Чат.",
+   "id": "Untuk ini Ciel memerlukan Claude atau model lokal: atur di Pulau → Obrolan."
+  },
+  "Ciel hasn't heard the others ask anything in the last minutes.": {
+   "zh-Hans": "最近几分钟里，Ciel 没有听到其他人提问。",
+   "hi": "पिछले कुछ मिनटों में Ciel ने दूसरों को कुछ पूछते नहीं सुना।",
+   "es": "Ciel no ha oído a los demás preguntar nada en los últimos minutos.",
+   "ar": "لم يسمع Ciel الآخرين يسألون أي شيء في الدقائق الأخيرة.",
+   "fr": "Ciel n'a entendu les autres poser aucune question ces dernières minutes.",
+   "bn": "গত কয়েক মিনিটে Ciel অন্যদের কিছু জিজ্ঞাসা করতে শোনেনি।",
+   "pt-BR": "O Ciel não ouviu os outros perguntarem nada nos últimos minutos.",
+   "ru": "За последние минуты Ciel не слышал, чтобы другие что-то спрашивали.",
+   "id": "Ciel tidak mendengar orang lain bertanya apa pun dalam beberapa menit terakhir."
+  },
+  "Ciel's brain didn't answer. Try the key again.": {
+   "zh-Hans": "Ciel 的大脑没有回答。请再按一次快捷键。",
+   "hi": "Ciel के ब्रेन ने जवाब नहीं दिया। फिर से कुंजी दबाएँ।",
+   "es": "El cerebro de Ciel no respondió. Vuelve a pulsar la tecla.",
+   "ar": "لم يُجب عقل Ciel. اضغط المفتاح مرة أخرى.",
+   "fr": "Le cerveau de Ciel n'a pas répondu. Réessayez la touche.",
+   "bn": "Ciel-এর ব্রেন উত্তর দেয়নি। আবার কী চাপুন।",
+   "pt-BR": "O cérebro do Ciel não respondeu. Pressione a tecla de novo.",
+   "ru": "Мозг Ciel не ответил. Нажмите клавишу ещё раз.",
+   "id": "Otak Ciel tidak menjawab. Coba tekan tombol lagi."
+  },
+  "Answer": {
+   "zh-Hans": "回答",
+   "hi": "जवाब",
+   "es": "Respuesta",
+   "ar": "الإجابة",
+   "fr": "Réponse",
+   "bn": "উত্তর",
+   "pt-BR": "Resposta",
+   "ru": "Ответ",
+   "id": "Jawaban"
+  },
+  "The full path of a folder": {
+   "zh-Hans": "文件夹的完整路径",
+   "hi": "किसी फ़ोल्डर का पूरा पाथ",
+   "es": "La ruta completa de una carpeta",
+   "ar": "المسار الكامل لمجلد",
+   "fr": "Le chemin complet d'un dossier",
+   "bn": "একটি ফোল্ডারের পুরো পাথ",
+   "pt-BR": "O caminho completo de uma pasta",
+   "ru": "Полный путь к папке",
+   "id": "Jalur lengkap sebuah folder"
+  },
+  "No folder yet.": {
+   "zh-Hans": "还没有文件夹。",
+   "hi": "अभी कोई फ़ोल्डर नहीं।",
+   "es": "Todavía no hay carpeta.",
+   "ar": "لا يوجد مجلد بعد.",
+   "fr": "Pas encore de dossier.",
+   "bn": "এখনও কোনো ফোল্ডার নেই।",
+   "pt-BR": "Nenhuma pasta ainda.",
+   "ru": "Папка ещё не выбрана.",
+   "id": "Belum ada folder."
+  },
+  "Company folder": {
+   "zh-Hans": "公司文件夹",
+   "hi": "कंपनी फ़ोल्डर",
+   "es": "Carpeta de la empresa",
+   "ar": "مجلد الشركة",
+   "fr": "Dossier de l'entreprise",
+   "bn": "কোম্পানির ফোল্ডার",
+   "pt-BR": "Pasta da empresa",
+   "ru": "Папка компании",
+   "id": "Folder perusahaan"
+  },
+  "During a call the Notetaker records, the answer key ({keys}) reads this folder as it is then: the passages that fit the question go to the brain with it, with Claude to Anthropic. Text files: Markdown, text, CSV, JSON, YAML, HTML.": {
+   "zh-Hans": "在记录器录制的通话中，回答快捷键（{keys}）会读取此文件夹当时的内容：与问题相关的段落会随问题发送给大脑，使用 Claude 时发送给 Anthropic。支持文本文件：Markdown、文本、CSV、JSON、YAML、HTML。",
+   "hi": "नोटटेकर द्वारा रिकॉर्ड की जा रही कॉल के दौरान, जवाब कुंजी ({keys}) इस फ़ोल्डर को उसी समय की स्थिति में पढ़ती है: सवाल से मेल खाने वाले अंश सवाल के साथ ब्रेन को जाते हैं, Claude के साथ Anthropic को। टेक्स्ट फ़ाइलें: Markdown, टेक्स्ट, CSV, JSON, YAML, HTML।",
+   "es": "Durante una llamada que graba el Notetaker, la tecla de respuesta ({keys}) lee esta carpeta tal como está en ese momento: los fragmentos que encajan con la pregunta van al cerebro con ella, con Claude a Anthropic. Archivos de texto: Markdown, texto, CSV, JSON, YAML, HTML.",
+   "ar": "أثناء مكالمة يسجلها مدوّن الملاحظات، يقرأ مفتاح الإجابة ({keys}) هذا المجلد كما هو حينها: تذهب المقاطع المطابقة للسؤال إلى العقل معه، ومع Claude إلى Anthropic. الملفات النصية: Markdown ونص وCSV وJSON وYAML وHTML.",
+   "fr": "Pendant un appel que le Notetaker enregistre, la touche de réponse ({keys}) lit ce dossier tel qu'il est à ce moment : les passages qui correspondent à la question partent au cerveau avec elle, avec Claude chez Anthropic. Fichiers texte : Markdown, texte, CSV, JSON, YAML, HTML.",
+   "bn": "নোটটেকার যে কল রেকর্ড করছে তার সময়, উত্তর কী ({keys}) এই ফোল্ডারটি তখন যেমন আছে তেমন পড়ে: প্রশ্নের সাথে মেলে এমন অংশ প্রশ্নের সাথে ব্রেনে যায়, Claude হলে Anthropic-এ। টেক্সট ফাইল: Markdown, টেক্সট, CSV, JSON, YAML, HTML।",
+   "pt-BR": "Durante uma chamada que o Notetaker grava, a tecla de resposta ({keys}) lê esta pasta como ela está no momento: os trechos que combinam com a pergunta vão para o cérebro junto com ela, com o Claude para a Anthropic. Arquivos de texto: Markdown, texto, CSV, JSON, YAML, HTML.",
+   "ru": "Во время звонка, который записывает Notetaker, клавиша ответа ({keys}) читает эту папку в её текущем виде: подходящие к вопросу фрагменты уходят мозгу вместе с ним, с Claude в Anthropic. Текстовые файлы: Markdown, текст, CSV, JSON, YAML, HTML.",
+   "id": "Selama panggilan yang direkam Notetaker, tombol jawaban ({keys}) membaca folder ini apa adanya saat itu: bagian yang cocok dengan pertanyaan dikirim ke otak bersama pertanyaannya, dengan Claude ke Anthropic. File teks: Markdown, teks, CSV, JSON, YAML, HTML."
+  },
+  "{count} files Ciel can read here.": {
+   "zh-Hans": {
+    "other": "Ciel 可在此读取 {count} 个文件。"
+   },
+   "hi": {
+    "one": "Ciel यहाँ {count} फ़ाइल पढ़ सकता है।",
+    "other": "Ciel यहाँ {count} फ़ाइलें पढ़ सकता है।"
+   },
+   "es": {
+    "one": "{count} archivo que Ciel puede leer aquí.",
+    "other": "{count} archivos que Ciel puede leer aquí."
+   },
+   "ar": {
+    "zero": "لا توجد ملفات يمكن لـ Ciel قراءتها هنا.",
+    "one": "ملف واحد يمكن لـ Ciel قراءته هنا.",
+    "two": "ملفان يمكن لـ Ciel قراءتهما هنا.",
+    "few": "{count} ملفات يمكن لـ Ciel قراءتها هنا.",
+    "many": "{count} ملفًا يمكن لـ Ciel قراءته هنا.",
+    "other": "{count} ملف يمكن لـ Ciel قراءته هنا."
+   },
+   "fr": {
+    "one": "{count} fichier que Ciel peut lire ici.",
+    "other": "{count} fichiers que Ciel peut lire ici."
+   },
+   "bn": {
+    "one": "Ciel এখানে {count}টি ফাইল পড়তে পারে।",
+    "other": "Ciel এখানে {count}টি ফাইল পড়তে পারে।"
+   },
+   "pt-BR": {
+    "one": "{count} arquivo que o Ciel pode ler aqui.",
+    "other": "{count} arquivos que o Ciel pode ler aqui."
+   },
+   "ru": {
+    "one": "Ciel может прочитать здесь {count} файл.",
+    "few": "Ciel может прочитать здесь {count} файла.",
+    "many": "Ciel может прочитать здесь {count} файлов.",
+    "other": "Ciel может прочитать здесь {count} файла."
+   },
+   "id": {
+    "other": "{count} file yang bisa dibaca Ciel di sini."
+   }
+  },
+  "This folder doesn't exist.": {
+   "zh-Hans": "此文件夹不存在。",
+   "hi": "यह फ़ोल्डर मौजूद नहीं है।",
+   "es": "Esta carpeta no existe.",
+   "ar": "هذا المجلد غير موجود.",
+   "fr": "Ce dossier n'existe pas.",
+   "bn": "এই ফোল্ডারটি নেই।",
+   "pt-BR": "Esta pasta não existe.",
+   "ru": "Этой папки нет.",
+   "id": "Folder ini tidak ada."
   }
  }
 }

@@ -305,6 +305,9 @@ export const Bridge = {
   launcherApps: () => call<LauncherApp[]>("launcher_apps"),
   launcherOpen: (id: string) => call<boolean>("launcher_open", { id }),
   micToggle: () => call<boolean>("mic_toggle"),
+  /** During a call the Notetaker records: a card with the answer to the last question (notes/mod.rs). */
+  notesAnswer: () => call<void>("notes_answer"),
+  notesFolderInfo: (path: string) => call<{ exists: boolean; files: number }>("notes_folder_info", { path }),
   /** Minutes awake; 0 lets it sleep, a negative number until turned off. */
   awakeSet: (minutes: number) => call<Controls>("awake_set", { minutes }),
   /** Open-Meteo (src-tauri/src/weather.rs). */

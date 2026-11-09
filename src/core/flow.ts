@@ -168,6 +168,8 @@ export interface Note {
   startLocal: string;
   /** Started from the Calendar pill's card: the meeting. */
   meeting?: { title: string; attendees: string[]; agenda?: string | null } | null;
+  /** What Ciel suggested during the call, on the answer key. `at`: seconds into the call. */
+  answers?: { at: number; question: string; answer: string }[];
 }
 
 export interface NotesState {

@@ -206,12 +206,25 @@ export async function notesPage(page: HTMLElement, ctx: HubContext) {
     detail.append(tab === "summary" ? summary(note) : transcript(note, ""));
   }
 
+  /** The questions put to you in the call, and what Ciel suggested (the answer key). */
+  function answers(note: Note): HTMLElement[] {
+    if (!note.answers?.length) return [];
+    const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+    return [
+      h("div", { class: "hub-label", text: t("Asked during the call") }),
+      ...note.answers.map((a) => h("div", { class: "hub-card", style: "align-self:stretch;display:flex;flex-direction:column;gap:4px" },
+        h("div", { class: "who", text: a.question ? `${clock(a.at)} · ${a.question}` : clock(a.at) }),
+        h("div", { style: "font-size:13.5px;line-height:1.5;color:var(--hub-body)", text: a.answer }))),
+    ];
+  }
+
   function summary(note: Note): HTMLElement {
     const el = h("div", { style: "display:flex;flex-direction:column;gap:14px;align-items:flex-start" });
     const busy = state.working.includes(note.id);
     if (!note.summary && note.keyPoints.length === 0 && note.todos.length === 0) {
       el.append(h("div", { class: "hub-note", text: busy ? t("Writing the summary…") : t("No summary yet.") }));
       if (!busy) el.append(button(t("Write the summary"), () => void FlowBridge.summarize(note.id), "primary", true));
+      el.append(...answers(note));
       return el;
     }
     if (note.summary) el.append(h("div", { class: "hub-card", style: "font-size:14px;line-height:1.55;color:var(--hub-body);align-self:stretch", text: note.summary }));
@@ -230,6 +243,7 @@ export async function notesPage(page: HTMLElement, ctx: HubContext) {
         el.append(h("label", { class: "hub-todo" }, box, h("span", {}, h("span", { text: todo.text, style: todo.done ? "text-decoration:line-through;opacity:.6" : "" }), extra ? h("div", { class: "who", text: extra }) : null)));
       }
     }
+    el.append(...answers(note));
     el.append(button(busy ? t("Writing the summary…") : t("Write the summary again"), () => void FlowBridge.summarize(note.id), "", true));
     return el;
   }

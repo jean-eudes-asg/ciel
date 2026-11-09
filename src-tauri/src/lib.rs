@@ -981,6 +981,8 @@ pub fn run() {
             notes::notes_state,
             notes::notes_start,
             notes::notes_stop,
+            notes::notes_answer,
+            notes::notes_folder_info,
             notes::notes_rename,
             notes::notes_rename_speaker,
             notes::notes_toggle_todo,

@@ -2,6 +2,26 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **Answers during a call** (Ctrl+Alt+K, Settings → Shortcuts): while the
+  Notetaker records, Ciel finds the last question the others put to you in
+  the live transcript and suggests an answer on a card in the island, with
+  your Claude key or a local model. Pressed before the call is noted, it
+  starts the Notetaker. Each question and answer stays in the call's note
+  (Ciel window → Notetaker). While the Notetaker records, Ciel shows in
+  screen shares even with Hide from screen sharing on, its answers included.
+  - **Your company folder** (Settings → Island → Chat): the answer key reads
+    it as it is at that moment, and the passages that fit the question go
+    to the brain with it. Text files for now (Markdown, text, CSV, JSON,
+    YAML, HTML).
+  - **Earlier calls** on the same subject help too: their summary and what
+    is still to do (with Claude, when Ciel's brain may read the notes).
+  - **Quicker**: the last words said are transcribed the moment the key is
+    pressed, without waiting for a pause. A button on the Notetaker's strip
+    in the island does the same as the key.
+
 ## [0.4.1] - 2026-11-09
 
 ### Added

@@ -152,6 +152,13 @@ export function runGlobalShortcut(host: ShortcutHost, action: string, resume: ()
       });
       break;
 
+    // During a call: Ciel's suggested answer comes as a card (notes/mod.rs).
+    case "meetingAnswer":
+      resume();
+      host.emote("wink");
+      void Bridge.notesAnswer();
+      break;
+
     case "clipboardOpen":
       resume();
       Tools.want("clipboard");

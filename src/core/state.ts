@@ -202,6 +202,8 @@ export interface Settings {
    * "" for `<Ciel's config dir>/finance` (src-tauri/src/finance.rs).
    */
   financeFolder: string;
+  /** The answer key's company folder (src-tauri/src/notes/folder.rs); "" for none. */
+  companyFolder: string;
   /** The Alerts pill's port (src-tauri/src/alerts.rs). */
   alertsPort: number;
   /** The Alerts pill takes alerts from other computers; off, only from this one. */
@@ -265,6 +267,7 @@ export const DEFAULT_SETTINGS: Settings = {
   pillColors: {},
   language: "",
   financeFolder: "",
+  companyFolder: "",
   alertsPort: 9797,
   alertsLan: false,
   wallpaper: { ...DEFAULT_WALLPAPER },

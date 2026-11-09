@@ -110,6 +110,9 @@ pub struct Settings {
     /// The Finance pill's folder (expenses.csv and settings.json). Empty means
     /// `<config dir>/finance`; see finance.rs.
     pub finance_folder: String,
+    /// The user's company folder (Ciel window → Notetaker): what the answer
+    /// key reads for the passages that fit the question (notes/folder.rs). "" for none.
+    pub company_folder: String,
     /// The Alerts pill's port (alerts.rs).
     pub alerts_port: u16,
     /// The Alerts pill takes alerts from other computers, not only this one.
@@ -349,6 +352,7 @@ impl Default for Settings {
             language: String::new(),
             desktop_cloud: DesktopCloudPref::default(),
             finance_folder: String::new(),
+            company_folder: String::new(),
             alerts_port: crate::alerts::DEFAULT_PORT,
             alerts_lan: false,
             wallpaper: WallpaperPrefs::default(),
@@ -650,6 +654,7 @@ mod tests {
   "language": "pt-BR",
   "desktopCloud": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } },
   "financeFolder": "/srv/dashboard/data",
+  "companyFolder": "/srv/company",
   "alertsPort": 8080,
   "alertsLan": true,
   "wallpaper": {
@@ -1123,6 +1128,7 @@ mod tests {
                 "language",
                 "desktopCloud",
                 "financeFolder",
+                "companyFolder",
                 "alertsPort",
                 "alertsLan",
                 "wallpaper",
