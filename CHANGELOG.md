@@ -2,7 +2,7 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.4.1] - 2026-11-09
 
 ### Added
 - **Quick settings in the island** (Tools → Controls), everything GNOME's
