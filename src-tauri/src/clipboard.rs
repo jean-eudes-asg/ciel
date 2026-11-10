@@ -484,6 +484,12 @@ pub async fn clipboard_use(app: AppHandle, id: u64, paste: bool) -> bool {
     .unwrap_or(false)
 }
 
+/// `text` on the clipboard: an answer of the answer key's (notify.rs), or
+/// what `clipboard_put` is given.
+pub fn copy_text(text: &str) -> bool {
+    !text.is_empty() && with_board(|b| b.set_text(clip_text(text)).is_ok()).unwrap_or(false)
+}
+
 /// Copies `text` (an item turned into something else: plain, cleaned, upper case…).
 #[tauri::command]
 pub async fn clipboard_put(app: AppHandle, text: String, paste: bool) -> bool {
@@ -494,7 +500,7 @@ pub async fn clipboard_put(app: AppHandle, text: String, paste: bool) -> bool {
         if paste {
             hand_back(&app);
         }
-        with_board(|b| b.set_text(clip_text(&text)).is_ok()).unwrap_or(false) && (!paste || paste_now())
+        copy_text(&text) && (!paste || paste_now())
     })
     .await
     .unwrap_or(false)

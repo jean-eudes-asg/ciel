@@ -60,6 +60,9 @@ pub struct Settings {
     /// Windows: Ciel's windows are left out of screen shares, recordings and
     /// screenshots (capture.rs). Off by default.
     pub hide_from_screen_sharing: bool,
+    /// With that on: the answer key's cards are in screen shares all the same,
+    /// so the others see them too (capture.rs, notes/mod.rs). On by default.
+    pub answers_in_shares: bool,
     /// The flip clock after this many minutes without input; 0 is off (screensaver.rs).
     pub screensaver_minutes: u32,
     /// The System pill warns when CPU, memory, disk or temperature runs high (system.rs).
@@ -332,6 +335,7 @@ impl Default for Settings {
             desktop_notifications: false,
             hide_gnome_panel: false,
             hide_from_screen_sharing: false,
+            answers_in_shares: true,
             screensaver_minutes: 0,
             system_warnings: false,
             clock_format: "auto".into(),
@@ -634,6 +638,7 @@ mod tests {
   "desktopNotifications": true,
   "hideGnomePanel": true,
   "hideFromScreenSharing": true,
+  "answersInShares": false,
   "screensaverMinutes": 10,
   "systemWarnings": true,
   "clockFormat": "24h",
@@ -971,6 +976,13 @@ mod tests {
     }
 
     #[test]
+    fn the_answer_keys_cards_are_in_shares_until_the_user_says_no() {
+        assert!(Settings::default().answers_in_shares);
+        assert!(parse(&custom_with("answersInShares", None)).unwrap().answers_in_shares, "an older settings.json");
+        assert!(!parse(&custom_with("answersInShares", Some(json!(false)))).unwrap().answers_in_shares);
+    }
+
+    #[test]
     fn wallpaper_keys_from_a_later_version_are_kept() {
         let loaded = parse(CUSTOM.as_bytes()).unwrap();
         assert_eq!(loaded.wallpaper.extra.get("aKeyFromALaterVersion"), Some(&json!([1, 2])));
@@ -1108,6 +1120,7 @@ mod tests {
                 "desktopNotifications",
                 "hideGnomePanel",
                 "hideFromScreenSharing",
+                "answersInShares",
                 "screensaverMinutes",
                 "systemWarnings",
                 "clockFormat",

@@ -1242,10 +1242,12 @@ export class Island {
     }
 
     // Dictation in the island takes the folded island's room while it shows;
-    // a notification takes it otherwise.
+    // a notification takes it otherwise. A call the Notetaker records keeps
+    // the row, and the answer key's cards show under it meanwhile.
     this.flowStrip.sync(State.mode === "compact");
     const dictating = this.flowStrip.active;
-    this.notes.sync(State.mode === "compact" && !dictating);
+    const calling = this.flowStrip.calling;
+    this.notes.sync(State.mode === "compact" && (!dictating || calling), calling);
     const busy = dictating || this.notes.active;
 
     // Compact mini grid

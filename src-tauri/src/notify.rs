@@ -81,9 +81,10 @@ pub enum Target {
     Timer(String),
     /// The answer key pressed with no call noted (notes/mod.rs): Take notes starts the Notetaker.
     Notetaker,
-    /// An answer of the answer key's: once it leaves the island, Ciel is left
+    /// An answer of the answer key's, with its text: Copy puts it on the
+    /// clipboard and the card stays. Once it leaves the island, Ciel is left
     /// out of screen shares again, if so set (capture.rs).
-    Answer,
+    Answer(String),
     /// The app that notified: its desktop entry id, the process that sent it
     /// (whose window comes forward), and GNOME's own copy of it once known.
     #[cfg(target_os = "linux")]
@@ -203,6 +204,8 @@ enum Own {
     Settings(String),
     /// The Notetaker, on a meeting of the calendar or on the call going on.
     Notes(Option<crate::notes::Meeting>),
+    /// An answer's Copy: its text, for the clipboard.
+    Copy(String),
     /// An answer left the island.
     AnswerGone,
 }
@@ -221,6 +224,10 @@ pub fn notification_action(app: AppHandle, id: String, action: String) {
                 None => crate::notes::start_for_answers(&app),
             });
         }
+        // The clipboard can keep its caller waiting: not on the window's thread.
+        Own::Copy(text) => {
+            std::thread::spawn(move || crate::clipboard::copy_text(&text));
+        }
         Own::AnswerGone => crate::capture::answer_gone(&app),
     });
 }
@@ -238,8 +245,9 @@ fn act(id: &str, action: &str, ciel: impl FnOnce(Own)) {
         (Target::Meeting { join: Some(url), .. }, "join" | "open") => crate::platform::open_url(&url),
         (Target::Meeting { meeting, .. }, "notes") => ciel(Own::Notes(Some(meeting))),
         (Target::Notetaker, "notes") => ciel(Own::Notes(None)),
-        // Whatever was pressed, the card leaves the island.
-        (Target::Answer, _) => ciel(Own::AnswerGone),
+        // Copy leaves the answer where it is; whatever else was pressed, its card leaves the island.
+        (Target::Answer(text), "copy") => ciel(Own::Copy(text)),
+        (Target::Answer(_), _) => ciel(Own::AnswerGone),
         (Target::Timer(id), action) => {
             crate::timers::act(&id, action, None);
         }
@@ -776,7 +784,11 @@ mod tests {
         act("answer-x", "notes", |own| taken = Some(own));
         assert_eq!(taken, Some(Own::Notes(None)));
 
-        TARGETS.lock().unwrap().push_back(("answer-y".into(), Target::Answer));
+        TARGETS.lock().unwrap().push_back(("answer-y".into(), Target::Answer("Ninety euros a seat.".into())));
+        // Copy hands the answer over for the clipboard: the card stays, and Ciel in the share.
+        let mut copied = None;
+        act("answer-y", "copy", |own| copied = Some(own));
+        assert_eq!(copied, Some(Own::Copy("Ninety euros a seat.".into())));
         for action in ["dismiss", "open"] {
             let mut gone = None;
             act("answer-y", action, |own| gone = Some(own));

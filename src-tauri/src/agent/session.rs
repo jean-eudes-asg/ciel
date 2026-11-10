@@ -24,6 +24,8 @@ const IDLE: Duration = Duration::from_secs(90);
 const TURN: Duration = Duration::from_secs(240);
 /// For `claude --version` and `claude auth status`.
 const CHECK: Duration = Duration::from_secs(15);
+/// The longest one answer of the answer key's may take, Claude Code starting included.
+const ONE_ANSWER: Duration = Duration::from_secs(60);
 /// What was found of `claude` is looked at again after this.
 const STATUS_KEPT: Duration = Duration::from_secs(60);
 
@@ -214,6 +216,53 @@ pub fn warm_up(app: &AppHandle) {
             session.last = Instant::now();
         }
     });
+}
+
+/// One answer, from a `claude -p` of its own that ends with it. The prompt
+/// goes on stdin: the call's words stay off the command line.
+pub fn complete(system: &str, prompt: &str) -> Option<String> {
+    let path = find()?;
+    let dir = crate::settings::local_dir().join("Agent");
+    crate::platform::ensure_private_dir(&dir).ok()?;
+    let mut child = match command(&path)
+        .args(super::one_answer_arguments(system))
+        .current_dir(&dir)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .spawn()
+    {
+        Ok(child) => child,
+        Err(err) => {
+            crate::log::line(format!("agent: Claude Code didn't start for an answer: {err}"));
+            return None;
+        }
+    };
+    let mut stdin = child.stdin.take()?;
+    let prompt = prompt.to_string();
+    // Dropped once written: Claude Code reads to the end, then answers.
+    std::thread::spawn(move || {
+        let _ = stdin.write_all(prompt.as_bytes());
+    });
+    let mut stdout = child.stdout.take()?;
+    let (tx, rx) = mpsc::channel();
+    std::thread::spawn(move || {
+        let mut text = String::new();
+        let _ = std::io::Read::read_to_string(&mut stdout, &mut text);
+        let _ = tx.send(text);
+    });
+    let text = rx.recv_timeout(ONE_ANSWER);
+    if text.is_err() {
+        let _ = child.kill();
+    }
+    let ok = child.wait().is_ok_and(|s| s.success());
+    match text {
+        Ok(text) if ok && !text.trim().is_empty() => Some(text.trim().to_string()),
+        _ => {
+            crate::log::line(format!("agent: Claude Code gave no answer for the answer key{}", if ok { "" } else { " (it failed or took too long)" }));
+            None
+        }
+    }
 }
 
 pub fn ask(app: &AppHandle, question: &str) -> Option<Reply> {

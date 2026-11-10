@@ -1471,14 +1471,24 @@ function gnomePanelRows(): HTMLElement {
 /** Windows: every window of Ciel's left out of screen shares (src-tauri/src/capture.rs). Linux has no way to. */
 function screenSharingRows(): HTMLElement[] {
   if (!navigator.userAgent.includes("Windows")) return [];
+  // The answer key's cards in shares or not (src-tauri/src/capture.rs): a
+  // choice only while Ciel is left out of them, else they are in anyway.
+  const answers = [
+    h("div", { class: "row" },
+      h("label", { text: t("Show answers in screen shares") }),
+      toggle(settings.answersInShares, (v) => { settings.answersInShares = v; void save(); }),
+    ),
+    h("div", { class: "hint", text: t("During a call the Notetaker records, the answer key's cards are in screen shares like the rest of your screen, so the others see them too. Off, only you see them.") }),
+  ];
+  const showAnswers = (on: boolean) => answers.forEach((e) => (e.style.display = on ? "" : "none"));
+  showAnswers(settings.hideFromScreenSharing);
   return [
     h("div", { class: "row" },
       h("label", { text: t("Hide from screen sharing") }),
-      toggle(settings.hideFromScreenSharing, (v) => { settings.hideFromScreenSharing = v; void save(); }),
+      toggle(settings.hideFromScreenSharing, (v) => { settings.hideFromScreenSharing = v; showAnswers(v); void save(); }),
     ),
     h("div", { class: "hint", text: t("Ciel stays on your screen but is left out of screen shares, recordings and screenshots, yours included. A camera pointed at the screen still sees everything.") }),
-    // The answer key's cards are seen by the others too (src-tauri/src/capture.rs).
-    h("div", { class: "hint", text: t("While it shows an answer during a call, Ciel is in screen shares like the rest of your screen, so the others see it too.") }),
+    ...answers,
   ];
 }
 

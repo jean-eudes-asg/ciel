@@ -15,6 +15,9 @@
 // None of the user's settings, hooks or MCP servers are loaded, nothing of
 // the conversation is kept, and the process ends 90 s after the last answer.
 //
+// The Notetaker's answer key asks it too, once per press (`complete`): no
+// tools at all, nothing but the call's words in and the answer out.
+//
 // The part that starts Claude Code (session.rs) is built only with the
 // `claude-code` feature, and is off by default even then: whether an app may
 // run the user's own Claude Code is Anthropic's to say. Without it, `wanted`
@@ -40,6 +43,8 @@ pub const MODEL: &str = "sonnet";
 pub const EFFORT: &str = "low";
 /// Tool rounds in one answer.
 pub const MAX_TURNS: u32 = 8;
+/// The answer key's: an answer during a call has to come at once.
+pub const QUICK_MODEL: &str = "haiku";
 /// The PermissionRequest hook's timeout, as for Claude Code's own (hooks.rs).
 const APPROVAL_TIMEOUT: u32 = 120;
 
@@ -105,6 +110,21 @@ pub fn warm_up(app: &AppHandle) {
     let _ = app;
 }
 
+/// One answer to `prompt` under `system`, with no tools: the Notetaker's
+/// answer key (notes/mod.rs). None when Claude Code couldn't answer, or this
+/// build hasn't it; the usual brain then does.
+pub fn complete(system: &str, prompt: &str) -> Option<String> {
+    #[cfg(feature = "claude-code")]
+    {
+        session::complete(system, prompt)
+    }
+    #[cfg(not(feature = "claude-code"))]
+    {
+        let _ = (system, prompt);
+        None
+    }
+}
+
 /// Ciel quits: so does Claude Code.
 pub fn shutdown() {
     #[cfg(feature = "claude-code")]
@@ -164,6 +184,31 @@ pub fn arguments(mcp_config: &str, settings: &str, prompt: &str, windows: bool) 
     args.extend(["--tools".to_string(), builtin_tools(windows)]);
     args.extend(["--max-turns".to_string(), MAX_TURNS.to_string()]);
     args
+}
+
+/// The arguments for one answer, the question on stdin: no tool, no MCP
+/// server, none of the user's settings or hooks, nothing kept.
+pub fn one_answer_arguments(system: &str) -> Vec<String> {
+    [
+        "-p",
+        "--output-format",
+        "text",
+        "--model",
+        QUICK_MODEL,
+        "--tools",
+        "",
+        "--strict-mcp-config",
+        "--setting-sources",
+        "project",
+        "--no-session-persistence",
+        "--max-turns",
+        "1",
+        "--system-prompt",
+        system,
+    ]
+    .iter()
+    .map(|s| s.to_string())
+    .collect()
 }
 
 /// The settings the brain's Claude Code gets: the one hook that brings its
@@ -274,6 +319,22 @@ mod tests {
         }
         assert!(args.iter().any(|a| a == "--no-session-persistence"));
         assert_eq!(value("--append-system-prompt"), Some("Be brief."));
+    }
+
+    #[test]
+    fn one_answer_gets_no_tool_and_nothing_of_the_users() {
+        let args = one_answer_arguments("Help during the call.");
+        let value = |flag: &str| args.iter().position(|a| a == flag).map(|i| args[i + 1].as_str());
+        assert_eq!(args[0], "-p");
+        assert_eq!(value("--tools"), Some(""), "no tool at all");
+        assert!(args.iter().any(|a| a == "--strict-mcp-config") && !args.iter().any(|a| a == "--mcp-config"));
+        assert_eq!(value("--setting-sources"), Some("project"));
+        assert_eq!(value("--max-turns"), Some("1"));
+        assert_eq!(value("--system-prompt"), Some("Help during the call."));
+        assert!(args.iter().any(|a| a == "--no-session-persistence"));
+        for never in ["--allowedTools", "--dangerously-skip-permissions", "--resume", "--continue", "--settings"] {
+            assert!(!args.iter().any(|a| a == never), "{never}");
+        }
     }
 
     #[test]

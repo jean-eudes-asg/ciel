@@ -401,8 +401,39 @@ const FOLDER_BUDGET: usize = 6000;
 const ANSWER_MODEL: &str = "claude-haiku-4-5";
 const ANSWER_TIMEOUT: Duration = Duration::from_secs(30);
 const ANSWER_LOCAL_TIMEOUT: Duration = Duration::from_secs(90);
-/// The card stays this long, or until dismissed; an answer is in screen shares meanwhile.
+/// An answer's card stays this long, or until dismissed, and is in screen
+/// shares meanwhile. So do the card that waits for it, until the answer or a
+/// word takes its place, and the one that asks before recording.
 const ANSWER_SHOWN_MS: u64 = 3 * 60_000;
+/// What the brain is asked. The answer is read at a glance, while speaking:
+/// its first sentence has to do alone.
+const ANSWER_PROMPT: &str = "You help the user during a live call, which they are recording with the other people's knowledge. \
+    From the transcript (\"Me\" is the user, \"Them\" the others), find the most recent question or request put to the user, \
+    and suggest what the user can answer: plain, factual, in the first person, in the language of the call. \
+    The user reads it at a glance while speaking. The first sentence is the answer itself, short enough to say as it is, \
+    with the figure, the date or the yes or no that was asked for; then at most three sentences of detail, only what helps. \
+    Use the company's files and earlier calls when they hold the answer, and never invent a figure, a date or a promise. \
+    If the answer needs facts you don't have, say in a few words what to check and give a sensible answer meanwhile. \
+    Reply in plain text, without Markdown, in exactly two parts: \"Q:\" and the question in a few words, then \"A:\" and the answer.";
+
+/// One answer at a time: a press while Ciel looks for one changes nothing.
+static ANSWERING: AtomicBool = AtomicBool::new(false);
+
+/// Held while the answer key works.
+struct Answering;
+
+impl Answering {
+    /// None while an earlier press is still being answered.
+    fn begin() -> Option<Self> {
+        (!ANSWERING.swap(true, Ordering::AcqRel)).then_some(Self)
+    }
+}
+
+impl Drop for Answering {
+    fn drop(&mut self) {
+        ANSWERING.store(false, Ordering::Release);
+    }
+}
 
 /// The last minutes of the call as the brain reads them: "Me:" and "Them:".
 pub fn recent_transcript(lines: &[Line], now_s: f64) -> String {
@@ -439,46 +470,50 @@ pub fn related_calls(notes: &[Note], current: &str, words: &[String]) -> String 
         .join("\n")
 }
 
-/// "Q: …" then "A: …" → (question, answer); without them, the whole reply is the answer.
+/// "Q: …" then "A: …" → (question, answer); without them, the whole reply is
+/// the answer. A brain that writes its labels in bold ("**Q:**") says the same.
 pub fn parse_answer(reply: &str) -> (String, String) {
     let reply = reply.trim();
+    // What is left of a label's bold around a part is not its text.
+    let part = |s: &str| s.trim().trim_matches('*').trim().to_string();
     let q = reply.find("Q:");
     let a = reply.find("A:");
     match (q, a) {
-        (Some(q), Some(a)) if q < a => (reply[q + 2..a].trim().to_string(), reply[a + 2..].trim().to_string()),
-        (None, Some(a)) => (String::new(), reply[a + 2..].trim().to_string()),
+        (Some(q), Some(a)) if q < a => (part(&reply[q + 2..a]), part(&reply[a + 2..])),
+        (None, Some(a)) => (String::new(), part(&reply[a + 2..])),
         _ => (String::new(), reply.to_string()),
     }
 }
 
 /// A word from the answer key that isn't an answer: it takes an answer's
-/// place in the island, and Ciel is left out of screen shares again, if so set.
+/// place in the island, and Ciel is left out of screen shares again, if so
+/// set. It folds away as any notification does.
 fn answer_card(app: &AppHandle, title: String, body: String) {
     crate::capture::answer_gone(app);
-    card(app, title, body, Vec::new(), crate::notify::Target::None);
+    card(app, title, body, Vec::new(), crate::notify::Target::None, false);
 }
 
-fn card(app: &AppHandle, title: String, body: String, buttons: Vec<crate::notify::Button>, target: crate::notify::Target) {
-    use crate::notify::{self, Notification};
-    let now = now_ms();
-    notify::show(
-        app,
-        Notification {
-            id: notify::next_id("answer"),
-            source: "ciel".into(),
-            app: "Ciel".into(),
-            title,
-            body,
-            icon: None,
-            at: now as f64,
-            // A new answer takes the place of the last.
-            tag: Some("meeting-answer".into()),
-            buttons,
-            until: Some((now + ANSWER_SHOWN_MS) as f64),
-            time: None,
-        },
-        target,
-    );
+/// One of the answer key's cards, as the island gets it. They share a tag: a
+/// new one takes the place of the last. `stays`: for ANSWER_SHOWN_MS, rather
+/// than as long as any notification (Settings → Notifications).
+fn answer_key_card(title: String, body: String, buttons: Vec<crate::notify::Button>, stays: bool, now: u64) -> crate::notify::Notification {
+    crate::notify::Notification {
+        id: crate::notify::next_id("answer"),
+        source: "ciel".into(),
+        app: "Ciel".into(),
+        title,
+        body,
+        icon: None,
+        at: now as f64,
+        tag: Some("meeting-answer".into()),
+        buttons,
+        until: stays.then(|| (now + ANSWER_SHOWN_MS) as f64),
+        time: None,
+    }
+}
+
+fn card(app: &AppHandle, title: String, body: String, buttons: Vec<crate::notify::Button>, target: crate::notify::Target, stays: bool) {
+    crate::notify::show(app, answer_key_card(title, body, buttons, stays, now_ms()), target);
 }
 
 /// The card's Take notes, when the answer key was pressed with no call noted.
@@ -492,15 +527,36 @@ pub fn start_for_answers(app: &AppHandle) {
     }
 }
 
+/// What the answer key found.
+struct Suggested {
+    /// The question in a few words; empty when the brain gave none.
+    question: String,
+    answer: String,
+    /// The user's own Claude answered, rather than Ciel's brain.
+    by_agent: bool,
+    /// The others may see the answers (`answers_in_shares`).
+    in_shares: bool,
+}
+
 /// The answer key, during a call the Notetaker records: Ciel finds the last
 /// question the others put to the user in the live transcript, and suggests
-/// an answer on a card in the island, kept in the note. While the card is
-/// there, Ciel is in screen shares (capture.rs). No call noted yet: a card
-/// asks first, and only its Take notes starts the Notetaker.
+/// an answer on a card in the island, kept in the note. A card says Ciel is
+/// thinking meanwhile, and another press changes nothing until the answer,
+/// or a word, took its place. While the answer is there, Ciel is in screen
+/// shares (capture.rs), unless the user turned that off
+/// (`answers_in_shares`). No call noted yet: a card asks first, and only its
+/// Take notes starts the Notetaker.
 pub async fn answer(app: &AppHandle) {
     let Some(taker) = get(app) else { return };
-    let id = taker.recording.lock().unwrap().as_ref().map(|r| r.id.clone());
-    let Some(id) = id else {
+    let Some(_one) = Answering::begin() else { return };
+    let began = std::time::Instant::now();
+    // The call's two sides, taken with its id: the call may end meanwhile.
+    let recording = taker.recording.lock().unwrap().as_ref().map(|rec| {
+        let channels: Vec<(Arc<Mutex<Channel>>, &'static str)> =
+            std::iter::once((rec.mic_channel.clone(), builder::ME)).chain(rec.system_channel.clone().map(|c| (c, "others"))).collect();
+        (rec.id.clone(), channels)
+    });
+    let Some((id, channels)) = recording else {
         let take = crate::notify::Button { id: "notes".into(), label: t("Take notes") };
         card(
             app,
@@ -508,19 +564,46 @@ pub async fn answer(app: &AppHandle) {
             t("Ciel records both sides of the call, and suggests an answer when you press the key again. Let the others know it is recorded."),
             vec![take],
             crate::notify::Target::Notetaker,
+            true,
         );
         return;
     };
-    let Some(engine) = crate::ai::current(app) else {
-        answer_card(app, t("Answer"), t("Ciel needs Claude or a local model for this: set one up in Island → Chat."));
-        return;
+    // Something to see at once: the answer takes a few seconds. It takes the
+    // last answer's place, so Ciel is left out of screen shares until the next.
+    crate::capture::answer_gone(app);
+    card(app, tf("{0} is thinking…", &[("0", "Ciel")]), String::new(), Vec::new(), crate::notify::Target::None, true);
+    match suggest(app, &taker, &id, channels).await {
+        Ok(found) => {
+            let by = if found.by_agent { "the user's claude" } else { "Ciel's brain" };
+            crate::log::line(format!("notes: answered in {:.1} s, through {by}", began.elapsed().as_secs_f64()));
+            // In the share before it shows, so the others see it as the user does,
+            // unless the user keeps the answers to themselves (Settings → General).
+            if found.in_shares {
+                crate::capture::answer_shown(app, ANSWER_SHOWN_MS);
+            }
+            let title = if found.question.is_empty() { t("Answer") } else { found.question };
+            // Copy puts the answer on the clipboard, and its card stays (notify.rs).
+            let copy = crate::notify::Button { id: "copy".into(), label: t("Copy") };
+            card(app, title, found.answer.clone(), vec![copy], crate::notify::Target::Answer(found.answer), true);
+        }
+        Err(word) => answer_card(app, t("Answer"), word),
+    }
+}
+
+/// The last question put to the user and an answer to suggest, kept in the
+/// note; else the word to show in its place.
+async fn suggest(app: &AppHandle, taker: &Arc<NoteTaker>, id: &str, channels: Vec<(Arc<Mutex<Channel>>, &'static str)>) -> Result<Suggested, String> {
+    fn no_answer() -> String {
+        t("Ciel's brain didn't answer. Try the key again.")
+    }
+    // The user's own Claude when they chose it for Ciel's brain (agent/, in a
+    // build that has it), else Claude with its key or a local model. Looked
+    // at while the last words are transcribed.
+    let wanted = {
+        let app = app.clone();
+        tauri::async_runtime::spawn_blocking(move || crate::agent::wanted(&app))
     };
     // The words just said, at once, rather than at the next pause.
-    let channels: Vec<(Arc<Mutex<Channel>>, &str)> = {
-        let rec = taker.recording.lock().unwrap();
-        let Some(rec) = rec.as_ref() else { return };
-        std::iter::once((rec.mic_channel.clone(), builder::ME)).chain(rec.system_channel.clone().map(|c| (c, "others"))).collect()
-    };
     let heard = tauri::async_runtime::spawn_blocking(move || {
         channels
             .into_iter()
@@ -535,17 +618,23 @@ pub async fn answer(app: &AppHandle) {
     .await
     .unwrap_or_default();
     if !heard.is_empty() {
-        taker.change(app, &id, |n| {
+        taker.change(app, id, |n| {
             n.lines.extend(heard);
             n.lines.sort_by(|a, b| a.start.partial_cmp(&b.start).unwrap_or(std::cmp::Ordering::Equal));
         });
     }
-    let Some(note) = taker.note(&id) else { return };
+    let agent = wanted.await.unwrap_or(false);
+    let engine = crate::ai::current(app);
+    if engine.is_none() && !agent {
+        crate::log::line("notes: the answer key has no brain (no Claude key, no local model, and no signed-in claude of the user's)");
+        return Err(t("Ciel needs Claude or a local model for this: set one up in Island → Chat."));
+    }
+    let Some(note) = taker.note(id) else { return Err(no_answer()) };
     let now_s = now_ms().saturating_sub(note.start) as f64 / 1000.0;
     let transcript = recent_transcript(&note.lines, now_s);
     if !transcript.contains("Them:") {
-        answer_card(app, t("Answer"), t("Ciel hasn't heard the others ask anything in the last minutes."));
-        return;
+        crate::log::line("notes: the answer key heard no one else in the last minutes");
+        return Err(t("Ciel hasn't heard the others ask anything in the last minutes."));
     }
     let meeting = note.meeting.as_ref().map(|m| {
         let agenda = m.agenda.as_deref().map(|a| format!("\nAgenda: {a}")).unwrap_or_default();
@@ -554,10 +643,10 @@ pub async fn answer(app: &AppHandle) {
     // What to look for: the others' last words, and the meeting's title.
     let recent_them: String = note.lines.iter().rev().filter(|l| l.speaker != builder::ME).take(4).map(|l| l.text.as_str()).collect::<Vec<_>>().join(" ");
     let question_words = folder::words(&format!("{recent_them} {}", note.meeting.as_ref().map(|m| m.title.as_str()).unwrap_or("")));
-    let (company, reads_notes) = {
+    let (company, reads_notes, in_shares) = {
         let shared = app.state::<crate::Shared>();
         let s = shared.settings.lock().unwrap();
-        (s.company_folder.trim().to_string(), s.brain_reads.notes)
+        (s.company_folder.trim().to_string(), s.brain_reads.notes, s.answers_in_shares)
     };
     let files = if company.is_empty() {
         String::new()
@@ -569,18 +658,13 @@ pub async fn answer(app: &AppHandle) {
         found.iter().map(|(name, p)| format!("[{name}]\n{p}")).collect::<Vec<_>>().join("\n\n")
     };
     // Earlier calls on the same subject: with Claude, only if the user lets the brain read the notes.
-    let earlier = if matches!(engine, crate::ai::Engine::Local(_)) || reads_notes {
+    let local_only = !agent && matches!(engine, Some(crate::ai::Engine::Local(_)));
+    let earlier = if local_only || reads_notes {
         let notes = taker.notes.lock().unwrap().clone();
-        related_calls(&notes, &id, &question_words)
+        related_calls(&notes, id, &question_words)
     } else {
         String::new()
     };
-    let system = "You help the user during a live call, which they are recording with the other people's knowledge. \
-        From the transcript (\"Me\" is the user, \"Them\" the others), find the most recent question or request put to the user, \
-        and suggest what the user can answer: plain, factual, in the first person, two to four sentences, in the language of the call. \
-        Use the company's files and earlier calls when they hold the answer, and never invent a figure, a date or a promise. \
-        If the answer needs facts you don't have, say in a few words what to check and give a sensible answer meanwhile. \
-        Reply in exactly two parts: \"Q:\" and the question in a few words, then \"A:\" and the answer.";
     let mut ask = meeting.unwrap_or_default();
     if !files.is_empty() {
         ask.push_str(&format!("From the company's files:\n{files}\n\n"));
@@ -589,30 +673,36 @@ pub async fn answer(app: &AppHandle) {
         ask.push_str(&format!("Earlier calls:\n{earlier}\n\n"));
     }
     ask.push_str(&format!("Transcript of the last minutes:\n{transcript}"));
-    let reply = match &engine {
-        crate::ai::Engine::Claude => crate::claude::complete(ANSWER_MODEL, system, &ask, 400, ANSWER_TIMEOUT).await,
-        crate::ai::Engine::Local(local) => {
+    let from_agent = if agent {
+        let ask = ask.clone();
+        tauri::async_runtime::spawn_blocking(move || crate::agent::complete(ANSWER_PROMPT, &ask)).await.ok().flatten()
+    } else {
+        None
+    };
+    let by_agent = from_agent.is_some();
+    let reply = match (from_agent, &engine) {
+        (Some(text), _) => Ok(text),
+        (None, Some(crate::ai::Engine::Claude)) => crate::claude::complete(ANSWER_MODEL, ANSWER_PROMPT, &ask, 400, ANSWER_TIMEOUT).await,
+        (None, Some(crate::ai::Engine::Local(local))) => {
             let how = crate::ai::Ask { max_tokens: 400, json: false, context: None, timeout: ANSWER_LOCAL_TIMEOUT };
-            crate::ai::complete(local, system, &ask, how).await
+            crate::ai::complete(local, ANSWER_PROMPT, &ask, how).await
         }
+        (None, None) => Err("the user's own Claude gave no answer".to_string()),
     };
     let reply = match reply {
         Ok(r) => crate::ai::visible_text(&r).trim().to_string(),
         Err(err) => {
             crate::log::line(format!("notes: no answer from the brain: {err}"));
-            answer_card(app, t("Answer"), t("Ciel's brain didn't answer. Try the key again."));
-            return;
+            return Err(no_answer());
         }
     };
     let (question, answer) = parse_answer(&reply);
     if answer.is_empty() {
-        return;
+        crate::log::line("notes: the brain's answer was empty");
+        return Err(no_answer());
     }
-    taker.change(app, &id, |n| n.answers.push(Answer { at: now_s, question: question.clone(), answer: answer.clone() }));
-    // In the share before it shows, so the others see it as the user does.
-    crate::capture::answer_shown(app, ANSWER_SHOWN_MS);
-    let title = if question.is_empty() { t("Answer") } else { question };
-    card(app, title, answer, Vec::new(), crate::notify::Target::Answer);
+    taker.change(app, id, |n| n.answers.push(Answer { at: now_s, question: question.clone(), answer: answer.clone() }));
+    Ok(Suggested { question, answer, by_agent, in_shares })
 }
 
 /// Every second while recording: the stretches ending on a pause go to
@@ -1141,6 +1231,26 @@ mod tests {
     }
 
     #[test]
+    fn one_answer_at_a_time_and_only_what_is_waited_for_stays() {
+        // A press while Ciel looks for an answer changes nothing; the next one does.
+        let first = Answering::begin();
+        assert!(first.is_some());
+        assert!(Answering::begin().is_none());
+        drop(first);
+        assert!(Answering::begin().is_some());
+
+        // A word folds as any notification does; an answer, the wait for it
+        // and the question before recording stay three minutes.
+        let word = answer_key_card("Answer".into(), "Ciel hasn't heard the others.".into(), Vec::new(), false, 1000);
+        assert_eq!(word.until, None);
+        let answer = answer_key_card("Price".into(), "Ninety euros a seat.".into(), Vec::new(), true, 1000);
+        assert_eq!(answer.until, Some((1000 + ANSWER_SHOWN_MS) as f64));
+        // One tag: each takes the place of the last in the island.
+        assert_eq!(word.tag, answer.tag);
+        assert_ne!(word.id, answer.id);
+    }
+
+    #[test]
     fn the_answer_key_reads_the_last_minutes_and_a_two_part_reply() {
         let line = |speaker: &str, end: f64, text: &str| Line { id: "l".into(), speaker: speaker.into(), start: end - 2.0, end, text: text.into() };
         let lines = vec![line("1", 10.0, "Old talk"), line(builder::ME, 300.0, "Hello"), line("1", 305.0, "What's the price for ten seats?")];
@@ -1150,6 +1260,11 @@ mod tests {
             ("Price for ten seats".to_string(), "It's 90 euros a seat, so 900 a month.".to_string())
         );
         assert_eq!(parse_answer("Just this."), (String::new(), "Just this.".to_string()));
+        // Labels in bold: their asterisks stay out of the card.
+        assert_eq!(
+            parse_answer("**Q:** Price for ten seats?\n\n**A:** It's 900 euros a month."),
+            ("Price for ten seats?".to_string(), "It's 900 euros a month.".to_string())
+        );
     }
 
     #[test]

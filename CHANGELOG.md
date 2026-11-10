@@ -10,9 +10,14 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   the live transcript and suggests an answer on a card in the island, with
   your Claude key or a local model. Pressed before the call is noted, it
   asks first: Take notes on its card starts the Notetaker. Each question and
-  answer stays in the call's note (Ciel window → Notetaker). While an answer
+  answer stays in the call's note (Ciel window → Notetaker). The card shows
+  during the call, under its strip: it says Ciel is thinking the moment the
+  key is pressed, then gives the whole answer, its first sentence short
+  enough to say as it is, with **Copy** for the clipboard. While an answer
   is on screen, Ciel shows in screen shares even with Hide from screen
   sharing on, so the others see it too; the rest of the call it stays out.
+  **Show answers in screen shares** (Settings → General, under Hide from
+  screen sharing) turns that off: then only you see the answers.
   - **Your company folder** (Settings → Island → Chat): the answer key reads
     it as it is at that moment, and the passages that fit the question go
     to the brain with it. Text files for now (Markdown, text, CSV, JSON,

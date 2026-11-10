@@ -9,7 +9,8 @@
 //
 // While an answer of the Notetaker's is on screen (notes/mod.rs), the setting
 // doesn't apply: Ciel is in the share like the rest of the screen, so the
-// others see what it suggests. The rest of the call, it is left out as set.
+// others see what it suggests, unless Show answers in screen shares is off.
+// The rest of the call, it is left out as set.
 //
 // Linux has nothing of the kind (on X11 any app reads the screen, Wayland's
 // portal hands over all of it): the setting isn't offered there and this does

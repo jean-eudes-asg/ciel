@@ -22,7 +22,29 @@ function icon(color: string): string {
 
 const n = (id: string, over: Record<string, unknown>) => ({ id, source: "chrome", app: "WhatsApp", title: "", body: "", icon: null, at: Date.now(), tag: null, ...over });
 
-const CASES: [string, Record<string, unknown>[]][] = [
+// The answer key's card (src-tauri/src/notes/mod.rs): the whole answer, scrolling past eight lines.
+const answer = n("q", {
+  source: "ciel", app: "Ciel", title: "Pro plan cost for 10 seats per month?", tag: "meeting-answer",
+  body: "The Pro plan is 90 euros per seat each month, billed monthly, so for 10 seats that comes to 900 euros a month. " +
+    "Discounts only start at twenty seats, with 15% off every seat, so none applies at ten. If you expect to grow past " +
+    "twenty this year, we can set the discount to start the month you get there. I'll confirm the billing terms in writing " +
+    "after the call, with the onboarding dates: Paul's team needs a week's notice before it can start.",
+  buttons: [{ id: "copy", label: "Copy" }],
+  until: Date.now() + 3 * 60_000,
+});
+// What the key shows at once, and a word when there is no answer: Dismiss alone.
+const ciel = { source: "ciel", app: "Ciel", tag: "meeting-answer" };
+const thinking = n("t", { ...ciel, title: "Ciel is thinking…", until: Date.now() + 3 * 60_000 });
+const word = n("h", { ...ciel, title: "Answer", body: "Ciel hasn't heard the others ask anything in the last minutes." });
+
+/** The case's label, what comes, and whether a call the Notetaker records holds the row. */
+const CASES: [string, Record<string, unknown>[], boolean?][] = [
+  ["The answer key, just pressed during a call", [thinking], true],
+  ["The answer key's answer, whole, with Copy", [answer]],
+  ["The answer key with nothing to answer", [word], true],
+  ["During a call: the answer shows, the mail that came after waits", [
+    answer, n("w", { source: "gmail", app: "Gmail", title: "Léa Martin", body: "Re: the website" }),
+  ], true],
   ["A message on WhatsApp Web", [n("a", { title: "Ana", body: "Are we still on for lunch at 1? I booked the place by the river.", icon: icon("#25D366") })]],
   ["New mail (Gmail), with two more waiting", [
     n("b1", { source: "gmail", app: "Gmail", title: "GitHub", body: "[ciel] CI passed on main — all 453 checks green" }),
@@ -38,7 +60,7 @@ const CASES: [string, Record<string, unknown>[]][] = [
 ];
 
 const root = document.getElementById("cases")!;
-for (const [label, items] of CASES) {
+for (const [label, items, inCall] of CASES) {
   let deliver: (raw: unknown) => void = () => {};
   const card = buildNotificationCard(() => {}, () => {}, (fn) => (deliver = fn));
   const strip = document.createElement("div");
@@ -50,7 +72,7 @@ for (const [label, items] of CASES) {
   box.className = "case";
   box.append(Object.assign(document.createElement("span"), { textContent: label }), strip);
   root.append(box);
-  card.sync(true);
+  card.sync(true, inCall);
   // Oldest first: the newest is the one that shows. Again every few seconds,
   // before they fold away, so the preview always has them.
   let round = 0;

@@ -47,6 +47,10 @@ export const MAX_UNSEEN = 50;
 /** Longest title and body shown: a page can send a book. */
 const MAX_TITLE = 160;
 const MAX_BODY = 600;
+/** An answer of the answer key's is read whole, scrolling in its card past a few lines. */
+const MAX_ANSWER = 1500;
+/** The answer key's tag (src-tauri/src/notes/mod.rs). */
+const ANSWER_TAG = "meeting-answer";
 
 const clip = (s: unknown, max: number) => {
   const text = typeof s === "string" ? s.replace(/\s+/g, " ").trim() : "";
@@ -62,7 +66,7 @@ export function parseNotification(raw: unknown): CielNotification | null {
     ? r.source
     : null;
   const title = clip(r.title, MAX_TITLE);
-  const body = clip(r.body, MAX_BODY);
+  const body = clip(r.body, source === "ciel" && r.tag === ANSWER_TAG ? MAX_ANSWER : MAX_BODY);
   if (!source || typeof r.id !== "string" || !r.id || (!title && !body)) return null;
   const icon = typeof r.icon === "string" && r.icon.startsWith("data:image/") ? r.icon : null;
   return {
@@ -110,6 +114,37 @@ export function timeSpan(time: { start: number; end: number }, lang?: string): s
 export function showFor(n: CielNotification, seconds: unknown, now = Date.now()): number {
   if (n.until != null) return Math.max(1000, n.until - now);
   return typeof seconds === "number" && seconds >= 0 ? seconds * 1000 : SHOW_MS;
+}
+
+/**
+ * The answer key's cards (src-tauri/src/notes/mod.rs): asked for with a key
+ * press, so they show during the call the Notetaker records, and with do not
+ * disturb on. Ciel's own, by their tag: a website's tag can't pass for one.
+ */
+export function isAnswerKeyCard(n: CielNotification): boolean {
+  return n.source === "ciel" && n.tag === ANSWER_TAG;
+}
+
+/**
+ * The card to show next: the newest. During a call the Notetaker records, the
+ * newest of the answer key's; the others wait for the call to end.
+ */
+export function nextToShow(queue: readonly CielNotification[], inCall: boolean): CielNotification | null {
+  return (inCall ? queue.find(isAnswerKeyCard) : queue[0]) ?? null;
+}
+
+/**
+ * The card's buttons beside Dismiss: its own, else Open. The answer key's
+ * words (Ciel is thinking…) have nothing to open: Dismiss alone.
+ */
+export function cardButtons(n: CielNotification, open: string): NotificationButton[] {
+  if (n.buttons.length) return n.buttons;
+  return isAnswerKeyCard(n) ? [] : [{ id: "open", label: open }];
+}
+
+/** An answer's Copy leaves its card in the island: it is still being read. */
+export function keepsCard(n: CielNotification, action: string): boolean {
+  return isAnswerKeyCard(n) && action === "copy";
 }
 
 /** The queue with `n` in front: one with the same app and tag goes, and the oldest past the cap. */

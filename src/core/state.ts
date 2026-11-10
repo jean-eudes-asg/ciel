@@ -151,6 +151,8 @@ export interface Settings {
   hideGnomePanel: boolean;
   /** Windows: Ciel's windows are left out of screen shares, recordings and screenshots (src-tauri/src/capture.rs). */
   hideFromScreenSharing: boolean;
+  /** With that on: the answer key's cards are in screen shares all the same (src-tauri/src/capture.rs). */
+  answersInShares: boolean;
   /** The flip clock after this many minutes without input; 0 is off (src-tauri/src/screensaver.rs). */
   screensaverMinutes: number;
   /** The System pill warns when CPU, memory, disk or temperature runs high (src-tauri/src/system.rs). */
@@ -248,6 +250,7 @@ export const DEFAULT_SETTINGS: Settings = {
   desktopNotifications: false,
   hideGnomePanel: false,
   hideFromScreenSharing: false,
+  answersInShares: true,
   screensaverMinutes: 0,
   systemWarnings: false,
   clockFormat: "auto",

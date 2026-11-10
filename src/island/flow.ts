@@ -26,6 +26,8 @@ export interface FlowStrip {
   pop: HTMLElement;
   /** Dictation shows in the island and has something to show. */
   readonly active: boolean;
+  /** What shows is a call the Notetaker records, nothing under it: a card has room there. */
+  readonly calling: boolean;
   /** The part of the pop that takes clicks (a message's buttons), in island pixels; null when none. */
   hitBox(): { w: number; h: number } | null;
   /** The island's mode changed: the strip and its pop show only while it is folded. */
@@ -238,6 +240,9 @@ export function buildFlowStrip(onChange: () => void, source: FlowSource = FROM_R
     pop,
     get active() {
       return active();
+    },
+    get calling() {
+      return active() && pillLook(state) === "note" && !pop.classList.contains("on");
     },
     hitBox() {
       if (!pop.classList.contains("on") || !pop.classList.contains("announce")) return null;

@@ -3,7 +3,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { addNotification, MAX_QUEUED, parseNotification } from "../src/core/notifications.ts";
+import { addNotification, cardButtons, isAnswerKeyCard, keepsCard, MAX_QUEUED, nextToShow, parseNotification } from "../src/core/notifications.ts";
 
 const raw = (over = {}) => ({
   id: "chrome-1", source: "chrome", app: "WhatsApp", title: "Ana", body: "Lunch?", icon: null, at: 1000, tag: null, ...over,
@@ -23,6 +23,43 @@ test("a notification from Rust is checked: its source, an id, something to show"
   assert.equal(bodyOnly.title, "Meeting in 5 min");
   assert.equal(bodyOnly.body, "");
   assert.equal(bodyOnly.app, "Chrome");
+});
+
+test("during a call the Notetaker records, only the answer key's cards show; the others wait", () => {
+  const mail = parseNotification(raw({ id: "gmail-1", source: "gmail", app: "Gmail" }));
+  const answer = parseNotification(raw({ id: "answer-1", source: "ciel", app: "Ciel", title: "Price for ten seats", tag: "meeting-answer" }));
+  const lookalike = parseNotification(raw({ id: "chrome-2", tag: "meeting-answer" }));
+  assert.ok(isAnswerKeyCard(answer));
+  assert.ok(!isAnswerKeyCard(lookalike), "a website's tag can't pass for Ciel's");
+  let q = addNotification([], answer);
+  q = addNotification(q, mail);
+  assert.equal(nextToShow(q, false).id, "gmail-1", "no call: the newest");
+  assert.equal(nextToShow(q, true).id, "answer-1", "in a call: the answer, the mail waits");
+  assert.equal(nextToShow([mail, lookalike], true), null);
+  assert.equal(nextToShow([], false), null);
+});
+
+test("an answer of the answer key's comes whole; anyone else's long text is cut", () => {
+  const long = "The Pro plan is 90 euros per seat each month. ".repeat(20).trim();
+  const answer = parseNotification(raw({ source: "ciel", app: "Ciel", title: "Price", body: long, tag: "meeting-answer" }));
+  assert.equal(answer.body, long, `${long.length} characters, none lost`);
+  const site = parseNotification(raw({ body: long, tag: "meeting-answer" }));
+  assert.ok(site.body.length <= 600 && site.body.endsWith("…"));
+});
+
+test("the answer key's cards: Copy leaves the answer where it is, a word has Dismiss alone", () => {
+  const ciel = { source: "ciel", app: "Ciel", tag: "meeting-answer" };
+  const copy = [{ id: "copy", label: "Copy" }];
+  const answer = parseNotification(raw({ ...ciel, title: "Price for ten seats", buttons: copy }));
+  const thinking = parseNotification(raw({ ...ciel, title: "Ciel is thinking…", body: "" }));
+  const mail = parseNotification(raw({ source: "gmail", app: "Gmail" }));
+  assert.equal(thinking.body, "", "a title is enough");
+  assert.deepEqual(cardButtons(answer, "Open"), copy);
+  assert.deepEqual(cardButtons(thinking, "Open"), [], "nothing to open");
+  assert.deepEqual(cardButtons(mail, "Open"), [{ id: "open", label: "Open" }]);
+  assert.ok(keepsCard(answer, "copy"));
+  assert.ok(!keepsCard(answer, "dismiss"));
+  assert.ok(!keepsCard(parseNotification(raw({ buttons: copy })), "copy"), "a website's Copy is a button like any other");
 });
 
 test("only image data URLs are icons, and long text is cut", () => {

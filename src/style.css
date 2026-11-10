@@ -587,6 +587,22 @@ body {
   overflow-wrap: anywhere;
 }
 
+/* The answer key's (notes/mod.rs): the whole answer, in a wider card that
+   scrolls past eight lines, inside the island's window. */
+.note-pop.answer {
+  width: 380px;
+}
+
+.note-pop.answer .note-body {
+  display: block;
+  -webkit-line-clamp: none;
+  max-height: calc(12px * 1.45 * 8);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+  user-select: text;
+}
+
 .note-actions {
   display: flex;
   justify-content: flex-end;

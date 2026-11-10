@@ -6928,16 +6928,27 @@
    "ru": "Ciel остаётся на вашем экране, но не попадает в демонстрацию экрана, записи и снимки экрана, в том числе ваши собственные. Камера, направленная на экран, всё равно видит всё.",
    "id": "Ciel tetap ada di layarmu, tetapi tidak ikut dalam berbagi layar, rekaman, dan tangkapan layar, termasuk milikmu sendiri. Kamera yang diarahkan ke layar tetap melihat semuanya."
   },
-  "While it shows an answer during a call, Ciel is in screen shares like the rest of your screen, so the others see it too.": {
-   "zh-Hans": "在通话中显示回答时，Ciel 会像屏幕上的其他内容一样出现在屏幕共享中，其他人也能看到。",
-   "hi": "कॉल के दौरान जब Ciel कोई जवाब दिखाता है, तो वह आपकी स्क्रीन के बाकी हिस्से की तरह स्क्रीन शेयर में दिखता है, ताकि दूसरे भी उसे देख सकें।",
-   "es": "Mientras muestra una respuesta durante una llamada, Ciel aparece al compartir pantalla como el resto de tu pantalla, así que los demás también la ven.",
-   "ar": "عندما يعرض Ciel إجابة أثناء مكالمة، يظهر في مشاركة الشاشة مثل بقية شاشتك، فيراها الآخرون أيضًا.",
-   "fr": "Quand il affiche une réponse pendant un appel, Ciel apparaît dans les partages d'écran comme le reste de ton écran : les autres la voient aussi.",
-   "bn": "কলের সময় Ciel কোনো উত্তর দেখালে, আপনার স্ক্রিনের বাকি অংশের মতো সেটিও স্ক্রিন শেয়ারে দেখা যায়, তাই অন্যরাও তা দেখতে পান।",
-   "pt-BR": "Enquanto mostra uma resposta durante uma chamada, o Ciel aparece no compartilhamento de tela como o resto da sua tela, então os outros também a veem.",
-   "ru": "Пока Ciel показывает ответ во время звонка, он виден при демонстрации экрана, как и всё остальное на экране, — остальные тоже его видят.",
-   "id": "Saat menampilkan jawaban selama panggilan, Ciel ikut dalam berbagi layar seperti bagian layarmu yang lain, jadi orang lain juga melihatnya."
+  "Show answers in screen shares": {
+   "zh-Hans": "在屏幕共享中显示回答",
+   "hi": "स्क्रीन शेयर में जवाब दिखाएँ",
+   "es": "Mostrar las respuestas al compartir pantalla",
+   "ar": "إظهار الإجابات عند مشاركة الشاشة",
+   "fr": "Montrer les réponses dans les partages d'écran",
+   "bn": "স্ক্রিন শেয়ারে উত্তর দেখান",
+   "pt-BR": "Mostrar as respostas no compartilhamento de tela",
+   "ru": "Показывать ответы при демонстрации экрана",
+   "id": "Tampilkan jawaban saat berbagi layar"
+  },
+  "During a call the Notetaker records, the answer key's cards are in screen shares like the rest of your screen, so the others see them too. Off, only you see them.": {
+   "zh-Hans": "在记录器录制的通话中，回答快捷键的卡片会像屏幕上的其他内容一样出现在屏幕共享中，其他人也能看到。关闭后，只有你能看到。",
+   "hi": "नोटटेकर द्वारा रिकॉर्ड की जा रही कॉल के दौरान, जवाब कुंजी के कार्ड आपकी स्क्रीन के बाकी हिस्से की तरह स्क्रीन शेयर में दिखते हैं, ताकि दूसरे भी उन्हें देख सकें। बंद करने पर, उन्हें सिर्फ़ आप देखते हैं।",
+   "es": "Durante una llamada que graba el Notetaker, las tarjetas de la tecla de respuesta aparecen al compartir pantalla como el resto de tu pantalla, así que los demás también las ven. Desactivado, solo las ves tú.",
+   "ar": "أثناء مكالمة يسجلها مدوّن الملاحظات، تظهر بطاقات مفتاح الإجابة في مشاركة الشاشة مثل بقية شاشتك، فيراها الآخرون أيضًا. عند الإيقاف، تراها أنت فقط.",
+   "fr": "Pendant un appel que le Notetaker enregistre, les cartes de la touche de réponse apparaissent dans les partages d'écran comme le reste de ton écran : les autres les voient aussi. Désactivé, toi seul les vois.",
+   "bn": "নোটটেকার যে কল রেকর্ড করছে তার সময়, উত্তর কী-এর কার্ডগুলো আপনার স্ক্রিনের বাকি অংশের মতো স্ক্রিন শেয়ারে দেখা যায়, তাই অন্যরাও সেগুলো দেখতে পান। বন্ধ থাকলে, শুধু আপনি সেগুলো দেখেন।",
+   "pt-BR": "Durante uma chamada que o Notetaker grava, os cartões da tecla de resposta aparecem no compartilhamento de tela como o resto da sua tela, então os outros também os veem. Desativado, só você os vê.",
+   "ru": "Во время звонка, который записывает Notetaker, карточки клавиши ответа видны при демонстрации экрана, как и всё остальное на экране, — остальные тоже их видят. Если выключено, их видите только вы.",
+   "id": "Selama panggilan yang direkam Notetaker, kartu tombol jawaban ikut dalam berbagi layar seperti bagian layarmu yang lain, jadi orang lain juga melihatnya. Jika mati, hanya kamu yang melihatnya."
   },
   "This computer": {
    "zh-Hans": "这台电脑",
