@@ -2,7 +2,7 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.4.2] - 2026-11-10
 
 ### Added
 - **Answers during a call** (Ctrl+Alt+K, Settings → Shortcuts): while the
@@ -490,6 +490,8 @@ an eye on your AI coding agents. Windows 10/11; Linux builds from source.
 Ciel is a fork of [Coucou](https://github.com/Louis-CFM/coucou) by Louis
 Raillé (MIT). Thank you.
 
+[0.4.2]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.4.2
+[0.4.1]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.4.1
 [0.4.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.4.0
 [0.3.2]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.3.2
 [0.3.1]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.3.1

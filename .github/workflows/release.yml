@@ -165,14 +165,15 @@ jobs:
           cat SHA256SUMS
           cd ..
           # The lines between "## [<version>]" and the next "## [" (or the links),
-          # then one line per paragraph and list item: GitHub shows every line break.
+          # then one line per paragraph and list item, an item under another
+          # keeping its indent: GitHub shows every line break.
           awk -v head="## [$version]" '
             index($0, head) == 1 { on = 1; next }
             on && (index($0, "## [") == 1 || index($0, "[") == 1 && index($0, "]: ") > 0) { exit }
             on { print }
           ' CHANGELOG.md | awk '
             /^$/ || /^#/ { if (buf != "") print buf; buf = ""; print; next }
-            /^- / { if (buf != "") print buf; buf = $0; next }
+            /^ *- / { if (buf != "") print buf; buf = $0; next }
             { line = $0; sub(/^ +/, "", line); buf = (buf == "" ? line : buf " " line) }
             END { if (buf != "") print buf }
           ' > release-notes.md
