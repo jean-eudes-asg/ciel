@@ -131,3 +131,71 @@ test("an alert from a monitoring tool comes as a notification of its own source"
   assert.equal(n.app, "Grafana");
   assert.equal(parseNotification(raw({ source: "alerts", app: "" })).app, "Alerts");
 });
+
+test("an update keeps its lines and reaches only the notification it names", async () => {
+  const { applyUpdate, parseNotificationUpdate } = await import("../src/core/notifications.ts");
+  const u = parseNotificationUpdate({ id: "answer-1", title: " Price ", body: "It's 90 euros a seat.\n\n  Discounts   start at twenty." });
+  assert.deepEqual(u, { id: "answer-1", title: "Price", body: "It's 90 euros a seat.\nDiscounts start at twenty.", buttons: null });
+  assert.equal(parseNotificationUpdate({ id: "", title: "x" }), null);
+  assert.equal(parseNotificationUpdate({ id: "a", title: "", body: "" }), null);
+  const copy = [{ id: "copy", label: "Copy" }];
+  const ciel = { source: "ciel", app: "Ciel", tag: "meeting-answer" };
+  const list = [
+    parseNotification(raw({ ...ciel, id: "answer-1", title: "Ciel is thinking…", body: "", until: 5000 })),
+    parseNotification(raw({ id: "chrome-2" })),
+  ];
+  const next = applyUpdate(list, u);
+  assert.equal(next[0].title, "Price");
+  assert.equal(next[0].until, 5000, "what it says, the rest as it was");
+  assert.deepEqual(next[0].buttons, []);
+  assert.equal(next[1].title, "Ana");
+  assert.deepEqual(applyUpdate(list, { ...u, id: "gone" }), list);
+
+  // Whole: its Copy, and its three minutes from now.
+  const whole = parseNotificationUpdate({ id: "answer-1", title: "Price", body: "It's 90 euros a seat.", buttons: copy, until: 9000 });
+  assert.deepEqual(whole.buttons, copy);
+  assert.equal(whole.until, 9000);
+  const done = applyUpdate(next, whole)[0];
+  assert.deepEqual(done.buttons, copy);
+  assert.equal(done.until, 9000);
+  // A word in the answer's place folds as any notification does: no end of its own (0 from Rust).
+  const word = parseNotificationUpdate({ id: "answer-1", title: "Answer", body: "Ciel hasn't heard the others.", until: 0 });
+  assert.equal(word.until, null);
+  assert.equal(applyUpdate(next, word)[0].until, null);
+  // An answer is read whole, its lines kept; another card's text is cut as ever.
+  const long = `${"word ".repeat(250)}\nend`;
+  assert.ok(parseNotification(raw({ ...ciel, body: "One.\nTwo." })).body === "One.\nTwo.");
+  assert.ok(applyUpdate(next, { ...u, body: long })[0].body.length > 1000);
+  assert.ok(applyUpdate(list, { ...u, id: "chrome-2", body: long })[1].body.length <= 600);
+});
+
+test("the answer key's card changes in place: no new arrival, the answer whole", async () => {
+  const { installFakeDom } = await import("./fakedom.mjs");
+  installFakeDom();
+  const { buildNotificationCard } = await import("../src/island/notifications.ts");
+  let deliver = () => {};
+  let update = () => {};
+  const arrived = [];
+  const card = buildNotificationCard(() => {}, (n) => arrived.push(n.id), (d) => (deliver = d), (u) => (update = u));
+  card.sync(true);
+  deliver(raw({ id: "answer-1", source: "ciel", app: "Ciel", title: "Ciel is thinking…", body: "", tag: "meeting-answer", until: Date.now() + 1000 }));
+  assert.ok(card.pop.classList.contains("answer"));
+  assert.doesNotMatch(card.pop.textContent, /Copy|Open/, "nothing to copy or open while Ciel thinks");
+  update({ id: "answer-1", title: "Price for ten seats", body: "It's 90 euros a seat.\nDiscounts start at twenty." });
+  assert.deepEqual(arrived, ["answer-1"], "an update is not a new notification");
+  assert.match(card.pop.textContent, /Price for ten seats/);
+  assert.match(card.pop.textContent, /Discounts start at twenty/);
+  assert.doesNotMatch(card.pop.textContent, /Copy/, "not before the answer is whole");
+  // Whole: Copy comes, on the same card.
+  update({
+    id: "answer-1", title: "Price for ten seats", body: "It's 90 euros a seat.\nDiscounts start at twenty.",
+    buttons: [{ id: "copy", label: "Copy" }], until: Date.now() + 180_000,
+  });
+  assert.match(card.pop.textContent, /Copy/);
+  assert.deepEqual(arrived, ["answer-1"]);
+  assert.ok(card.active);
+  // One that isn't showing changes nothing on the card.
+  update({ id: "chrome-9", title: "Other", body: "x" });
+  assert.doesNotMatch(card.pop.textContent, /Other/);
+  card.sync(false);
+});

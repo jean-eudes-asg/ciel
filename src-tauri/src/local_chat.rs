@@ -287,7 +287,7 @@ pub async fn send(
 /// One server-sent event line: `Some(Ok(text))` for a content delta,
 /// `Some(Err(message))` for an error event, None for anything else (other
 /// lines, `[DONE]`, a delta without content, such as reasoning-only ones).
-fn parse_sse_line(line: &str) -> Option<Result<String, String>> {
+pub(crate) fn parse_sse_line(line: &str) -> Option<Result<String, String>> {
     let payload = line.strip_prefix("data:")?.trim_start();
     if payload == "[DONE]" {
         return None;

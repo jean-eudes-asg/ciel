@@ -7,7 +7,7 @@
 // lock: Microsoft says it is no DRM, some capture paths through the GPU still
 // see the window, and a camera sees everything.
 //
-// While an answer of the Notetaker's is on screen (notes/mod.rs), the setting
+// While an answer of the Notetaker's is on screen (notes/answer.rs), the setting
 // doesn't apply: Ciel is in the share like the rest of the screen, so the
 // others see what it suggests, unless Show answers in screen shares is off.
 // The rest of the call, it is left out as set.

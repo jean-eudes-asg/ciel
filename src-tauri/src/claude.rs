@@ -223,6 +223,105 @@ async fn call_with_timeout(endpoint: &Url, key: &str, body: &Value, timeout: Dur
     serde_json::from_slice(&bytes).map_err(|e| tf("Bad API response: {error}", &[("error", &e.to_string())]))
 }
 
+// ── A streamed answer (the answer key, notes/answer.rs) ──────────────────────
+
+/// A line of the event stream this long, or an answer this long, is not one.
+const MAX_STREAM_LINE: usize = 1024 * 1024;
+const MAX_STREAM_TEXT: usize = 256 * 1024;
+
+/// What a streamed answer came to.
+#[derive(Debug, Default, Clone, PartialEq)]
+pub struct Streamed {
+    pub text: String,
+    /// "end_turn", "max_tokens", "refusal"…
+    pub stop_reason: Option<String>,
+    /// The prompt's tokens read afresh and from the cache, for the log.
+    pub input_tokens: u64,
+    pub cache_read: u64,
+}
+
+/// One event of the Messages API's stream, as far as a plain answer needs it.
+#[derive(Debug, PartialEq)]
+enum StreamEvent {
+    Text(String),
+    Start { input: u64, cache_read: u64 },
+    Stop(String),
+    Error(String),
+    Other,
+}
+
+/// The JSON after `data:` on a line of the stream.
+fn stream_event(data: &str) -> StreamEvent {
+    let Ok(v) = serde_json::from_str::<Value>(data) else { return StreamEvent::Other };
+    match v["type"].as_str() {
+        Some("content_block_delta") if v["delta"]["type"] == "text_delta" => {
+            StreamEvent::Text(v["delta"]["text"].as_str().unwrap_or_default().to_string())
+        }
+        Some("message_start") => {
+            let usage = &v["message"]["usage"];
+            StreamEvent::Start {
+                input: usage["input_tokens"].as_u64().unwrap_or(0),
+                cache_read: usage["cache_read_input_tokens"].as_u64().unwrap_or(0),
+            }
+        }
+        Some("message_delta") => v["delta"]["stop_reason"].as_str().map_or(StreamEvent::Other, |r| StreamEvent::Stop(r.into())),
+        Some("error") => StreamEvent::Error(v.pointer("/error/message").and_then(Value::as_str).unwrap_or("error").to_string()),
+        _ => StreamEvent::Other,
+    }
+}
+
+/// A Messages request answered as a stream: `on_text` gets the text so far
+/// each time it grows. `body` goes as it is, with `"stream": true`.
+pub async fn stream(body: &Value, timeout: Duration, on_text: impl FnMut(&str)) -> Result<Streamed, String> {
+    let key = secrets::get(KEY).ok_or_else(|| t("API key missing. Open settings."))?;
+    stream_from(&endpoint()?, &key, body, timeout, on_text).await
+}
+
+async fn stream_from(endpoint: &Url, key: &str, body: &Value, timeout: Duration, mut on_text: impl FnMut(&str)) -> Result<Streamed, String> {
+    let mut body = body.clone();
+    body["stream"] = json!(true);
+    let network = |e: reqwest::Error| tf("Network error: {error}", &[("error", &e.to_string())]);
+    let mut response = net::client(endpoint, timeout)?
+        .post(endpoint.clone())
+        .header("x-api-key", key)
+        .header("anthropic-version", ANTHROPIC_VERSION)
+        .header("content-type", "application/json")
+        .json(&body)
+        .send()
+        .await
+        .map_err(network)?;
+    let status = response.status();
+    if !status.is_success() {
+        let body = net::read_capped(response, net::MAX_ERROR_BODY).await.unwrap_or_default();
+        return Err(format!("Claude API {status}: {}", net::error_detail(&body)));
+    }
+    let mut out = Streamed::default();
+    let mut pending = Vec::<u8>::new();
+    while let Some(chunk) = response.chunk().await.map_err(network)? {
+        pending.extend_from_slice(&chunk);
+        // Whole lines only: a chunk may end in the middle of one, or of a character.
+        while let Some(end) = pending.iter().position(|b| *b == b'\n') {
+            let line: Vec<u8> = pending.drain(..=end).collect();
+            let line = String::from_utf8_lossy(&line);
+            let Some(data) = line.trim_end().strip_prefix("data:") else { continue };
+            match stream_event(data.trim_start()) {
+                StreamEvent::Text(text) if !text.is_empty() => {
+                    out.text.push_str(&text);
+                    on_text(&out.text);
+                }
+                StreamEvent::Start { input, cache_read } => (out.input_tokens, out.cache_read) = (input, cache_read),
+                StreamEvent::Stop(reason) => out.stop_reason = Some(reason),
+                StreamEvent::Error(message) => return Err(format!("Claude API: {message}")),
+                _ => {}
+            }
+        }
+        if pending.len() > MAX_STREAM_LINE || out.text.len() > MAX_STREAM_TEXT {
+            return Err(t("The server's answer is too large."));
+        }
+    }
+    Ok(out)
+}
+
 /// The models on the user's Anthropic account, newest first, as the API lists them.
 pub async fn models(key: &str) -> Result<Vec<ModelInfo>, String> {
     let url = models_endpoint(&endpoint()?);
@@ -313,6 +412,53 @@ fn base64(bytes: &[u8]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_stream_gives_the_text_the_usage_and_why_it_stopped() {
+        assert_eq!(
+            stream_event(r#"{"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Hel"}}"#),
+            StreamEvent::Text("Hel".into())
+        );
+        assert_eq!(
+            stream_event(r#"{"type":"message_start","message":{"usage":{"input_tokens":12,"cache_read_input_tokens":900}}}"#),
+            StreamEvent::Start { input: 12, cache_read: 900 }
+        );
+        assert_eq!(stream_event(r#"{"type":"message_delta","delta":{"stop_reason":"refusal"}}"#), StreamEvent::Stop("refusal".into()));
+        assert_eq!(stream_event(r#"{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}}"#), StreamEvent::Error("Overloaded".into()));
+        // Thinking, a block's start, pings: nothing to show.
+        assert_eq!(stream_event(r#"{"type":"content_block_delta","delta":{"type":"thinking_delta","thinking":"x"}}"#), StreamEvent::Other);
+        assert_eq!(stream_event(r#"{"type":"ping"}"#), StreamEvent::Other);
+        assert_eq!(stream_event("not json"), StreamEvent::Other);
+    }
+
+    #[test]
+    fn a_streamed_answer_grows_line_by_line_even_cut_in_the_middle() {
+        let events = [
+            r#"event: message_start"#,
+            r#"data: {"type":"message_start","message":{"usage":{"input_tokens":5,"cache_read_input_tokens":0}}}"#,
+            "",
+            r#"data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"Q: Price"}}"#,
+            r#"data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"\nA: 90 €."}}"#,
+            r#"data: {"type":"message_delta","delta":{"stop_reason":"end_turn"}}"#,
+            "",
+        ]
+        .join("\n");
+        let url = crate::net::tests::serve_once("200 OK", "Content-Type: text/event-stream\r\n", events.into_bytes());
+        let endpoint = Url::parse(&url).unwrap();
+        let mut seen = Vec::new();
+        let rt = tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap();
+        let out = rt
+            .block_on(stream_from(&endpoint, "k", &json!({ "model": "m" }), Duration::from_secs(5), |t| seen.push(t.to_string())))
+            .unwrap();
+        assert_eq!(out.text, "Q: Price\nA: 90 €.");
+        assert_eq!(out.stop_reason.as_deref(), Some("end_turn"));
+        assert_eq!(out.input_tokens, 5);
+        assert_eq!(seen, vec!["Q: Price".to_string(), "Q: Price\nA: 90 €.".to_string()]);
+
+        let url = crate::net::tests::serve_once("200 OK", "", b"data: {\"type\":\"error\",\"error\":{\"message\":\"Overloaded\"}}\n".to_vec());
+        let err = rt.block_on(stream_from(&Url::parse(&url).unwrap(), "k", &json!({}), Duration::from_secs(5), |_| {})).unwrap_err();
+        assert_eq!(err, "Claude API: Overloaded");
+    }
 
     #[test]
     fn base64_matches_rfc4648_vectors() {

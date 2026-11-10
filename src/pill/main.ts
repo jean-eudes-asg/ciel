@@ -20,7 +20,7 @@ const RESTING_THICKNESS = 8;
 const OPEN_THICKNESS = 34;
 const BANDS = 9;
 
-let state: PillState = { phase: "idle", edge: "bottom", key: "right_ctrl", noteStartedAt: null, announcement: null, enabled: false, voice: null };
+let state: PillState = { phase: "idle", edge: "bottom", key: "right_ctrl", noteStartedAt: null, noteAnswer: null, announcement: null, enabled: false, voice: null };
 let platform: "windows" | "linux" = navigator.userAgent.includes("Windows") ? "windows" : "linux";
 let hovered = false;
 let tooltip: string | null = null;
@@ -83,7 +83,8 @@ function openLength(l: Look): number {
     case "toolbar":
       return 150;
     case "note":
-      return vertical() ? 128 : hours ? 152 : 136;
+      // The clock, then the answer key's button and stop.
+      return vertical() ? 156 : hours ? 182 : 166;
     case "handsFree":
       return 158;
     case "message":
@@ -167,7 +168,16 @@ function content(l: Look): HTMLElement {
         e.stopPropagation();
         void FlowBridge.pillAction("stopNote");
       });
-      c.append(cloudSlot(), el("span", "rec"), noteClock(), stop);
+      // The answer key (notes/answer.rs); lit when an answer is ready.
+      const ready = state.noteAnswer === "ready";
+      const answer = el("button", ready ? "answer ready" : "answer");
+      answer.title = ready ? t("An answer is ready · press to see it") : t("Answer the last question in the call");
+      answer.append(svgIcon("bolt"));
+      answer.addEventListener("click", (e) => {
+        e.stopPropagation();
+        void Bridge.notesAnswer();
+      });
+      c.append(cloudSlot(), el("span", "rec"), noteClock(), answer, stop);
       break;
     }
     default:
@@ -220,7 +230,7 @@ function render() {
   const length = open ? openLength(l) : RESTING_LENGTH;
   const thickness = open ? OPEN_THICKNESS : RESTING_THICKNESS;
   root.className = `${state.edge}${vertical() ? " vertical" : ""}`;
-  const key = `${l}|${state.edge}|${state.phase}|${state.key}|${state.noteStartedAt}|${platform}|${state.voice?.phase ?? ""}`;
+  const key = `${l}|${state.edge}|${state.phase}|${state.key}|${state.noteStartedAt}|${state.noteAnswer ?? ""}|${platform}|${state.voice?.phase ?? ""}`;
   if (!capsule || key !== lastKey) {
     lastKey = key;
     const next = el("div", "capsule");

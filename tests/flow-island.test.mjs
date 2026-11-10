@@ -10,7 +10,7 @@ import { setLanguage } from "../src/i18n/i18n.ts";
 setLanguage("en");
 
 const state = (over = {}) => ({
-  phase: "idle", edge: "island", key: "right_ctrl", noteStartedAt: null, announcement: null, enabled: true, voice: null,
+  phase: "idle", edge: "island", key: "right_ctrl", noteStartedAt: null, noteAnswer: null, announcement: null, enabled: true, voice: null,
   ...over,
 });
 

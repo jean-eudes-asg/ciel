@@ -10752,6 +10752,50 @@
    "pt-BR": "Esta pasta não existe.",
    "ru": "Этой папки нет.",
    "id": "Folder ini tidak ada."
+  },
+  "Ciel's brain declined this question.": {
+   "zh-Hans": "Ciel 的大脑拒绝回答这个问题。",
+   "hi": "Ciel के ब्रेन ने इस सवाल का जवाब देने से मना कर दिया।",
+   "es": "El cerebro de Ciel ha rechazado esta pregunta.",
+   "ar": "رفض عقل Ciel هذا السؤال.",
+   "fr": "Le cerveau de Ciel a refusé cette question.",
+   "bn": "Ciel-এর ব্রেন এই প্রশ্নটির উত্তর দিতে রাজি হয়নি।",
+   "pt-BR": "O cérebro do Ciel recusou esta pergunta.",
+   "ru": "Мозг Ciel отказался отвечать на этот вопрос.",
+   "id": "Otak Ciel menolak pertanyaan ini."
+  },
+  "An answer is ready · press to see it": {
+   "zh-Hans": "答案已准备好 · 按下即可查看",
+   "hi": "जवाब तैयार है · देखने के लिए दबाएँ",
+   "es": "Hay una respuesta lista · pulsa para verla",
+   "ar": "الإجابة جاهزة · اضغط لرؤيتها",
+   "fr": "Une réponse est prête · appuyez pour la voir",
+   "bn": "উত্তর তৈরি · দেখতে চাপুন",
+   "pt-BR": "Uma resposta está pronta · pressione para ver",
+   "ru": "Ответ готов · нажмите, чтобы увидеть",
+   "id": "Jawaban sudah siap · tekan untuk melihatnya"
+  },
+  "Prepare answers ahead": {
+   "zh-Hans": "提前准备答案",
+   "hi": "जवाब पहले से तैयार करें",
+   "es": "Preparar las respuestas por adelantado",
+   "ar": "تحضير الإجابات مسبقًا",
+   "fr": "Préparer les réponses à l'avance",
+   "bn": "উত্তর আগে থেকে তৈরি রাখুন",
+   "pt-BR": "Preparar as respostas com antecedência",
+   "ru": "Готовить ответы заранее",
+   "id": "Siapkan jawaban lebih dulu"
+  },
+  "When the others ask you a question during a call, Ciel writes the answer before you press the key, and the key's button lights up. With Claude, up to the last half hour of the call goes to Anthropic with each question, pressed or not.": {
+   "zh-Hans": "通话中其他人向你提问时，Ciel 会在你按下快捷键之前写好答案，快捷键的按钮会亮起。使用 Claude 时，无论是否按下快捷键，每个问题都会把通话最近半小时以内的内容发送给 Anthropic。",
+   "hi": "कॉल के दौरान जब दूसरे आपसे कोई सवाल पूछते हैं, तो आपके कुंजी दबाने से पहले ही Ciel जवाब लिख देता है, और कुंजी का बटन जल उठता है। Claude के साथ, हर सवाल पर कॉल का पिछला आधा घंटा तक Anthropic को जाता है, चाहे आप कुंजी दबाएँ या नहीं।",
+   "es": "Cuando los demás te hacen una pregunta durante una llamada, Ciel escribe la respuesta antes de que pulses la tecla, y el botón de la tecla se ilumina. Con Claude, hasta la última media hora de la llamada va a Anthropic con cada pregunta, pulses o no.",
+   "ar": "عندما يطرح عليك الآخرون سؤالًا أثناء المكالمة، يكتب Ciel الإجابة قبل أن تضغط على المفتاح، ويضيء زر المفتاح. مع Claude، يذهب ما يصل إلى آخر نصف ساعة من المكالمة إلى Anthropic مع كل سؤال، سواء ضغطت أم لا.",
+   "fr": "Quand les autres vous posent une question pendant un appel, Ciel écrit la réponse avant que vous appuyiez sur la touche, et le bouton de la touche s'allume. Avec Claude, jusqu'à la dernière demi-heure de l'appel part chez Anthropic à chaque question, que vous appuyiez ou non.",
+   "bn": "কলের সময় অন্যরা আপনাকে কোনো প্রশ্ন করলে, আপনি কী চাপার আগেই Ciel উত্তরটি লিখে ফেলে, আর কী-এর বোতামটি জ্বলে ওঠে। Claude হলে, প্রতিটি প্রশ্নে কলের শেষ আধ ঘণ্টা পর্যন্ত Anthropic-এ যায়, আপনি চাপুন বা না চাপুন।",
+   "pt-BR": "Quando os outros fazem uma pergunta a você durante uma chamada, o Ciel escreve a resposta antes de você pressionar a tecla, e o botão da tecla se acende. Com o Claude, até a última meia hora da chamada vai para a Anthropic a cada pergunta, pressionando ou não.",
+   "ru": "Когда собеседники задают вам вопрос во время звонка, Ciel пишет ответ ещё до того, как вы нажмёте клавишу, и её кнопка загорается. С Claude до последних получаса звонка уходят в Anthropic при каждом вопросе, нажмёте вы клавишу или нет.",
+   "id": "Saat orang lain mengajukan pertanyaan kepada Anda selama panggilan, Ciel menulis jawabannya sebelum Anda menekan tombol, dan tombolnya menyala. Dengan Claude, hingga setengah jam terakhir panggilan dikirim ke Anthropic untuk setiap pertanyaan, ditekan atau tidak."
   }
  }
 }

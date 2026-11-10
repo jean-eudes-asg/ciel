@@ -193,6 +193,8 @@ export interface PillState {
   /** "wayland" where the desktop holds the shortcut. */
   key: FlowKey | "wayland" | "";
   noteStartedAt: number | null;
+  /** "ready": the answer key has an answer prepared for the last question, and its button lights up. */
+  noteAnswer: "ready" | null;
   announcement: Announcement | null;
   enabled: boolean;
   /** « OK Ciel » is talking with you. */

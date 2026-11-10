@@ -61,7 +61,7 @@ pub struct Settings {
     /// screenshots (capture.rs). Off by default.
     pub hide_from_screen_sharing: bool,
     /// With that on: the answer key's cards are in screen shares all the same,
-    /// so the others see them too (capture.rs, notes/mod.rs). On by default.
+    /// so the others see them too (capture.rs, notes/answer.rs). On by default.
     pub answers_in_shares: bool,
     /// The flip clock after this many minutes without input; 0 is off (screensaver.rs).
     pub screensaver_minutes: u32,
@@ -116,6 +116,11 @@ pub struct Settings {
     /// The user's company folder (Ciel window → Notetaker): what the answer
     /// key reads for the passages that fit the question (notes/folder.rs). "" for none.
     pub company_folder: String,
+    /// The answer key prepares the answer as soon as the others ask a question
+    /// in a call, before the key is pressed (notes/answer.rs). Off by default:
+    /// with Claude, up to the call's last half hour then goes to Anthropic for
+    /// each question.
+    pub prepare_answers: bool,
     /// The Alerts pill's port (alerts.rs).
     pub alerts_port: u16,
     /// The Alerts pill takes alerts from other computers, not only this one.
@@ -357,6 +362,7 @@ impl Default for Settings {
             desktop_cloud: DesktopCloudPref::default(),
             finance_folder: String::new(),
             company_folder: String::new(),
+            prepare_answers: false,
             alerts_port: crate::alerts::DEFAULT_PORT,
             alerts_lan: false,
             wallpaper: WallpaperPrefs::default(),
@@ -660,6 +666,7 @@ mod tests {
   "desktopCloud": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } },
   "financeFolder": "/srv/dashboard/data",
   "companyFolder": "/srv/company",
+  "prepareAnswers": true,
   "alertsPort": 8080,
   "alertsLan": true,
   "wallpaper": {
@@ -1142,6 +1149,7 @@ mod tests {
                 "desktopCloud",
                 "financeFolder",
                 "companyFolder",
+                "prepareAnswers",
                 "alertsPort",
                 "alertsLan",
                 "wallpaper",

@@ -7,16 +7,17 @@
 // notification that arrives meanwhile waits for it to end. During a call the
 // Notetaker records, the call keeps the folded island's row and only the
 // answer key's cards show, under it; the others wait for the call to end.
-// Those say Ciel is thinking, then give the answer, with Copy: it goes to the
-// clipboard and the card stays.
+// Theirs says Ciel is thinking, then the answer is written into it as it
+// comes, in place and without announcing it again; whole, it has Copy, which
+// puts it on the clipboard and leaves the card there.
 //
 // Open goes back to where it came from (Rust: the tab in Chrome, the mail in
 // Gmail, the app); Dismiss only takes it out of the island and the list.
 
 import { Bridge, onEvent } from "../core/bridge";
 import {
-  addNotification, cardButtons, isAnswerKeyCard, keepsCard, MAX_UNSEEN, nextToShow, parseNotification, showFor, timeSpan,
-  type CielNotification,
+  addNotification, applyUpdate, cardButtons, isAnswerKeyCard, keepsCard, MAX_UNSEEN, nextToShow, parseNotification,
+  parseNotificationUpdate, showFor, timeSpan, type CielNotification,
 } from "../core/notifications";
 import { State } from "../core/state";
 import { Tools } from "../tools/store";
@@ -56,11 +57,13 @@ function own(e: HTMLElement): HTMLElement {
 export type NotificationSource = (deliver: (raw: unknown) => void) => void;
 
 const FROM_RUST: NotificationSource = (deliver) => void onEvent<unknown>("notification", deliver);
+const UPDATES_FROM_RUST: NotificationSource = (deliver) => void onEvent<unknown>("notification-update", deliver);
 
 export function buildNotificationCard(
   onChange: () => void,
   onArrive: (n: CielNotification) => void,
   source: NotificationSource = FROM_RUST,
+  updates: NotificationSource = UPDATES_FROM_RUST,
 ): NotificationCard {
   let queue: CielNotification[] = [];
   /** The one showing, if any. */
@@ -179,6 +182,20 @@ export function buildNotificationCard(
     showing = null;
     onArrive(n);
     next();
+  });
+
+  // A card that says something new: in place, no sound, no new arrival.
+  updates((raw) => {
+    const u = parseNotificationUpdate(raw);
+    if (!u) return;
+    State.notifications = applyUpdate(State.notifications, u);
+    queue = applyUpdate(queue, u);
+    if (showing?.id !== u.id) return;
+    showing = queue.find((q) => q.id === u.id) ?? applyUpdate([showing], u)[0];
+    // How long it stays changed (the answer is whole, or a word took its place): counted from now.
+    if (u.until !== undefined && free) startTimer();
+    render();
+    onChange();
   });
 
   return {

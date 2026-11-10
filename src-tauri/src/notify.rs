@@ -79,11 +79,12 @@ pub enum Target {
     None,
     /// A timer or reminder that rang (timers.rs): its buttons stop, snooze or restart it.
     Timer(String),
-    /// The answer key pressed with no call noted (notes/mod.rs): Take notes starts the Notetaker.
+    /// The answer key pressed with no call noted (notes/answer.rs): Take notes starts the Notetaker.
     Notetaker,
-    /// An answer of the answer key's, with its text: Copy puts it on the
-    /// clipboard and the card stays. Once it leaves the island, Ciel is left
-    /// out of screen shares again, if so set (capture.rs).
+    /// An answer of the answer key's, with its text (none yet while it is
+    /// being written): Copy puts it on the clipboard and the card stays. Once
+    /// it leaves the island, Ciel is left out of screen shares again, if so
+    /// set (capture.rs), and what was being written for it stops.
     Answer(String),
     /// The app that notified: its desktop entry id, the process that sent it
     /// (whose window comes forward), and GNOME's own copy of it once known.
@@ -149,6 +150,47 @@ pub fn show(app: &AppHandle, n: Notification, target: Target) {
         }
     }
     let _ = app.emit_to(crate::island::WINDOW_LABEL, "notification", &n);
+}
+
+/// What a card shown already says now: the island changes it in place, without
+/// announcing it again (the answer key's, as the answer is written).
+#[derive(Serialize, Clone, Debug, PartialEq)]
+pub struct Update {
+    pub id: String,
+    pub title: String,
+    pub body: String,
+    /// Its buttons from now on (an answer's Copy, once it is whole); none: as
+    /// they were.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub buttons: Option<Vec<Button>>,
+    /// Until when it stays from now on, Unix ms; `AS_ANY`: as long as any
+    /// notification, from now; none: as it was.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub until: Option<f64>,
+}
+
+/// An update's `until` for a card that folds away as any notification does.
+pub const AS_ANY: f64 = 0.0;
+
+impl Update {
+    /// What the card says, the rest as it was.
+    pub fn text(id: &str, title: String, body: String) -> Update {
+        Update { id: id.to_string(), title, body, buttons: None, until: None }
+    }
+}
+
+pub fn update(app: &AppHandle, mut update: Update) {
+    update.title = clip(&update.title, MAX_TEXT);
+    update.body = clip(&update.body, MAX_TEXT);
+    let _ = app.emit_to(crate::island::WINDOW_LABEL, "notification-update", &update);
+}
+
+/// What Open, Dismiss or a button does from now on for a card shown already
+/// (an answer once it is whole: its Copy has something to copy).
+pub fn retarget(id: &str, target: Target) {
+    if let Some(slot) = TARGETS.lock().unwrap().iter_mut().find(|(i, _)| i == id) {
+        slot.1 = target;
+    }
 }
 
 /// GNOME's id for a notification already shown, once the server has answered.
@@ -228,7 +270,10 @@ pub fn notification_action(app: AppHandle, id: String, action: String) {
         Own::Copy(text) => {
             std::thread::spawn(move || crate::clipboard::copy_text(&text));
         }
-        Own::AnswerGone => crate::capture::answer_gone(&app),
+        Own::AnswerGone => {
+            crate::capture::answer_gone(&app);
+            crate::notes::answer::dismissed(&app, &id);
+        }
     });
 }
 
@@ -794,5 +839,28 @@ mod tests {
             act("answer-y", action, |own| gone = Some(own));
             assert_eq!(gone, Some(Own::AnswerGone), "{action}");
         }
+    }
+
+    #[test]
+    fn a_card_that_waited_gets_its_copy_once_the_answer_is_whole() {
+        // The card that waits has nothing to copy yet; whole, its Copy has.
+        TARGETS.lock().unwrap().push_back(("answer-z".into(), Target::Answer(String::new())));
+        retarget("answer-z", Target::Answer("Yes, by Friday.".into()));
+        let mut copied = None;
+        act("answer-z", "copy", |own| copied = Some(own));
+        assert_eq!(copied, Some(Own::Copy("Yes, by Friday.".into())));
+        // A card long gone: nothing.
+        retarget("answer-never", Target::None);
+        act("answer-never", "copy", |own| panic!("no such card: {own:?}"));
+
+        // As the answer is written, only what it says goes to the island.
+        let said = serde_json::to_value(Update::text("answer-z", "Price".into(), "It's 90".into())).unwrap();
+        assert_eq!(said, json!({ "id": "answer-z", "title": "Price", "body": "It's 90" }));
+        // Whole, or a word in its place: its buttons and how long it stays, too.
+        let copy = Button { id: "copy".into(), label: "Copy".into() };
+        let whole = Update { id: "answer-z".into(), title: "Price".into(), body: "It's 90 euros.".into(), buttons: Some(vec![copy]), until: Some(AS_ANY) };
+        let whole = serde_json::to_value(whole).unwrap();
+        assert_eq!(whole["buttons"], json!([{ "id": "copy", "label": "Copy" }]));
+        assert_eq!(whole["until"], json!(0.0));
     }
 }

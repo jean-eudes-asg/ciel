@@ -7,7 +7,7 @@ import { buildFlowStrip, type FlowSource } from "../src/island/flow";
 import type { PillState } from "../src/core/flow";
 
 const base: PillState = {
-  phase: "idle", edge: "island", key: "right_ctrl", noteStartedAt: null, announcement: null, enabled: true, voice: null,
+  phase: "idle", edge: "island", key: "right_ctrl", noteStartedAt: null, noteAnswer: null, announcement: null, enabled: true, voice: null,
 };
 
 const CASES: [string, Partial<PillState>, boolean?][] = [
@@ -16,6 +16,7 @@ const CASES: [string, Partial<PillState>, boolean?][] = [
   ["Thinking: the words are on their way", { phase: "thinking" }],
   ["A short message", { phase: "copied" }],
   ["Recording a call", { noteStartedAt: Date.now() - 754_000 }],
+  ["Recording a call, an answer ready for the last question", { noteStartedAt: Date.now() - 754_000, noteAnswer: "ready" }],
   ["« OK Ciel » answers", { voice: { phase: "speaking", heard: "What's left on my Claude plan this week?", answer: "You've used 61% of your week; it resets Thursday at 13:37. The 5-hour window is at 34%." } }, true],
   ["A message with its button", { announcement: { id: 1, icon: "download", tint: "#7FB4EA", text: "The speech model is ready", action: "Try it", actionId: "openSettings" } }, true],
 ];

@@ -111,7 +111,7 @@ pub fn warm_up(app: &AppHandle) {
 }
 
 /// One answer to `prompt` under `system`, with no tools: the Notetaker's
-/// answer key (notes/mod.rs). None when Claude Code couldn't answer, or this
+/// answer key (notes/answer.rs). None when Claude Code couldn't answer, or this
 /// build hasn't it; the usual brain then does.
 pub fn complete(system: &str, prompt: &str) -> Option<String> {
     #[cfg(feature = "claude-code")]

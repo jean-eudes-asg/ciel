@@ -22,7 +22,7 @@ function icon(color: string): string {
 
 const n = (id: string, over: Record<string, unknown>) => ({ id, source: "chrome", app: "WhatsApp", title: "", body: "", icon: null, at: Date.now(), tag: null, ...over });
 
-// The answer key's card (src-tauri/src/notes/mod.rs): the whole answer, scrolling past eight lines.
+// The answer key's card (src-tauri/src/notes/answer.rs): the whole answer, scrolling past eight lines.
 const answer = n("q", {
   source: "ciel", app: "Ciel", title: "Pro plan cost for 10 seats per month?", tag: "meeting-answer",
   body: "The Pro plan is 90 euros per seat each month, billed monthly, so for 10 seats that comes to 900 euros a month. " +
@@ -36,10 +36,19 @@ const answer = n("q", {
 const ciel = { source: "ciel", app: "Ciel", tag: "meeting-answer" };
 const thinking = n("t", { ...ciel, title: "Ciel is thinking…", until: Date.now() + 3 * 60_000 });
 const word = n("h", { ...ciel, title: "Answer", body: "Ciel hasn't heard the others ask anything in the last minutes." });
+// The answer as the brain writes it: the question for a title, a sentence to say, then its detail.
+const WRITTEN = {
+  title: "Pro plan cost for 10 seats per month?",
+  body: "It's 900 euros a month for ten seats, at 90 euros a seat.\nDiscounts start at twenty seats, with 15% off every seat.",
+};
 
-/** The case's label, what comes, and whether a call the Notetaker records holds the row. */
-const CASES: [string, Record<string, unknown>[], boolean?][] = [
+/**
+ * The case's label, what comes, whether a call the Notetaker records holds
+ * the row, and what is then written into the card that came.
+ */
+const CASES: [string, Record<string, unknown>[], boolean?, typeof WRITTEN?][] = [
   ["The answer key, just pressed during a call", [thinking], true],
+  ["The answer written into its card as it comes, then Copy", [thinking], true, WRITTEN],
   ["The answer key's answer, whole, with Copy", [answer]],
   ["The answer key with nothing to answer", [word], true],
   ["During a call: the answer shows, the mail that came after waits", [
@@ -60,9 +69,10 @@ const CASES: [string, Record<string, unknown>[], boolean?][] = [
 ];
 
 const root = document.getElementById("cases")!;
-for (const [label, items, inCall] of CASES) {
+for (const [label, items, inCall, written] of CASES) {
   let deliver: (raw: unknown) => void = () => {};
-  const card = buildNotificationCard(() => {}, () => {}, (fn) => (deliver = fn));
+  let update: (raw: unknown) => void = () => {};
+  const card = buildNotificationCard(() => {}, () => {}, (fn) => (deliver = fn), (fn) => (update = fn));
   const strip = document.createElement("div");
   strip.className = "strip";
   const ciel = document.createElement("i");
@@ -79,6 +89,17 @@ for (const [label, items, inCall] of CASES) {
   const send = () => {
     round++;
     for (const item of [...items].reverse()) deliver({ ...item, id: `${item.id}-${round}` });
+    if (!written) return;
+    // A few words at a time into the card that came, then whole, with Copy.
+    const id = `${items[0].id}-${round}`;
+    const words = written.body.split(/(?<=\s)/);
+    words.forEach((_, i) => {
+      window.setTimeout(() => {
+        const body = words.slice(0, i + 1).join("");
+        const whole = i === words.length - 1;
+        update({ id, title: written.title, body, ...(whole ? { buttons: [{ id: "copy", label: "Copy" }], until: Date.now() + 3 * 60_000 } : {}) });
+      }, 900 + i * 70);
+    });
   };
   send();
   setInterval(send, 5000);

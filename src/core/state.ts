@@ -206,6 +206,12 @@ export interface Settings {
   financeFolder: string;
   /** The answer key's company folder (src-tauri/src/notes/folder.rs); "" for none. */
   companyFolder: string;
+  /**
+   * The answer key prepares the answer as soon as the others ask a question
+   * (src-tauri/src/notes/answer.rs). Off by default: with Claude, each question
+   * sends up to the call's last half hour to Anthropic.
+   */
+  prepareAnswers: boolean;
   /** The Alerts pill's port (src-tauri/src/alerts.rs). */
   alertsPort: number;
   /** The Alerts pill takes alerts from other computers; off, only from this one. */
@@ -271,6 +277,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: "",
   financeFolder: "",
   companyFolder: "",
+  prepareAnswers: false,
   alertsPort: 9797,
   alertsLan: false,
   wallpaper: { ...DEFAULT_WALLPAPER },

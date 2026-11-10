@@ -49,13 +49,58 @@ const MAX_TITLE = 160;
 const MAX_BODY = 600;
 /** An answer of the answer key's is read whole, scrolling in its card past a few lines. */
 const MAX_ANSWER = 1500;
-/** The answer key's tag (src-tauri/src/notes/mod.rs). */
+/** The answer key's tag (src-tauri/src/notes/answer.rs). */
 const ANSWER_TAG = "meeting-answer";
 
 const clip = (s: unknown, max: number) => {
   const text = typeof s === "string" ? s.replace(/\s+/g, " ").trim() : "";
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
 };
+
+/** Its lines kept: the answer key's sentence to say, then its detail. */
+const clipLines = (s: unknown, max: number) => {
+  const text = typeof s === "string" ? s.split("\n").map((l) => l.replace(/\s+/g, " ").trim()).filter(Boolean).join("\n") : "";
+  return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+};
+
+/** What a card shown already says now: the answer key's, as the answer is written (src-tauri/src/notify.rs). */
+export interface NotificationUpdate {
+  id: string;
+  title: string;
+  body: string;
+  /** Its buttons from now on (an answer's Copy, once it is whole); null: as they were. */
+  buttons: NotificationButton[] | null;
+  /** Until when it stays from now on, Unix ms; null: as long as any notification, from now; undefined: as it was. */
+  until?: number | null;
+}
+
+/** An update as Rust sent it, checked and trimmed; null when it has nothing to show. */
+export function parseNotificationUpdate(raw: unknown): NotificationUpdate | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  const title = clip(r.title, MAX_TITLE);
+  const body = clipLines(r.body, MAX_ANSWER);
+  if (typeof r.id !== "string" || !r.id || (!title && !body)) return null;
+  const update: NotificationUpdate = {
+    id: r.id,
+    title: title || body,
+    body: title ? body : "",
+    buttons: Array.isArray(r.buttons) ? parseButtons(r.buttons) : null,
+  };
+  // 0 from Rust (notify.rs AS_ANY): no end of its own any more.
+  if (typeof r.until === "number" && Number.isFinite(r.until)) update.until = r.until > 0 ? r.until : null;
+  return update;
+}
+
+/** The list with the update on its notification; unchanged when it isn't there. */
+export function applyUpdate<T extends CielNotification>(list: readonly T[], u: NotificationUpdate): T[] {
+  return list.map((n) => {
+    if (n.id !== u.id) return n;
+    // Only an answer is read whole.
+    const body = isAnswerKeyCard(n) ? u.body : clipLines(u.body, MAX_BODY);
+    return { ...n, title: u.title, body, ...(u.buttons ? { buttons: u.buttons } : {}), ...(u.until !== undefined ? { until: u.until } : {}) };
+  });
+}
 
 /** A notification as Rust sent it, checked and trimmed; null when it has nothing to show. */
 export function parseNotification(raw: unknown): CielNotification | null {
@@ -66,7 +111,8 @@ export function parseNotification(raw: unknown): CielNotification | null {
     ? r.source
     : null;
   const title = clip(r.title, MAX_TITLE);
-  const body = clip(r.body, source === "ciel" && r.tag === ANSWER_TAG ? MAX_ANSWER : MAX_BODY);
+  // An answer is read whole, its lines kept.
+  const body = source === "ciel" && r.tag === ANSWER_TAG ? clipLines(r.body, MAX_ANSWER) : clip(r.body, MAX_BODY);
   if (!source || typeof r.id !== "string" || !r.id || (!title && !body)) return null;
   const icon = typeof r.icon === "string" && r.icon.startsWith("data:image/") ? r.icon : null;
   return {
@@ -117,7 +163,7 @@ export function showFor(n: CielNotification, seconds: unknown, now = Date.now())
 }
 
 /**
- * The answer key's cards (src-tauri/src/notes/mod.rs): asked for with a key
+ * The answer key's cards (src-tauri/src/notes/answer.rs): asked for with a key
  * press, so they show during the call the Notetaker records, and with do not
  * disturb on. Ciel's own, by their tag: a website's tag can't pass for one.
  */
