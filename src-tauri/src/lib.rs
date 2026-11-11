@@ -133,7 +133,9 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     if let Err(err) = settings::save(&settings) {
         log::line(format!("could not save settings: {err}"));
     }
-    if autostart_changed {
+    // A development build never writes the login item: it would start
+    // target/debug/ciel at login, with no dev server to load its pages from.
+    if autostart_changed && !cfg!(debug_assertions) {
         let manager = app.autolaunch();
         let result = if settings.autostart { manager.enable() } else { manager.disable() };
         if let Err(err) = result {
@@ -1087,7 +1089,7 @@ pub fn run() {
             }
             shortcuts::apply(&handle, &loaded.shortcuts);
             wallpaper::sync(&handle, &loaded.wallpaper);
-            if loaded.autostart {
+            if loaded.autostart && !cfg!(debug_assertions) {
                 // Login items written before 0.5 start Ciel without --autostart:
                 // writing it again adds it, so the window stays hidden at login.
                 let _ = handle.autolaunch().enable();
