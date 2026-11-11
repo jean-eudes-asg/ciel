@@ -232,6 +232,8 @@ export interface Settings {
   islandTheme: "black" | "white" | "system";
   /** The island hung from the screen's edge (a notch), or floating under it (the sky island). */
   islandShape: "notch" | "sky";
+  /** In the sky island, an agent's reply comes in a bubble under it, or opens it as the notch does. */
+  replyStyle: "bubble" | "open";
   /** The steps of the window's setup gone through (settings/setup.ts), "later" once put off. */
   setupSteps: string[];
 }
@@ -290,6 +292,7 @@ export const DEFAULT_SETTINGS: Settings = {
   windowTheme: "black",
   islandTheme: "black",
   islandShape: "notch",
+  replyStyle: "bubble",
   setupSteps: [],
 };
 

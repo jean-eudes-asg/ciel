@@ -1912,6 +1912,16 @@ function windowSection(): HTMLElement {
     });
     shape.append(b);
   }
+  const replies = h("div", { class: "hub-segmented" });
+  for (const [value, label] of [["bubble", t("In a bubble")], ["open", t("Open the island")]] as const) {
+    const b = h("button", { class: (settings.replyStyle ?? "bubble") === value ? "on" : "", text: label });
+    b.addEventListener("click", () => {
+      for (const other of replies.querySelectorAll("button")) other.classList.toggle("on", other === b);
+      settings.replyStyle = value;
+      void save();
+    });
+    replies.append(b);
+  }
   const setup = h("button", { text: setupProgress(settings) ? t("Continue the setup") : t("Go through the setup again"), onclick: () => hub?.show("setup") });
   return h("section", {},
     h("h2", {}, h("span", { text: t("Window") })),
@@ -1919,6 +1929,8 @@ function windowSection(): HTMLElement {
     h("div", { class: "row" }, h("label", { text: t("Island") }), picker("islandTheme")),
     h("div", { class: "row" }, h("label", { text: t("Shape") }), shape),
     h("div", { class: "hint", text: t("A notch hangs from the top of the screen. The sky island floats under it, and draws in to a dot when it hides.") }),
+    h("div", { class: "row" }, h("label", { text: t("Replies") }), replies),
+    h("div", { class: "hint", text: t("In the sky island, what an agent answers shows in a bubble under it; a click opens the island. A permission or a question always opens it.") }),
     h("div", { class: "row" }, h("label", { text: t("Setup") }), setup),
     h("div", { class: "hint", text: t("The questions of the first launch: what Ciel follows, how the island opens, your tools, your voice.") }),
   );

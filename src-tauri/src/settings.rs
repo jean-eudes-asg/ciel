@@ -139,6 +139,8 @@ pub struct Settings {
     pub island_theme: String,
     /// "notch" (hung from the screen's edge) or "sky" (floating under it).
     pub island_shape: String,
+    /// In the sky island: "bubble" (a reply shows under it) or "open" (it opens on the reply).
+    pub reply_style: String,
     /// The steps of the window's setup the user went through (src/settings/setup.ts),
     /// and "later" once they put it off; empty until it was first shown.
     pub setup_steps: Vec<String>,
@@ -375,6 +377,7 @@ impl Default for Settings {
             window_theme: "black".into(),
             island_theme: "black".into(),
             island_shape: "notch".into(),
+            reply_style: "bubble".into(),
             setup_steps: Vec::new(),
         }
     }
@@ -690,6 +693,7 @@ mod tests {
   "windowTheme": "white",
   "islandTheme": "white",
   "islandShape": "sky",
+  "replyStyle": "open",
   "setupSteps": ["hello", "work", "later"]
 }"##;
 
@@ -1166,6 +1170,7 @@ mod tests {
                 "windowTheme",
                 "islandTheme",
                 "islandShape",
+                "replyStyle",
                 "setupSteps",
             ]
         );

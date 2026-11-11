@@ -10829,6 +10829,50 @@
    "pt-BR": "O notch fica preso ao topo da tela. A ilha do céu flutua logo abaixo e se recolhe em um ponto ao se esconder.",
    "ru": "Вырез свисает с верхнего края экрана. Небесный остров парит под ним и, прячась, сжимается в точку.",
    "id": "Notch menggantung dari tepi atas layar. Pulau langit melayang di bawahnya, dan menyusut menjadi titik saat bersembunyi."
+  },
+  "Replies": {
+   "zh-Hans": "回复",
+   "hi": "जवाब",
+   "es": "Respuestas",
+   "ar": "الردود",
+   "fr": "Réponses",
+   "bn": "উত্তর",
+   "pt-BR": "Respostas",
+   "ru": "Ответы",
+   "id": "Balasan"
+  },
+  "In a bubble": {
+   "zh-Hans": "显示在气泡中",
+   "hi": "बुलबुले में",
+   "es": "En una burbuja",
+   "ar": "في فقاعة",
+   "fr": "Dans une bulle",
+   "bn": "বুদবুদে",
+   "pt-BR": "Em um balão",
+   "ru": "В пузыре",
+   "id": "Dalam gelembung"
+  },
+  "Open the island": {
+   "zh-Hans": "打开灵动岛",
+   "hi": "आइलैंड खोलें",
+   "es": "Abrir la isla",
+   "ar": "فتح الجزيرة",
+   "fr": "Ouvrir l'île",
+   "bn": "আইল্যান্ড খুলুন",
+   "pt-BR": "Abrir a ilha",
+   "ru": "Открыть остров",
+   "id": "Buka pulau"
+  },
+  "In the sky island, what an agent answers shows in a bubble under it; a click opens the island. A permission or a question always opens it.": {
+   "zh-Hans": "在天空岛中，智能体的回答显示在它下方的气泡里；点击即可打开岛。权限请求或提问始终会打开它。",
+   "hi": "आकाश द्वीप में, एजेंट का जवाब उसके नीचे एक बुलबुले में दिखता है; क्लिक करने पर आइलैंड खुलता है। अनुमति या सवाल हमेशा उसे खोलता है।",
+   "es": "En la isla del cielo, lo que responde un agente aparece en una burbuja debajo; un clic abre la isla. Un permiso o una pregunta siempre la abren.",
+   "ar": "في جزيرة السماء، يظهر ما يجيب به الوكيل في فقاعة تحتها؛ والنقر يفتح الجزيرة. طلب الإذن أو السؤال يفتحها دائمًا.",
+   "fr": "Dans l'île du ciel, ce qu'un agent répond s'affiche dans une bulle dessous ; un clic ouvre l'île. Une permission ou une question l'ouvre toujours.",
+   "bn": "আকাশ দ্বীপে, এজেন্ট যা উত্তর দেয় তা তার নিচে একটি বুদবুদে দেখায়; ক্লিক করলে আইল্যান্ড খোলে। অনুমতি বা প্রশ্ন সবসময় এটি খোলে।",
+   "pt-BR": "Na ilha do céu, o que um agente responde aparece em um balão abaixo dela; um clique abre a ilha. Uma permissão ou uma pergunta sempre a abre.",
+   "ru": "В небесном острове ответ агента появляется в пузыре под ним; щелчок открывает остров. Запрос разрешения или вопрос всегда открывают его.",
+   "id": "Di pulau langit, jawaban agen muncul dalam gelembung di bawahnya; klik untuk membuka pulau. Izin atau pertanyaan selalu membukanya."
   }
  }
 }

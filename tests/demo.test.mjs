@@ -61,6 +61,9 @@ const island = {
     if (State.mode !== "expanded") this.fsm.forceHome();
     State.view = view;
   },
+  sayReply() {
+    return false;
+  },
   reveal() {
     this.fsm.reveal();
   },

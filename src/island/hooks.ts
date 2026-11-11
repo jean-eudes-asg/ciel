@@ -420,8 +420,11 @@ export function handleHook(island: Island, payload: HookPayload) {
       }
       Sound.play("finish");
       // A card waiting for an answer is never covered by another alert.
-      if (focused && !State.pendingApproval) surface("finished", true);
-      else State.setPillBadge(agentId, "finished");
+      // In the sky island the reply comes in a bubble under it, whoever said it.
+      const inBubble = !State.pendingApproval && island.sayReply(agentId, finalText);
+      if (focused && !State.pendingApproval) {
+        if (!inBubble) surface("finished", true);
+      } else State.setPillBadge(agentId, "finished");
       cancelStopTimer(agentId);
       const backToIdle = () => {
         stopTimers.delete(agentId);

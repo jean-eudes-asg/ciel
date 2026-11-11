@@ -11,7 +11,7 @@ import { parseDiffStep } from "../src/core/diff.ts";
 
 const CLAUDE = "integration_claude";
 
-const island = { alert() {}, setView() {}, reveal() {}, dropPin() {} };
+const island = { alert() {}, setView() {}, reveal() {}, sayReply: () => false, dropPin() {} };
 registerHookHandlers(island);
 
 const hook = (payload) => emit("hook", payload);

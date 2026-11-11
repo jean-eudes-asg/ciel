@@ -18,7 +18,7 @@ import type { DemoHost } from "./player";
 /** What the demo needs of the island (the tests hand in a stand-in). */
 export type DemoIsland = Pick<
   Island,
-  | "alert" | "setView" | "reveal" | "dropPin" | "collapse" | "viewCommand" | "applySettings"
+  | "alert" | "setView" | "reveal" | "sayReply" | "dropPin" | "collapse" | "viewCommand" | "applySettings"
   | "setPinned" | "takeKeyboard" | "fsm" | "viewActions"
 >;
 

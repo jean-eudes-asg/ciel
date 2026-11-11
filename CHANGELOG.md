@@ -23,6 +23,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   the song being sung has a bubble of its own under the island, tied to it
   by a little round one, as a thought is drawn; each new line comes up into
   place.
+- **Replies in a bubble**, in the sky island: when an agent finishes, what
+  it said comes up in a bubble under the folded island, beside that agent's
+  own little cloud, for a few seconds; a click opens the island on its card.
+  A permission or a question still opens the island. Preferences → General →
+  Window → Replies puts it back to opening the island each time.
 
 ### Changed
 - **New sounds**, all 29, low and few-noted. What you touch answers with a

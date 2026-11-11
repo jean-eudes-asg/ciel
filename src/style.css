@@ -235,16 +235,61 @@
   left: 50%;
   height: auto;
   transform: translateX(-50%);
+  flex-direction: column;
+  align-items: center;
+}
+
+/* What an agent answered (island/reply.ts): its own little cloud, its name in
+   its colour, and its words, three lines of them at most. */
+#island[data-shape="sky"] .islets.under > .reply-bubble {
+  position: relative;
+  width: max-content;
+  max-width: 440px;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 9px 15px 10px 10px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow: var(--float);
+  color: var(--ink-3);
+  text-align: start;
+  cursor: pointer;
+}
+
+.reply-cloud {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.reply-body {
+  min-width: 0;
+}
+
+.reply-who {
+  display: block;
+  font: 700 10.5px var(--font);
+}
+
+.reply-text {
+  font: 500 12px/1.4 var(--font);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 #island[data-shape="sky"] .islets.under > #island-live {
   position: relative;
+  top: auto;
+  left: auto;
   max-width: 360px;
   height: 28px;
   border-radius: 14px;
   padding: 0 13px 0 9px;
 }
 
+#island[data-shape="sky"] .islets.under > .reply-bubble::before,
 #island[data-shape="sky"] .islets.under > #island-live::before {
   content: "";
   position: absolute;

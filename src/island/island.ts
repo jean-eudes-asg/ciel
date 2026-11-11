@@ -3,6 +3,7 @@
 
 import { Tracked, Spring, clamp } from "../core/anim";
 import { applyTheme, onWhite } from "../core/theme";
+import { buildReplyBubble, type ReplyBubble } from "./reply";
 import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
 import {
   EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W, ISLET_GAP, SKY_COMPACT_W, SKY_DOT, SKY_EXPANDED_CORNER, SKY_GAP,
@@ -112,6 +113,16 @@ export class Island {
   private isletsBelow = h("div", { id: "islets-below", class: "islets" });
   /** Under the folded sky island: the line of the song being sung, in a bubble of its own. */
   private isletsUnder = h("div", { class: "islets under" });
+  private reply: ReplyBubble = buildReplyBubble(
+    (taskId) => {
+      State.setFocus(taskId);
+      this.alert("finished");
+    },
+    () => {
+      State.notify();
+      this.ensureRunning();
+    },
+  );
   private dirty = true;
   private canvasPx = 0;
 
@@ -506,6 +517,21 @@ export class Island {
     this.fsm.reveal();
   }
 
+  /**
+   * An agent finished and said `text`. In the sky island (unless Preferences
+   * says to open it), the folded island shows it in a bubble and this is true;
+   * else nothing is done and the caller opens the island as before.
+   */
+  sayReply(taskId: string, text: string): boolean {
+    if (!this.sky || State.settings.replyStyle === "open" || State.mode === "expanded" || !text) return false;
+    const task = State.tasks.find((t) => t.id === taskId);
+    if (!task) return false;
+    if (this.reply.el.parentElement !== this.isletsUnder) this.isletsUnder.append(this.reply.el);
+    this.reply.show(task, text);
+    if (State.mode === "hidden") this.revealSilently();
+    return true;
+  }
+
   /** Music started playing: the compact island, without the peek sound (musicReveal). */
   revealSilently() {
     this.silentReveal = true;
@@ -740,8 +766,8 @@ export class Island {
 
   /** How far the row of pills reaches under the open sky island (0 with none). */
   private isletDrop(): number {
-    const h = this.isletsBelow.classList.contains("on") ? this.isletsBelow.offsetHeight : this.isletsUnder.offsetHeight;
-    return h ? h + ISLET_GAP + 1 : 0;
+    const el = this.isletsBelow.classList.contains("on") ? this.isletsBelow : this.isletsUnder;
+    return el.offsetHeight ? el.offsetTop + el.offsetHeight - this.height.value : 0;
   }
 
   /** How far under the screen's edge the island's top is. */
@@ -1270,6 +1296,7 @@ export class Island {
     const expanded = State.mode === "expanded";
     const greetingActive = expanded && State.view === "greeting";
     this.islandEl.dataset.mode = State.mode;
+    if (expanded) this.reply.hide();
 
     const live = expanded && !greetingActive;
     this.contentEl.classList.toggle("live", live);
@@ -1379,7 +1406,7 @@ export class Island {
    * show when it does, but don't keep it: they may stay off for hours.)
    */
   private mustStay(): boolean {
-    return this.flowStrip.active || this.notes.active || State.notifications.length > 0 || this.liveHolds();
+    return this.flowStrip.active || this.notes.active || this.reply.active || State.notifications.length > 0 || this.liveHolds();
   }
 
   /** What the live chip would show holds the island (asked whatever the mode). */
