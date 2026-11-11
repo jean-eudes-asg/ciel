@@ -5,7 +5,7 @@ import { Tracked, Spring, clamp } from "../core/anim";
 import { applyTheme, onWhite } from "../core/theme";
 import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
 import {
-  EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W,
+  EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W, ISLET_GAP, SKY_COMPACT_W, SKY_DOT, SKY_EXPANDED_CORNER, SKY_GAP,
   ROUNDED_CORNER, VIEW_LAYOUTS, botGlowColor, botGlowOpacity, botPosition, chatPromptHeight,
   TALL_TOOL_H, TALL_TOOLS, inboxHeight, islandSize, panelHeightFor,
   QUESTION_PICKER_H,
@@ -49,6 +49,9 @@ const UPLOAD_VIEWS: ReadonlySet<IslandViewName> = new Set(["upload", "uploading"
 
 /** Seconds between the drop and the moment the progress bar starts filling. */
 const PRE_PROGRESS = USC.T_PROG_START - USC.T_DROP;
+
+/** How long after the last click or key Ciel's idle life goes on in the open island. */
+const LIVELY_MS = 10_000;
 
 const modeOrder = (m: IslandMode) => (m === "hidden" ? 0 : m === "compact" ? 1 : 2);
 
@@ -102,6 +105,13 @@ export class Island {
   private inboxH = VIEW_LAYOUTS.notifications.height;
   /** The window's height, as last asked of Rust: the panel's, or more for a long list. */
   private panelH = PANEL_H;
+  private wasRoomy = false;
+  /** Where the sky island's islets sit: beside it folded, under it open. */
+  private isletsLeft = h("div", { class: "islets left" });
+  private isletsRight = h("div", { class: "islets right" });
+  private isletsBelow = h("div", { id: "islets-below", class: "islets" });
+  /** Under the folded sky island: the line of the song being sung, in a bubble of its own. */
+  private isletsUnder = h("div", { class: "islets under" });
   private dirty = true;
   private canvasPx = 0;
 
@@ -346,6 +356,10 @@ export class Island {
       this.noteStack.el,
       this.planRings.el,
       this.planRings.pop,
+      this.isletsLeft,
+      this.isletsRight,
+      this.isletsBelow,
+      this.isletsUnder,
       this.flowStrip.el,
       this.flowStrip.pop,
       this.notes.el,
@@ -697,13 +711,47 @@ export class Island {
     }
     if (State.mode === "expanded" && State.view === "notifications") h = this.inboxH;
     if (State.mode === "expanded" && State.view === "tools" && TALL_TOOLS.includes(Tools.tab)) h = TALL_TOOL_H;
+    if (this.sky) {
+      // A pill at rest, rounder corners open, and a dot before it is gone.
+      if (State.mode === "hidden") return { w: SKY_DOT, h: SKY_DOT, r: SKY_DOT / 2 };
+      if (State.mode === "expanded") return { w, h, r: SKY_EXPANDED_CORNER };
+      // Dictation and notifications write across the folded island: they keep its full width.
+      const roomy = this.flowStrip?.active || this.notes?.active;
+      return { w: roomy ? w : SKY_COMPACT_W, h, r: h / 2 };
+    }
     const r = State.mode === "expanded" ? EXPANDED_CORNER : ROUNDED_CORNER;
     return { w, h, r };
   }
 
+  /** The sky island (Preferences → General → Window → Shape): floating under the edge, not hung from it. */
+  private get sky(): boolean {
+    return State.settings.islandShape === "sky";
+  }
+
+  /**
+   * How far the islets reach beyond the folded sky island, on its wider side:
+   * the pointer over them is over the island (they are hovered and clicked).
+   */
+  private isletReach(): number {
+    if (!this.sky || State.mode !== "compact") return 0;
+    const widest = Math.max(this.isletsLeft.offsetWidth, this.isletsRight.offsetWidth);
+    return widest ? widest + ISLET_GAP : 0;
+  }
+
+  /** How far the row of pills reaches under the open sky island (0 with none). */
+  private isletDrop(): number {
+    const h = this.isletsBelow.classList.contains("on") ? this.isletsBelow.offsetHeight : this.isletsUnder.offsetHeight;
+    return h ? h + ISLET_GAP + 1 : 0;
+  }
+
+  /** How far under the screen's edge the island's top is. */
+  private get gap(): number {
+    return this.sky ? SKY_GAP : 0;
+  }
+
   private animateGeometry(shrinking: boolean) {
     const { w, h, r } = this.targetSize();
-    this.syncPanel(h, false);
+    this.syncPanel(h + this.gap + this.isletDrop(), false);
     if (shrinking) {
       // Folds up first, then draws in: the height leads the width.
       this.height.curveTowards(h, 280);
@@ -724,21 +772,25 @@ export class Island {
     const r = this.radius.value;
     this.islandEl.style.width = `${w}px`;
     this.islandEl.style.height = `${hh}px`;
-    this.islandEl.style.borderRadius = `0 0 ${r}px ${r}px`;
+    this.islandEl.style.borderRadius = this.sky ? `${r}px` : `0 0 ${r}px ${r}px`;
+    this.islandEl.style.top = `${this.gap}px`;
     this.islandEl.style.transform = `translateX(-50%)`;
     // These follow the island as it resizes, so they belong here rather than in
     // the state-driven DOM sync.
-    this.miniGrid.style.left = `${w - 40 - 14.5}px`;
-    this.miniGrid.style.top = `${hh / 2 - 14.5}px`;
+    // In the sky island the little clouds are an islet of their own (style.css places it).
+    this.miniGrid.style.left = this.sky ? "" : `${w - 40 - 14.5}px`;
+    this.miniGrid.style.top = this.sky ? "" : `${hh / 2 - 14.5}px`;
     this.greetingCanvas.style.left = `${(w - EXPANDED_W) / 2}px`;
     this.uploadCanvas.el.style.left = `${(w - EXPANDED_W) / 2}px`;
 
     const viewportW = window.innerWidth > 0 ? window.innerWidth : PANEL_W;
     // A dictation message or a notification under the island has buttons: they take clicks too.
     const extra = this.flowStrip?.hitBox() ?? this.notes?.hitBox();
-    const rw = extra ? Math.max(w, extra.w) : w;
+    const rw = (extra ? Math.max(w, extra.w) : w) + 2 * this.isletReach();
     const rh = extra ? Math.max(hh, extra.h) : hh;
-    const rect = { x: (viewportW - rw) / 2, y: 0, w: rw, h: rh };
+    // The gap above a floating island counts as the island: the pointer crosses
+    // it coming down from the edge, and must not be taken for having left.
+    const rect = { x: (viewportW - rw) / 2, y: 0, w: rw, h: rh + this.gap + this.isletDrop() };
     const p = this.pushedRect;
     if (Math.abs(p.x - rect.x) > 0.5 || Math.abs(p.w - rect.w) > 0.5 || Math.abs(p.h - rect.h) > 0.5) {
       this.pushedRect = rect;
@@ -778,7 +830,7 @@ export class Island {
     const w = this.width.value;
     const hh = this.height.value;
     const viewportW = window.innerWidth > 0 ? window.innerWidth : PANEL_W;
-    return { x: (viewportW - w) / 2, y: 0, w, h: hh };
+    return { x: (viewportW - w) / 2, y: this.gap, w, h: hh };
   }
 
   // ── Window collapse (hidden → tiny wake strip, zero polling) ────────────────
@@ -1034,7 +1086,7 @@ export class Island {
     // At rest: the list measures itself, and a window grown for it shrinks back.
     if (this.sizing && !this.height.animating) {
       this.fitInbox();
-      this.syncPanel(this.targetSize().h, true);
+      this.syncPanel(this.targetSize().h + this.gap + this.isletDrop(), true);
     }
     this.sizing = this.height.animating;
 
@@ -1151,8 +1203,9 @@ export class Island {
         : null;
     this.engine.particleOverhang = BOT_OVERHANG;
     this.engine.onLight = onWhite();
-    // Open, someone is looking at him: he breathes, glances about, fidgets.
-    this.engine.lively = State.mode === "expanded";
+    // Open and just used, someone is looking at him: he breathes, glances
+    // about, fidgets. Left alone he goes still, and the island stops redrawing.
+    this.engine.lively = State.mode === "expanded" && performance.now() - State.lastActivity < LIVELY_MS;
     this.engine.carryX = this.botCx.velocity / Math.max(1, size);
     this.engine.carryY = this.botCy.velocity / Math.max(1, size);
     this.engine.lookX = this.lookX();
@@ -1193,7 +1246,7 @@ export class Island {
   }
 
   private lookY(): number {
-    return -Math.tanh((State.mouse.y - this.botCy.value) / 200);
+    return -Math.tanh((State.mouse.y - this.gap - this.botCy.value) / 200);
   }
 
   private updateCountdown(nowMs: number) {
@@ -1262,14 +1315,17 @@ export class Island {
     // Compact mini grid
     const showGrid = State.mode === "compact" && !busy;
     this.miniGrid.style.opacity = showGrid ? "1" : "0";
+    this.miniGrid.classList.toggle("on", showGrid && State.otherTasks.length > 0);
     if (showGrid) {
       const others = State.otherTasks.slice(0, 4);
-      const key = others.map((t) => t.id).join("|");
+      // On their islet the little clouds have room to be a little bigger.
+      const cloudSize = this.sky ? 16 : 13;
+      const key = `${cloudSize}:${others.map((t) => t.id).join("|")}`;
       if (this.miniGrid.dataset.key !== key) {
         this.miniGrid.dataset.key = key;
         this.miniGrid.replaceChildren();
         for (const t of others) {
-          this.miniGrid.append(createMiniBot(t, 13));
+          this.miniGrid.append(createMiniBot(t, cloudSize));
         }
         pruneMiniBots();
       }
@@ -1278,9 +1334,16 @@ export class Island {
     // A live activity takes the clock's place in the folded island.
     this.liveChip.sync(State.mode === "compact" && !busy);
     const liveShown = this.liveChip.live != null;
+    if (this.sky) {
+      // A song's words are not a status: they go under the island, like a thought of his.
+      const home = this.liveChip.live?.kind === "lyric" ? this.isletsUnder : this.isletsRight;
+      if (this.liveChip.el.parentElement !== home) home.prepend(this.liveChip.el);
+    }
     // Open, it sits in the header row, between the tabs and the buttons.
     this.clock.classList.toggle("open", expanded);
-    this.syncClock((State.mode === "compact" && !busy && !liveShown) || (live && State.view !== "confused"));
+    // On its own islet, what is going on no longer takes the time's place.
+    this.syncClock((State.mode === "compact" && !busy && (!liveShown || this.sky)) || (live && State.view !== "confused"));
+    this.isletsBelow.classList.toggle("on", this.sky && live && State.view === "overview");
     this.noteStack.sync(State.mode === "compact" && !busy);
     // The microphones just went off, a timer rang: the folded island comes out to say so.
     if (State.mode === "hidden" && this.liveHolds() && !this.liveWasHolding) this.revealSilently();
@@ -1290,7 +1353,11 @@ export class Island {
     // Plan usage rings: beside the mini grid, or at the end when it is empty.
     this.planRings.sync();
     if (busy) this.planRings.el.classList.remove("on");
-    this.planRings.el.style.right = `${showGrid && State.otherTasks.length ? 62 : 14}px`;
+    this.planRings.el.style.right = this.sky ? "" : `${showGrid && State.otherTasks.length ? 62 : 14}px`;
+    // The folded sky island is narrower while nothing writes across it.
+    const roomy = this.flowStrip.active || this.notes.active;
+    if (this.sky && State.mode === "compact" && roomy !== this.wasRoomy) this.animateGeometry(!roomy);
+    this.wasRoomy = roomy;
 
     syncMiniBotStates(State.tasks);
     this.engine.setState(State.effectiveState);
@@ -1337,6 +1404,22 @@ export class Island {
     this.fsm.openOnHover = State.settings.openOnHover;
     setClockFormat(State.settings.clockFormat);
     applyTheme(State.settings.islandTheme ?? "black");
+    // A change of shape is animated like any other change of size.
+    const shape = this.sky ? "sky" : "notch";
+    if (this.islandEl.dataset.shape !== shape) {
+      this.islandEl.dataset.shape = shape;
+      // What the notch carries inside it, the sky island sets down beside it:
+      // the other agents and the notifications to its left, what is going on
+      // now (a timer, the microphones, rain, a song) and the plans to its right.
+      if (this.sky) {
+        this.isletsLeft.append(this.miniGrid, this.noteStack.el);
+        this.isletsRight.append(this.liveChip.el, this.planRings.el);
+      } else {
+        this.islandEl.append(this.miniGrid, this.noteStack.el, this.liveChip.el, this.planRings.el);
+      }
+      this.isletsBelow.dataset.sky = this.sky ? "1" : "0";
+      this.animateGeometry(false);
+    }
     // Where no click elsewhere can be seen (Wayland), leaving stands in for it.
     this.fsm.quickLeave = State.settings.closeOnClickOutside && !this.clicksOutside;
     State.notify();

@@ -10796,6 +10796,39 @@
    "pt-BR": "Quando os outros fazem uma pergunta a você durante uma chamada, o Ciel escreve a resposta antes de você pressionar a tecla, e o botão da tecla se acende. Com o Claude, até a última meia hora da chamada vai para a Anthropic a cada pergunta, pressionando ou não.",
    "ru": "Когда собеседники задают вам вопрос во время звонка, Ciel пишет ответ ещё до того, как вы нажмёте клавишу, и её кнопка загорается. С Claude до последних получаса звонка уходят в Anthropic при каждом вопросе, нажмёте вы клавишу или нет.",
    "id": "Saat orang lain mengajukan pertanyaan kepada Anda selama panggilan, Ciel menulis jawabannya sebelum Anda menekan tombol, dan tombolnya menyala. Dengan Claude, hingga setengah jam terakhir panggilan dikirim ke Anthropic untuk setiap pertanyaan, ditekan atau tidak."
+  },
+  "Shape": {
+   "zh-Hans": "形状",
+   "hi": "आकार",
+   "es": "Forma",
+   "ar": "الشكل",
+   "fr": "Forme",
+   "bn": "আকার",
+   "pt-BR": "Forma",
+   "ru": "Форма",
+   "id": "Bentuk"
+  },
+  "Sky island": {
+   "zh-Hans": "天空岛",
+   "hi": "आकाश द्वीप",
+   "es": "Isla del cielo",
+   "ar": "جزيرة السماء",
+   "fr": "Île du ciel",
+   "bn": "আকাশ দ্বীপ",
+   "pt-BR": "Ilha do céu",
+   "ru": "Небесный остров",
+   "id": "Pulau langit"
+  },
+  "A notch hangs from the top of the screen. The sky island floats under it, and draws in to a dot when it hides.": {
+   "zh-Hans": "刘海挂在屏幕顶部。天空岛悬浮在它下方，隐藏时会收缩成一个小点。",
+   "hi": "नॉच स्क्रीन के ऊपरी किनारे से लटकता है। आकाश द्वीप उसके नीचे तैरता है, और छिपते समय सिमटकर एक बिंदु बन जाता है।",
+   "es": "El notch cuelga de la parte superior de la pantalla. La isla del cielo flota debajo y se recoge en un punto al ocultarse.",
+   "ar": "النتوء يتدلى من أعلى الشاشة. جزيرة السماء تطفو تحته، وتنكمش إلى نقطة عندما تختفي.",
+   "fr": "Le notch est accroché en haut de l'écran. L'île du ciel flotte dessous, et se resserre en un point quand elle se cache.",
+   "bn": "নচ স্ক্রিনের উপরের প্রান্ত থেকে ঝুলে থাকে। আকাশ দ্বীপ তার নিচে ভেসে থাকে, আর লুকানোর সময় গুটিয়ে একটি বিন্দু হয়ে যায়।",
+   "pt-BR": "O notch fica preso ao topo da tela. A ilha do céu flutua logo abaixo e se recolhe em um ponto ao se esconder.",
+   "ru": "Вырез свисает с верхнего края экрана. Небесный остров парит под ним и, прячась, сжимается в точку.",
+   "id": "Notch menggantung dari tepi atas layar. Pulau langit melayang di bawahnya, dan menyusut menjadi titik saat bersembunyi."
   }
  }
 }

@@ -13,6 +13,8 @@ export interface WebParams {
   transparent: boolean;
   /** `?theme=white`: the white island. */
   white: boolean;
+  /** `?shape=sky`: the sky island, floating under the edge. */
+  sky: boolean;
 }
 
 export function readParams(search: string): WebParams {
@@ -24,5 +26,6 @@ export function readParams(search: string): WebParams {
     lang: q.get("lang") ?? "",
     transparent: q.get("bg") === "transparent",
     white: q.get("theme") === "white",
+    sky: q.get("shape") === "sky",
   };
 }

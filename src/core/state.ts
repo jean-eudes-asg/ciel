@@ -230,6 +230,8 @@ export interface Settings {
   windowTheme: "black" | "white" | "system";
   /** The island's colours (core/theme.ts), on their own: a white window may keep a black island. */
   islandTheme: "black" | "white" | "system";
+  /** The island hung from the screen's edge (a notch), or floating under it (the sky island). */
+  islandShape: "notch" | "sky";
   /** The steps of the window's setup gone through (settings/setup.ts), "later" once put off. */
   setupSteps: string[];
 }
@@ -287,6 +289,7 @@ export const DEFAULT_SETTINGS: Settings = {
   tools: { ...DEFAULT_TOOL_PREFS },
   windowTheme: "black",
   islandTheme: "black",
+  islandShape: "notch",
   setupSteps: [],
 };
 

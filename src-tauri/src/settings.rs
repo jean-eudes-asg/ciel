@@ -137,6 +137,8 @@ pub struct Settings {
     pub window_theme: String,
     /// The island's colours, the same three (src/core/theme.ts).
     pub island_theme: String,
+    /// "notch" (hung from the screen's edge) or "sky" (floating under it).
+    pub island_shape: String,
     /// The steps of the window's setup the user went through (src/settings/setup.ts),
     /// and "later" once they put it off; empty until it was first shown.
     pub setup_steps: Vec<String>,
@@ -372,6 +374,7 @@ impl Default for Settings {
             tools: ToolsPrefs::default(),
             window_theme: "black".into(),
             island_theme: "black".into(),
+            island_shape: "notch".into(),
             setup_steps: Vec::new(),
         }
     }
@@ -686,6 +689,7 @@ mod tests {
   },
   "windowTheme": "white",
   "islandTheme": "white",
+  "islandShape": "sky",
   "setupSteps": ["hello", "work", "later"]
 }"##;
 
@@ -1161,6 +1165,7 @@ mod tests {
                 "tools",
                 "windowTheme",
                 "islandTheme",
+                "islandShape",
                 "setupSteps",
             ]
         );

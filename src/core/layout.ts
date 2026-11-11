@@ -65,6 +65,16 @@ export const EXPANDED_W = 640;
 export const ROUNDED_CORNER = 14; // hidden / compact
 export const EXPANDED_CORNER = 22;
 
+// The sky island: the same island let go of the screen's edge, a pill floating
+// SKY_GAP under it. With no edge to slide into, it hides by drawing in to a dot.
+export const SKY_GAP = 8;
+export const SKY_DOT = 10;
+export const SKY_EXPANDED_CORNER = 30; // the cards' 20 and their 10 of inset
+// Folded, the sky island keeps only Ciel and the time: the plan rings and the
+// other agents' little clouds leave it for islets of their own, beside it.
+export const SKY_COMPACT_W = 216;
+export const ISLET_GAP = 7;
+
 /** Invisible hover strip that wakes the island when hidden. */
 export const WAKE_STRIP_W = 240;
 export const WAKE_STRIP_H = 6;

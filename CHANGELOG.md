@@ -9,6 +9,20 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   or as the system, on its own from the Ciel window's colours. On white, Ciel
   and the little clouds get a soft shadow for an edge, and coloured text takes
   the deeper shade of its colour.
+- **The sky island** (Preferences → General → Window → Shape): the island let
+  go of the screen's edge, a pill floating just under it, in black or white.
+  With no edge to slide into, it hides by drawing in to a dot that fades,
+  and comes back from that dot. The notch stays the default.
+- **Islets**, around the sky island: what the notch carries inside it, the
+  sky island sets down beside it, each thing on a small island of its own.
+  Folded, the other agents' clouds and the notifications float to its left,
+  what is going on now (a timer, the microphones off, rain coming, the line
+  of a song) and each plan's ring to its right, and the time keeps its
+  place. Open on the overview, the pills are a row of islands under it and
+  the card has the whole width. An islet buds out as it comes. The line of
+  the song being sung has a bubble of its own under the island, tied to it
+  by a little round one, as a thought is drawn; each new line comes up into
+  place.
 
 ### Changed
 - **New sounds**, all 29, low and few-noted. What you touch answers with a
@@ -19,12 +33,12 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   the sounds folder still replaces Ciel's.
 - **The island moves better**: it opens wide a touch ahead of its fall and
   lands with a little give, folds up before it draws in, and what it shows
-  comes into place and into focus with a spring. Changing view, one sinks
+  comes into place with a spring. Changing view, one sinks
   back as the next rises. Buttons and tabs spring back when let go. With
   reduced motion asked of the system, only the fades remain.
 - **Ciel is more alive.** His body follows on springs, so he overshoots and
   settles like jelly, and he leans and stretches when he is carried across
-  the island. With the island open he breathes, his eyes dart, and with
+  the island. With the island open and in use he breathes, his eyes dart, and with
   nothing to do he fidgets: a look aside, a slow blink, a stretch, a little
   hop. Each state has its own way in: a crouch and a hop off to work, a head
   cocked and a drifting gaze while he thinks, a landing after the roll when a

@@ -39,7 +39,6 @@ export function buildLiveChip(open: (tool: ToolId) => void): LiveChip {
   const el = h("button", { id: "island-live", class: "live-chip" }, icon, text);
   let current: Live | null = null;
   let timer = 0;
-  let shown = false;
 
   el.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -77,7 +76,13 @@ export function buildLiveChip(open: (tool: ToolId) => void): LiveChip {
         break;
       case "lyric":
         icon.replaceChildren(svg(ICONS.musicNote, 11));
-        if (text.textContent !== live.text) text.textContent = live.text;
+        if (text.textContent !== live.text) {
+          text.textContent = live.text;
+          // Each new line comes up into place (style.css .live-text.line).
+          text.classList.remove("line");
+          void text.offsetWidth;
+          text.classList.add("line");
+        }
         break;
     }
     el.title = live.kind === "timer" || live.kind === "rang" ? timerName(live.timer) : "";
@@ -94,10 +99,8 @@ export function buildLiveChip(open: (tool: ToolId) => void): LiveChip {
     if (visible) paint(current!);
     // Out of sight, no class keeps an animation (the ringing shake) going.
     else el.className = "live-chip";
-    if (visible !== shown) {
-      shown = visible;
-      el.classList.toggle("on", visible);
-    }
+    // paint() rewrites the classes: "on" goes back each time (the sky island's islet shows by it).
+    el.classList.toggle("on", visible);
     el.style.opacity = visible ? "1" : "0";
     el.style.pointerEvents = visible ? "auto" : "none";
     // A countdown moves each second, and only while it shows.

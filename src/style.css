@@ -114,6 +114,198 @@
   filter: drop-shadow(0 0 0.6px rgba(30, 55, 95, 0.6));
 }
 
+/* The sky island floats: a shadow under it and a hairline around it, so a
+   black pill still shows on a dark wallpaper. Hiding, it has drawn in to a dot
+   by the time it fades; waking, the dot is there at once and grows. */
+#island[data-shape="sky"] {
+  --float: 0 6px 22px rgba(0, 0, 0, 0.32), 0 0 0 0.5px rgb(var(--fg) / 0.14);
+  box-shadow: var(--float);
+  transition: opacity 0.08s linear;
+}
+
+/* Islets. The sky island sets down what the notch carries inside it, each
+   thing on a small island of its own. Folded: the other agents' clouds and the
+   notifications to its left, what is going on now and each plan's ring to its
+   right. Open on the overview: the pills in a row under it. An islet buds out
+   as it comes, and is simply gone when it goes. */
+.islets {
+  position: absolute;
+  top: 0;
+  height: 32px;
+  display: none;
+  align-items: center;
+  gap: 7px;
+}
+
+#island[data-shape="sky"] .islets {
+  display: flex;
+}
+
+.islets.left {
+  right: calc(100% + 7px);
+  flex-direction: row-reverse;
+}
+
+.islets.right {
+  left: calc(100% + 7px);
+}
+
+@keyframes islet-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+#island[data-shape="sky"] .islets > * {
+  position: static;
+  flex: 0 0 auto;
+  display: none;
+  transform: none;
+}
+
+#island[data-shape="sky"] .islets > .on {
+  display: flex;
+  animation: islet-in 0.55s var(--spring) 0.14s backwards;
+}
+
+#island[data-shape="sky"] .islets > .on + .on {
+  animation-delay: 0.22s;
+}
+
+/* One island each: the clouds together, the notifications, what goes on now. */
+#island[data-shape="sky"] #mini-grid,
+#island[data-shape="sky"] #note-stack,
+#island[data-shape="sky"] #island-live {
+  width: auto;
+  height: 32px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: var(--float);
+}
+
+#island[data-shape="sky"] #island-live {
+  gap: 6px;
+  padding: 0 12px 0 8px;
+}
+
+#island[data-shape="sky"] #island-live:hover,
+#island[data-shape="sky"] #note-stack:hover {
+  background: color-mix(in srgb, var(--bg) 88%, rgb(var(--fg)));
+}
+
+/* The plans: a round island for each ring. */
+#island[data-shape="sky"] #plan-rings {
+  gap: 6px;
+}
+
+#island[data-shape="sky"] .plan-ring {
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: var(--float);
+  transition: opacity 0.3s ease, transform 0.4s var(--spring);
+}
+
+#island[data-shape="sky"] .plan-ring:hover {
+  transform: scale(1.12);
+}
+
+/* A timer that rang still shakes on its islet, and keeps its amber. */
+@keyframes islet-ring {
+  10% { transform: rotate(-4deg); }
+  20% { transform: rotate(4deg); }
+  30% { transform: rotate(0deg); }
+}
+
+#island[data-shape="sky"] .islets > #island-live.rang {
+  background: color-mix(in srgb, var(--bg) 76%, #f5a524);
+  animation: islet-ring 1.2s ease-in-out infinite;
+}
+
+/* The song's words, under the folded island: a bubble, and the little round
+   one that ties it to him, as a thought is drawn. */
+.islets.under {
+  top: calc(100% + 13px);
+  left: 50%;
+  height: auto;
+  transform: translateX(-50%);
+}
+
+#island[data-shape="sky"] .islets.under > #island-live {
+  position: relative;
+  max-width: 360px;
+  height: 28px;
+  border-radius: 14px;
+  padding: 0 13px 0 9px;
+}
+
+#island[data-shape="sky"] .islets.under > #island-live::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: calc(50% - 3px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: var(--float);
+}
+
+@keyframes lyric-line {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+
+.live-text.line {
+  animation: lyric-line 0.35s ease-out;
+}
+
+/* The pills, under the open island: a row of them, each afloat. */
+#island[data-shape="sky"] #islets-below {
+  top: calc(100% + 8px);
+  left: 50%;
+  height: auto;
+  width: max-content;
+  max-width: 640px;
+  transform: translateX(-50%);
+  display: none;
+}
+
+#island[data-shape="sky"] #islets-below.on {
+  display: block;
+}
+
+#island[data-shape="sky"] #islets-below > .pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 7px;
+  height: auto;
+  padding: 0;
+  animation: none;
+}
+
+#island[data-shape="sky"] #islets-below .pill {
+  flex: 0 0 150px;
+  height: 32px;
+  background: var(--bg);
+  border-color: transparent;
+  box-shadow: var(--float);
+  animation: islet-in 0.5s var(--spring) 0.2s backwards;
+}
+
+#island[data-shape="sky"] #islets-below .pill:nth-child(2) { animation-delay: 0.25s; }
+#island[data-shape="sky"] #islets-below .pill:nth-child(3) { animation-delay: 0.3s; }
+#island[data-shape="sky"] #islets-below .pill:nth-child(n + 4) { animation-delay: 0.35s; }
+
 /* A shadow under the island, where black needed none. */
 :root[data-theme="white"] #island:not([data-mode="hidden"]) {
   box-shadow: 0 1px 14px rgba(0, 0, 0, 0.16), 0 0 0 0.5px rgba(0, 0, 0, 0.1);
@@ -1000,19 +1192,18 @@ body {
   display: flex;
   flex-direction: column;
   /* Folded: gone at once, drawn back toward the notch, so the island closes on
-     nothing. Open (.live): it comes down into place, into focus, with a spring. */
+     nothing. Open (.live): it comes down into place with a spring. No blur:
+     a filter over the whole island is heavy for the display server. */
   opacity: 0;
   transform: translateY(-8px) scale(0.94);
   transform-origin: 50% 0;
-  filter: blur(6px);
-  transition: opacity 0.14s ease-in, transform 0.2s ease-in, filter 0.14s ease-in;
+  transition: opacity 0.14s ease-in, transform 0.2s ease-in;
 }
 
 #content.live {
   opacity: 1;
   transform: none;
-  filter: none;
-  transition: opacity 0.26s ease-out 0.06s, transform 0.55s var(--spring) 0.04s, filter 0.3s ease-out 0.06s;
+  transition: opacity 0.26s ease-out 0.06s, transform 0.55s var(--spring) 0.04s;
 }
 
 #header {
@@ -1107,7 +1298,6 @@ body {
   .view,
   .view.on {
     transform: none;
-    filter: none;
     transition: opacity 0.15s linear;
   }
 }

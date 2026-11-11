@@ -535,7 +535,11 @@ function buildOverview(actions: ViewActions): ViewHost {
     sync() {
       const p = planOverview(State.tasks, State.focusId);
       layout = p.layout;
-      el.classList.toggle("solo", layout === "solo");
+      // In the sky island the list of pills is a row of islets under it
+      // (island.ts gives them #islets-below), and the card it leaves goes too.
+      const below = document.getElementById("islets-below");
+      const shed = layout === "list" && below != null && below.dataset.sky === "1";
+      el.classList.toggle("solo", layout === "solo" || shed);
       el.classList.toggle("duo", layout === "duo");
 
       const planOpen = planCardOpen();
@@ -545,13 +549,15 @@ function buildOverview(actions: ViewActions): ViewHost {
         leftHolder.append(planOpen ? plan.el : main.el);
       }
       if (planOpen) plan.sync();
-      main.sync(p.left, layout === "solo");
+      main.sync(p.left, layout === "solo" || shed);
       second.sync(p.right, false);
       syncPlanTimer(planOpen || main.showsPlan);
 
       // The right card: the second pill of a duo in detail, else the list.
       const rightChild = layout === "duo" ? second.el : pills;
-      if (rightChild.parentElement !== rightHolder) {
+      if (shed) {
+        if (pills.parentElement !== below) below!.replaceChildren(pills);
+      } else if (rightChild.parentElement !== rightHolder) {
         clear(rightHolder);
         rightHolder.append(rightChild);
       }
