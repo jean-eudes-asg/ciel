@@ -519,13 +519,28 @@ export class Island {
 
   /**
    * An agent finished and said `text`. In the sky island (unless Preferences
-   * says to open it), the folded island shows it in a bubble and this is true;
-   * else nothing is done and the caller opens the island as before.
+   * says to open it), the island folds if it was left open and shows it in a
+   * bubble, and this is true; else nothing is done and the caller opens the
+   * island as before.
    */
   sayReply(taskId: string, text: string): boolean {
-    if (!this.sky || State.settings.replyStyle === "open" || State.mode === "expanded" || !text) return false;
+    if (!this.sky || State.settings.replyStyle === "open" || !text) return false;
     const task = State.tasks.find((t) => t.id === taskId);
     if (!task) return false;
+    if (State.mode === "expanded") {
+      // Open and in use (the pointer on it, or the chat): the card, as before.
+      // Open on a card that is done with (a question just answered): it folds,
+      // and the reply comes in its bubble.
+      if (this.wasInIsland || State.view === "prompt") {
+        void Bridge.log(`reply: on its card, the island is in use (${this.wasInIsland ? "pointer on it" : "chat"})`);
+        return false;
+      }
+      this.collapse();
+      if (State.mode === "expanded") {
+        void Bridge.log("reply: on its card, the island would not fold");
+        return false;
+      }
+    }
     if (this.reply.el.parentElement !== this.isletsUnder) this.isletsUnder.append(this.reply.el);
     this.reply.show(task, text);
     if (State.mode === "hidden") this.revealSilently();
