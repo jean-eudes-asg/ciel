@@ -1884,24 +1884,29 @@ const setupHost: SetupHost = {
   },
 };
 
-/** Preferences → General → Window: pitch black, white, or as the system. */
+/** Preferences → General → Window: pitch black, white, or as the system, for the window and for the island. */
 function windowSection(): HTMLElement {
   const choices: [WindowTheme, string][] = [["black", t("Black")], ["white", t("White")], ["system", t("System")]];
-  const group = h("div", { class: "hub-segmented" });
-  for (const [value, label] of choices) {
-    const b = h("button", { class: (settings.windowTheme ?? "black") === value ? "on" : "", text: label });
-    b.addEventListener("click", () => {
-      for (const other of group.querySelectorAll("button")) other.classList.toggle("on", other === b);
-      settings.windowTheme = value;
-      applyTheme(value);
-      void save();
-    });
-    group.append(b);
-  }
+  const picker = (key: "windowTheme" | "islandTheme", picked?: (value: WindowTheme) => void) => {
+    const group = h("div", { class: "hub-segmented" });
+    for (const [value, label] of choices) {
+      const b = h("button", { class: (settings[key] ?? "black") === value ? "on" : "", text: label });
+      b.addEventListener("click", () => {
+        for (const other of group.querySelectorAll("button")) other.classList.toggle("on", other === b);
+        settings[key] = value;
+        picked?.(value);
+        void save();
+      });
+      group.append(b);
+    }
+    return group;
+  };
+  const group = picker("windowTheme", applyTheme);
   const setup = h("button", { text: setupProgress(settings) ? t("Continue the setup") : t("Go through the setup again"), onclick: () => hub?.show("setup") });
   return h("section", {},
     h("h2", {}, h("span", { text: t("Window") })),
     h("div", { class: "row" }, h("label", { text: t("Colours") }), group),
+    h("div", { class: "row" }, h("label", { text: t("Island") }), picker("islandTheme")),
     h("div", { class: "row" }, h("label", { text: t("Setup") }), setup),
     h("div", { class: "hint", text: t("The questions of the first launch: what Ciel follows, how the island opens, your tools, your voice.") }),
   );

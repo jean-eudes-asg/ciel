@@ -92,7 +92,7 @@ const base = {
 export const BOT_STATES: Record<BotStateName, BotStateCfg> = {
   idle: { ...base, color: C.idle, tint: 0, eye: "pill", badge: null },
   working: { ...base, color: C.working, tint: 0.72, eye: "pill", badge: { kind: "dots", color: C.working } },
-  thinking: { ...base, color: C.thinking, tint: 0.72, eye: "pill", badge: { kind: "dots", color: C.thinking }, look: [0.55, 0.55] },
+  thinking: { ...base, color: C.thinking, tint: 0.72, eye: "pill", badge: { kind: "dots", color: C.thinking }, tilt: -0.07, look: [0.55, 0.55] },
   searching: { ...base, color: C.searching, tint: 0.72, eye: "pill", badge: { kind: "dots", color: C.searching }, scans: true },
   approval: { ...base, color: C.approval, tint: 0.78, eye: "wide", badge: { kind: "bang", color: C.approval }, bounces: true },
   question: { ...base, color: C.question, tint: 0.75, eye: "pill", badge: { kind: "question", color: C.question }, tilt: 0.17 },
@@ -196,6 +196,8 @@ export class BotEngine {
   isMini = false;
   /** Solid body colour for mini bots / integration pills (null = Ciel gradient). */
   bodyColor: RGB | null = null;
+  /** Drawn on a white island: the body gets a soft shadow for an edge. */
+  onLight = false;
 
   // Animated state (BotEngine `s`)
   yaw = 0; pitch = 0; roll = 0; tilt = 0; open = 1;
@@ -204,6 +206,23 @@ export class BotEngine {
 
   // Targets
   tgYaw = 0; tgPitch = 0; tgTilt = 0; tgSy = 1; tgSx = 1; tgEs = 1;
+  // The body follows its targets on springs, so it overshoots and settles like jelly.
+  private vTilt = 0; private vSy = 0; private vSx = 0;
+
+  /**
+   * Someone is looking (the island is open, he is out on the desktop): he
+   * breathes, his eyes dart, he fidgets, and the states that only wait keep
+   * moving. Off, he costs nothing between two events.
+   */
+  lively = false;
+  /** How fast he is being carried, in body widths a second: he leans into it. */
+  carryX = 0;
+  carryY = 0;
+  /** Speaking: the mouth opens to a syllable's rhythm, 0 (shut) to 1. */
+  talking = false;
+  mouthOpen = 0;
+  private dart = { x: 0, y: 0, until: 0, next: 0 };
+  private nextFidget = now() + 6 + Math.random() * 6;
 
   /** Extra canvas height above the body so hearts can fly out without clipping. */
   particleOverhang = 0;
@@ -268,28 +287,55 @@ export class BotEngine {
       case "finished":
         this.doRoll(950, 1);
         setTimeout(() => this.emit("spark", 5), 500);
+        // He lands from the roll.
+        setTimeout(() => { if (this.state === "finished") this.squash(); }, 930);
         break;
       case "error":
         this.anim("ox", [
           [0.08, 50, Ease.out], [-0.08, 70, Ease.inOut],
           [0.05, 70, Ease.inOut], [0, 90, Ease.out],
         ]);
+        // And sinks a little.
+        this.anim("sy", [[0.9, 140, Ease.out], [1, 420, Ease.inOut]]);
         break;
       case "approval":
         this.anim("oy", [[-0.2, 150, Ease.out], [0, 300, Ease.back]]);
+        this.anim("es", [[1.22, 120, Ease.out], [1, 320, Ease.inOut]]);
         break;
       case "dizzy":
         this.doRoll(1300, 2);
         break;
       case "question":
         this.blink();
+        this.anim("es", [[1.15, 140, Ease.out], [1, 300, Ease.inOut]]);
         break;
       case "ratelimit":
         this.emit("sweat", 1);
         break;
+      case "working":
+        // Off to work: he gathers himself, then a little hop.
+        this.blink();
+        this.hop(0.16);
+        break;
+      case "sleeping":
+        // A sigh as he settles.
+        this.anim("sy", [[1.06, 450, Ease.inOut], [0.94, 650, Ease.inOut], [1, 500, Ease.inOut]]);
+        break;
       default:
         if (prev !== "idle" || next !== "idle") this.blink();
     }
+  }
+
+  /** Crouch, jump, land: the squash before and after is what gives it weight. */
+  hop(height: number) {
+    this.anim("sy", [[0.86, 90, Ease.out], [1.12, 120, Ease.out], [0.92, 150, Ease.inOut], [1, 200, Ease.back]]);
+    this.anim("sx", [[1.1, 90, Ease.out], [0.93, 120, Ease.out], [1.05, 150, Ease.inOut], [1, 200, Ease.back]]);
+    this.anim("oy", [[0.03, 90, Ease.out], [-height, 150, Ease.out], [0, 190, Ease.easeIn]]);
+  }
+
+  /** Speaking or not (« OK Ciel » answering out loud). */
+  setTalking(on: boolean) {
+    this.talking = on;
   }
 
   setBadge(b: Badge | null) {
@@ -490,7 +536,9 @@ export class BotEngine {
       this.tweens.size > 0 ||
       this.particles.length > 0 ||
       this.cfg.bounces || this.cfg.scans || this.cfg.breathes || this.cfg.zz || this.cfg.sweat ||
-      this.isMini ||
+      this.isMini || this.lively ||
+      this.talking || this.mouthOpen > 0.01 ||
+      Math.abs(this.vTilt) > 0.01 || Math.abs(this.vSy) > 0.01 || Math.abs(this.vSx) > 0.01 ||
       this.isDancing || this.dancingLevel > 0.001 ||
       Math.abs(this.tgYaw - this.yaw) > 0.002 ||
       Math.abs(this.tgPitch - this.pitch) > 0.002 ||
@@ -564,16 +612,38 @@ export class BotEngine {
       tp = this.miniLookTarget.y * 0.5;
     }
 
+    const awake = this.state !== "sleeping" && this.state !== "dizzy";
+    if (this.lively && !this.isMini && awake) {
+      // Eyes never rest on one point: a small dart now and then, held a moment.
+      if (n > this.dart.next) {
+        this.dart = {
+          x: (Math.random() - 0.5) * 0.22, y: (Math.random() - 0.5) * 0.14,
+          until: n + 0.35 + Math.random() * 0.9, next: n + 1.4 + Math.random() * 2.8,
+        };
+      }
+      if (n < this.dart.until) { ty += this.dart.x; tp += this.dart.y; }
+      // Thinking, his gaze drifts as the thought does.
+      if (this.state === "thinking") ty += Math.sin(t * 0.7) * 0.12;
+      if (this.state === "idle" && !this.talking && n > this.nextFidget) this.fidget();
+    }
+    // Speaking, he nods a little on each word.
+    tp -= this.mouthOpen * 0.06;
+
     this.tgYaw = ty;
     this.tgPitch = tp;
     this.tgTilt = this.cfg.tilt;
+    if (this.lively && this.state === "thinking") this.tgTilt += Math.sin(t * 0.9) * 0.035;
+    // Carried across the island, he leans back against the way he goes.
+    this.tgTilt += Math.max(-0.18, Math.min(0.18, this.carryX * 0.03));
 
     if (n > this.waveStart && n < this.waveUntil) {
       const wt = n - this.waveStart;
       this.tgTilt = -0.06 + Math.sin(2 * Math.PI * 1.2 * wt) * 0.07;
     }
 
-    const bounce = this.cfg.bounces ? -Math.abs(Math.sin(t * 5.2)) * 0.07 : 0;
+    let bounce = this.cfg.bounces ? -Math.abs(Math.sin(t * 5.2)) * 0.07 : 0;
+    // At work, a quick small bob, like fingers on keys.
+    if (this.lively && this.state === "working") bounce = -Math.abs(Math.sin(t * 6.5)) * 0.022;
     const kGen = 1 - Math.pow(0.0008, dt);
     if (!this.locks.has("oy")) this.oy += (bounce - this.oy) * kGen;
 
@@ -584,19 +654,42 @@ export class BotEngine {
     } else if (this.isMini) {
       this.tgSy = 1 + Math.sin(t * 2.2) * 0.04;
       this.tgSx = 1 - Math.sin(t * 2.2) * 0.02;
+    } else if (this.lively) {
+      // Awake he breathes too, only smaller.
+      this.tgSy = 1 + Math.sin(t * 1.5) * 0.016;
+      this.tgSx = 1 - Math.sin(t * 1.5) * 0.009;
     } else {
       this.tgSy = 1;
       this.tgSx = 1;
     }
+    // Carried, he stretches along the way he goes.
+    const speedX = Math.min(1, Math.abs(this.carryX) * 0.06);
+    const speedY = Math.min(1, Math.abs(this.carryY) * 0.06);
+    this.tgSx += 0.1 * speedX - 0.06 * speedY;
+    this.tgSy += 0.1 * speedY - 0.06 * speedX;
 
     if (this.isMini && n > this.miniNextBehavior) this.doMiniBehaviorLoop();
 
     const kLook = 1 - Math.pow(0.0025, dt);
     if (!this.locks.has("yaw")) this.yaw += (this.tgYaw - this.yaw) * kLook;
     if (!this.locks.has("pitch")) this.pitch += (this.tgPitch - this.pitch) * kLook;
-    if (!this.locks.has("tilt")) this.tilt += (this.tgTilt - this.tilt) * kGen;
-    if (!this.locks.has("sy")) this.sy += (this.tgSy - this.sy) * kGen;
-    if (!this.locks.has("sx")) this.sx += (this.tgSx - this.sx) * kGen;
+    // Springs, in small steps so a late frame never throws them (ω₀ = 2π/0.36, ζ = 0.5).
+    const steps = Math.max(1, Math.ceil(dt * 240));
+    const h = dt / steps;
+    const spring = (value: number, velocity: number, target: number): [number, number] => {
+      const w = (2 * Math.PI) / 0.36;
+      for (let i = 0; i < steps; i++) {
+        velocity += (w * w * (target - value) - 2 * 0.5 * w * velocity) * h;
+        value += velocity * h;
+      }
+      return [value, velocity];
+    };
+    if (this.locks.has("tilt")) this.vTilt = 0;
+    else [this.tilt, this.vTilt] = spring(this.tilt, this.vTilt, this.tgTilt);
+    if (this.locks.has("sy")) this.vSy = 0;
+    else [this.sy, this.vSy] = spring(this.sy, this.vSy, this.tgSy);
+    if (this.locks.has("sx")) this.vSx = 0;
+    else [this.sx, this.vSx] = spring(this.sx, this.vSx, this.tgSx);
     if (!this.locks.has("es")) this.es += (this.tgEs - this.es) * kGen;
 
     this.col = mix3(this.col, this.colT, 1 - Math.pow(0.002, dt));
@@ -608,6 +701,17 @@ export class BotEngine {
       }
       this.nextBlink = n + 2.2 + Math.random() * 3.2;
     }
+
+    // The mouth: syllables about five a second, louder and softer in phrases,
+    // with a breath between them. It shuts quicker than it opens.
+    let mouth = 0;
+    if (this.talking) {
+      const syllable = 0.5 + 0.5 * Math.sin(t * 2 * Math.PI * 5.1 + Math.sin(t * 2.3) * 1.4);
+      const phrase = 0.6 + 0.4 * Math.sin(t * 2 * Math.PI * 1.3 + 0.8);
+      const breath = Math.sin(t * 1.1) > -0.82 ? 1 : 0;
+      mouth = syllable * phrase * breath;
+    }
+    this.mouthOpen += (mouth - this.mouthOpen) * (1 - Math.pow(mouth > this.mouthOpen ? 1e-9 : 1e-7, dt));
 
     if (this.eyeOverride && n > this.eyeOverrideUntil) {
       this.eyeOverride = this.permanentEye;
@@ -633,6 +737,27 @@ export class BotEngine {
     this.dancingLevel = stepDanceLevel(this.dancingLevel, this.isDancing, dt);
 
     this.lastTime = n;
+  }
+
+  /** With nothing to do, he does not sit still: a look aside, a slow blink, a stretch, a little hop. */
+  private fidget() {
+    this.nextFidget = now() + 7 + Math.random() * 9;
+    const side = Math.random() < 0.5 ? -1 : 1;
+    switch (Math.floor(Math.random() * 4)) {
+      case 0:
+        this.anim("yaw", [[side * 0.55, 280, Ease.inOut], [side * 0.55, 520, Ease.lin], [0, 340, Ease.inOut]]);
+        break;
+      case 1:
+        if (!this.locks.has("open")) this.anim("open", [[0.06, 170, Ease.inOut], [0.06, 200, Ease.lin], [1, 260, Ease.out]]);
+        break;
+      case 2:
+        this.anim("sy", [[1.08, 420, Ease.inOut], [1.08, 260, Ease.lin], [1, 380, Ease.inOut]]);
+        this.anim("sx", [[0.95, 420, Ease.inOut], [0.95, 260, Ease.lin], [1, 380, Ease.inOut]]);
+        this.anim("tilt", [[side * 0.06, 420, Ease.inOut], [side * 0.06, 260, Ease.lin], [0, 380, Ease.inOut]]);
+        break;
+      default:
+        this.hop(0.1);
+    }
   }
 
   private doMiniBehaviorLoop() {
@@ -772,6 +897,16 @@ export class BotEngine {
   }
 
   private drawBody(x: CanvasRenderingContext2D, body: Path2D, R: number, ry: number) {
+    if (this.onLight) {
+      // On white a white cloud has no edge: a soft blue-grey shadow draws it.
+      x.save();
+      x.shadowColor = "rgba(30,55,95,0.42)";
+      x.shadowBlur = R * 0.16;
+      x.shadowOffsetY = R * 0.03;
+      x.fillStyle = "#fff";
+      x.fill(body);
+      x.restore();
+    }
     if (this.bodyColor) {
       // Mini clouds: flat solid fill — no gradient, no reflection, no highlight
       x.fillStyle = rgba(this.bodyColor, 1);
@@ -1003,6 +1138,27 @@ export class BotEngine {
     x.fillStyle = INK;
     x.lineCap = "round";
     x.lineWidth = R * 0.05;
+    if (this.mouthOpen > 0.04) {
+      // Speaking: an open mouth, wider than tall until it is wide open, and a
+      // glimpse of tongue at the bottom of it.
+      const o = this.mouthOpen;
+      const w = R * (0.085 + 0.03 * o);
+      const hgt = R * (0.022 + 0.11 * o);
+      x.beginPath();
+      x.ellipse(0, R * 0.005, w, hgt, 0, 0, Math.PI * 2);
+      x.fill();
+      if (o > 0.35) {
+        x.save();
+        x.clip();
+        x.fillStyle = "rgb(255,138,148)";
+        x.beginPath();
+        x.ellipse(0, R * 0.005 + hgt * 0.95, w * 0.8, hgt * 0.6, 0, 0, Math.PI * 2);
+        x.fill();
+        x.restore();
+      }
+      x.restore();
+      return;
+    }
     switch (shape) {
       case "happy":
       case "wink":

@@ -36,7 +36,7 @@ function moon(cx: number, cy: number, r: number): SVGPathElement {
 }
 
 export function weatherIcon(sky: Sky, isDay: boolean, size = 32): SVGSVGElement {
-  const svg = el("svg", { viewBox: "0 0 32 32", width: size, height: size, "aria-hidden": "true" });
+  const svg = el("svg", { viewBox: "0 0 32 32", width: size, height: size, "aria-hidden": "true", class: "weather-icon" });
   const light = isDay ? sun : moon;
   const cloud = (d: string, fill: string) => el("path", { d, fill });
   switch (sky) {

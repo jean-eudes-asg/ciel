@@ -80,7 +80,7 @@ function buildRing(plan: Plan): Ring {
   svgEl.setAttribute("width", String(SIZE));
   svgEl.setAttribute("height", String(SIZE));
   svgEl.setAttribute("aria-hidden", "true");
-  const track = circle("#303030");
+  const track = circle("rgb(var(--fg) / 0.19)");
   const arc = circle("#6B7079");
   arc.setAttribute("stroke-linecap", "round");
   arc.setAttribute("stroke-dasharray", `${ARC} ${ARC}`);
@@ -103,7 +103,7 @@ function drawRing(ring: Ring, plan: Plan, now: number) {
   ring.arc.setAttribute("stroke", color);
   ring.arc.setAttribute("stroke-dashoffset", String(ARC * (1 - shown / 100)));
   ring.arc.style.opacity = pct == null ? "0" : "1";
-  ring.track.setAttribute("stroke", `color-mix(in srgb, ${agentColor(plan)} ${TRACK_TINT}%, #26282c)`);
+  ring.track.setAttribute("stroke", `color-mix(in srgb, ${agentColor(plan)} ${TRACK_TINT}%, var(--raised))`);
   ring.text.textContent = pct == null ? "–" : String(Math.round(pct));
   ring.text.classList.toggle("three", pct != null && Math.round(pct) >= 100);
   ring.el.classList.toggle("stale", stale);

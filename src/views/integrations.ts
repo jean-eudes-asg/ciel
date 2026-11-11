@@ -144,7 +144,7 @@ function idleCard(task: AgentTask, openSettings: () => void): HTMLElement {
     );
   } else if (!configured) {
     actions.append(
-      h("button", { class: "link-btn", style: "color:#8e939c", text: t("Settings…"), onclick: openSettings }),
+      h("button", { class: "link-btn", style: "color:var(--dim-2)", text: t("Settings…"), onclick: openSettings }),
     );
   }
 

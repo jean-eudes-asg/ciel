@@ -2,6 +2,36 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+- **A white island** (Preferences → General → Window → Island): black, white,
+  or as the system, on its own from the Ciel window's colours. On white, Ciel
+  and the little clouds get a soft shadow for an edge, and coloured text takes
+  the deeper shade of its colour.
+
+### Changed
+- **New sounds**, all 29, low and few-noted. What you touch answers with a
+  tap on wood: the island opening and closing, a key, a file attached. What
+  asks for you or tells you something rings a deep bell once or twice and
+  lets it fade: a permission, a question, a task done. They share one voice
+  and one key, so the island sounds like one instrument. Still made in code (`npm run sounds`); a sound of your own in
+  the sounds folder still replaces Ciel's.
+- **The island moves better**: it opens wide a touch ahead of its fall and
+  lands with a little give, folds up before it draws in, and what it shows
+  comes into place and into focus with a spring. Changing view, one sinks
+  back as the next rises. Buttons and tabs spring back when let go. With
+  reduced motion asked of the system, only the fades remain.
+- **Ciel is more alive.** His body follows on springs, so he overshoots and
+  settles like jelly, and he leans and stretches when he is carried across
+  the island. With the island open he breathes, his eyes dart, and with
+  nothing to do he fidgets: a look aside, a slow blink, a stretch, a little
+  hop. Each state has its own way in: a crouch and a hop off to work, a head
+  cocked and a drifting gaze while he thinks, a landing after the roll when a
+  task is done, a sigh as he falls asleep.
+- **He speaks with his mouth**: while « OK Ciel » answers out loud, the
+  island's Ciel moves his mouth to the rhythm of speech and nods along.
+
 ## [0.4.2] - 2026-11-10
 
 ### Added

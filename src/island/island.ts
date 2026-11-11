@@ -2,6 +2,7 @@
 // Mirrors IslandRootView.swift + IslandWindowController.swift.
 
 import { Tracked, Spring, clamp } from "../core/anim";
+import { applyTheme, onWhite } from "../core/theme";
 import { Bridge, IS_TAURI, onDragDrop } from "../core/bridge";
 import {
   EXPANDED_CORNER, EXPANDED_W, NOTCH_W, PANEL_H, PANEL_W,
@@ -704,13 +705,15 @@ export class Island {
     const { w, h, r } = this.targetSize();
     this.syncPanel(h, false);
     if (shrinking) {
-      this.width.curveTowards(w);
-      this.height.curveTowards(h);
-      this.radius.curveTowards(r);
+      // Folds up first, then draws in: the height leads the width.
+      this.height.curveTowards(h, 280);
+      this.width.curveTowards(w, 360);
+      this.radius.curveTowards(r, 320);
     } else {
-      this.width.springTo(w);
-      this.height.springTo(h);
-      this.radius.springTo(r);
+      // Opens wide a touch ahead of its fall, and lands with a little give.
+      this.width.springTo(w, 0.42, 0.82);
+      this.height.springTo(h, 0.5, 0.68);
+      this.radius.springTo(r, 0.42, 0.82);
     }
     this.ensureRunning();
   }
@@ -1147,6 +1150,11 @@ export class Island {
         ? hexToRGB(focus.color)
         : null;
     this.engine.particleOverhang = BOT_OVERHANG;
+    this.engine.onLight = onWhite();
+    // Open, someone is looking at him: he breathes, glances about, fidgets.
+    this.engine.lively = State.mode === "expanded";
+    this.engine.carryX = this.botCx.velocity / Math.max(1, size);
+    this.engine.carryY = this.botCy.velocity / Math.max(1, size);
     this.engine.lookX = this.lookX();
     this.engine.lookY = this.lookY();
     if (this.engine.morph > 0.3) {
@@ -1208,9 +1216,10 @@ export class Island {
   private syncDom() {
     const expanded = State.mode === "expanded";
     const greetingActive = expanded && State.view === "greeting";
+    this.islandEl.dataset.mode = State.mode;
 
     const live = expanded && !greetingActive;
-    this.contentEl.style.opacity = live ? "1" : "0";
+    this.contentEl.classList.toggle("live", live);
     // While the drop sequence owns the body its buttons are painted on the canvas
     // underneath, so only the header may keep taking clicks up here.
     this.contentEl.style.pointerEvents = live && !this.uploadActive ? "auto" : "none";
@@ -1327,9 +1336,16 @@ export class Island {
     this.fsm.homeToPetitDelay = State.settings.autoCloseInterval;
     this.fsm.openOnHover = State.settings.openOnHover;
     setClockFormat(State.settings.clockFormat);
+    applyTheme(State.settings.islandTheme ?? "black");
     // Where no click elsewhere can be seen (Wayland), leaving stands in for it.
     this.fsm.quickLeave = State.settings.closeOnClickOutside && !this.clicksOutside;
     State.notify();
+  }
+
+  /** « OK Ciel » starts or stops speaking: his mouth follows. */
+  setTalking(on: boolean) {
+    this.engine.setTalking(on);
+    this.ensureRunning();
   }
 
   /** Rust sees a press anywhere on screen (Windows, X11); not on Wayland. */

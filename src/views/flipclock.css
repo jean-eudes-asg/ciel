@@ -74,7 +74,7 @@
   top: 50%;
   height: max(1px, calc(var(--flip-size) * 0.02));
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--flip-hinge, rgba(0, 0, 0, 0.55));
   z-index: 3;
 }
 

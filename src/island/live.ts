@@ -31,7 +31,7 @@ export function buildLiveChip(open: (tool: ToolId) => void): LiveChip {
   ring.setAttribute("height", "16");
   ring.classList.add("live-ring");
   ring.innerHTML =
-    `<circle cx="9" cy="9" r="7" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2.4"/>` +
+    `<circle cx="9" cy="9" r="7" fill="none" stroke="rgb(var(--fg) / 0.18)" stroke-width="2.4"/>` +
     `<circle class="arc" cx="9" cy="9" r="7" fill="none" stroke-width="2.4" stroke-linecap="round" transform="rotate(-90 9 9)" stroke-dasharray="${RING}" stroke-dashoffset="${RING}"/>`;
   const arc = ring.querySelector(".arc") as SVGCircleElement;
   const icon = h("span", { class: "live-icon" });

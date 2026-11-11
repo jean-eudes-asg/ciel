@@ -28,8 +28,8 @@ const COMPLETED_SCALE = 11.5 / 13; // 0.885 — the completed font size
 const EASE = cubicBezier(0.4, 0, 0.2, 1);
 
 /** The current row's text once the turn is over (TickerRowView staticColor). */
-const STILL_CURRENT = "#c9cdd4";
-const DIM = "#6b7079";
+const STILL_CURRENT = "var(--ink-3)";
+const DIM = "var(--dim-3)";
 
 interface Row {
   el: HTMLElement;
@@ -50,7 +50,7 @@ interface Row {
 function makeRow(): Row {
   const chevron = svg(ICONS.chevronRight, 9, { stroke: 2.4 });
   const check = svg(ICONS.check, 8, { stroke: 2.2 });
-  check.style.color = "#454850"; // the completed tick is dimmer than the chevron
+  check.style.color = "var(--dim-5)"; // the completed tick is dimmer than the chevron
   check.style.position = "absolute";
   chevron.style.position = "absolute";
   const shimmer = h("span", { class: "tick-text shimmer" });

@@ -141,6 +141,7 @@ export function installFakeDom() {
     createElementNS: (ns, tag) => new FakeElement(tag, ns),
     createTextNode: (text) => new FakeText(text),
     body: new FakeElement("body"),
+    documentElement: new FakeElement("html"),
   };
   return { root: () => new FakeElement("div") };
 }

@@ -20,11 +20,14 @@ import { pillDefinition } from "../core/pills";
 import { N_, t } from "../i18n/i18n";
 import { Lyrics } from "../tools/lyrics";
 import { Tools } from "../tools/store";
+import { onWhite } from "../core/theme";
 
 
 function lighter(hex: string, amount: number): string {
+  // On the white island a lighter shade would wash out: it goes deeper instead.
+  const shift = (onWhite() ? -1.3 * amount : amount) * 255;
   const v = parseInt(hex.replace("#", ""), 16);
-  const c = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map((x) => Math.min(255, Math.round(x + amount * 255)));
+  const c = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map((x) => Math.max(0, Math.min(255, Math.round(x + shift))));
   return `rgb(${c[0]},${c[1]},${c[2]})`;
 }
 
@@ -187,7 +190,7 @@ class NowPlayingBar {
     this.onCommit = onCommit;
     this.fill = h("i", { class: "np-fill" });
     this.knob = h("i", { class: "np-knob" });
-    this.fill.style.background = "#C5C8CD";
+    this.fill.style.background = "var(--ink-3)";
     this.el = h("div", { class: "np-bar" }, h("i", { class: "np-track" }), this.fill, this.knob);
     this.el.addEventListener("mouseenter", () => {
       this.hovering = true;
@@ -241,7 +244,7 @@ class NowPlayingBar {
     this.el.classList.toggle("active", active);
     const pct = `${this.fraction * 100}%`;
     this.fill.style.width = pct;
-    this.fill.style.background = active ? this.color : "#C5C8CD";
+    this.fill.style.background = active ? this.color : "var(--ink-3)";
     this.knob.style.left = `clamp(0px, calc(${pct} - 4.5px), calc(100% - 9px))`;
   }
 }
@@ -304,8 +307,8 @@ export function buildPlayerCard(source: PlayerSource): SpotifyCardHost {
     Tools.setPrefs({ lyrics: !Tools.prefs.lyrics });
     Lyrics.want(source.state);
   });
-  prev.style.color = "#C5C8CD";
-  next.style.color = "#C5C8CD";
+  prev.style.color = "var(--ink-3)";
+  next.style.color = "var(--ink-3)";
   const play = h("button", { class: "np-play", onclick: () => togglePlay(source) });
   const volIcon = h("span", { class: "np-vol-icon" });
   const volume = new NowPlayingBar(

@@ -85,21 +85,7 @@ const ALL: PageDef[] = SPACES.flatMap((s) => s.pages);
 const spaceOf = (page: PageId) => SPACES.find((s) => s.pages.some((p) => p.id === page)) ?? SPACES[0];
 
 /** The window's colours: pitch black, white, or the system's. */
-export type WindowTheme = "black" | "white" | "system";
-
-let themeQuery: MediaQueryList | null = null;
-
-export function applyTheme(theme: WindowTheme) {
-  themeQuery ??= window.matchMedia("(prefers-color-scheme: light)");
-  const set = () => {
-    const white = theme === "white" || (theme === "system" && themeQuery!.matches);
-    document.documentElement.dataset.theme = white ? "white" : "black";
-    // settings.html paints the page black until this runs.
-    document.documentElement.style.removeProperty("background");
-  };
-  themeQuery.onchange = theme === "system" ? set : null;
-  set();
-}
+export { applyTheme, type Theme as WindowTheme } from "../core/theme";
 
 /** What a page gets to draw itself and reach the rest of the window. */
 export interface HubContext {

@@ -9,6 +9,7 @@
 //   ?loop=0          play once, then stay asleep
 //   ?lang=fr         one of the ten interface languages (else the browser's)
 //   ?bg=transparent  no backdrop
+//   ?theme=white     the white island
 //
 // Embedded in a page of the same origin, it posts the island's mood to it
 // ({ type: "ciel-demo-mood", mood }), and takes "ciel-demo-play" (a moment,
@@ -45,7 +46,7 @@ function main() {
     scene: params.scene,
     // Muted until asked, then at the top of the app's slider (on the website
     // they play over a bed of sound); hovering opens the island, as a visitor expects.
-    settings: { soundEnabled: false, soundVolume: 0.2, openOnHover: true },
+    settings: { soundEnabled: false, soundVolume: 0.2, openOnHover: true, islandTheme: params.white ? "white" : "black" },
   });
 
   // Whichever switch turns the sounds on (ours, the page's, the island's own).

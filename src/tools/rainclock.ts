@@ -4,6 +4,7 @@
 // only while the Timers panel is on screen.
 
 import { OUTLINE, OUTLINE_STEPS } from "../cloud/shape";
+import { onWhite } from "../core/theme";
 
 export type RainMood = "idle" | "timer" | "focus" | "break" | "paused" | "rang";
 
@@ -94,6 +95,9 @@ export class RainClock {
     const ctx = this.ctx;
     if (!ctx) return;
     const c = COLORS[this.mood];
+    // The glass and the ripples are white on black, black on the white island.
+    const white = onWhite();
+    const line = white ? "0,0,0" : "255,255,255";
     ctx.clearRect(0, 0, W, H);
 
     // The glass, and its water.
@@ -112,14 +116,14 @@ export class RainClock {
     ctx.closePath();
     ctx.fill();
     ctx.restore();
-    ctx.strokeStyle = "rgba(255,255,255,0.22)";
+    ctx.strokeStyle = `rgba(${line},0.22)`;
     ctx.lineWidth = 1.5;
     roundRect(ctx, GLASS.x, GLASS.y, GLASS.w, GLASS.h, 9);
     ctx.stroke();
 
     // Ripples where the drops land.
     for (const r of this.ripples) {
-      ctx.strokeStyle = `rgba(255,255,255,${0.35 * (1 - r.age / 0.5)})`;
+      ctx.strokeStyle = `rgba(${line},${0.35 * (1 - r.age / 0.5)})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.ellipse(r.x, surface, 2 + r.age * 10, 0.8 + r.age * 2, 0, 0, Math.PI * 2);
@@ -142,7 +146,14 @@ export class RainClock {
     const bob = this.mood === "idle" ? Math.sin(t * 1.2) * 0.8 : 0;
     const cx = CLOUD.x + shake;
     const cy = CLOUD.y + bob;
-    ctx.fillStyle = c.cloud;
+    // Asleep he is a dark cloud on black, a pale grey one on white; the pale
+    // clouds of the other moods get a soft shadow there for an edge.
+    ctx.save();
+    ctx.fillStyle = white && this.mood === "idle" ? "#c3c8d0" : c.cloud;
+    if (white) {
+      ctx.shadowColor = "rgba(30,55,95,0.35)";
+      ctx.shadowBlur = 4;
+    }
     ctx.beginPath();
     for (let i = 0; i <= OUTLINE_STEPS; i++) {
       const a = (i / OUTLINE_STEPS) * Math.PI * 2;
@@ -154,6 +165,7 @@ export class RainClock {
     }
     ctx.closePath();
     ctx.fill();
+    ctx.restore();
     ctx.fillStyle = "#1b1d22";
     if (this.mood === "idle" || this.mood === "paused") {
       // Eyes shut: two little arcs.

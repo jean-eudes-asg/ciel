@@ -135,6 +135,8 @@ pub struct Settings {
     pub tools: ToolsPrefs,
     /// The Ciel window's colours: "black", "white" or "system" (src/hub/shell.ts).
     pub window_theme: String,
+    /// The island's colours, the same three (src/core/theme.ts).
+    pub island_theme: String,
     /// The steps of the window's setup the user went through (src/settings/setup.ts),
     /// and "later" once they put it off; empty until it was first shown.
     pub setup_steps: Vec<String>,
@@ -369,6 +371,7 @@ impl Default for Settings {
             brain_reads: BrainReads::default(),
             tools: ToolsPrefs::default(),
             window_theme: "black".into(),
+            island_theme: "black".into(),
             setup_steps: Vec::new(),
         }
     }
@@ -682,6 +685,7 @@ mod tests {
     "worldClocks": [{ "name": "Cotonou", "tz": "Africa/Porto-Novo" }]
   },
   "windowTheme": "white",
+  "islandTheme": "white",
   "setupSteps": ["hello", "work", "later"]
 }"##;
 
@@ -1156,6 +1160,7 @@ mod tests {
                 "brainReads",
                 "tools",
                 "windowTheme",
+                "islandTheme",
                 "setupSteps",
             ]
         );

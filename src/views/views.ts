@@ -30,6 +30,7 @@ import type { ViewCommand } from "../island/shortcuts";
 import { buildInbox } from "./inbox";
 import { buildToday } from "./today";
 import { buildTools } from "../tools/view";
+import { onWhite } from "../core/theme";
 
 export interface ViewActions {
   setView(v: IslandViewName): void;
@@ -639,10 +640,10 @@ function buildPill(task: AgentTask, actions: ViewActions): HTMLElement {
 }
 
 function lighten(hex: string, amount: number): string {
+  // On the white island a lighter shade would wash out: it goes deeper instead.
+  const shift = (onWhite() ? -1.3 * amount : amount) * 255;
   const v = parseInt(hex.replace("#", ""), 16);
-  const c = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map((x) =>
-    Math.min(255, Math.round(x + amount * 255)),
-  );
+  const c = [(v >> 16) & 255, (v >> 8) & 255, v & 255].map((x) => Math.max(0, Math.min(255, Math.round(x + shift))));
   return `rgb(${c[0]},${c[1]},${c[2]})`;
 }
 
@@ -798,7 +799,7 @@ function buildQuestion(actions: ViewActions): ViewHost {
       row.append(
         h("button", {
           class: "link-btn",
-          style: "color:#8e939c",
+          style: "color:var(--dim-2)",
           text: tl("Answer in terminal"),
           onclick: () => actions.answerInTerminal(),
         }),
@@ -921,7 +922,7 @@ function buildSettings(actions: ViewActions): ViewHost {
       h("div", { class: "grow" }),
       h("button", {
         class: "link-btn",
-        style: "color:#8e939c;font-size:11.5px",
+        style: "color:var(--dim-2);font-size:11.5px",
         text: tl("Settings…"),
         onclick: () => actions.openSettingsWindow(),
       }),

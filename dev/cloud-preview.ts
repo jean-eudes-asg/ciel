@@ -30,7 +30,8 @@ const STATES: BotStateName[] = [
   "idle", "working", "thinking", "searching", "approval", "question",
   "error", "finished", "ratelimit", "sleeping", "dizzy",
 ];
-for (const s of STATES) cell("states", s, (e) => e.setState(s, true));
+for (const s of STATES) cell("states", s, (e) => { e.lively = true; e.setState(s, true); });
+cell("states", "talking", (e) => { e.lively = true; e.setTalking(true); });
 
 const EMOTES: BotEmoteName[] = ["love", "surprised", "proud", "wink", "yawn", "happy", "annoyed"];
 for (const m of EMOTES) {

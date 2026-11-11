@@ -370,7 +370,10 @@ fn say_piece(app: &AppHandle, text: &str, made: Made, gender: &str) {
     let (tx, rx) = mpsc::channel();
     pending().lock().unwrap().insert(id, tx);
     let _ = app.emit_to(pill::LABEL, "voice-say", Say { id, text: text.into(), lang: wake::speech_lang(text), audio, mime, gender: gender.into() });
+    // The island's Ciel moves his mouth while it is said.
+    let _ = app.emit("voice-speaking", true);
     let _ = rx.recv_timeout(wait);
+    let _ = app.emit("voice-speaking", false);
     pending().lock().unwrap().remove(&id);
 }
 

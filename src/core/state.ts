@@ -228,6 +228,8 @@ export interface Settings {
   tools: ToolPrefs;
   /** The Ciel window's colours (hub/shell.ts applyTheme). */
   windowTheme: "black" | "white" | "system";
+  /** The island's colours (core/theme.ts), on their own: a white window may keep a black island. */
+  islandTheme: "black" | "white" | "system";
   /** The steps of the window's setup gone through (settings/setup.ts), "later" once put off. */
   setupSteps: string[];
 }
@@ -284,6 +286,7 @@ export const DEFAULT_SETTINGS: Settings = {
   brainReads: { calendar: true, notes: true, finance: false },
   tools: { ...DEFAULT_TOOL_PREFS },
   windowTheme: "black",
+  islandTheme: "black",
   setupSteps: [],
 };
 

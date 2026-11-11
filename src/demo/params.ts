@@ -11,6 +11,8 @@ export interface WebParams {
   lang: string;
   /** `?bg=transparent`: no backdrop. */
   transparent: boolean;
+  /** `?theme=white`: the white island. */
+  white: boolean;
 }
 
 export function readParams(search: string): WebParams {
@@ -21,5 +23,6 @@ export function readParams(search: string): WebParams {
     loop: q.get("loop") !== "0",
     lang: q.get("lang") ?? "",
     transparent: q.get("bg") === "transparent",
+    white: q.get("theme") === "white",
   };
 }

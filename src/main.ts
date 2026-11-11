@@ -136,6 +136,9 @@ async function main() {
     void refreshConfigured();
   });
 
+  // « OK Ciel » answers out loud (src-tauri/src/voice say_piece): Ciel's mouth moves with it.
+  await onEvent<boolean>("voice-speaking", (on) => island.setTalking(on));
+
   registerHookHandlers(island);
   registerIntegrationHandlers(island);
   // Timers, the clipboard, the controls, the weather (src/tools).

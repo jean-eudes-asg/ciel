@@ -2,6 +2,7 @@
 // Each canvas owns a BotEngine; the island's frame loop ticks every live one.
 
 import { BotEngine, hexToRGB } from "./engine";
+import { onWhite } from "../core/theme";
 import type { AgentTask } from "../core/state";
 
 interface MiniBot {
@@ -80,6 +81,7 @@ export function tickMiniBots(dt: number) {
     const ctx = mb.canvas.getContext("2d");
     if (!ctx) continue;
     mb.engine.setDancing(mb.dancing?.() ?? false);
+    mb.engine.onLight = onWhite();
     mb.engine.update(dt);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, mb.cssSize, mb.cssSize);

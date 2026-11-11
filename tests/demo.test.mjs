@@ -431,8 +431,9 @@ test("?loop=0 plays once and stays on the last moment", () => {
 
 test("query parameters: a known scene, loop=0, the language, a transparent page", () => {
   assert.deepEqual(readParams("?scene=approval&loop=0&lang=fr&bg=transparent"),
-    { scene: "approval", loop: false, lang: "fr", transparent: true });
-  assert.deepEqual(readParams(""), { scene: null, loop: true, lang: "", transparent: false });
+    { scene: "approval", loop: false, lang: "fr", transparent: true, white: false });
+  assert.deepEqual(readParams(""), { scene: null, loop: true, lang: "", transparent: false, white: false });
+  assert.equal(readParams("?theme=white").white, true);
   assert.equal(readParams("?scene=nope").scene, null);
 });
 
