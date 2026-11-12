@@ -15,6 +15,7 @@ import type { Island } from "./island";
 import { parseClaudePlan, restorePlanUsage } from "../core/plan";
 import { setClaudePlanUsage, storedClaudePlanUsage } from "../views/usage";
 import { N_, t } from "../i18n/i18n";
+import { asRule, ruleLabel } from "../core/rules";
 
 const CLAUDE_ID = "integration_claude";
 const CURSOR_ID = "agent_cursor";
@@ -90,6 +91,10 @@ export interface HookPayload {
   term_editor?: string;
   /** StatusLine (the plan usage relay): Claude Code's 5-hour and weekly limits. */
   rate_limits?: unknown;
+  /** PermissionRequest: the rule of the user's that covers it (src-tauri/src/rules.rs). */
+  ciel_rule?: unknown;
+  /** PermissionRequest: the rule "Don't ask again" would make for it. */
+  ciel_remember?: unknown;
 }
 
 /** Display names for folders whose name reads badly as is. */
@@ -487,6 +492,17 @@ export function handleHook(island: Island, payload: HookPayload) {
       }
 
       const requestId = payload.request_id ?? "";
+      // A rule you made with "Don't ask again" covers this one: no card, no
+      // sound. Rust found the rule and checks it once more as it answers; the
+      // island passes the request on and leaves a line on the session, so an
+      // answer given for you is never given unseen.
+      const rule = asRule(payload.ciel_rule);
+      if (rule && requestId) {
+        ensurePill();
+        void Bridge.approvalByRule(requestId);
+        State.appendStep(agentId, t("Allowed by your rule · {what}", { what: ruleLabel(rule) }));
+        break;
+      }
       // One card, one request. A second one must never quietly replace the first
       // — that would leave a human staring at request B while request A waits for
       // a decision nobody can give. Hand it straight back to the terminal.
@@ -504,6 +520,7 @@ export function handleHook(island: Island, payload: HookPayload) {
       // Code asks questions this way.
       const questions = isExternalAgent ? null : askedQuestions(tool, input);
       const view = questions ? "question" : "approval";
+      const remember = questions ? null : asRule(payload.ciel_remember);
       // The card always comes up, even over another pill or an island that is
       // already open: its pill comes to the front, and the one you were on
       // comes back once you answer (Mac #117, #120).
@@ -514,6 +531,7 @@ export function handleHook(island: Island, payload: HookPayload) {
         tool,
         command: approvalTarget(tool, input),
         ...(questions ? { questions } : {}),
+        ...(remember ? { remember } : {}),
         ...(validAgent === CIEL_AGENT ? { transient: true } : {}),
       });
       // The relay's short ack window closes in 800 ms; everything below this

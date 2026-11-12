@@ -10873,6 +10873,83 @@
    "pt-BR": "Na ilha do céu, o que um agente responde aparece em um balão abaixo dela; um clique abre a ilha. Uma permissão ou uma pergunta sempre a abre.",
    "ru": "В небесном острове ответ агента появляется в пузыре под ним; щелчок открывает остров. Запрос разрешения или вопрос всегда открывают его.",
    "id": "Di pulau langit, jawaban agen muncul dalam gelembung di bawahnya; klik untuk membuka pulau. Izin atau pertanyaan selalu membukanya."
+  },
+  "Don't ask again": {
+   "zh-Hans": "不再询问",
+   "hi": "दोबारा न पूछें",
+   "es": "No volver a preguntar",
+   "ar": "لا تسأل مجددًا",
+   "fr": "Ne plus demander",
+   "bn": "আর জিজ্ঞেস করবেন না",
+   "pt-BR": "Não perguntar de novo",
+   "ru": "Больше не спрашивать",
+   "id": "Jangan tanya lagi"
+  },
+  "Don't ask again: {what}, in this project": {
+   "zh-Hans": "不再询问：{what}，仅限此项目",
+   "hi": "दोबारा न पूछें: {what}, इस प्रोजेक्ट में",
+   "es": "No volver a preguntar: {what}, en este proyecto",
+   "ar": "لا تسأل مجددًا: {what}، في هذا المشروع",
+   "fr": "Ne plus demander : {what}, dans ce projet",
+   "bn": "আর জিজ্ঞেস করবেন না: {what}, এই প্রজেক্টে",
+   "pt-BR": "Não perguntar de novo: {what}, neste projeto",
+   "ru": "Больше не спрашивать: {what}, в этом проекте",
+   "id": "Jangan tanya lagi: {what}, di proyek ini"
+  },
+  "Allowed by your rule · {what}": {
+   "zh-Hans": "已按你的规则允许 · {what}",
+   "hi": "आपके नियम से अनुमति दी गई · {what}",
+   "es": "Permitido por tu regla · {what}",
+   "ar": "سُمح به وفق قاعدتك · {what}",
+   "fr": "Autorisé par votre règle · {what}",
+   "bn": "আপনার নিয়মে অনুমোদিত · {what}",
+   "pt-BR": "Permitido pela sua regra · {what}",
+   "ru": "Разрешено вашим правилом · {what}",
+   "id": "Diizinkan oleh aturan Anda · {what}"
+  },
+  "file edits": {
+   "zh-Hans": "文件编辑",
+   "hi": "फ़ाइल संपादन",
+   "es": "ediciones de archivos",
+   "ar": "تعديلات الملفات",
+   "fr": "modifications de fichiers",
+   "bn": "ফাইল সম্পাদনা",
+   "pt-BR": "edições de arquivos",
+   "ru": "правки файлов",
+   "id": "suntingan file"
+  },
+  "Remembered answers": {
+   "zh-Hans": "记住的回答",
+   "hi": "याद रखे गए जवाब",
+   "es": "Respuestas recordadas",
+   "ar": "الإجابات المحفوظة",
+   "fr": "Réponses retenues",
+   "bn": "মনে রাখা উত্তর",
+   "pt-BR": "Respostas lembradas",
+   "ru": "Запомненные ответы",
+   "id": "Jawaban yang diingat"
+  },
+  "When you click Don't ask again on a permission card, Ciel allows the same kind of request from that agent in that project at once, and leaves a line on the session. Remove a rule and Ciel asks again.": {
+   "zh-Hans": "在权限卡片上点击“不再询问”后，Ciel 会立即允许该智能体在该项目中的同类请求，并在会话中留下一行记录。移除规则后，Ciel 会再次询问。",
+   "hi": "जब आप अनुमति कार्ड पर “दोबारा न पूछें” क्लिक करते हैं, तो Ciel उस प्रोजेक्ट में उस एजेंट के उसी तरह के अनुरोध को तुरंत अनुमति देता है और सत्र में एक पंक्ति छोड़ता है। नियम हटाएँ और Ciel फिर से पूछेगा।",
+   "es": "Cuando haces clic en «No volver a preguntar» en una tarjeta de permiso, Ciel permite al instante el mismo tipo de solicitud de ese agente en ese proyecto y deja una línea en la sesión. Quita una regla y Ciel vuelve a preguntar.",
+   "ar": "عند النقر على «لا تسأل مجددًا» في بطاقة إذن، يسمح Ciel فورًا بالنوع نفسه من الطلبات من ذلك الوكيل في ذلك المشروع، ويترك سطرًا في الجلسة. أزل القاعدة وسيسأل Ciel من جديد.",
+   "fr": "Quand vous cliquez sur « Ne plus demander » sur une carte de permission, Ciel autorise aussitôt le même genre de demande de cet agent dans ce projet, et laisse une ligne dans la session. Retirez une règle et Ciel redemande.",
+   "bn": "অনুমতি কার্ডে “আর জিজ্ঞেস করবেন না” ক্লিক করলে, Ciel সেই প্রজেক্টে সেই এজেন্টের একই ধরনের অনুরোধ সঙ্গে সঙ্গে অনুমোদন করে এবং সেশনে একটি লাইন রেখে যায়। নিয়ম সরিয়ে দিলে Ciel আবার জিজ্ঞেস করবে।",
+   "pt-BR": "Quando você clica em “Não perguntar de novo” em um cartão de permissão, o Ciel permite na hora o mesmo tipo de pedido desse agente nesse projeto e deixa uma linha na sessão. Remova uma regra e o Ciel volta a perguntar.",
+   "ru": "Когда вы нажимаете «Больше не спрашивать» на карточке разрешения, Ciel сразу разрешает такие же запросы этого агента в этом проекте и оставляет строку в сессии. Уберите правило, и Ciel снова спросит.",
+   "id": "Saat Anda mengeklik “Jangan tanya lagi” pada kartu izin, Ciel langsung mengizinkan permintaan sejenis dari agen itu di proyek itu, dan meninggalkan satu baris di sesi. Hapus aturan dan Ciel akan bertanya lagi."
+  },
+  "Nothing remembered yet.": {
+   "zh-Hans": "还没有记住任何回答。",
+   "hi": "अभी तक कुछ याद नहीं रखा गया।",
+   "es": "Aún no hay nada recordado.",
+   "ar": "لا شيء محفوظ بعد.",
+   "fr": "Rien de retenu pour l'instant.",
+   "bn": "এখনও কিছু মনে রাখা হয়নি।",
+   "pt-BR": "Nada lembrado ainda.",
+   "ru": "Пока ничего не запомнено.",
+   "id": "Belum ada yang diingat."
   }
  }
 }

@@ -42,6 +42,7 @@ mod quick;
 #[cfg(target_os = "linux")]
 mod portal;
 mod recap;
+mod rules;
 mod secrets;
 mod session_window;
 mod screensaver;
@@ -509,8 +510,28 @@ async fn codex_plan_usage() -> Option<serde_json::Value> {
 
 #[tauri::command]
 fn approval_decision(app: AppHandle, request_id: String, decision: String) {
+    // "Don't ask again": the rule offered for this request is kept first, so
+    // it is on the list before the agent carries on.
+    if decision == "always" {
+        rules::remember(&app, &request_id);
+    }
     recap::record_decision(&app, &request_id, &decision);
     pipe::answer(&app, &request_id, &decision);
+}
+
+/// A request that came in tagged with a rule of the user's: allowed if that
+/// rule still stands, handed to the terminal if not. The island only names the
+/// request; which rule covers it was settled in Rust as it arrived (rules.rs).
+#[tauri::command]
+fn approval_by_rule(app: AppHandle, request_id: String) {
+    // No click on a card: nothing for the recap's count of decisions.
+    recap::forget_request(&app, &request_id);
+    if rules::answers(&app, &request_id) {
+        log::line(format!("rule answers id={request_id}"));
+        pipe::answer(&app, &request_id, "allow");
+    } else {
+        pipe::decline(&app, &request_id);
+    }
 }
 
 /// An option picked on the island for a question Claude Code asked.
@@ -827,6 +848,7 @@ pub fn run() {
         .manage(Chat::default())
         .manage(shortcuts::Registry::default())
         .manage(recap::load())
+        .manage(rules::load())
         // Hide from screen sharing, for the windows made after launch too.
         .on_page_load(capture::page_load)
         .invoke_handler(tauri::generate_handler![
@@ -902,6 +924,10 @@ pub fn run() {
             approval_answer,
             approval_ack,
             approval_decline,
+            approval_by_rule,
+            rules::rules_list,
+            rules::rules_remove,
+            rules::rules_clear,
             log_line,
             chat_send,
             chat_models,

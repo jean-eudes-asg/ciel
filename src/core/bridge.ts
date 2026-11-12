@@ -165,8 +165,18 @@ export const Bridge = {
    */
   codexPlanUsage: () => call<unknown>("codex_plan_usage"),
 
-  approvalDecision: (requestId: string, decision: "allow" | "deny") =>
+  /** "always" is "Don't ask again": allow, and keep the rule offered for this request. */
+  approvalDecision: (requestId: string, decision: "allow" | "deny" | "always") =>
     call<void>("approval_decision", { requestId, decision }),
+  /**
+   * Passes on a request that came in with a rule of the user's (`ciel_rule`).
+   * Rust allows it if that rule still stands, and hands it to the terminal if not.
+   */
+  approvalByRule: (requestId: string) => call<void>("approval_by_rule", { requestId }),
+  /** The remembered answers ("Don't ask again"), oldest first. */
+  rulesList: () => call<unknown[]>("rules_list"),
+  rulesRemove: (id: string) => call<void>("rules_remove", { id }),
+  rulesClear: () => call<void>("rules_clear"),
   /** "The card is up" — until this lands the relay only waits a moment. */
   approvalAck: (requestId: string) => call<void>("approval_ack", { requestId }),
   /** Answers a question Claude Code asked: question text → chosen label. */

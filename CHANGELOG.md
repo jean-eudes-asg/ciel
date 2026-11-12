@@ -28,6 +28,18 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   own little cloud, for a few seconds; a click opens the island on its card.
   A permission or a question still opens the island. Preferences → General →
   Window → Replies puts it back to opening the island each time.
+- **Don't ask again**, on a permission card, beside Allow and Deny: Ciel
+  remembers your answer and allows the same kind of request from that agent
+  in that project at once, with no card. A line above the buttons says what
+  will be remembered before you click: a command word for word, or its first
+  words when Claude Code suggests them (`npm test …`, never a command that
+  chains, pipes or redirects); a website, for fetches; one MCP tool or web
+  searches; file edits inside the project folder (Claude Code, hidden folders
+  such as `.git` left out). Each time a rule answers, the session says
+  "Allowed by your rule". The rules are in **Settings → Agents → Remembered
+  answers**, each with **Remove**; they stay on your computer. For Claude
+  Code, Codex, Copilot CLI and Muse Code. A paused Ciel answers nothing, and
+  a question or a plan to approve is never remembered.
 
 ### Changed
 - **New sounds**, all 29, low and few-noted. What you touch answers with a

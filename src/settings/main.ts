@@ -23,6 +23,7 @@ import { applyTheme, startHub, type PageId, type WindowTheme } from "../hub/shel
 import { renderSetup, setupFirstTime, setupProgress, type SetupHost } from "./setup";
 import { FLOW_PAGE_RENDERERS } from "../hub/pages";
 import { agentsSection } from "./agents";
+import { rulesSection } from "./rules";
 import { brainSection } from "./brain";
 import { colorDot } from "./colors";
 import { demoRows } from "./demo";
@@ -2005,7 +2006,7 @@ async function render() {
       }),
     ],
     pills: () => [activePillsSection(connected)],
-    agents: () => [claudeSection(status), agentsSection(agents), planSection(status)],
+    agents: () => [claudeSection(status), agentsSection(agents), rulesSection(), planSection(status)],
     chat: () => [apiSection(hasKey), brain(), companyFolderSection(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
     integrations: () => [
       notificationsSection({

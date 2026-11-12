@@ -14,6 +14,9 @@
 //   * whatever happens we drop the connection after the decision timeout, and
 //     the terminal takes over.
 //
+// A request that a rule of the user's covers ("Don't ask again", rules.rs) is
+// answered `allow` the same way, as soon as the island has passed it on.
+//
 // What we write back is the bare word `allow` or `deny` — or, when the request
 // was Claude Code asking a question, `{"answers":{…}}` with what was picked on
 // the island. Turning either into the documented hookSpecificOutput JSON is
@@ -271,11 +274,16 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
         crate::voice::waiting_for_ok(&app);
     }
     payload["request_id"] = json!(id);
+    // A rule the user made answers this one, or "Don't ask again" could make
+    // one: the island is told which (rules.rs). It is still the island that
+    // passes the answer on, so a paused island answers nothing.
+    crate::rules::note_request(&app, &id, &mut payload);
     log::line(format!("hook PermissionRequest id={id}"));
     let _ = app.emit_to(WINDOW_LABEL, "hook", payload);
 
     let decision = wait_for_decision(&id, &mut rx).await;
     app.state::<Pending>().0.lock().unwrap().remove(&id);
+    crate::rules::forget(&app, &id);
 
     // No decision: say nothing at all. ciel-hook then writes nothing to stdout
     // and Claude Code asks in the terminal, exactly as if Ciel were closed.

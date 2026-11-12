@@ -12,6 +12,7 @@ import type { FileDiff } from "./diff";
 import type { CielNotification } from "./notifications";
 import type { Bindings } from "./shortcuts";
 import type { AiEngine } from "./brain";
+import type { Rule } from "./rules";
 import { pillColor } from "./pill-colors";
 import { Spotify, musicPlaying } from "./spotify";
 import { YTMUSIC_ID, YtMusic } from "./ytmusic";
@@ -54,6 +55,8 @@ export interface ApprovalInfo {
   command: string;
   /** Set when Claude Code is asking a question rather than for a permission. */
   questions?: AskedQuestion[];
+  /** The rule "Don't ask again" would make for this request, when there is one. */
+  remember?: Rule;
   /** The pill was made for this card alone (Ciel's own brain on Claude Code): it goes with it. */
   transient?: boolean;
 }

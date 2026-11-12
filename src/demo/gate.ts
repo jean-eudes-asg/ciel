@@ -73,7 +73,7 @@ export function demoGate(options: DemoGateOptions, hooks: GateHooks): BridgeGate
         // declined straight to its terminal, demo or not.
         case "approval_decision":
           if (!isDemoRequest(a.requestId)) return options.app ? undefined : answer(null);
-          hooks.answered(a.decision === "allow" ? "allow" : "deny");
+          hooks.answered(a.decision === "deny" ? "deny" : "allow");
           return answer(null);
         case "approval_answer":
           if (!isDemoRequest(a.requestId)) return options.app ? undefined : answer(null);

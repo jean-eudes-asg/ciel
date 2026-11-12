@@ -54,6 +54,7 @@ no account, and can run entirely on your own computer.
   CLI and more, each session live in the island with its steps and its diffs.
 - **Nothing runs without you.** Allow, Deny and answer questions from the
   island. If Ciel is not running, the agent asks in its own terminal.
+  **Don't ask again** remembers your answer for one agent in one project.
 - **Useful when you are not coding.** Timers, clipboard history, a file shelf,
   quick settings, a calendar and the weather.
 - **Voice that stays on your computer.** Hold a key to dictate anywhere, say
@@ -149,7 +150,13 @@ and the island is yours for the rest.
 - **Allow / Deny, questions and live diffs** in the island.
 - Ciel does a happy little jump when a session finishes, and a weekly recap
   sums up the work.
-- Ciel never allows anything on its own. See [Supported agents](#supported-agents).
+- **Don't ask again** on a permission card: Ciel then allows the same kind of
+  request from that agent in that project at once, and says so on the session.
+  A command word for word, or its first words when the agent suggests them
+  (`npm test …`); a website for fetches; one MCP tool; file edits inside the
+  project. The rules are listed in **Settings → Agents**, each with **Remove**.
+- Ciel never allows anything on its own: only what you clicked, or what a rule
+  you made covers. See [Supported agents](#supported-agents).
 
 ### Everyday tools
 
@@ -285,6 +292,9 @@ For « OK Ciel » to answer out loud on your computer too, pick **Kitten** in
   notes (their summaries, never what was said), and your spending only once
   you turn it on.
 - **Nothing is approved or sent without your click.** No permission, no email.
+  A click on **Don't ask again** is the one that stands for later ones: it
+  makes a rule you can read and remove in Settings → Agents, kept in a file on
+  your computer, and the island tells you each time a rule answers.
 - **Agents are never blocked.** If Ciel does not answer, `ciel-hook` exits at
   once and the agent asks in its own terminal.
 - **Hide from screen sharing** (Windows) keeps your sessions, mail and notes
