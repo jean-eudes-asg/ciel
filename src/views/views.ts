@@ -31,6 +31,7 @@ import { buildInbox } from "./inbox";
 import { buildToday } from "./today";
 import { buildTools } from "../tools/view";
 import { onWhite } from "../core/theme";
+import { ruleLabel } from "../core/rules";
 
 export interface ViewActions {
   setView(v: IslandViewName): void;
@@ -44,7 +45,8 @@ export interface ViewActions {
   /** The ↗ button: opens whatever the focused pill points at. */
   openTarget(): void;
   openUrl(url: string): void;
-  decide(d: "allow" | "deny"): void;
+  /** "always" is "Don't ask again": allow, and remember the rule the card shows. */
+  decide(d: "allow" | "deny" | "always"): void;
   /** Answers the question Claude Code asked: question text → chosen label. */
   answer(answers: Record<string, string | string[]>): void;
   /** Hands the pending request back to the terminal. */
@@ -674,16 +676,18 @@ function foldButton(actions: ViewActions): HTMLElement {
 function buildApproval(actions: ViewActions): ViewHost {
   const who = h("div");
   const code = h("div", { class: "code" });
+  // What "Don't ask again" would remember, said before the click.
+  const scope = h("div", { class: "remember-scope" });
   const row = h("div", { class: "actions" });
   const el = h("div", { class: "view" },
-    card("amber", stack(116, 16, who, code, row), foldButton(actions)));
-  let rowKey = "";
+    card("amber", stack(116, 16, who, code, scope, row), foldButton(actions)));
+  let rowKey: string | null = null;
   // The card pops up under a cursor that was busy with something else: a click
   // meant for the window underneath must not land on Allow. Clicks in the first
   // moments after a new request appears are ignored.
   let shownFor: string | null = null;
   let shownAt = 0;
-  const guarded = (d: "allow" | "deny") => () => {
+  const guarded = (d: "allow" | "deny" | "always") => () => {
     if (performance.now() - shownAt < CLICK_GUARD_MS) return;
     actions.decide(d);
   };
@@ -701,16 +705,25 @@ function buildApproval(actions: ViewActions): ViewHost {
       // is the command, the file path or the URL being authorised, not just the
       // name of the tool asking.
       code.textContent = State.pendingApproval?.command || State.pendingApproval?.tool || "…";
-      // Two buttons, built once. Rebuilding them between a mouse-down and a
-      // mouse-up would swallow the click, and there is nothing left to vary:
-      // "Always" is gone until the remembered-rules list exists to back it.
-      if (rowKey === "built") return;
-      rowKey = "built";
+      // "Don't ask again" is there when Rust found something safe to remember
+      // for this request (rules.rs), and the line above the buttons says what:
+      // the click is on words the user can read. The rule goes on the list in
+      // Settings → Agents, where it can be removed.
+      const remember = State.pendingApproval?.remember ?? null;
+      const what = remember ? ruleLabel(remember) : "";
+      scope.textContent = what ? t("Don't ask again: {what}, in this project", { what }) : "";
+      scope.hidden = !what;
+      // The buttons are built once per request. Rebuilding them between a
+      // mouse-down and a mouse-up would swallow the click.
+      const key = `${req ?? ""}|${what}`;
+      if (rowKey === key) return;
+      rowKey = key;
       clear(row);
       row.append(
         btn(tl("Deny"), "secondary", guarded("deny"), "N"),
         btn(tl("Allow"), "primary", guarded("allow"), "Y"),
       );
+      if (what) row.append(btn(tl("Don't ask again"), "secondary", guarded("always")));
     },
   };
 }

@@ -2,9 +2,12 @@
 //! agent's stdout contract. Same replies as the Mac relay (HookServer.swift).
 //!
 //! The one rule that matters: **nothing that allows anything is ever printed
-//! without a decision a human clicked.** With no decision the reply is silence,
-//! an empty `{}`, or Copilot's explicit "ask", and every agent then asks in its
-//! own terminal exactly as if Ciel were not installed.
+//! without a decision a human clicked** — on the card, or once on « Don't ask
+//! again », which makes the rule the app then answers by (src-tauri/src/rules.rs;
+//! the relay itself knows no rule, it prints what the app decided). With no
+//! decision the reply is silence, an empty `{}`, or Copilot's explicit "ask",
+//! and every agent then asks in its own terminal exactly as if Ciel were not
+//! installed.
 
 use serde_json::{json, Map, Value};
 
@@ -86,8 +89,8 @@ pub fn decision_json(decision: &str, question: Option<&Value>) -> Option<String>
         );
     }
     let behavior = match decision.trim() {
-        // "always" still answers a plain allow; remembering it is the island's
-        // business, not the agent's.
+        // "always" still answers a plain allow; remembering it is the app's
+        // business (src-tauri/src/rules.rs), not the agent's.
         "allow" | "always" => r#"{"behavior":"allow"}"#.to_string(),
         "deny" => r#"{"behavior":"deny","message":"Denied from Ciel"}"#.to_string(),
         _ => return None,

@@ -37,6 +37,12 @@ npx tsc --noEmit && npm test && cargo test --workspace
 - Never block an agent: if the app doesn't answer, `ciel-hook` exits at once and
   the agent asks in its own terminal. It never allows anything on its own.
 - Never approve a permission or send an email without the user's explicit click.
+  One click may stand for later ones: « Don't ask again » on a permission card
+  makes a rule (`src-tauri/src/rules.rs`), and Ciel then allows what that rule
+  covers, for that agent, in that project folder, until the user removes it in
+  Settings → Agents. Only that click makes a rule. What a rule covers is decided
+  in `rules.rs` alone, narrowly: when unsure, no rule answers and the card comes
+  up. Each answer given by a rule leaves a line on the session in the island.
 - Agent config files (`~/.claude/settings.json` and the others): dated backup,
   merge only Ciel's entries, show the diff, write only after the user confirms.
 - 0 % CPU when the island is hidden.

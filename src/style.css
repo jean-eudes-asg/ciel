@@ -2028,6 +2028,16 @@ body {
   gap: 5px;
 }
 
+/* What "Don't ask again" would remember, above the buttons. */
+.remember-scope {
+  font: 400 11px var(--font);
+  color: var(--dim-2);
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .actions {
   display: flex;
   gap: 8px;

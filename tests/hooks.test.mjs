@@ -559,6 +559,70 @@ test("a card answered in time leaves nothing for the 110 s timer to undo", () =>
   assert.equal(task().state, "working");
 });
 
+// ── Don't ask again ───────────────────────────────────────────────────────────
+// Rust tags a request with the rule that covers it (`ciel_rule`) or with the
+// one the card could make (`ciel_remember`), see src-tauri/src/rules.rs.
+
+const RULE = { id: "k1", agent: "", cwd: "C:\Users\me\proj", tool: "Bash", kind: "prefix", text: "npm test", created: 1 };
+
+test("a request a rule of yours covers is passed on without a card, and leaves a line", () => {
+  hook({
+    hook_event_name: "PermissionRequest", request_id: "r1", session_id: "s1", cwd: "C:\Users\me\proj",
+    tool_name: "Bash", tool_input: { command: "npm test -- one" }, ciel_rule: RULE,
+  });
+  assert.deepEqual(sent("approval_by_rule"), [{ requestId: "r1" }]);
+  assert.deepEqual(sent("approval_decision"), []);
+  assert.deepEqual(sent("approval_ack"), []);
+  assert.equal(State.pendingApproval, null);
+  assert.equal(task().steps.at(-1), "Allowed by your rule · npm test …");
+  // No card, no alert, no sound: the island stays as it was.
+  assert.deepEqual(asked, []);
+});
+
+test("a rule answers while another request's card is up, and leaves that card alone", () => {
+  ask("r1");
+  hook({ hook_event_name: "PermissionRequest", request_id: "r2", session_id: "s1", tool_name: "Bash", ciel_rule: RULE });
+  assert.deepEqual(sent("approval_by_rule"), [{ requestId: "r2" }]);
+  assert.deepEqual(sent("approval_decline"), []);
+  assert.equal(State.pendingApproval.requestId, "r1");
+});
+
+test("a paused island passes nothing on, rule or not", () => {
+  State.paused = true;
+  hook({ hook_event_name: "PermissionRequest", request_id: "r1", tool_name: "Bash", ciel_rule: RULE });
+  assert.deepEqual(sent("approval_by_rule"), []);
+  assert.deepEqual(sent("approval_decline"), [{ requestId: "r1" }]);
+});
+
+test("a tag that is not a rule gets the card, as any request does", () => {
+  for (const tag of [true, "npm test", { kind: "prefix" }, { id: "k", tool: "Bash", kind: "anything" }]) {
+    calls.length = 0;
+    State.pendingApproval = null;
+    hook({ hook_event_name: "PermissionRequest", request_id: "r1", session_id: "s1", tool_name: "Bash", ciel_rule: tag });
+    assert.deepEqual(sent("approval_by_rule"), []);
+    assert.equal(State.pendingApproval.requestId, "r1");
+  }
+});
+
+test("the card carries the rule Don't ask again would make, a question never does", () => {
+  const offer = { ...RULE, id: "k2" };
+  hook({
+    hook_event_name: "PermissionRequest", request_id: "r1", session_id: "s1",
+    tool_name: "Bash", tool_input: { command: "npm test" }, ciel_remember: offer,
+  });
+  assert.deepEqual(State.pendingApproval.remember, offer);
+  assert.deepEqual(sent("approval_by_rule"), []);
+
+  State.pendingApproval = null;
+  hook({
+    hook_event_name: "PermissionRequest", request_id: "r2", session_id: "s1", tool_name: "AskUserQuestion",
+    tool_input: { questions: [{ question: "Which one?", options: [{ label: "A" }, { label: "B" }] }] },
+    ciel_remember: offer,
+  });
+  assert.ok(State.pendingApproval.questions);
+  assert.equal(State.pendingApproval.remember, undefined);
+});
+
 // ── What takes over from a stop ───────────────────────────────────────────────
 // Stop arms a 5.2 s return to idle. A handler that writes a newer state cancels
 // it; one that writes none leaves it alone, or the pill would stay finished.
