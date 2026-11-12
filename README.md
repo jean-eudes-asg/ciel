@@ -148,6 +148,8 @@ and the island is yours for the rest.
   Antigravity, OpenCode, Amp, Hermes and Muse Code, and Claude Code sessions
   from the Claude desktop app.
 - **Allow / Deny, questions and live diffs** in the island.
+- **Every session in one list**: who needs you, who works, who is done, a row
+  each with what it was asked and what it is doing, and Allow / Deny on the row.
 - Ciel does a happy little jump when a session finishes, and a weekly recap
   sums up the work.
 - **Don't ask again** on a permission card: Ciel then allows the same kind of
@@ -160,7 +162,7 @@ and the island is yours for the rest.
 
 ### Everyday tools
 
-A **Tools** tab in the island, for everyone:
+Each with its own icon in the island's header, for everyone:
 
 - **Timers and reminders.** Type "25m tea" or "18:30 call mum". Repeating
   reminders, Snooze, and Focus rounds (25 minutes, 5 of break).
@@ -174,6 +176,9 @@ A **Tools** tab in the island, for everyone:
   screenshot, lock and a power menu, plus your pinned apps.
 - **Calendar.** The month with your events, and world clocks.
 - **Weather** from Open-Meteo, free and without an account, with rain alerts.
+
+**Today** gathers them in tiles: the week, the weather, the timer on its ring,
+your agents, what comes next, what waits on the shelf.
 
 What matters shows in the folded island in place of the clock: a timer counting
 down, "Mic off", rain coming, the line of the song playing.

@@ -29,7 +29,10 @@ import { language, t, tl, type Msg } from "../i18n/i18n";
 import type { ViewCommand } from "../island/shortcuts";
 import { buildInbox } from "./inbox";
 import { buildToday } from "./today";
-import { buildTools } from "../tools/view";
+import { FILLED_TOOLS, TOOL_TABS, buildTools } from "../tools/view";
+import { Tools } from "../tools/store";
+import { buildSessions } from "./sessions";
+import { buildFlipClock, tick as tickClock } from "./flipclock";
 import { onWhite } from "../core/theme";
 import { ruleLabel } from "../core/rules";
 
@@ -112,12 +115,42 @@ function stack(padLeft: number, padRight: number, ...children: Node[]): HTMLElem
 // ── Header ────────────────────────────────────────────────────────────────────
 
 export function buildHeader(actions: ViewActions): ViewHost {
+  // One row of icons, each a move from any other: home, the agents' list,
+  // today, the chat, then every tool by itself. No second row anywhere.
   const tabHome = h("button", { class: "tab", title: tl("Overview"), onclick: () => go("overview") }, svg(ICONS.house, 13));
+  // How many sessions wait for you, on the list's own icon.
+  const agentsBadge = h("span", { class: "tab-badge" });
+  const tabAgents = h("button", { class: "tab tab-notes", title: tl("Agents"), onclick: () => go("agents") }, svg(ICONS.prompt, 13, { stroke: 2.2 }), agentsBadge);
+  const tabToday = h("button", { class: "tab", title: tl("Today"), onclick: () => go("empty") }, svg(ICONS.sun, 13, { stroke: 2 }));
   const tabChat = h("button", { class: "tab", title: tl("Ask"), onclick: () => go("prompt") }, svg(ICONS.bubble, 13));
-  const tabTools = h("button", { class: "tab", title: tl("Tools"), onclick: () => go("tools") }, svg(ICONS.tools, 12));
+  const toolTabs = TOOL_TABS.map((tab) => ({
+    id: tab.id,
+    el: h(
+      "button",
+      {
+        class: "tab",
+        title: tab.label,
+        onclick: () => {
+          // Straight to that tool: the island takes its height in the same move.
+          Tools.wanted = null;
+          Tools.tab = tab.id;
+          go("tools");
+        },
+      },
+      svg(tab.icon, 13, FILLED_TOOLS.has(tab.id) ? {} : { stroke: 2 }),
+    ),
+  }));
+  const toolGroup = h("div", { class: "tab-group" }, ...toolTabs.map((tab) => tab.el));
   // The notifications Ciel keeps: there while some wait, or while on their list.
   const tabBadge = h("span", { class: "tab-badge" });
   const tabNotes = h("button", { class: "tab tab-notes", title: tl("Notifications"), onclick: () => go("notifications") }, svg(ICONS.bell, 13), tabBadge);
+
+  // The time, in the room the icons and the buttons leave between them:
+  // centred there by the row itself, so no icon is ever under it, and gone
+  // when the row is too full to hold it. It keeps time only while open.
+  const headerClock = buildFlipClock("island-flip");
+  const clockSlot = h("div", { class: "header-clock" }, headerClock.el);
+  let stopClock: (() => void) | null = null;
 
   const gearBtn = h("button", { title: tl("Settings"), onclick: () => go("settings") }, svg(ICONS.gear, 14));
   const soundBtn = h("button", { title: tl("Mute"), onclick: () => actions.toggleSound() }, svg(ICONS.speakerOn, 14));
@@ -135,7 +168,8 @@ export function buildHeader(actions: ViewActions): ViewHost {
   const el = h(
     "div",
     { id: "header" },
-    h("div", { class: "tabs" }, tabHome, tabChat, tabTools, tabNotes),
+    h("div", { class: "tabs" }, tabHome, tabAgents, tabToday, tabChat, toolGroup, tabNotes),
+    clockSlot,
     h("div", { class: "header-actions" }, planPills, gearBtn, soundBtn),
   );
   const headerActions = el.lastElementChild as HTMLElement;
@@ -144,9 +178,16 @@ export function buildHeader(actions: ViewActions): ViewHost {
     el,
     sync() {
       const v = State.view;
-      tabHome.classList.toggle("on", v === "overview" || v === "empty");
+      tabHome.classList.toggle("on", v === "overview");
+      tabAgents.classList.toggle("on", v === "agents");
+      tabToday.classList.toggle("on", v === "empty");
       tabChat.classList.toggle("on", v === "prompt");
-      tabTools.classList.toggle("on", v === "tools");
+      const tool = v === "tools" ? (Tools.wanted ?? Tools.tab) : null;
+      for (const tab of toolTabs) tab.el.classList.toggle("on", tab.id === tool);
+      // One card waits at a time: the badge says it is there, on the list's icon.
+      const asking = State.pendingApproval ? 1 : 0;
+      agentsBadge.textContent = asking ? String(asking) : "";
+      agentsBadge.style.display = asking && v !== "agents" ? "" : "none";
       const waiting = State.notifications.length;
       tabNotes.classList.toggle("on", v === "notifications");
       tabNotes.style.display = waiting || v === "notifications" ? "" : "none";
@@ -159,6 +200,17 @@ export function buildHeader(actions: ViewActions): ViewHost {
       soundBtn.append(svg(State.settings.soundEnabled ? ICONS.speakerOn : ICONS.speakerOff, 14));
       syncPlanPills();
       el.style.opacity = v === "confused" ? "0" : "1";
+
+      const open = State.mode === "expanded";
+      if (open && !stopClock) stopClock = tickClock(headerClock);
+      else if (!open && stopClock) {
+        stopClock();
+        stopClock = null;
+      }
+      // Measured once the row is laid out: a hidden header has no sizes to go by.
+      const room = clockSlot.clientWidth;
+      const need = headerClock.el.offsetWidth;
+      if (room > 0 && need > 0) clockSlot.classList.toggle("tight", room < need + 12);
     },
   };
 
@@ -1009,6 +1061,7 @@ export function buildViews(
   map.set("choose", buildChoose(actions));
   map.set("recap", buildRecap(actions));
   map.set("notifications", buildInbox(actions, onInboxRows));
+  map.set("agents", buildSessions(actions, onHeightChange));
   // Not in the Windows v1: sending a file by email, window attach + web result.
   map.set("mail", buildPlaceholder(tl("Sending by email isn't in this version."), ""));
   map.set("searching", buildPlaceholder(tl("Claude is searching…"), ""));

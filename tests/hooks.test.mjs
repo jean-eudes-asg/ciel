@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import { calls, emit, sent } from "./tauri.mjs";
 import { registerHookHandlers } from "../src/island/hooks.ts";
 import { DEFAULT_SETTINGS, State } from "../src/core/state.ts";
+import { Sessions } from "../src/core/sessions.ts";
 
 const CLAUDE = "integration_claude";
 
@@ -38,6 +39,7 @@ beforeEach(() => {
   State.pendingApproval = null;
   State.settings = { ...DEFAULT_SETTINGS };
   State.loadIntegrationTasks();
+  Sessions.swap();
 });
 
 // hooks.ts keeps timer handles between events: the 110 s approval timeout, and
@@ -621,6 +623,44 @@ test("the card carries the rule Don't ask again would make, a question never doe
   });
   assert.ok(State.pendingApproval.questions);
   assert.equal(State.pendingApproval.remember, undefined);
+});
+
+// ── The agents' list ──────────────────────────────────────────────────────────
+
+test("every session has its own row, read from its pill as each event is handled", () => {
+  hook({ hook_event_name: "UserPromptSubmit", session_id: "s1", cwd: "C:\\Users\\me\\proj", prompt: "Fix the build" });
+  hook({ hook_event_name: "PreToolUse", session_id: "s1", cwd: "C:\\Users\\me\\proj", tool_name: "Bash", tool_input: { command: "npm test" } });
+  hook({ hook_event_name: "UserPromptSubmit", session_id: "s2", cwd: "C:\\Users\\me\\site", prompt: "Write the page" });
+  hook({ hook_event_name: "UserPromptSubmit", session_id: "x1", ciel_agent: "codex", cwd: "/home/me/api", prompt: "Rate limits" });
+  assert.deepEqual(Sessions.list.map((s) => [s.pillId, s.sessionId, s.agent, s.project, s.title, s.phase]), [
+    [CLAUDE, "s1", "Claude Code", "proj", "Fix the build", "working"],
+    [CLAUDE, "s2", "Claude Code", "site", "Write the page", "working"],
+    ["agent_codex", "x1", "Codex", "api", "Rate limits", "working"],
+  ]);
+  assert.match(Sessions.list[0].line, /npm test/);
+
+  hook({ hook_event_name: "Stop", session_id: "s2", last_assistant_message: "The page is written." });
+  assert.equal(Sessions.list[1].phase, "done");
+  hook({ hook_event_name: "SessionEnd", session_id: "s1" });
+  assert.deepEqual(Sessions.list.map((s) => s.sessionId), ["s2", "x1"]);
+});
+
+test("the session whose card waits is the one that asks; Ciel's own brain has no row", () => {
+  hook({ hook_event_name: "UserPromptSubmit", session_id: "s1", prompt: "One" });
+  hook({ hook_event_name: "UserPromptSubmit", session_id: "s2", prompt: "Two" });
+  ask("r1", { session_id: "s2" });
+  const waiting = State.pendingApproval;
+  const rows = Sessions.rows({ pillId: waiting.pillId, sessionId: waiting.sessionId }, Date.now());
+  assert.deepEqual(rows.map((r) => [r.sessionId, r.phase]), [["s2", "asking"], ["s1", "working"]]);
+
+  hook({ hook_event_name: "PermissionRequest", request_id: "r-ciel", session_id: "v1", ciel_agent: "ciel", tool_name: "Bash" });
+  assert.ok(!Sessions.list.some((s) => s.sessionId === "v1"));
+});
+
+test("a paused island keeps no rows", () => {
+  State.paused = true;
+  hook({ hook_event_name: "UserPromptSubmit", session_id: "s1", prompt: "One" });
+  assert.deepEqual(Sessions.list, []);
 });
 
 // ── What takes over from a stop ───────────────────────────────────────────────

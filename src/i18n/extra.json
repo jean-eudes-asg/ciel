@@ -9128,17 +9128,6 @@
    "ru": "Добавьте свой город",
    "id": "Tambahkan kota Anda"
   },
-  "Sound, microphones, screen": {
-   "zh-Hans": "声音、麦克风、屏幕",
-   "hi": "आवाज़, माइक्रोफ़ोन, स्क्रीन",
-   "es": "Sonido, micrófonos, pantalla",
-   "ar": "الصوت والميكروفونات والشاشة",
-   "fr": "Son, micros, écran",
-   "bn": "সাউন্ড, মাইক্রোফোন, স্ক্রিন",
-   "pt-BR": "Som, microfones, tela",
-   "ru": "Звук, микрофоны, экран",
-   "id": "Suara, mikrofon, layar"
-  },
   "{minutes} min to stretch, drink, look far away.": {
    "zh-Hans": "{minutes} 分钟：伸展一下、喝点水、看看远处。",
    "hi": "{minutes} मिनट: स्ट्रेच करें, पानी पिएँ, दूर देखें।",
@@ -10950,6 +10939,235 @@
    "pt-BR": "Nada lembrado ainda.",
    "ru": "Пока ничего не запомнено.",
    "id": "Belum ada yang diingat."
+  },
+  "No agent is running.": {
+   "zh-Hans": "没有正在运行的智能体。",
+   "hi": "कोई एजेंट नहीं चल रहा है।",
+   "es": "No hay ningún agente en marcha.",
+   "ar": "لا يوجد وكيل يعمل الآن.",
+   "fr": "Aucun agent ne tourne.",
+   "bn": "কোনো এজেন্ট চলছে না।",
+   "pt-BR": "Nenhum agente em execução.",
+   "ru": "Ни один агент не запущен.",
+   "id": "Tidak ada agen yang berjalan."
+  },
+  "Start one in your terminal and it shows here.": {
+   "zh-Hans": "在终端中启动一个，它就会显示在这里。",
+   "hi": "अपने टर्मिनल में एक शुरू करें, वह यहाँ दिखेगा।",
+   "es": "Inicia uno en tu terminal y aparecerá aquí.",
+   "ar": "ابدأ واحدًا في الطرفية وسيظهر هنا.",
+   "fr": "Lancez-en un dans votre terminal et il apparaît ici.",
+   "bn": "আপনার টার্মিনালে একটি চালু করুন, এটি এখানে দেখা যাবে।",
+   "pt-BR": "Inicie um no seu terminal e ele aparece aqui.",
+   "ru": "Запустите агента в терминале, и он появится здесь.",
+   "id": "Mulai satu di terminal Anda dan ia akan muncul di sini."
+  },
+  "Asks you a question": {
+   "zh-Hans": "向你提问",
+   "hi": "आपसे एक सवाल पूछ रहा है",
+   "es": "Te hace una pregunta",
+   "ar": "يطرح عليك سؤالًا",
+   "fr": "Vous pose une question",
+   "bn": "আপনাকে একটি প্রশ্ন করছে",
+   "pt-BR": "Faz uma pergunta a você",
+   "ru": "Задаёт вам вопрос",
+   "id": "Mengajukan pertanyaan kepada Anda"
+  },
+  "Allow {what}?": {
+   "zh-Hans": "允许 {what}？",
+   "hi": "{what} की अनुमति दें?",
+   "es": "¿Permitir {what}?",
+   "ar": "السماح بـ {what}؟",
+   "fr": "Autoriser {what} ?",
+   "bn": "{what} অনুমতি দেবেন?",
+   "pt-BR": "Permitir {what}?",
+   "ru": "Разрешить {what}?",
+   "id": "Izinkan {what}?"
+  },
+  "Thinking…": {
+   "zh-Hans": "思考中…",
+   "hi": "सोच रहा है…",
+   "es": "Pensando…",
+   "ar": "يفكّر…",
+   "fr": "Réfléchit…",
+   "bn": "ভাবছে…",
+   "pt-BR": "Pensando…",
+   "ru": "Думает…",
+   "id": "Berpikir…"
+  },
+  "Stopped on an error": {
+   "zh-Hans": "因错误而停止",
+   "hi": "त्रुटि पर रुक गया",
+   "es": "Se detuvo por un error",
+   "ar": "توقف بسبب خطأ",
+   "fr": "Arrêté sur une erreur",
+   "bn": "ত্রুটিতে থেমে গেছে",
+   "pt-BR": "Parou em um erro",
+   "ru": "Остановился из-за ошибки",
+   "id": "Berhenti karena kesalahan"
+  },
+  "Waiting for a prompt": {
+   "zh-Hans": "等待指令",
+   "hi": "प्रॉम्प्ट का इंतज़ार",
+   "es": "Esperando una instrucción",
+   "ar": "بانتظار تعليمات",
+   "fr": "En attente d'une demande",
+   "bn": "প্রম্পটের অপেক্ষায়",
+   "pt-BR": "Aguardando um pedido",
+   "ru": "Ждёт запроса",
+   "id": "Menunggu perintah"
+  },
+  "{count} working": {
+   "zh-Hans": "{count} 个工作中",
+   "hi": "{count} काम पर",
+   "es": "{count} trabajando",
+   "ar": "قيد العمل: {count}",
+   "fr": "{count} au travail",
+   "bn": "{count}টি কাজ করছে",
+   "pt-BR": "{count} trabalhando",
+   "ru": "{count} в работе",
+   "id": "{count} bekerja"
+  },
+  "{count} done": {
+   "zh-Hans": "{count} 个已完成",
+   "hi": "पूरा: {count}",
+   "es": "Listo: {count}",
+   "ar": "انتهى: {count}",
+   "fr": "Terminé : {count}",
+   "bn": "শেষ: {count}",
+   "pt-BR": "Concluído: {count}",
+   "ru": "Готово: {count}",
+   "id": "{count} selesai"
+  },
+  "{count} stopped": {
+   "zh-Hans": "{count} 个已停止",
+   "hi": "रुका: {count}",
+   "es": "Detenido: {count}",
+   "ar": "توقف: {count}",
+   "fr": "Arrêté : {count}",
+   "bn": "থেমেছে: {count}",
+   "pt-BR": "Parado: {count}",
+   "ru": "Остановлено: {count}",
+   "id": "{count} berhenti"
+  },
+  "All quiet": {
+   "zh-Hans": "一切安静",
+   "hi": "सब शांत",
+   "es": "Todo en calma",
+   "ar": "كل شيء هادئ",
+   "fr": "Tout est calme",
+   "bn": "সব শান্ত",
+   "pt-BR": "Tudo calmo",
+   "ru": "Всё тихо",
+   "id": "Semua tenang"
+  },
+  "None running": {
+   "zh-Hans": "没有运行中的",
+   "hi": "कोई नहीं चल रहा",
+   "es": "Ninguno en marcha",
+   "ar": "لا شيء يعمل",
+   "fr": "Aucun en cours",
+   "bn": "কিছুই চলছে না",
+   "pt-BR": "Nenhum em execução",
+   "ru": "Ничего не запущено",
+   "id": "Tidak ada yang berjalan"
+  },
+  "Week {n}": {
+   "zh-Hans": "第 {n} 周",
+   "hi": "सप्ताह {n}",
+   "es": "Semana {n}",
+   "ar": "الأسبوع {n}",
+   "fr": "Semaine {n}",
+   "bn": "সপ্তাহ {n}",
+   "pt-BR": "Semana {n}",
+   "ru": "Неделя {n}",
+   "id": "Minggu {n}"
+  },
+  "Event": {
+   "zh-Hans": "活动",
+   "hi": "इवेंट",
+   "es": "Evento",
+   "ar": "حدث",
+   "fr": "Événement",
+   "bn": "ইভেন্ট",
+   "pt-BR": "Evento",
+   "ru": "Событие",
+   "id": "Acara"
+  },
+  "Nothing planned": {
+   "zh-Hans": "没有安排",
+   "hi": "कुछ तय नहीं",
+   "es": "Nada previsto",
+   "ar": "لا شيء مخطط",
+   "fr": "Rien de prévu",
+   "bn": "কিছু নির্ধারিত নেই",
+   "pt-BR": "Nada marcado",
+   "ru": "Ничего не запланировано",
+   "id": "Tidak ada rencana"
+  },
+  "Your day is clear": {
+   "zh-Hans": "今天没有日程",
+   "hi": "आपका दिन खाली है",
+   "es": "Tu día está libre",
+   "ar": "يومك خالٍ",
+   "fr": "Votre journée est libre",
+   "bn": "আপনার দিন ফাঁকা",
+   "pt-BR": "Seu dia está livre",
+   "ru": "День свободен",
+   "id": "Hari Anda kosong"
+  },
+  "Drop files on Ciel": {
+   "zh-Hans": "把文件拖到 Ciel 上",
+   "hi": "फ़ाइलें Ciel पर छोड़ें",
+   "es": "Suelta archivos sobre Ciel",
+   "ar": "أفلت الملفات على Ciel",
+   "fr": "Déposez des fichiers sur Ciel",
+   "bn": "Ciel-এর উপর ফাইল ছাড়ুন",
+   "pt-BR": "Solte arquivos no Ciel",
+   "ru": "Перетащите файлы на Ciel",
+   "id": "Jatuhkan file ke Ciel"
+  },
+  "{count} need you": {
+   "zh-Hans": {
+    "other": "{count} 个需要你"
+   },
+   "hi": {
+    "one": "{count} को आपकी ज़रूरत है",
+    "other": "{count} को आपकी ज़रूरत है"
+   },
+   "es": {
+    "one": "{count} te necesita",
+    "other": "{count} te necesitan"
+   },
+   "ar": {
+    "zero": "لا أحد يحتاجك",
+    "one": "واحد يحتاجك",
+    "two": "اثنان يحتاجانك",
+    "few": "{count} يحتاجونك",
+    "many": "{count} يحتاجونك",
+    "other": "{count} يحتاجونك"
+   },
+   "fr": {
+    "one": "{count} a besoin de vous",
+    "other": "{count} ont besoin de vous"
+   },
+   "bn": {
+    "one": "{count}টির আপনাকে দরকার",
+    "other": "{count}টির আপনাকে দরকার"
+   },
+   "pt-BR": {
+    "one": "{count} precisa de você",
+    "other": "{count} precisam de você"
+   },
+   "ru": {
+    "one": "{count} ждёт вас",
+    "few": "{count} ждут вас",
+    "many": "{count} ждут вас",
+    "other": "{count} ждут вас"
+   },
+   "id": {
+    "other": "{count} butuh Anda"
+   }
   }
  }
 }

@@ -6,7 +6,7 @@
 // Code's (hook/src/normalize.rs), so one handler serves them all.
 
 import { Bridge, onEvent } from "../core/bridge";
-import { buildFileDiff, fileName, makeDiffStep, toOneLine } from "../core/diff";
+import { buildFileDiff, fileName, lastTextStep, makeDiffStep, toOneLine } from "../core/diff";
 import { Sound } from "../core/sound";
 import { State, type AskedQuestion } from "../core/state";
 import { pillDefinition } from "../core/pills";
@@ -16,6 +16,7 @@ import { parseClaudePlan, restorePlanUsage } from "../core/plan";
 import { setClaudePlanUsage, storedClaudePlanUsage } from "../views/usage";
 import { N_, t } from "../i18n/i18n";
 import { asRule, ruleLabel } from "../core/rules";
+import { Sessions } from "../core/sessions";
 
 const CLAUDE_ID = "integration_claude";
 const CURSOR_ID = "agent_cursor";
@@ -553,6 +554,24 @@ export function handleHook(island: Island, payload: HookPayload) {
 
     default:
       break;
+  }
+  // The agents' list keeps each session's own line (core/sessions.ts), read
+  // from its pill now that the event is handled. Ciel's own brain has no row.
+  if (validAgent !== CIEL_AGENT) {
+    const pill = State.tasks.find((x) => x.id === agentId);
+    Sessions.observe({
+      event: name,
+      pillId: agentId,
+      sessionId,
+      agent: validAgent ? agentName(validAgent) : (pillDefinition(agentId)?.name ?? "Claude Code"),
+      color: pill?.color ?? (validAgent ? agentColor(validAgent) : "#FFFFFF"),
+      project: cwd ? projectName : "",
+      cwd,
+      prompt: payload.prompt,
+      line: pill ? lastTextStep(pill.steps) : undefined,
+      final: pill?.finalLine,
+      now: Date.now(),
+    });
   }
   State.notify();
 }

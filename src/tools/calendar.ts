@@ -18,7 +18,8 @@ import type { ToolPanel } from "./view";
 
 const CALENDAR_ID = "integration_calendar";
 
-function events(): CalendarEvent[] {
+/** The Calendar pill's events for the month around today, as it last read them. */
+export function events(): CalendarEvent[] {
   const month = State.integrations[CALENDAR_ID]?.data?.month;
   if (!Array.isArray(month)) return [];
   return month
