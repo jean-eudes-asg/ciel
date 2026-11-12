@@ -1,9 +1,10 @@
-// The Tools tab of the open island: timers, the clipboard, the shelf, quick
-// controls and the weather, one at a time beside a small Ciel, with their
-// own little tabs. Each tool is a panel (tools/*.ts); what they know comes
-// from tools/store.ts.
+// The tools of the open island: timers, the clipboard, the shelf, quick
+// controls, the calendar and the weather, one at a time beside a small Ciel.
+// Each has its own icon in the island's header (TOOL_TABS, drawn by
+// views/views.ts), one move from any other view. Each tool is a panel
+// (tools/*.ts); what they know comes from tools/store.ts.
 
-import { h, svg } from "../views/dom";
+import { h } from "../views/dom";
 import { ICONS } from "../views/icons";
 import type { ViewActions, ViewHost } from "../views/views";
 import { State } from "../core/state";
@@ -28,7 +29,7 @@ export interface ToolPanel {
   focus?(): void;
 }
 
-const TABS: readonly { id: ToolId; icon: string; label: Msg }[] = [
+export const TOOL_TABS: readonly { id: ToolId; icon: string; label: Msg }[] = [
   { id: "timers", icon: ICONS.timer, label: tl("Timers") },
   { id: "clipboard", icon: ICONS.clipboard, label: tl("Clipboard") },
   { id: "shelf", icon: ICONS.shelf, label: tl("Shelf") },
@@ -38,7 +39,7 @@ const TABS: readonly { id: ToolId; icon: string; label: Msg }[] = [
 ];
 
 /** The timer icon is a filled one; the others are drawn as lines. */
-const FILLED = new Set<ToolId>(["timers"]);
+export const FILLED_TOOLS: ReadonlySet<ToolId> = new Set<ToolId>(["timers"]);
 
 /** `resize`: the island takes its height again (Controls is taller). */
 export function buildTools(actions: ViewActions, resize: () => void = () => {}): ViewHost {
@@ -51,29 +52,7 @@ export function buildTools(actions: ViewActions, resize: () => void = () => {}):
     calendar: buildCalendar(actions),
   };
   const holder = h("div", { class: "tools-panel" });
-  const buttons = new Map<ToolId, HTMLElement>();
-  const tabs = h("div", { class: "tools-tabs", role: "tablist" });
-  for (const tab of TABS) {
-    const b = h(
-      "button",
-      {
-        class: "tools-tab",
-        role: "tab",
-        title: tab.label,
-        onclick: () => {
-          if (Tools.tab === tab.id) return;
-          actions.blip();
-          Tools.tab = tab.id;
-          State.notify();
-        },
-      },
-      svg(tab.icon, 12, FILLED.has(tab.id) ? {} : { stroke: 2 }),
-      h("span", { text: tab.label }),
-    );
-    buttons.set(tab.id, b);
-    tabs.append(b);
-  }
-  const el = h("div", { class: "view tools" }, h("div", { class: "card" }, h("div", { class: "tools-body" }, tabs, holder)));
+  const el = h("div", { class: "view tools" }, h("div", { class: "card" }, h("div", { class: "tools-body" }, holder)));
 
   let current: ToolId | null = null;
   let wasOn = false;
@@ -87,10 +66,6 @@ export function buildTools(actions: ViewActions, resize: () => void = () => {}):
         Tools.wanted = null;
       }
       const id = Tools.tab;
-      for (const [tab, b] of buttons) {
-        b.classList.toggle("on", tab === id);
-        b.setAttribute("aria-selected", String(tab === id));
-      }
       const panel = panels[id];
       if (current !== id) {
         current = id;

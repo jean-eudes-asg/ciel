@@ -40,8 +40,31 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   answers**, each with **Remove**; they stay on your computer. For Claude
   Code, Codex, Copilot CLI and Muse Code. A paused Ciel answers nothing, and
   a question or a plan to approve is never remembered.
+- **Every agent session in one list** (the prompt icon in the island's
+  header): how many need you, work or are done on top, then a row a session
+  with that agent's own little cloud in its mood, what it was asked, what it
+  is doing now, since when and in which project. Two Claude Code sessions
+  have a row each, where the pill shows only the one that spoke last. The
+  row that waits for you says what it asks, with Deny and Allow on the row;
+  a press on a row opens it, and its arrow brings that session's own
+  terminal window to the front. The icon wears a badge while a card waits.
+- **Today, in tiles** (the sun in the header, and what the island opens on
+  with nothing running): the week with today lit and a dot on the days that
+  hold something, the weather with the day's high and low, the timer on a
+  ring that fills as it runs, your agents as their little clouds, what comes
+  next in your calendar, and what waits on the shelf or in the clipboard.
+  Each tile opens the tool behind it.
 
 ### Changed
+- **One row of icons in the island's header**, each one move from any other:
+  home, the agents, today, the chat, then every tool by itself: timers, the
+  clipboard, the shelf, the controls, the calendar and the weather. The Tools
+  tab and its second row of tabs are gone, a dot sits under the icon you are
+  on, and each tool has the room that row took. The time sits in what the
+  icons and the buttons leave free between them, never over an icon.
+- **The notch grows out of the screen's edge**: where its sides meet the
+  edge they curve outward into it, a small shoulder each side, rounder when
+  the island is open. The sky island floats free and has none.
 - **New sounds**, all 29, low and few-noted. What you touch answers with a
   tap on wood: the island opening and closing, a key, a file attached. What
   asks for you or tells you something rings a deep bell once or twice and

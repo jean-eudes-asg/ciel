@@ -3,6 +3,7 @@
 // settings, and where the island was (hidden, compact or open, on which view).
 
 import { State, type SessionDiffStore } from "../core/state";
+import { Sessions, type AgentSession } from "../core/sessions";
 import type { FsmState } from "../island/fsm";
 import type { DemoIsland } from "./host";
 
@@ -20,6 +21,8 @@ type Fields = { [K in Field]: (typeof State)[K] };
 export interface IslandSnapshot {
   fields: Fields;
   diffs: SessionDiffStore;
+  /** The agents' list as it was: the demo's sessions never mix with the real ones. */
+  sessions: AgentSession[];
   fsm: FsmState;
   fsmPinned: boolean;
   petitToHiddenDelay: number;
@@ -37,6 +40,7 @@ export function takeSnapshot(island: DemoIsland): IslandSnapshot {
   return {
     fields: fields as Fields,
     diffs: State.swapSessionDiffs(),
+    sessions: Sessions.swap(),
     fsm: island.fsm.state,
     fsmPinned: island.fsm.pinned,
     petitToHiddenDelay: island.fsm.petitToHiddenDelay,
@@ -48,6 +52,7 @@ export function restoreSnapshot(island: DemoIsland, snap: IslandSnapshot) {
   // The demo's diffs go, with their timers; the real ones come back with theirs.
   for (const id of [...State.sessionDiffs.keys()]) State.clearSessionDiffs(id);
   State.swapSessionDiffs(snap.diffs);
+  Sessions.swap(snap.sessions);
   const target = State as unknown as Record<Field, unknown>;
   for (const key of FIELDS) target[key] = copy(snap.fields[key]);
   island.applySettings();

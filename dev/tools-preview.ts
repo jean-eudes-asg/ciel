@@ -119,11 +119,11 @@ function show(label: string, height: number, el: HTMLElement, bot = { x: 46, y: 
 }
 
 // The island's height less its header (52): taller on Controls, as island.ts makes it.
-const toolsHeight = () => (TALL_TOOLS.includes(Tools.tab) ? TALL_TOOL_H - 52 : 216);
+const toolsHeight = () => (TALL_TOOLS.includes(Tools.tab) ? TALL_TOOL_H - 52 : 184);
 const tools = buildTools(actions, () => ((tools.el.parentElement as HTMLElement).style.height = `${toolsHeight()}px`));
 show("Tools", toolsHeight(), tools.el);
 const today = buildToday(actions);
-show("Today (nothing running)", 118, today.el, { x: 70, y: 59, d: 62 });
+show("Today", 194, today.el, { x: 62, y: 94, d: 56 });
 
 const tabs: ToolId[] = ["timers", "clipboard", "shelf", "controls", "calendar", "weather"];
 const bar = document.getElementById("tabs")!;

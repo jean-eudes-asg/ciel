@@ -34,6 +34,28 @@ export function monthGrid(year: number, month: number, firstDay: number): Date[]
   return Array.from({ length: 42 }, (_, i) => new Date(year, month, 1 - back + i));
 }
 
+/** The seven days of the week `day` is in, from the locale's first day of the week. */
+export function weekDays(day: Date, firstDay: number): Date[] {
+  const back = (day.getDay() - firstDay + 7) % 7;
+  return Array.from({ length: 7 }, (_, i) => new Date(day.getFullYear(), day.getMonth(), day.getDate() - back + i));
+}
+
+/** The ISO 8601 week number: the week with the year's first Thursday is week 1. */
+export function isoWeek(day: Date): number {
+  const d = new Date(Date.UTC(day.getFullYear(), day.getMonth(), day.getDate()));
+  const weekday = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - weekday);
+  const yearStart = Date.UTC(d.getUTCFullYear(), 0, 1);
+  return Math.ceil(((d.getTime() - yearStart) / 86_400_000 + 1) / 7);
+}
+
+/** What comes next: the first timed event not over yet, within `aheadMs`. */
+export function nextEvent(events: readonly CalendarEvent[], now: number, aheadMs = 36 * 3600_000): CalendarEvent | null {
+  return events
+    .filter((e) => !e.allDay && e.end > now && e.start - now < aheadMs)
+    .sort((a, b) => a.start - b.start)[0] ?? null;
+}
+
 export interface CalendarEvent {
   title: string;
   /** Unix ms. */

@@ -37,6 +37,7 @@ import { DRAG_THRESHOLD } from "../cloud/desktop-logic";
 import { buildLiveChip, type LiveChip } from "./live";
 import { holdsIsland } from "../core/live";
 import { Tools } from "../tools/store";
+import { sessionsHeight } from "../views/sessions";
 
 const BOT_OVERHANG = 40;
 const CLAUDE_DESKTOP_ID = "agent_claude-desktop";
@@ -752,6 +753,7 @@ export class Island {
     }
     if (State.mode === "expanded" && State.view === "notifications") h = this.inboxH;
     if (State.mode === "expanded" && State.view === "tools" && TALL_TOOLS.includes(Tools.tab)) h = TALL_TOOL_H;
+    if (State.mode === "expanded" && State.view === "agents") h = sessionsHeight();
     if (this.sky) {
       // A pill at rest, rounder corners open, and a dot before it is gone.
       if (State.mode === "hidden") return { w: SKY_DOT, h: SKY_DOT, r: SKY_DOT / 2 };
@@ -1381,10 +1383,10 @@ export class Island {
       const home = this.liveChip.live?.kind === "lyric" ? this.isletsUnder : this.isletsRight;
       if (this.liveChip.el.parentElement !== home) home.prepend(this.liveChip.el);
     }
-    // Open, it sits in the header row, between the tabs and the buttons.
-    this.clock.classList.toggle("open", expanded);
+    // The folded island's own clock, in its middle. Open, the header has the
+    // time in its row (views.ts buildHeader), clear of the icons.
     // On its own islet, what is going on no longer takes the time's place.
-    this.syncClock((State.mode === "compact" && !busy && (!liveShown || this.sky)) || (live && State.view !== "confused"));
+    this.syncClock(State.mode === "compact" && !busy && (!liveShown || this.sky));
     this.isletsBelow.classList.toggle("on", this.sky && live && State.view === "overview");
     this.noteStack.sync(State.mode === "compact" && !busy);
     // The microphones just went off, a timer rang: the folded island comes out to say so.

@@ -24,7 +24,8 @@ export type IslandViewName =
   | "greeting"
   | "recap"
   | "notifications"
-  | "tools";
+  | "tools"
+  | "agents";
 
 export type BotStateName =
   | "idle"
@@ -81,7 +82,8 @@ export const WAKE_STRIP_H = 6;
 
 export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
   overview: { height: 160, botX: 68, botY: null, botDiameter: 58, agentMode: "pills" },
-  empty: { height: 160, botX: 70, botY: null, botDiameter: 62, agentMode: "none" },
+  // Today (views/today.ts): the greeting and two rows of tiles, Ciel beside them.
+  empty: { height: 236, botX: 62, botY: 136, botDiameter: 56, agentMode: "none" },
   approval: { height: 160, botX: 62, botY: null, botDiameter: 56, agentMode: "column" },
   question: { height: 160, botX: 62, botY: null, botDiameter: 56, agentMode: "column" },
   error: { height: 160, botX: 62, botY: null, botDiameter: 58, agentMode: "column" },
@@ -105,9 +107,19 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
   recap: { height: 184, botX: 62, botY: null, botDiameter: 58, agentMode: "column" },
   // The list Ciel keeps (views/inbox.ts): Ciel small at the top left, the rows beside him.
   notifications: { height: 280, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
-  // The Tools tab (src/tools): Ciel small at the top left, the tool beside him.
-  tools: { height: 268, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
+  // A tool (src/tools): Ciel small at the top left, the tool beside him.
+  tools: { height: 236, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
+  // Every agent session in one list (views/sessions.ts): Ciel small at the top
+  // left, a row a session beside him. The height follows the rows (agentsHeight).
+  agents: { height: 160, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
 };
+
+/** The agents' list: its line of counts, then up to five rows before it scrolls. */
+export const AGENT_ROW_H = 44;
+export function agentsHeight(rows: number): number {
+  const shown = Math.max(1, Math.min(5, rows));
+  return Math.max(VIEW_LAYOUTS.agents.height, 42 + 60 + shown * AGENT_ROW_H);
+}
 
 // The upload views above are only the fallback geometry. Once a file is actually
 // dropped the whole sequence — Ciel included — is drawn by src/upload, which
@@ -132,7 +144,7 @@ export function panelHeightFor(islandH: number): number {
  * The Tools view on Controls (the buttons, the sliders, three rows of tiles,
  * the apps) and on Calendar (six weeks beside a day and the world clocks).
  */
-export const TALL_TOOL_H = 380;
+export const TALL_TOOL_H = 348;
 export const TALL_TOOLS: readonly string[] = ["controls", "calendar"];
 
 /** The question view with options to pick from: room for two rows of them. */

@@ -410,6 +410,42 @@ body {
   border-radius: inherit;
 }
 
+/* The notch grows out of the screen's edge: where its sides meet the edge they
+   curve outward into it, a small shoulder each side, instead of a hard corner.
+   The sky island floats free of the edge and has none. Each shoulder is a
+   square of the island's colour with a quarter ellipse cut out of it; hidden,
+   the island has no height and neither do they. */
+#island:not([data-shape="sky"])::before,
+#island:not([data-shape="sky"])::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 9px;
+  height: min(9px, 100%);
+  background: var(--bg);
+  pointer-events: none;
+  transition: width 0.3s ease-out, height 0.3s ease-out;
+}
+
+#island:not([data-shape="sky"])::before {
+  right: 100%;
+  -webkit-mask-image: radial-gradient(farthest-side at 0 100%, transparent calc(100% - 0.6px), #000 100%);
+  mask-image: radial-gradient(farthest-side at 0 100%, transparent calc(100% - 0.6px), #000 100%);
+}
+
+#island:not([data-shape="sky"])::after {
+  left: 100%;
+  -webkit-mask-image: radial-gradient(farthest-side at 100% 100%, transparent calc(100% - 0.6px), #000 100%);
+  mask-image: radial-gradient(farthest-side at 100% 100%, transparent calc(100% - 0.6px), #000 100%);
+}
+
+/* Open, the island's own corners are rounder, and so are its shoulders. */
+#island[data-mode="expanded"]:not([data-shape="sky"])::before,
+#island[data-mode="expanded"]:not([data-shape="sky"])::after {
+  width: 14px;
+  height: min(14px, 100%);
+}
+
 #bot-canvas,
 #greeting-canvas {
   position: absolute;
@@ -500,16 +536,12 @@ body {
 }
 
 /* The flip clock (views/flipclock.ts), small: two little cards on the black. */
-#island-clock .island-flip {
+#island-clock .island-flip,
+.header-clock .island-flip {
   --flip-size: 11.5px;
   --flip-card: var(--tab-on);
   --flip-ink: rgb(var(--fg) / 0.9);
   --flip-gap: 3px;
-}
-
-/* Open, centred on the header row (#content's 8px inset + 34px header). */
-#island-clock.open {
-  top: 9px;
 }
 
 /* Compact 2×2 mini grid, to the right of the notch. */
@@ -1036,6 +1068,174 @@ body {
   box-shadow: 0 0 0 1.5px var(--bg);
 }
 
+/* ── The agents' list (views/sessions.ts) ───────────────────────────────────
+   Every session in a row: its agent's little cloud in its mood, what it was
+   asked, what it does now, since when and where. Same body as the list of
+   notifications. Greys throughout; colour only says who needs you, who works,
+   who is done. */
+
+.sessions-chips {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sessions-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px 2px 7px;
+  border-radius: 999px;
+  background: rgb(var(--fg) / 0.07);
+  font: 600 10.5px var(--font);
+  font-variant-numeric: tabular-nums;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.sessions-chip i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dim-3);
+}
+
+.sessions-chip.asking i { background: #f5a524; }
+.sessions-chip.working i { background: #3b9eff; }
+.sessions-chip.done i { background: #34d399; }
+.sessions-chip.error i { background: #f4505e; }
+
+.sessions-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  scrollbar-width: none;
+}
+
+.sessions-list::-webkit-scrollbar {
+  display: none;
+}
+
+.session-row {
+  flex: 0 0 42px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0 6px 0 9px;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  animation: inbox-in 0.28s ease-out;
+}
+
+.session-row:hover,
+.session-row:focus-visible {
+  background: rgb(var(--fg) / 0.055);
+  outline: none;
+}
+
+/* The one that waits for you: a hairline of amber, and its line in amber. */
+.session-row.asking {
+  background: rgb(var(--fg) / 0.05);
+  box-shadow: inset 0 0 0 1px rgba(245, 165, 36, 0.4);
+}
+
+.session-row .mini {
+  flex: 0 0 auto;
+}
+
+.session-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.session-title,
+.session-line,
+.session-where {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-title {
+  font: 600 12.5px/16px var(--font);
+  color: var(--ink);
+}
+
+.session-line {
+  font: 400 11.5px/15px var(--font);
+  color: var(--dim-2);
+}
+
+.session-row.asking .session-line { color: var(--amber-text); }
+.session-row.done .session-line { color: var(--green-text); }
+.session-row.error .session-line { color: var(--red-text); }
+
+.session-side {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.session-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  max-width: 170px;
+}
+
+.session-age {
+  min-height: 15px;
+  font: 600 10.5px/15px var(--font);
+  font-variant-numeric: tabular-nums;
+  color: var(--dim-3);
+}
+
+.session-where {
+  max-width: 170px;
+  font: 400 10.5px/14px var(--font);
+  color: var(--dim-3);
+}
+
+.session-jump {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.session-row:hover .session-jump,
+.session-jump:focus-visible {
+  opacity: 1;
+}
+
+.btn.small {
+  padding: 4px 11px;
+  font-size: 11.5px;
+}
+
+.sessions-empty {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 8px 14px;
+}
+
+.sessions-empty b {
+  font: 600 12.5px var(--font);
+  color: var(--ink-2);
+}
+
+.sessions-empty span {
+  font: 400 11.5px var(--font);
+  color: var(--dim-2);
+}
+
 .inbox-body {
   position: relative;
   z-index: 1;
@@ -1262,12 +1462,23 @@ body {
 
 .tabs {
   display: flex;
-  gap: 5px;
+  align-items: center;
+  gap: 2px;
   padding-left: 14px;
 }
 
+/* The tools, each with its own icon, set a little apart from the views. */
+.tab-group {
+  display: flex;
+  gap: 2px;
+  margin-left: 5px;
+  padding-left: 7px;
+  border-left: 1px solid rgb(var(--fg) / 0.1);
+}
+
 .tab {
-  width: 30px;
+  position: relative;
+  width: 27px;
   height: 22px;
   display: grid;
   place-items: center;
@@ -1292,6 +1503,43 @@ body {
 .tab.on {
   background: var(--tab-on);
   color: var(--ink);
+}
+
+/* Where you are, said twice: the lit tab, and a dot under it. */
+.tab.on::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  animation: tab-dot 0.3s var(--spring);
+}
+
+@keyframes tab-dot {
+  from { transform: scale(0); }
+}
+
+/* The time, open: in the middle of what the icons and the buttons leave
+   free. The row lays it out, so it can never sit over an icon; when the row
+   is too full for it, it steps aside. */
+.header-clock {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.header-clock.tight {
+  opacity: 0;
 }
 
 .header-actions {
@@ -1344,6 +1592,12 @@ body {
   .view.on {
     transform: none;
     transition: opacity 0.15s linear;
+  }
+
+  .today-tile,
+  .session-row,
+  .tab.on::after {
+    animation: none;
   }
 }
 
@@ -4385,37 +4639,6 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   padding: 10px 12px 10px 74px;
 }
 
-.tools-tabs {
-  display: flex;
-  gap: 4px;
-  flex: 0 0 auto;
-}
-
-.tools-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  height: 24px;
-  padding: 0 10px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
-  color: var(--dim-2);
-  font: 600 11.5px var(--font);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.tools-tab:hover {
-  background: rgb(var(--fg) / 0.06);
-  color: var(--ink-3);
-}
-
-.tools-tab.on {
-  background: var(--tab-on);
-  color: var(--ink);
-}
-
 .tools-panel {
   position: relative;
   flex: 1 1 auto;
@@ -6127,7 +6350,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   flex-direction: column;
   justify-content: center;
   gap: 9px;
-  padding: 6px 14px 8px 118px;
+  padding: 8px 12px 10px 112px;
 }
 
 .today-head {
@@ -6163,75 +6386,232 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .today-buttons .btn {
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 12px;
 }
 
-.today-glances {
-  display: flex;
+/* The tiles, three across in two rows: the week, the weather and the timer,
+   then the agents, what comes next and what waits. All the same width, so a
+   long word in any language has the same room. Each says one thing and opens
+   the tool behind it. Greys, as everywhere; today's own day is the one lit
+   thing. */
+.today-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 54px;
   gap: 6px;
-  min-width: 0;
 }
 
-.today-glance {
-  flex: 1 1 0;
+.today-tile {
   min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
-  padding: 0 10px 0 7px;
+  padding: 0 7px;
   border: 0;
-  border-radius: 13px;
+  border-radius: 14px;
   background: rgb(var(--fg) / 0.05);
   color: var(--ink);
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.4s var(--spring);
+  animation: tile-in 0.34s var(--spring) backwards;
 }
 
-.today-glance:hover {
+.today-tile:nth-child(2) { animation-delay: 0.03s; }
+.today-tile:nth-child(3) { animation-delay: 0.06s; }
+.today-tile:nth-child(4) { animation-delay: 0.09s; }
+.today-tile:nth-child(5) { animation-delay: 0.12s; }
+.today-tile:nth-child(6) { animation-delay: 0.15s; }
+
+@keyframes tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.97);
+  }
+}
+
+.today-tile:hover {
   background: rgb(var(--fg) / 0.1);
 }
 
-.today-glance-icon {
-  flex: 0 0 26px;
-  height: 26px;
+.today-tile:active {
+  transform: scale(0.97);
+  transition: transform 0.06s ease-out;
+}
+
+.today-tile.ringing {
+  box-shadow: inset 0 0 0 1px rgba(245, 165, 36, 0.55);
+}
+
+.today-visual {
+  position: relative;
+  flex: 0 0 30px;
+  height: 30px;
   display: grid;
   place-items: center;
-  border-radius: 50%;
+  border-radius: 15px;
   background: rgb(var(--fg) / 0.06);
   color: var(--ink-3);
 }
 
-.today-glance.weather .today-glance-icon {
+.today-tile.weather .today-visual {
   background: transparent;
 }
 
-.today-glance.timers .today-glance-icon {
-  color: var(--sky-text);
-}
-
-.today-glance-text {
+.today-text {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  gap: 1px;
 }
 
-.today-glance-text b {
+.today-text b,
+.today-text span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.today-text b {
   font: 600 11.5px var(--font);
   font-variant-numeric: tabular-nums;
 }
 
-.today-glance-text span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font: 500 10px var(--font);
+.today-text span {
+  font: 400 10.5px var(--font);
   color: var(--dim-2);
+}
+
+/* The week. */
+.today-tile.week {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 3px;
+  padding: 0 7px;
+}
+
+.today-week-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 3px;
+  font: 600 10.5px var(--font);
+}
+
+.today-week-head b {
+  font: inherit;
+  color: var(--ink-2);
+  text-transform: capitalize;
+}
+
+.today-week-head span {
+  font-weight: 500;
+  color: var(--dim-3);
+}
+
+.today-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+
+.today-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1px 0 4px;
+  border-radius: 9px;
+}
+
+.today-day i {
+  font: 500 9px/11px var(--font);
+  color: var(--dim-3);
+}
+
+.today-day b {
+  font: 600 11.5px/14px var(--font);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+}
+
+.today-day.on {
+  background: var(--hi);
+}
+
+.today-day.on i,
+.today-day.on b {
+  color: var(--on-hi);
+}
+
+.today-day.busy::after {
+  content: "";
+  position: absolute;
+  bottom: 1px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--dim);
+}
+
+.today-day.on.busy::after {
+  background: var(--on-hi);
+}
+
+/* The timer on its ring. */
+.today-tile.timers .today-visual {
+  flex-basis: 32px;
+  height: 32px;
+  background: transparent;
+}
+
+.today-ring {
+  position: absolute;
+  inset: 0;
+  width: 32px;
+  height: 32px;
+  transform: rotate(-90deg);
+}
+
+.today-ring circle {
+  fill: none;
+  stroke-width: 2.6;
+}
+
+.today-ring .track {
+  stroke: rgb(var(--fg) / 0.12);
+}
+
+.today-ring .arc {
+  stroke: var(--ink);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.today-ring-icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  font: 600 13px var(--font);
+  color: var(--ink-3);
+}
+
+/* The agents, as their little clouds side by side. */
+.today-tile.agents .today-visual {
+  flex: 0 0 auto;
+  min-width: 30px;
+  padding: 0 6px;
+}
+
+.today-clouds {
+  display: flex;
+  align-items: center;
+}
+
+.today-clouds .mini + .mini {
+  margin-left: 2px;
 }
 
 /* The folded island's live activity, in place of the clock (island/live.ts). */
