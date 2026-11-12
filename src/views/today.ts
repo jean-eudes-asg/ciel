@@ -149,7 +149,6 @@ export function buildToday(actions: ViewActions): ViewHost {
       timerSub.textContent = t("Start");
       return;
     }
-    const more = timers.length > 1 ? tn("and one more", "and {count} more", timers.length - 1) : "";
     timerRing.set(lead.ringing ? 1 : progress(lead, nowMs));
     if (lead.ringing) timerMain.textContent = t("Time's up");
     else if (lead.kind === "reminder") timerMain.textContent = dueText(lead.due);
@@ -157,18 +156,22 @@ export function buildToday(actions: ViewActions): ViewHost {
       timerMain.textContent = clock(msLeft(lead, nowMs));
       running = lead.left == null;
     }
-    timerSub.textContent = [timerName(lead), more].filter(Boolean).join(" · ");
+    // The one that rings soonest; the others are a press away, in Timers.
+    timerSub.textContent = timerName(lead);
   }
 
   /** The agents: their little clouds, each in its mood, and who needs you. */
   function agentsTile(rows: SessionRow[]): HTMLElement {
     const moods = { asking: "approval", working: "working", done: "finished", error: "error", idle: "idle" } as const;
     const clouds = h("span", { class: "today-clouds" });
-    for (const row of rows.slice(0, 3)) {
+    // The one that needs you stands alone, and its line has the room to say
+    // so; otherwise up to three, side by side.
+    const shown = rows[0]?.phase === "asking" ? rows.slice(0, 1) : rows.slice(0, 3);
+    for (const row of shown) {
       clouds.append(createMiniBot({
         id: `today:${row.key}`, name: row.agent, color: row.color, state: moods[row.phase],
         stepIndex: 0, steps: [], source: "agent", isIntegration: false,
-      } as AgentTask, 17));
+      } as AgentTask, 15));
     }
     if (!rows.length) clouds.append(svg(ICONS.prompt, 15, { stroke: 2 }));
     return tile("agents", () => {
@@ -236,14 +239,17 @@ export function buildToday(actions: ViewActions): ViewHost {
         ? tile("next", () => open("calendar"), svg(ICONS.calendar, 15, { stroke: 2 }), next.title || t("Event"), dueText(next.start))
         : tile("next", () => open("calendar"), svg(ICONS.calendar, 15, { stroke: 2 }), t("Nothing planned"), t("Your day is clear")));
 
-      // What waits: the files on the shelf first, else what was copied, else
-      // the shelf's own invitation.
+      // What waits: the files on the shelf first, with the latest one's name
+      // (a name is cut where it must be, a sentence should not be); else how
+      // much was copied, and from which app last, never what; else the
+      // shelf's own invitation.
       if (Tools.shelf.length) {
-        tiles.push(tile("shelf", () => open("shelf"), svg(ICONS.shelf, 15, { stroke: 2 }), tn("One file on the shelf", "{count} files on the shelf", Tools.shelf.length), t("Drag it into any app")));
+        const latest = Tools.shelf.reduce((a, b) => (b.at > a.at ? b : a));
+        tiles.push(tile("shelf", () => open("shelf"), svg(ICONS.shelf, 15, { stroke: 2 }), `${t("Shelf")} · ${Tools.shelf.length}`, latest.name));
       } else if (Tools.prefs.clipboard && Tools.clip.items.length) {
-        const pins = Tools.clip.items.filter((i) => i.pinned).length;
+        const latest = Tools.clip.items.reduce((a, b) => (b.at > a.at ? b : a));
         tiles.push(tile("clipboard", () => open("clipboard"), svg(ICONS.clipboard, 15, { stroke: 2 }),
-          tn("One thing copied", "{count} things copied", Tools.clip.items.length), pins ? tn("one pinned", "{count} pinned", pins) : ""));
+          t("Clipboard"), [String(Tools.clip.items.length), latest.app].filter(Boolean).join(" · ")));
       } else {
         tiles.push(tile("shelf", () => open("shelf"), svg(ICONS.shelf, 15, { stroke: 2 }), t("Shelf"), t("Drop files on Ciel")));
       }

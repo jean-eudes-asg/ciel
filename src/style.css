@@ -6390,23 +6390,24 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   font-size: 12px;
 }
 
-/* The tiles, in two rows: the week, the weather and the timer, then the
-   agents, what comes next and what waits. Each says one thing and opens the
-   tool behind it. Greys, as everywhere; today's own day is the one lit thing. */
+/* The tiles, three across in two rows: the week, the weather and the timer,
+   then the agents, what comes next and what waits. All the same width, so a
+   long word in any language has the same room. Each says one thing and opens
+   the tool behind it. Greys, as everywhere; today's own day is the one lit
+   thing. */
 .today-grid {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-auto-rows: 54px;
   gap: 6px;
 }
 
 .today-tile {
-  grid-column: span 4;
   min-width: 0;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 0 9px 0 8px;
+  padding: 0 7px;
   border: 0;
   border-radius: 14px;
   background: rgb(var(--fg) / 0.05);
@@ -6484,12 +6485,11 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 /* The week. */
 .today-tile.week {
-  grid-column: span 5;
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
   gap: 3px;
-  padding: 0 10px;
+  padding: 0 7px;
 }
 
 .today-week-head {
@@ -6514,7 +6514,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 .today-days {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 1px;
 }
 
 .today-day {
@@ -6561,10 +6561,6 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 /* The timer on its ring. */
-.today-tile.timers {
-  grid-column: span 3;
-}
-
 .today-tile.timers .today-visual {
   flex-basis: 32px;
   height: 32px;
@@ -6615,7 +6611,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .today-clouds .mini + .mini {
-  margin-left: -3px;
+  margin-left: 2px;
 }
 
 /* The folded island's live activity, in place of the clock (island/live.ts). */

@@ -9123,7 +9123,7 @@
    "es": "Añade tu ciudad",
    "ar": "أضف مدينتك",
    "fr": "Ajoutez votre ville",
-   "bn": "আপনার শহর যোগ করুন",
+   "bn": "শহর যোগ করুন",
    "pt-BR": "Adicione sua cidade",
    "ru": "Добавьте свой город",
    "id": "Tambahkan kota Anda"
@@ -9278,174 +9278,6 @@
    },
    "id": {
     "other": "{count} file disalin"
-   }
-  },
-  "and {count} more": {
-   "zh-Hans": {
-    "other": "还有 {count} 个"
-   },
-   "hi": {
-    "one": "और एक",
-    "other": "और {count}"
-   },
-   "es": {
-    "one": "y uno más",
-    "other": "y {count} más"
-   },
-   "ar": {
-    "zero": "ولا شيء غيره",
-    "one": "وواحد آخر",
-    "two": "واثنان آخران",
-    "few": "و{count} أخرى",
-    "many": "و{count} أخرى",
-    "other": "و{count} أخرى"
-   },
-   "fr": {
-    "one": "et un autre",
-    "other": "et {count} autres"
-   },
-   "bn": {
-    "one": "আর একটি",
-    "other": "আর {count}টি"
-   },
-   "pt-BR": {
-    "one": "e mais um",
-    "other": "e mais {count}"
-   },
-   "ru": {
-    "one": "и ещё {count}",
-    "few": "и ещё {count}",
-    "many": "и ещё {count}",
-    "other": "и ещё {count}"
-   },
-   "id": {
-    "other": "dan {count} lagi"
-   }
-  },
-  "{count} files on the shelf": {
-   "zh-Hans": {
-    "other": "文件架上有 {count} 个文件"
-   },
-   "hi": {
-    "one": "शेल्फ़ पर एक फ़ाइल",
-    "other": "शेल्फ़ पर {count} फ़ाइलें"
-   },
-   "es": {
-    "one": "Un archivo en el estante",
-    "other": "{count} archivos en el estante"
-   },
-   "ar": {
-    "zero": "لا ملفات على الرف",
-    "one": "ملف واحد على الرف",
-    "two": "ملفان على الرف",
-    "few": "{count} ملفات على الرف",
-    "many": "{count} ملفًا على الرف",
-    "other": "{count} ملف على الرف"
-   },
-   "fr": {
-    "one": "Un fichier sur l'étagère",
-    "other": "{count} fichiers sur l'étagère"
-   },
-   "bn": {
-    "one": "শেলফে একটি ফাইল",
-    "other": "শেলফে {count}টি ফাইল"
-   },
-   "pt-BR": {
-    "one": "Um arquivo na prateleira",
-    "other": "{count} arquivos na prateleira"
-   },
-   "ru": {
-    "one": "{count} файл на полке",
-    "few": "{count} файла на полке",
-    "many": "{count} файлов на полке",
-    "other": "{count} файла на полке"
-   },
-   "id": {
-    "other": "{count} file di rak"
-   }
-  },
-  "{count} things copied": {
-   "zh-Hans": {
-    "other": "已复制 {count} 项"
-   },
-   "hi": {
-    "one": "एक चीज़ कॉपी हुई",
-    "other": "{count} चीज़ें कॉपी हुईं"
-   },
-   "es": {
-    "one": "Una cosa copiada",
-    "other": "{count} cosas copiadas"
-   },
-   "ar": {
-    "zero": "لم يُنسخ شيء",
-    "one": "نُسخ شيء واحد",
-    "two": "نُسخ شيئان",
-    "few": "نُسخت {count} أشياء",
-    "many": "نُسخ {count} شيئًا",
-    "other": "نُسخ {count} شيء"
-   },
-   "fr": {
-    "one": "Une chose copiée",
-    "other": "{count} choses copiées"
-   },
-   "bn": {
-    "one": "একটি জিনিস কপি হয়েছে",
-    "other": "{count}টি জিনিস কপি হয়েছে"
-   },
-   "pt-BR": {
-    "one": "Uma coisa copiada",
-    "other": "{count} coisas copiadas"
-   },
-   "ru": {
-    "one": "Скопирован {count} элемент",
-    "few": "Скопировано {count} элемента",
-    "many": "Скопировано {count} элементов",
-    "other": "Скопировано {count} элемента"
-   },
-   "id": {
-    "other": "{count} hal disalin"
-   }
-  },
-  "{count} pinned": {
-   "zh-Hans": {
-    "other": "{count} 项已固定"
-   },
-   "hi": {
-    "one": "एक पिन की गई",
-    "other": "{count} पिन की गईं"
-   },
-   "es": {
-    "one": "una fijada",
-    "other": "{count} fijadas"
-   },
-   "ar": {
-    "zero": "لا شيء مثبّت",
-    "one": "واحد مثبّت",
-    "two": "اثنان مثبّتان",
-    "few": "{count} مثبّتة",
-    "many": "{count} مثبّتًا",
-    "other": "{count} مثبّت"
-   },
-   "fr": {
-    "one": "une épinglée",
-    "other": "{count} épinglées"
-   },
-   "bn": {
-    "one": "একটি পিন করা",
-    "other": "{count}টি পিন করা"
-   },
-   "pt-BR": {
-    "one": "uma fixada",
-    "other": "{count} fixadas"
-   },
-   "ru": {
-    "one": "{count} закреплён",
-    "few": "{count} закреплено",
-    "many": "{count} закреплено",
-    "other": "{count} закреплено"
-   },
-   "id": {
-    "other": "{count} disematkan"
    }
   },
   "Your day": {
@@ -11070,7 +10902,7 @@
    "bn": "কিছুই চলছে না",
    "pt-BR": "Nenhum em execução",
    "ru": "Ничего не запущено",
-   "id": "Tidak ada yang berjalan"
+   "id": "Tidak ada yang aktif"
   },
   "Week {n}": {
    "zh-Hans": "第 {n} 周",
@@ -11102,7 +10934,7 @@
    "fr": "Rien de prévu",
    "bn": "কিছু নির্ধারিত নেই",
    "pt-BR": "Nada marcado",
-   "ru": "Ничего не запланировано",
+   "ru": "Планов нет",
    "id": "Tidak ada rencana"
   },
   "Your day is clear": {
@@ -11119,12 +10951,12 @@
   "Drop files on Ciel": {
    "zh-Hans": "把文件拖到 Ciel 上",
    "hi": "फ़ाइलें Ciel पर छोड़ें",
-   "es": "Suelta archivos sobre Ciel",
+   "es": "Suéltalos sobre Ciel",
    "ar": "أفلت الملفات على Ciel",
-   "fr": "Déposez des fichiers sur Ciel",
-   "bn": "Ciel-এর উপর ফাইল ছাড়ুন",
+   "fr": "Déposez-les sur Ciel",
+   "bn": "Ciel-এ ফাইল ছাড়ুন",
    "pt-BR": "Solte arquivos no Ciel",
-   "ru": "Перетащите файлы на Ciel",
+   "ru": "Бросьте их на Ciel",
    "id": "Jatuhkan file ke Ciel"
   },
   "{count} need you": {
