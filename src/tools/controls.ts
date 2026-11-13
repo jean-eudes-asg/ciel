@@ -105,21 +105,22 @@ export function buildControls(actions: ViewActions): ToolPanel {
     powerButton,
   );
 
-  // ── Sound and brightness ──
+  // ── Sound and brightness, side by side: each a pill that fills, its icon
+  // and its value inside. The speaker's icon mutes. ──
   const volumeIcon = h("button", { class: "ctl-knob", title: tl("Mute"), onclick: () => {
     actions.blip();
     set("muted", Tools.controls?.muted ? 0 : 1);
   } });
   const volume = toolSlider(throttle(60, (v: number) => set("volume", v)));
   const volumeValue = h("span", { class: "ctl-value" });
-  const outputButton = h("button", { class: "ctl-knob", title: tl("Sound output"), onclick: () => open("output") },
+  const outputButton = h("button", { class: "ctl-round", title: tl("Sound output"), onclick: () => open("output") },
     svg(ICONS.chevronRight, 11, { stroke: 2.2 }));
-  const volumeRow = h("div", { class: "ctl-slider-row" }, volumeIcon, volume.el, volumeValue, outputButton);
+  const volumeRow = h("div", { class: "ctl-slider-row" }, h("div", { class: "ctl-pill" }, volume.el, volumeIcon, volumeValue), outputButton);
   // Brightness: DDC/CI is slow, so fewer steps while dragging.
-  const brightIcon = h("span", { class: "ctl-knob static" }, svg(ICONS.sun, 13, { stroke: 2 }));
+  const brightIcon = h("span", { class: "ctl-knob static" }, svg(ICONS.sun, 14, { stroke: 2 }));
   const brightness = toolSlider(throttle(300, (v: number) => set("brightness", v)), (v: number) => set("brightness", v));
   const brightValue = h("span", { class: "ctl-value" });
-  const brightRow = h("div", { class: "ctl-slider-row" }, brightIcon, brightness.el, brightValue, h("span", { class: "ctl-knob static" }));
+  const brightRow = h("div", { class: "ctl-slider-row" }, h("div", { class: "ctl-pill" }, brightness.el, brightIcon, brightValue));
 
   // ── The tiles ──
   const network = tile(ICONS.network, tl("Network"), () => openNetwork(), () => openNetwork());
@@ -321,7 +322,7 @@ export function buildControls(actions: ViewActions): ToolPanel {
       volumeIcon.replaceChildren(svg(c?.muted || c?.volume === 0 ? ICONS.volume0 : (c?.volume ?? 0) < 0.34 ? ICONS.volume1 : (c?.volume ?? 0) < 0.67 ? ICONS.volume2 : ICONS.volume3, 14, { stroke: 2 }));
       volumeRow.classList.toggle("muted", !!c?.muted);
       volumeValue.textContent = c?.muted ? t("Muted") : pct(volume.active ? null : c?.volume);
-      outputButton.style.visibility = (c?.outputs.length ?? 0) > 1 ? "" : "hidden";
+      outputButton.style.display = (c?.outputs.length ?? 0) > 1 ? "" : "none";
       outputButton.classList.toggle("on", menu === "output");
       brightRow.style.display = c?.brightness == null && c ? "none" : "";
       brightness.set(c?.brightness ?? null);

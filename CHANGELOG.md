@@ -15,6 +15,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   (its icon in blue) or rung (in amber). Resting the pointer on an icon
   goes there, no click needed.
 - Each tool has the whole island: no small Ciel beside it any more.
+- A new look for Controls: the sound and the brightness side by side, each a
+  pill that fills in Ciel's blue with its icon and its value inside (the
+  speaker still mutes), and a tile that is on takes its colour across the
+  whole tile: blue, red for the microphones muted, amber for keeping awake,
+  violet for do not disturb. The tiles share their row, their names in full.
 
 ### Fixed
 - In the sky island, a plan's card hangs from the rings' islet, its tail at

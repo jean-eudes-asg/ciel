@@ -5445,16 +5445,58 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   gap: 7px;
 }
 
+/* Sound and brightness side by side, each a pill that fills in Ciel's blue
+   with its icon and its value inside. */
 .ctl-sliders {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .ctl-slider-row {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+}
+
+.ctl-pill {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 34px;
+}
+
+.ctl-pill .tool-slider {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  border-radius: 17px;
+  background: rgb(var(--fg) / 0.07);
+}
+
+.ctl-pill .tool-slider-fill {
+  min-width: 34px;
+  border-radius: 17px;
+  background: rgba(127, 180, 234, 0.34);
+}
+
+.ctl-pill .ctl-knob {
+  position: absolute;
+  top: 6px;
+  left: 5px;
+}
+
+.ctl-pill .ctl-knob.static {
+  pointer-events: none;
+}
+
+.ctl-pill .ctl-value {
+  position: absolute;
+  top: 0;
+  right: 13px;
+  line-height: 34px;
+  pointer-events: none;
 }
 
 .ctl-knob {
@@ -5484,11 +5526,10 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .ctl-slider-row.muted .tool-slider-fill {
-  background: rgb(var(--fg) / 0.3);
+  background: rgb(var(--fg) / 0.12);
 }
 
 .ctl-value {
-  flex: 0 0 40px;
   text-align: right;
   font: 600 11px var(--font);
   font-variant-numeric: tabular-nums;
@@ -5497,19 +5538,21 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .ctl-tiles {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 6px;
 }
 
+/* A tile that is on takes its colour, all of it: Ciel's blue, or its own. */
 .ctl-tile {
+  --tint: 127, 180, 234;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   min-width: 0;
-  height: 38px;
-  padding: 0 8px;
+  height: 42px;
+  padding: 0 9px;
   border: 0;
-  border-radius: 13px;
+  border-radius: 14px;
   background: rgb(var(--fg) / 0.06);
   color: var(--ink);
   text-align: left;
@@ -5519,6 +5562,26 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 
 .ctl-tile:hover {
   background: rgb(var(--fg) / 0.1);
+}
+
+.ctl-tile.on {
+  background: rgba(var(--tint), 0.2);
+}
+
+.ctl-tile.on:hover {
+  background: rgba(var(--tint), 0.28);
+}
+
+.ctl-tile.mic {
+  --tint: 244, 80, 94;
+}
+
+.ctl-tile.awake {
+  --tint: 245, 165, 36;
+}
+
+.ctl-tile.dnd {
+  --tint: 185, 163, 245;
 }
 
 .ctl-tile:active {
@@ -5531,8 +5594,8 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 .ctl-icon {
-  flex: 0 0 24px;
-  height: 24px;
+  flex: 0 0 26px;
+  height: 26px;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -5543,10 +5606,6 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 .ctl-tile.on .ctl-icon {
   background: #7fb4ea;
   color: #0b1a2b;
-}
-
-.ctl-tile.mic.on {
-  background: rgba(244, 80, 94, 0.16);
 }
 
 .ctl-tile.mic.on .ctl-icon {
