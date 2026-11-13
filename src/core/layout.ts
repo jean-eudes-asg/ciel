@@ -107,8 +107,8 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
   recap: { height: 184, botX: 62, botY: null, botDiameter: 58, agentMode: "column" },
   // The list Ciel keeps (views/inbox.ts): Ciel small at the top left, the rows beside him.
   notifications: { height: 280, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
-  // A tool (src/tools): Ciel small at the top left, the tool beside him.
-  tools: { height: 236, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
+  // A tool (src/tools): the tool has the island to itself.
+  tools: { height: 236, botX: 46, botY: 74, botDiameter: 0, agentMode: "none" },
   // Every agent session in one list (views/sessions.ts): Ciel small at the top
   // left, a row a session beside him. The height follows the rows (agentsHeight).
   agents: { height: 160, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
@@ -204,7 +204,8 @@ export function botPosition(
         };
       }
       if (layout.botY != null) {
-        return { cx: layout.botX, cy: layout.botY, diameter: layout.botDiameter, opacity: 1 };
+        // A view without him (a tool, the greeting) has him at 0: not drawn at all.
+        return { cx: layout.botX, cy: layout.botY, diameter: layout.botDiameter, opacity: layout.botDiameter ? 1 : 0 };
       }
       // Centre of the fixed 84 pt card (8 pt top inset + 34 pt header → content at y = 42)
       const headerBottom = 42;

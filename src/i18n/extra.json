@@ -8919,17 +8919,6 @@
    "ru": "Ничего не тикает. Введите длительность или время или выберите.",
    "id": "Tidak ada yang berjalan. Ketik durasi atau waktu, atau pilih salah satu."
   },
-  "Rain clock": {
-   "zh-Hans": "雨钟",
-   "hi": "बारिश घड़ी",
-   "es": "Reloj de lluvia",
-   "ar": "ساعة المطر",
-   "fr": "Horloge de pluie",
-   "bn": "বৃষ্টির ঘড়ি",
-   "pt-BR": "Relógio de chuva",
-   "ru": "Дождевые часы",
-   "id": "Jam hujan"
-  },
   "Timers": {
    "zh-Hans": "计时器",
    "hi": "टाइमर",

@@ -14,6 +14,7 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   after home: an agent asking, the notifications waiting, a timer running
   (its icon in blue) or rung (in amber). Resting the pointer on an icon
   goes there, no click needed.
+- Each tool has the whole island: no small Ciel beside it any more.
 
 ### Fixed
 - In the sky island, a plan's card hangs from the rings' islet, its tail at

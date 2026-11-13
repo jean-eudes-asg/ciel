@@ -196,7 +196,7 @@ export function buildTimers(actions: ViewActions): ToolPanel {
     rain.mood = mood;
     rain.progress = lead ? (lead.ringing ? 1 : progress(lead, now)) : 0;
     big.textContent = lead ? (lead.ringing ? t("Time's up") : clock(msLeft(lead, now))) : "";
-    caption.textContent = lead ? timerName(lead) : t("Rain clock");
+    caption.textContent = lead ? timerName(lead) : "";
     big.classList.toggle("rang", !!lead?.ringing);
   }
 

@@ -4676,8 +4676,8 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
 }
 
 /* ── Tools (src/tools) ──────────────────────────────────────────────────────
-   The island's Tools tab: one tool at a time beside a small Ciel, with its
-   own little tabs. Same cards, type scale and greys as the rest. */
+   The island's Tools tab: one tool at a time, the whole island its own.
+   Same cards, type scale and greys as the rest. */
 
 .tools-body {
   position: relative;
@@ -4686,7 +4686,7 @@ html[data-dir="rtl"] #views :is(.bubble, .reply .md-p, .reply .md-h, .reply .md-
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 10px 12px 10px 74px;
+  padding: 10px 14px;
 }
 
 .tools-panel {
