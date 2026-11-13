@@ -8,6 +8,12 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 - Islets draw back into the sky island as they go, instead of vanishing:
   when the island opens, when it hides, and when what they show is over.
 - A second reply while the bubble shows brings its words up anew.
+- The icons at the top of the open island go by importance: home, the
+  agents, the chat, the calendar, the timers, today, the weather, the
+  clipboard, the shelf, the controls. What needs you comes forward right
+  after home: an agent asking, the notifications waiting, a timer running
+  (its icon in blue) or rung (in amber). Resting the pointer on an icon
+  goes there, no click needed.
 
 ### Fixed
 - In the sky island, a plan's card hangs from the rings' islet, its tail at

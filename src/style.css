@@ -1517,15 +1517,6 @@ body {
   padding-left: 14px;
 }
 
-/* The tools, each with its own icon, set a little apart from the views. */
-.tab-group {
-  display: flex;
-  gap: 2px;
-  margin-left: 5px;
-  padding-left: 7px;
-  border-left: 1px solid rgb(var(--fg) / 0.1);
-}
-
 .tab {
   position: relative;
   width: 27px;
@@ -1536,7 +1527,7 @@ body {
   background: transparent;
   border-radius: 11px;
   color: var(--dim-2);
-  cursor: default;
+  cursor: pointer;
   transition: background 0.18s ease-out, color 0.18s ease-out, transform 0.4s var(--spring);
 }
 
@@ -1553,6 +1544,15 @@ body {
 .tab.on {
   background: var(--tab-on);
   color: var(--ink);
+}
+
+/* A timer running: its icon in Ciel's blue; one that rang, in amber. */
+.tab.live {
+  color: #7fb4ea;
+}
+
+.tab.rang {
+  color: #f5a524;
 }
 
 /* Where you are, said twice: the lit tab, and a dot under it. */

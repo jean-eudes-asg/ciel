@@ -114,9 +114,13 @@ function stack(padLeft: number, padRight: number, ...children: Node[]): HTMLElem
 
 // ── Header ────────────────────────────────────────────────────────────────────
 
+/** The header's icons after home, the most important first. */
+const TAB_ORDER = ["agents", "notifications", "prompt", "calendar", "timers", "empty", "weather", "clipboard", "shelf", "controls"];
+
 export function buildHeader(actions: ViewActions): ViewHost {
-  // One row of icons, each a move from any other: home, the agents' list,
-  // today, the chat, then every tool by itself. No second row anywhere.
+  // One row of icons, each a move from any other, by importance (TAB_ORDER).
+  // What needs you now comes forward, right after home: an agent asking, the
+  // notifications waiting, a timer running or rung. No second row anywhere.
   const tabHome = h("button", { class: "tab", title: tl("Overview"), onclick: () => go("overview") }, svg(ICONS.house, 13));
   // How many sessions wait for you, on the list's own icon.
   const agentsBadge = h("span", { class: "tab-badge" });
@@ -140,7 +144,6 @@ export function buildHeader(actions: ViewActions): ViewHost {
       svg(tab.icon, 13, FILLED_TOOLS.has(tab.id) ? {} : { stroke: 2 }),
     ),
   }));
-  const toolGroup = h("div", { class: "tab-group" }, ...toolTabs.map((tab) => tab.el));
   // The notifications Ciel keeps: there while some wait, or while on their list.
   const tabBadge = h("span", { class: "tab-badge" });
   const tabNotes = h("button", { class: "tab tab-notes", title: tl("Notifications"), onclick: () => go("notifications") }, svg(ICONS.bell, 13), tabBadge);
@@ -165,10 +168,31 @@ export function buildHeader(actions: ViewActions): ViewHost {
     actions.setView(v);
   }
 
+  const tabEls: Record<string, HTMLElement> = {
+    overview: tabHome,
+    agents: tabAgents,
+    notifications: tabNotes,
+    prompt: tabChat,
+    empty: tabToday,
+    ...Object.fromEntries(toolTabs.map((tab) => [tab.id, tab.el])),
+  };
+  const tabsRow = h("div", { class: "tabs" });
+  // Resting on an icon is enough to go there; just passing over it is not.
+  let hoverTimer = 0;
+  for (const tab of Object.values(tabEls)) {
+    tab.addEventListener("mouseenter", () => {
+      window.clearTimeout(hoverTimer);
+      hoverTimer = window.setTimeout(() => {
+        if (!tab.classList.contains("on")) tab.click();
+      }, 140);
+    });
+    tab.addEventListener("mouseleave", () => window.clearTimeout(hoverTimer));
+  }
+
   const el = h(
     "div",
     { id: "header" },
-    h("div", { class: "tabs" }, tabHome, tabAgents, tabToday, tabChat, toolGroup, tabNotes),
+    tabsRow,
     clockSlot,
     h("div", { class: "header-actions" }, planPills, gearBtn, soundBtn),
   );
@@ -193,6 +217,21 @@ export function buildHeader(actions: ViewActions): ViewHost {
       tabNotes.style.display = waiting || v === "notifications" ? "" : "none";
       tabBadge.textContent = waiting > 99 ? "99+" : String(waiting);
       tabBadge.style.display = waiting ? "" : "none";
+      const timerTab = tabEls.timers;
+      const rang = Tools.timers.some((x) => x.ringing);
+      const timing = rang || Tools.timers.some((x) => x.kind !== "reminder" && x.due > 0);
+      timerTab.classList.toggle("live", timing && !rang);
+      timerTab.classList.toggle("rang", rang);
+      const needs = new Set<string>();
+      if (asking) needs.add("agents");
+      if (waiting) needs.add("notifications");
+      if (timing) needs.add("timers");
+      const order = ["overview", ...TAB_ORDER.filter((id) => needs.has(id)), ...TAB_ORDER.filter((id) => !needs.has(id))];
+      const key = order.join();
+      if (tabsRow.dataset.order !== key) {
+        tabsRow.dataset.order = key;
+        tabsRow.replaceChildren(...order.map((id) => tabEls[id]));
+      }
       gearBtn.classList.toggle("on", v === "settings");
       clear(gearBtn);
       gearBtn.append(svg(v === "settings" ? ICONS.gearFill : ICONS.gear, 14));
