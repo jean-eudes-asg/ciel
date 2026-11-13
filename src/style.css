@@ -127,7 +127,7 @@
    thing on a small island of its own. Folded: the other agents' clouds and the
    notifications to its left, what is going on now and each plan's ring to its
    right. Open on the overview: the pills in a row under it. An islet buds out
-   as it comes, and is simply gone when it goes. */
+   as it comes and draws back into the island as it goes. */
 .islets {
   position: absolute;
   top: 0;
@@ -157,15 +157,36 @@
   }
 }
 
+/* Going, an islet shrinks towards the island and fades; it stays in the
+   layout (display waits for the end) so it isn't simply gone. */
 #island[data-shape="sky"] .islets > * {
   position: static;
   flex: 0 0 auto;
   display: none;
-  transform: none;
+  opacity: 0;
+  transform: scale(0.4);
+  transition:
+    opacity 0.16s ease-in,
+    transform 0.2s ease-in,
+    display 0.2s allow-discrete;
+}
+
+#island[data-shape="sky"] .islets.left > * {
+  transform-origin: right center;
+}
+
+#island[data-shape="sky"] .islets.right > * {
+  transform-origin: left center;
+}
+
+#island[data-shape="sky"] .islets.under > * {
+  transform-origin: center top;
 }
 
 #island[data-shape="sky"] .islets > .on {
   display: flex;
+  opacity: 1;
+  transform: none;
   animation: islet-in 0.55s var(--spring) 0.14s backwards;
 }
 
@@ -309,7 +330,8 @@
   }
 }
 
-.live-text.line {
+.live-text.line,
+.reply-text.line {
   animation: lyric-line 0.35s ease-out;
 }
 
@@ -322,10 +344,15 @@
   max-width: 640px;
   transform: translateX(-50%);
   display: none;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease-in,
+    display 0.15s allow-discrete;
 }
 
 #island[data-shape="sky"] #islets-below.on {
   display: block;
+  opacity: 1;
 }
 
 #island[data-shape="sky"] #islets-below > .pills {
@@ -335,7 +362,30 @@
   gap: 7px;
   height: auto;
   padding: 0;
+  opacity: 1;
+  transform: none;
+  transition: none;
   animation: none;
+}
+
+/* A ring's card hangs from the rings' islet, its tail at the ring. */
+#island[data-shape="sky"] .islets > #plan-pop {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  display: block;
+  opacity: 0;
+  transform: translateY(-4px);
+  transform-origin: center;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  animation: none;
+}
+
+#island[data-shape="sky"] .islets > #plan-pop.on {
+  opacity: 1;
+  transform: none;
 }
 
 #island[data-shape="sky"] #islets-below .pill {

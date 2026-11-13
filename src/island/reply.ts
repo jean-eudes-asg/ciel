@@ -59,9 +59,10 @@ export function buildReplyBubble(open: (taskId: string) => void, changed: () => 
       text.textContent = said;
       cloud.replaceChildren(createMiniBot(task, 20));
       pruneMiniBots();
-      // Shown again for a second reply: the bubble buds out anew.
-      el.classList.remove("on");
-      void el.offsetWidth;
+      // A second reply while the bubble shows: its words come up anew.
+      text.classList.remove("line");
+      void text.offsetWidth;
+      text.classList.add("line");
       el.classList.add("on");
       wait();
       changed();

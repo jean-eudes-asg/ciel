@@ -1457,9 +1457,10 @@ export class Island {
       // now (a timer, the microphones, rain, a song) and the plans to its right.
       if (this.sky) {
         this.isletsLeft.append(this.miniGrid, this.noteStack.el);
-        this.isletsRight.append(this.liveChip.el, this.planRings.el);
+        this.isletsRight.append(this.liveChip.el, this.planRings.el, this.planRings.pop);
       } else {
-        this.islandEl.append(this.miniGrid, this.noteStack.el, this.liveChip.el, this.planRings.el);
+        this.planRings.pop.before(this.miniGrid, this.noteStack.el, this.liveChip.el, this.planRings.el);
+        this.isletsLeft.before(this.planRings.pop);
       }
       this.isletsBelow.dataset.sky = this.sky ? "1" : "0";
       this.animateGeometry(false);

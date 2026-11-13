@@ -2,6 +2,17 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Changed
+- Islets draw back into the sky island as they go, instead of vanishing:
+  when the island opens, when it hides, and when what they show is over.
+- A second reply while the bubble shows brings its words up anew.
+
+### Fixed
+- In the sky island, a plan's card hangs from the rings' islet, its tail at
+  the ring, instead of from the island's right edge.
+
 ## [0.4.3] - 2026-11-13
 
 ### Added

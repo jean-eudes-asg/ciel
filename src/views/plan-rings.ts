@@ -139,9 +139,11 @@ export function buildPlanRings(): PlanRings {
     hovered = plan;
     if (plan === "codex") refreshCodexPlanUsage();
     card.sync(Date.now(), plan === "codex");
-    // The tail points at the ring: its centre, from the island's right edge.
-    const island = el.offsetParent as HTMLElement | null;
-    const ringRight = island ? island.clientWidth - (el.offsetLeft + ring.el.offsetLeft + SIZE / 2) : 0;
+    // The tail points at the ring: its centre, from the right edge of what
+    // holds the card (the island, or the rings' islet in the sky island).
+    const box = pop.parentElement?.getBoundingClientRect();
+    const r = ring.el.getBoundingClientRect();
+    const ringRight = box ? box.right - (r.left + r.width / 2) : 0;
     pop.style.setProperty("--tail-right", `${Math.max(14, ringRight - 6)}px`);
     pop.classList.add("on");
   };
