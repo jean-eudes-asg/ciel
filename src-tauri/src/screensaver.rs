@@ -209,6 +209,23 @@ pub async fn screensaver_preview(app: AppHandle) {
 
 // ── The system: idle time, staying awake, the screens' power ──────────────────
 
+/// macOS: no idle time yet, so the screen saver never starts on its own.
+#[cfg(target_os = "macos")]
+mod os {
+    pub struct System;
+
+    impl System {
+        pub fn new() -> System {
+            System
+        }
+        pub fn idle_ms(&mut self) -> Option<u64> {
+            None
+        }
+        pub fn keep_awake(&mut self, _on: bool) {}
+        pub fn screens(&mut self, _on: bool) {}
+    }
+}
+
 #[cfg(target_os = "linux")]
 mod os {
     use std::process::{Command, Stdio};

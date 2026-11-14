@@ -1,5 +1,11 @@
 // Ciel for Windows — app wiring and the commands the island calls.
 
+// macOS builds and tests, but most of what the Windows and Linux code calls
+// (wallpapers, session windows, the browser bridge…) has no macOS caller yet.
+// Each item loses this as the macOS port wires it up; Windows and Linux keep
+// every warning.
+#![cfg_attr(target_os = "macos", allow(dead_code, unused_imports))]
+
 mod agent_hooks;
 mod agents;
 mod alerts;
@@ -339,8 +345,9 @@ fn open_session(session_id: Option<String>, path: Option<String>) -> bool {
     }
     // Linux asks the display server, KWin or the terminal, which can take a
     // moment: never on the UI thread a sync command runs on. VS Code still
-    // opens when none of them could bring the window forward.
-    #[cfg(target_os = "linux")]
+    // opens when none of them could bring the window forward. macOS finds no
+    // window yet, so VS Code opens.
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     {
         std::thread::spawn(move || {
             if !platform::focus_session_window(&owners, &folder) {

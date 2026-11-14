@@ -872,6 +872,80 @@ mod platform {
 
 // ── Linux ─────────────────────────────────────────────────────────────────────
 
+/// macOS: no quick controls yet. Every tile reads as unavailable and every
+/// switch reports that nothing changed.
+#[cfg(target_os = "macos")]
+mod platform {
+    pub fn volume() -> Option<(f64, bool)> {
+        None
+    }
+    pub fn set_volume(_level: f64) -> bool {
+        false
+    }
+    pub fn set_muted(_on: bool) -> bool {
+        false
+    }
+    pub fn mics() -> (Option<bool>, u32) {
+        (None, 0)
+    }
+    pub fn set_mics_muted(_on: bool) -> bool {
+        false
+    }
+    pub fn outputs() -> Vec<super::Device> {
+        Vec::new()
+    }
+    pub fn set_output(_id: &str) -> bool {
+        false
+    }
+    pub fn network() -> (Option<super::Network>, Vec<super::Connection>) {
+        (None, Vec::new())
+    }
+    pub fn set_connection(_id: &str, _up: bool) -> bool {
+        false
+    }
+    pub fn power_mode() -> Option<(String, Vec<String>)> {
+        None
+    }
+    pub fn set_power_mode(_mode: &str) -> bool {
+        false
+    }
+    pub fn dark() -> Option<bool> {
+        None
+    }
+    pub fn set_dark(_on: bool) -> bool {
+        false
+    }
+    pub fn dnd() -> Option<bool> {
+        None
+    }
+    pub fn set_dnd(_on: bool) {}
+    pub fn battery() -> Option<super::Battery> {
+        None
+    }
+    pub fn brightness() -> Option<f64> {
+        None
+    }
+    pub fn set_brightness(_level: f64) -> bool {
+        false
+    }
+    pub fn radios() -> (Option<bool>, Option<bool>) {
+        (None, None)
+    }
+    pub fn set_wifi(_on: bool) -> bool {
+        false
+    }
+    pub fn set_bluetooth(_on: bool) -> bool {
+        false
+    }
+    pub fn night_light() -> Option<bool> {
+        None
+    }
+    pub fn set_night_light(_on: bool) -> bool {
+        false
+    }
+    pub fn stay_awake(_on: bool) {}
+}
+
 #[cfg(target_os = "linux")]
 mod platform {
     use std::process::{Child, Command, Stdio};
