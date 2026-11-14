@@ -490,6 +490,12 @@ pub async fn voice_say_native(text: String, lang: Option<String>) -> bool {
             let _ = (text, lang);
             false
         }
+        // macOS always has `say`, in the system's default voice.
+        #[cfg(target_os = "macos")]
+        {
+            let _ = lang;
+            std::process::Command::new("/usr/bin/say").arg("--").arg(&text).status().is_ok_and(|s| s.success())
+        }
     })
     .await
     .unwrap_or(false)
@@ -854,6 +860,12 @@ fn open_app(name: &str) -> (String, bool) {
         }
         None => (format!("No app named {name} on this computer."), false),
     }
+}
+
+/// macOS: not yet; « OK Ciel » says no app by that name.
+#[cfg(target_os = "macos")]
+fn find_app(_wanted: &str) -> Option<(String, Box<dyn FnOnce()>)> {
+    None
 }
 
 #[cfg(windows)]

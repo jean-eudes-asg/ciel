@@ -69,9 +69,9 @@ mod win;
 #[cfg(windows)]
 use win::connect;
 
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 mod unix;
-#[cfg(target_os = "linux")]
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 use unix::connect;
 
 /// What the command line says: `--agent <name>` and the event name.
