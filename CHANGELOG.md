@@ -24,6 +24,10 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 ### Fixed
 - In the sky island, a plan's card hangs from the rings' islet, its tail at
   the ring, instead of from the island's right edge.
+- On Windows the microphone keeps a fifth of a second of sound waiting
+  instead of about a hundredth: a busy moment no longer loses what was said,
+  often the first word, so « OK Ciel », the other name it answers to and
+  dictation hear the whole phrase.
 
 ## [0.4.3] - 2026-11-13
 

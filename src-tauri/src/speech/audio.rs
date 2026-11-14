@@ -315,7 +315,14 @@ fn build_stream(source: &Source, mut sink: impl FnMut(&[f32]) + Send + 'static) 
     let channels = supported.channels().max(1) as usize;
     let rate = supported.sample_rate();
     let format = supported.sample_format();
-    let config: cpal::StreamConfig = supported.into();
+    let mut config: cpal::StreamConfig = supported.into();
+    // Windows' own buffer is about 10 ms: a stall that long (the voice models
+    // loading, a busy moment) and the audio in it is lost, often the first
+    // word said. Shared mode takes any length; it changes no timing, only how
+    // much can wait before it's read.
+    if cfg!(windows) {
+        config.buffer_size = cpal::BufferSize::Fixed(buffer_frames(rate));
+    }
     let mut resampler = Resampler::new(rate);
     let mut mono: Vec<f32> = Vec::with_capacity(4096);
     let mut out: Vec<f32> = Vec::with_capacity(4096);
@@ -367,6 +374,11 @@ fn build_stream(source: &Source, mut sink: impl FnMut(&[f32]) + Send + 'static) 
         other => return Err(format!("unsupported sample format {other:?}")),
     };
     stream.map_err(|e| e.to_string())
+}
+
+/// The input buffer, in frames: 200 ms at the device's rate.
+fn buffer_frames(rate: u32) -> u32 {
+    (rate / 5).max(1)
 }
 
 // ── A recording in memory ─────────────────────────────────────────────────────
@@ -486,6 +498,14 @@ mod tests {
         fn drop(&mut self) {
             let _ = std::fs::remove_file(&self.0);
         }
+    }
+
+    #[test]
+    fn the_input_buffer_holds_a_fifth_of_a_second() {
+        assert_eq!(buffer_frames(48_000), 9_600);
+        assert_eq!(buffer_frames(44_100), 8_820);
+        assert_eq!(buffer_frames(16_000), 3_200);
+        assert_eq!(buffer_frames(1), 1);
     }
 
     fn tone(freq: f64, rate: u32, seconds: f64) -> Vec<f32> {
