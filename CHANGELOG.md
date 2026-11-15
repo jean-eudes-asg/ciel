@@ -4,6 +4,59 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 
 ## [Unreleased]
 
+### Added
+- **Your work** (Ciel window → Chat → Your work): name the folders you work
+  in, and « OK Ciel » knows where things stand when you talk to it. For each
+  project, its branch, what isn't committed, what isn't pushed and its last
+  commits; for any other folder, the files changed lately. With it, a list
+  of what must be done, a plain file you can open and edit: tell Ciel to
+  note something, or that one is done. Ciel looks only when you speak to
+  it, and only asks git to read; never what is inside a file. With Claude,
+  those lines go to Anthropic with your question.
+- **Remember what we say** (same place), off by default: Ciel notes what
+  you ask it out loud and what it answered in a file beside your list, and
+  reads the latest back at the start of a conversation, so it follows on
+  after the conversation ended, Ciel quit or the computer restarted. The
+  words only, never the sound; the file is yours to read, edit or delete.
+- **Claude's scheduled tasks** (same place), off by default: the tasks you
+  scheduled in the Claude app are told with your work, so « OK Ciel » can
+  say what runs when and what last ran. Ciel reads each one's name, its
+  time, its last run and the line that says what it is for, from Claude's
+  own list on your computer; never a task's instructions, and nothing else
+  of Claude's.
+- **Speak up** (same place), off by default: without being asked, Ciel
+  says aloud in a few words that an agent needs you, that an agent has
+  finished after a minute of work or more, that a meeting is about to
+  start, and gives a brief of your day the first time you are at your desk
+  early in your hours. Only while « OK Ciel » listens and you are at your
+  desk: on the days and between the hours you give, as many periods as you
+  need, each with its own days (a day in two parts, the weekend all day),
+  while your session is unlocked; tell it « I'm leaving » or « I'm back »
+  to say otherwise for the day. Never during a meeting, a recorded call, a
+  dictation or a presentation. Unless you turn on answering below, it only
+  says that something waits: the answer is still your click in the island.
+- **On Discord when you are away** (same place), off by default: with a
+  bot of your own, Ciel writes you in its direct messages what it would
+  have said aloud, while you are away from your desk. What you write back
+  goes to Ciel's brain like words spoken to it, and it answers there. A
+  session is never started from there. The bot's token stays in the
+  keychain, Ciel writes to you and no one else, and it asks Discord for
+  your messages only while you are away.
+- **Answer agents by voice and on Discord** (Speak up), off by default:
+  when an agent asks for a permission, Ciel reads it to you and asks, and
+  your spoken answer allows or denies it, as a click would. Away, it is
+  written to you on Discord with a four-digit code, and only your reply
+  with that code answers it. Never « Don't ask again », never Ciel's own
+  requests, never an agent's question: those wait for a click. Each answer
+  leaves a line on the session in the island.
+- **Learn from my answers** (same place), off by default: each answer you
+  give an agent goes in a journal on your computer (approvals.jsonl). When
+  you always allow the same thing in a project, Ciel's brain judges whether
+  it is safe and asks you at your desk, now and then, whether Ciel may
+  allow it on its own from then on. Your yes makes it a remembered answer,
+  marked as learned in Settings → Agents, where you can remove it. Nothing
+  that deletes, publishes, installs or reaches out is ever put forward.
+
 ### Changed
 - Islets draw back into the sky island as they go, instead of vanishing:
   when the island opens, when it hides, and when what they show is over.

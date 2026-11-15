@@ -10,7 +10,7 @@ import {
   ISLAND_SHORTCUTS, SHORTCUTS, SHORTCUT_TEXT, activeKeys, displayKeys, duplicates, effective,
   recordPress, type Binding,
 } from "../core/shortcuts";
-import { DEFAULT_SETTINGS, type Settings } from "../core/state";
+import { DEFAULT_SETTINGS, type Settings, type SpeakUp, type Period } from "../core/state";
 import { isFullPath, type FinanceFolderInfo } from "../core/finance";
 import { SOUND_NAMES, Sound } from "../core/sound";
 import {
@@ -33,7 +33,7 @@ import { renderDiff, statusDot } from "./parts";
 import { wallpaperSections } from "./wallpaper";
 import { setClockFormat } from "../views/flipclock";
 import {
-  LANGUAGES, N_, isRtl, onLanguageChange, resolveLanguage, setLanguage, systemLanguages, t, tn,
+  LANGUAGES, N_, isRtl, language, onLanguageChange, resolveLanguage, setLanguage, systemLanguages, t, tn,
 } from "../i18n/i18n";
 
 /** Where secrets.rs keeps the keys on this OS. */
@@ -573,6 +573,244 @@ function companyFolderSection(): HTMLElement {
       h("label", { text: t("Prepare answers ahead") }),
       toggle(settings.prepareAnswers, (on) => { settings.prepareAnswers = on; void save(); })),
     h("div", { class: "hint", text: t("When the others ask you a question during a call, Ciel writes the answer before you press the key, and the key's button lights up. With Claude, up to the last half hour of the call goes to Anthropic with each question, pressed or not.") }),
+  );
+}
+
+// ── Your work (work.rs) ───────────────────────────────────────────────────────
+
+/**
+ * The folders of the user's work: what « OK Ciel » is told of their projects
+ * at the start of a conversation, with the list of what must be done. Saved
+ * as `workFolders`; with none, nothing is looked at.
+ */
+function workSection(): HTMLElement {
+  const list = h("div", {});
+  const input = h("input", {
+    type: "text", autocomplete: "off", spellcheck: "false",
+    placeholder: t("The full path of a folder"), style: "flex:1 1 auto;min-width:0",
+  }) as HTMLInputElement;
+  const addBtn = h("button", { text: t("Add") });
+  const status = h("div", { class: "hint", style: "padding-top:5px" });
+  const file = h("label", { style: "flex:1 1 auto;min-width:0;overflow-wrap:anywhere" });
+  void Bridge.workFile().then((path) => { file.textContent = path ?? ""; });
+  const draw = async () => {
+    const folders = settings.workFolders;
+    const there = folders.length ? await Bridge.workFoldersExist(folders) : [];
+    clear(list);
+    folders.forEach((folder, i) => {
+      list.append(h("div", { class: "row" },
+        statusDot(there?.[i] !== false),
+        h("label", { text: folder, style: "flex:1 1 auto;min-width:0;overflow-wrap:anywhere" }),
+        h("button", {
+          class: "danger", text: t("Remove"),
+          onclick: () => {
+            settings.workFolders = settings.workFolders.filter((f) => f !== folder);
+            void save().then(draw);
+          },
+        })));
+    });
+    status.textContent = folders.length === 0
+      ? t("No folder yet.")
+      : there?.some((ok) => !ok) ? t("This folder doesn't exist.") : "";
+  };
+  void draw();
+  const add = async () => {
+    const value = input.value.trim();
+    if (!value) return;
+    if (!isFullPath(value)) {
+      status.textContent = t("Enter the full path of a folder.");
+      return;
+    }
+    if (!settings.workFolders.some((f) => f.toLowerCase() === value.toLowerCase())) {
+      settings.workFolders = [...settings.workFolders, value];
+      await save();
+    }
+    input.value = "";
+    await draw();
+  };
+  addBtn.addEventListener("click", () => void add());
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") void add(); });
+  return h("section", {},
+    h("h2", {}, h("span", { text: t("Your work") })),
+    list,
+    h("div", { class: "row" }, input, addBtn),
+    status,
+    h("div", { class: "hint", text: t("When you talk to Ciel, it looks at these folders: for each project, its branch, what isn't committed and its last commits; for any other folder, the names of the files changed lately. That and your list of what must be done go to the brain with your question, with Claude to Anthropic. Never what is inside a file.") }),
+    h("div", { class: "row", style: "margin-top:12px" }, file, h("button", { text: t("Open"), onclick: () => void Bridge.workOpen() })),
+    h("div", { class: "hint", text: t("Your list of what must be done is this file. Tell Ciel to note something, or that one is done, or edit it yourself.") }),
+    // Off by default: a conversation otherwise lives in memory only (talks.rs).
+    h("div", { class: "row", style: "margin-top:12px" },
+      h("label", { text: t("Remember what we say") }),
+      toggle(settings.rememberTalks, (on) => { settings.rememberTalks = on; void save(); })),
+    h("div", { class: "hint", text: t("Ciel notes what you ask it out loud and what it answered in talks.md, beside your list, and reads the latest back at the start of a conversation: it follows on even after a restart. The words only, never the sound. With Claude, they go to Anthropic with your question.") }),
+    // Off by default: Claude's own list of scheduled tasks is read only once asked (schedules.rs).
+    h("div", { class: "row", style: "margin-top:12px" },
+      h("label", { text: t("Claude's scheduled tasks") }),
+      toggle(settings.scheduledTasks, (on) => { settings.scheduledTasks = on; void save(); })),
+    h("div", { class: "hint", text: t("With your work, Ciel also tells its brain of the tasks you scheduled in the Claude app: each one's name, when it runs, when it last ran, and the line that says what it is for. It reads that from Claude's own list on this computer when you talk to it; never a task's instructions, and nothing else of Claude's. With Claude, those lines go to Anthropic with your question.") }),
+  );
+}
+
+/**
+ * Speak up on Discord (discord.rs): the user's own bot writes to them while
+ * they are away. Its token goes to the keychain; the switch and their user
+ * ID are saved in `speakUp`.
+ */
+function discordRows(set: (change: Partial<SpeakUp>) => void): HTMLElement[] {
+  const KEY = "discord-bot-token";
+  const dot = statusDot(false);
+  const token = h("input", {
+    type: "password", placeholder: t("Bot token"), autocomplete: "off", spellcheck: "false", style: "flex:1 1 auto;min-width:0",
+  }) as HTMLInputElement;
+  const removeBtn = h("button", { class: "danger", text: t("Remove"), style: "display:none" });
+  const feedback = h("div", {});
+  const say = (ok: boolean, text: string) => {
+    clear(feedback);
+    feedback.append(h("div", { class: ok ? "notice ok" : "notice err", text }));
+  };
+  const refresh = async () => {
+    const present = (await Bridge.secretPresent(KEY)) ?? false;
+    dot.style.background = present ? "#22c55e" : "#f4505e";
+    token.placeholder = present ? `••••••••••••  ${t("(stored)")}` : t("Bot token");
+    removeBtn.style.display = present ? "" : "none";
+  };
+  void refresh();
+  const saveToken = async () => {
+    const value = token.value.trim();
+    if (!value) return;
+    try {
+      await Bridge.secretSet(KEY, value);
+      token.value = "";
+      say(true, t("Saved. It never touches disk."));
+    } catch (err) {
+      say(false, t("Could not save: {error}", { error: String(err) }));
+    }
+    await refresh();
+  };
+  removeBtn.addEventListener("click", async () => {
+    try {
+      await Bridge.secretClear(KEY);
+      say(true, t("Key removed."));
+    } catch (err) {
+      say(false, t("Could not remove: {error}", { error: String(err) }));
+    }
+    await refresh();
+  });
+  const user = h("input", {
+    type: "text", inputmode: "numeric", value: settings.speakUp.discordUser, placeholder: "123456789012345678",
+    autocomplete: "off", spellcheck: "false", style: "width:200px",
+  }) as HTMLInputElement;
+  user.addEventListener("change", () => set({ discordUser: user.value.trim() }));
+  const testBtn = h("button", { text: t("Send a test message") });
+  testBtn.addEventListener("click", async () => {
+    // The ID typed but not yet left: saved first, so the test uses it.
+    if (user.value.trim() !== settings.speakUp.discordUser) {
+      settings.speakUp = { ...settings.speakUp, discordUser: user.value.trim() };
+      await save();
+    }
+    try {
+      await Bridge.discordTest();
+      say(true, t("Sent: look at your direct messages on Discord."));
+    } catch (err) {
+      say(false, String(err));
+    }
+  });
+  return [
+    h("div", { class: "row", style: "margin-top:12px" },
+      h("label", { text: t("On Discord when you are away") }), toggle(settings.speakUp.discord, (discord) => set({ discord }))),
+    h("div", { class: "row" },
+      dot, token, h("button", { class: "primary", text: t("Save key"), onclick: () => void saveToken() }), removeBtn),
+    h("div", { class: "row" }, h("label", { text: t("Your Discord user ID") }), user),
+    h("div", { class: "row" }, h("label", {}), testBtn),
+    feedback,
+    h("div", { class: "hint", text: t("Make a bot of your own in Discord's developer portal, add it to a server you are in, then give Ciel its token and your own user ID. While you are away from your desk, Ciel writes you there what it would have said aloud. What you write back goes to Ciel's brain like words spoken to it, and it answers there. From there, an agent's request is answered only by your reply with its code, if you turned that on, and a session is never started. Ciel asks Discord for your messages only while you are away, and the token stays in the {store}.", { store: KEY_STORE }) }),
+  ];
+}
+
+/**
+ * Speak up (speakup.rs, desk.rs): what Ciel says aloud without being asked,
+ * and the days and hours you are at your desk to hear it. Saved as `speakUp`;
+ * off until turned on.
+ */
+function speakSection(): HTMLElement {
+  const prefs = () => settings.speakUp;
+  const set = (change: Partial<SpeakUp>) => {
+    settings.speakUp = { ...settings.speakUp, ...change };
+    void save();
+  };
+  const dayName = new Intl.DateTimeFormat(language(), { weekday: "short", timeZone: "UTC" });
+  const time = (value: string, change: (v: string) => void) => {
+    const input = h("input", { type: "time", value, style: "width:110px" }) as HTMLInputElement;
+    input.addEventListener("change", () => { if (input.value) change(input.value); });
+    return input;
+  };
+  // Your hours: one period or several, each with its days (desk.rs). An older
+  // settings file has only days, from and to: that is the first period. The
+  // first is also kept there, for an older Ciel.
+  const periods = (): Period[] => prefs().periods.length
+    ? prefs().periods
+    : [{ days: prefs().days, from: prefs().from, to: prefs().to }];
+  const setPeriods = (next: Period[]) => {
+    const first = next[0];
+    set({ periods: next, ...(first ? { days: first.days, from: first.from, to: first.to } : {}) });
+    drawPeriods();
+  };
+  const change = (i: number, part: Partial<Period>) => setPeriods(periods().map((p, j) => (j === i ? { ...p, ...part } : p)));
+  const hoursBox = h("div", {});
+  const drawPeriods = () => {
+    clear(hoursBox);
+    const all = periods();
+    all.forEach((period, i) => {
+      const days = h("div", { style: "display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end" });
+      for (let day = 0; day < 7; day++) {
+        const on = period.days.includes(day);
+        days.append(h("button", {
+          // 5 January 2026 is a Monday.
+          text: dayName.format(new Date(Date.UTC(2026, 0, 5 + day))),
+          "aria-pressed": on, style: on ? "" : "opacity:.4",
+          onclick: () => change(i, { days: on ? period.days.filter((d) => d !== day) : [...period.days, day].sort() }),
+        }));
+      }
+      hoursBox.append(
+        h("div", { class: "row", style: i === 0 ? "margin-top:12px" : "margin-top:10px" },
+          h("label", { text: i === 0 ? t("At your desk") : "" }), days),
+        h("div", { class: "row" },
+          h("label", {}),
+          time(period.from, (from) => change(i, { from })),
+          h("span", { class: "hint", text: "→" }),
+          time(period.to, (to) => change(i, { to })),
+          ...(all.length > 1
+            ? [h("button", { class: "danger", text: t("Remove"), onclick: () => setPeriods(all.filter((_, j) => j !== i)) })]
+            : [])),
+      );
+    });
+    if (all.length < 12) {
+      hoursBox.append(h("div", { class: "row" }, h("label", {}),
+        h("button", { text: t("Add hours"), onclick: () => setPeriods([...all, { days: [5, 6], from: "00:00", to: "00:00" }]) })));
+    }
+  };
+  drawPeriods();
+  return h("section", {},
+    h("h2", {}, h("span", { text: t("Speak up") })),
+    h("div", { class: "row" }, h("label", { text: t("Ciel tells you aloud") }), toggle(prefs().on, (on) => set({ on }))),
+    h("div", { class: "hint", text: t("Without being asked, Ciel says in a few words what waits for you; the card shows in the island as before. Only while « OK Ciel » is listening and you are at your desk, never during a meeting, a recorded call, a dictation or a presentation. It answers nothing for you, unless you turn on answering agents below.") }),
+    h("div", { class: "row", style: "margin-top:12px" },
+      h("label", { text: t("An agent needs you") }), toggle(prefs().needs, (needs) => set({ needs }))),
+    h("div", { class: "row" }, h("label", { text: t("An agent has finished") }), toggle(prefs().done, (done) => set({ done }))),
+    h("div", { class: "row" }, h("label", { text: t("A meeting is about to start") }), toggle(prefs().meeting, (meeting) => set({ meeting }))),
+    h("div", { class: "row" }, h("label", { text: t("Morning brief") }), toggle(prefs().brief, (brief) => set({ brief }))),
+    h("div", { class: "hint", text: t("An agent is said to have finished after a minute of work or more. The morning brief comes once a day, the first time you are at your desk within four hours of the start of your hours: your list, your projects and your meetings, as Ciel's brain tells them.") }),
+    // Off by default: a request answered without a click (asked.rs).
+    h("div", { class: "row", style: "margin-top:12px" },
+      h("label", { text: t("Answer agents by voice and on Discord") }), toggle(prefs().answer, (answer) => set({ answer }))),
+    h("div", { class: "hint", text: t("When an agent asks for a permission, Ciel reads it to you and asks; your answer allows or denies it, as a click would. Away, it writes it to you on Discord with a code, and only your reply with that code answers it. Never « Don't ask again », never a request of Ciel's own, never an agent's question: those wait for a click.") }),
+    // Off by default: the journal and what Ciel learns from it (learn.rs).
+    h("div", { class: "row", style: "margin-top:12px" },
+      h("label", { text: t("Learn from my answers") }), toggle(prefs().learn, (learn) => set({ learn }))),
+    h("div", { class: "hint", text: t("Each answer you give an agent, by click, voice or Discord, goes in a journal on this computer (approvals.jsonl in Ciel's folder). When you always allow the same thing in a project, Ciel's brain judges whether it is safe and asks you at your desk whether Ciel may allow it on its own from then on. Your yes makes it a remembered answer you can remove in Settings → Agents; nothing destructive is ever put forward.") }),
+    hoursBox,
+    h("div", { class: "hint", text: t("Ciel takes you to be at your desk on these days, between these hours, while your session is unlocked. Add hours for a day in two parts or for other days; 00:00 → 00:00 is the whole day. Tell it « I'm leaving » or « I'm back » to say otherwise for the day.") }),
+    ...discordRows(set),
   );
 }
 
@@ -2007,7 +2245,7 @@ async function render() {
     ],
     pills: () => [activePillsSection(connected)],
     agents: () => [claudeSection(status), agentsSection(agents), rulesSection(), planSection(status)],
-    chat: () => [apiSection(hasKey), brain(), companyFolderSection(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
+    chat: () => [apiSection(hasKey), brain(), workSection(), speakSection(), companyFolderSection(), chatProvidersSection(chatKeys, keyChanged), localSection(customKey)],
     integrations: () => [
       notificationsSection({
         seconds: settings.notificationSeconds,

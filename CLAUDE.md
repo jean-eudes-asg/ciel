@@ -37,10 +37,19 @@ npx tsc --noEmit && npm test && cargo test --workspace
 - Never block an agent: if the app doesn't answer, `ciel-hook` exits at once and
   the agent asks in its own terminal. It never allows anything on its own.
 - Never approve a permission or send an email without the user's explicit click.
+  Once they turn on « Answer agents by voice and on Discord » (off by default),
+  their own answer counts as that click for one request (`src-tauri/src/asked.rs`):
+  spoken right after Ciel read them that request, or their Discord reply carrying
+  that request's code, which Ciel's code reads, never the brain. The brain only
+  passes on a spoken answer; it never answers from Discord or in the brief, never
+  for Ciel's own brain, never an agent's question, never « Don't ask again ».
   One click may stand for later ones: « Don't ask again » on a permission card
   makes a rule (`src-tauri/src/rules.rs`), and Ciel then allows what that rule
   covers, for that agent, in that project folder, until the user removes it in
-  Settings → Agents. Only that click makes a rule. What a rule covers is decided
+  Settings → Agents. Only that click makes a rule, or the user's spoken yes to
+  one Ciel put forward from their own past answers (`src-tauri/src/learn.rs`,
+  off by default): the brain may judge and ask, never make a rule itself, and
+  nothing destructive is ever put forward. What a rule covers is decided
   in `rules.rs` alone, narrowly: when unsure, no rule answers and the card comes
   up. Each answer given by a rule leaves a line on the session in the island.
 - Agent config files (`~/.claude/settings.json` and the others): dated backup,

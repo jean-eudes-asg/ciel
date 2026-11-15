@@ -333,9 +333,17 @@ fn card(app: &AppHandle, o: &Occurrence) {
         agenda: o.description.as_deref().and_then(ics::agenda),
     };
     notify::show(app, n, Target::Meeting { join: o.join.clone(), meeting });
+    // Said aloud too, if the user asked for that and is at their desk.
+    crate::speakup::meeting(app, &o.title, o.start);
 }
 
 // ── For « OK Ciel » ───────────────────────────────────────────────────────────
+
+/// A meeting is under way right now: Ciel doesn't speak up over it (speakup.rs).
+pub fn under_way() -> bool {
+    let now = now_ms();
+    KNOWN.lock().unwrap().events.iter().any(|o| !o.all_day && o.start <= now && now < o.end)
+}
 
 /// The most meetings « OK Ciel » is told of at once.
 const BRAIN_MAX: usize = 20;

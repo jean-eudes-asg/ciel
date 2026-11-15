@@ -226,8 +226,10 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
                 Mode::Wake => match wake::after_wake(&heard, &wake_name(&app)) {
                     Some(rest) => {
                         crate::log::line("voice: « OK Ciel » heard");
-                        // A local model loads, or Claude Code starts, while the question comes.
+                        // A local model loads, the folders of the user's work are looked at,
+                        // or Claude Code starts, while the question comes.
                         crate::ai::warm_up(&app);
+                        crate::work::warm(&app);
                         crate::agent::warm_up(&app);
                         hide_at = None;
                         // A request may come with pauses in it.
@@ -242,28 +244,101 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
                 show(&app, Some(VoiceView { phase: "listening".into(), heard: text.clone(), answer: String::new() }));
             }
         }
-        let Some((next, ready)) = tick(&mode, Instant::now(), vad.in_speech()) else { continue };
-        mode = next;
-        vad.hangover = 25;
-        let Some(question) = ready else {
-            show(&app, None);
-            continue;
+        // Between two conversations, what Ciel has to say without being
+        // asked (speakup.rs): a line as it is, or the day's brief.
+        let mut brief = false;
+        let mut learning: Option<String> = None;
+        if mode == Mode::Wake && !vad.in_speech() {
+            match crate::speakup::next(&app) {
+                Some(crate::speakup::Say::Line(line)) => {
+                    show(&app, Some(VoiceView { phase: "speaking".into(), heard: String::new(), answer: line.clone() }));
+                    speak(&app, &line);
+                    vad.reset();
+                    // Drop what the microphone heard of Ciel's own voice.
+                    while rx.try_recv().is_ok() {}
+                    hide_at = Some(Instant::now() + Duration::from_secs(5));
+                    continue;
+                }
+                Some(crate::speakup::Say::Brief) => brief = true,
+                Some(crate::speakup::Say::Learn { key }) => learning = Some(key),
+                // An agent's request, as a question: their reply needs no
+                // « OK Ciel », and it may answer the request (asked.rs).
+                Some(crate::speakup::Say::Ask { id, text }) => {
+                    show(&app, Some(VoiceView { phase: "speaking".into(), heard: String::new(), answer: text.clone() }));
+                    speak(&app, &text);
+                    crate::asked::read_aloud(&id, turn());
+                    vad.reset();
+                    while rx.try_recv().is_ok() {}
+                    mode = Mode::FollowUp { until: Instant::now() + FOLLOW_UP };
+                    vad.hangover = 40;
+                    show(&app, Some(VoiceView { phase: "listening".into(), heard: String::new(), answer: text }));
+                    continue;
+                }
+                None => {}
+            }
+        }
+        // What the brain is asked, and what the pill and the notes call it.
+        let (question, heard) = if brief {
+            hide_at = None;
+            (crate::speakup::brief_cue(), crate::i18n::t("Morning brief"))
+        } else if let Some(key) = &learning {
+            // Something the user always allows: the brain may ask them (learn.rs).
+            let Some(cue) = crate::learn::cue(&app, key) else { continue };
+            hide_at = None;
+            (cue, crate::i18n::t("A question from Ciel"))
+        } else {
+            let Some((next, ready)) = tick(&mode, Instant::now(), vad.in_speech()) else { continue };
+            mode = next;
+            vad.hangover = 25;
+            let Some(question) = ready else {
+                show(&app, None);
+                continue;
+            };
+            // Their own words: a turn of theirs, and someone who speaks to
+            // Ciel is at their desk (desk.rs).
+            TURN.fetch_add(1, Ordering::Relaxed);
+            crate::desk::spoke();
+            // An agent's request read to them waits: the brain is told what
+            // was asked, before their words (asked.rs).
+            let asked = crate::asked::context(turn()).or_else(|| crate::learn::context(turn())).unwrap_or_default();
+            (format!("{asked}{question}"), question)
         };
-        show(&app, Some(VoiceView { phase: "thinking".into(), heard: question.clone(), answer: String::new() }));
-        *HEARD.lock().unwrap() = question.clone();
+        show(&app, Some(VoiceView { phase: "thinking".into(), heard: heard.clone(), answer: String::new() }));
+        *HEARD.lock().unwrap() = heard.clone();
+        // Words spoken aloud, not a turn of Ciel's own: only these may answer
+        // a request, or a question of what Ciel learned.
+        let own = brief || learning.is_some();
+        crate::asked::voice_turn(!own);
+        crate::learn::showing(learning.is_some());
         let reply = brain.respond(&app, &question);
+        crate::asked::voice_turn(false);
+        crate::learn::showing(false);
         let answer = reply.as_ref().map(|r| r.text.clone()).unwrap_or_default();
+        if brief {
+            crate::speakup::brief_done(!answer.is_empty());
+        }
         if answer.is_empty() {
+            // A brief that didn't come is asked again later, not shown as a
+            // fault; a question the brain let go is not shown at all.
+            if own {
+                show(&app, None);
+                continue;
+            }
             let done = reply.is_some_and(|r| r.acted);
+            if done {
+                crate::talks::note(&app, &heard, "✓");
+            }
             show(&app, Some(VoiceView {
                 phase: "speaking".into(),
-                heard: question,
+                heard,
                 answer: if done { "✓".into() } else { cannot_answer(&app) },
             }));
             hide_at = Some(Instant::now() + Duration::from_secs(5));
             continue;
         }
-        show(&app, Some(VoiceView { phase: "speaking".into(), heard: question.clone(), answer: answer.clone() }));
+        show(&app, Some(VoiceView { phase: "speaking".into(), heard: heard.clone(), answer: answer.clone() }));
+        // Noted for the next conversation, if the user asked Ciel to remember.
+        crate::talks::note(&app, &heard, &answer);
         speak(&app, &answer);
         vad.reset();
         // Drop what the microphone heard of Ciel's own voice.
@@ -276,6 +351,15 @@ fn run(app: AppHandle, stop: Arc<AtomicBool>) {
     }
     capture.stop();
     show(&app, None);
+}
+
+/// How many things the user has asked « OK Ciel » since Ciel started: what
+/// was proposed in one turn is told from what they said in the next
+/// (agent/launch.rs).
+static TURN: AtomicU64 = AtomicU64::new(0);
+
+pub fn turn() -> u64 {
+    TURN.load(Ordering::Relaxed)
 }
 
 /// The question being answered, for `waiting_for_ok`.
@@ -673,11 +757,23 @@ pub fn run_tool(app: &AppHandle, name: &str, input: &Value, cloud: bool) -> (Str
         "calendar" if !allowed("calendar") => (NOT_ALLOWED.into(), false),
         "calendar" => (crate::calendar::for_brain(input["day"].as_str()), false),
         "notes" if !allowed("notes") => (NOT_ALLOWED.into(), false),
+        "work" if !allowed("work") => ("The user named no folder of their work yet (Ciel window → Chat → Your work).".into(), false),
+        "work" => match current_settings(app) {
+            Some(settings) => crate::work::for_brain(&settings, input),
+            None => ("no settings".into(), false),
+        },
         "notes" => {
             let limit = input["limit"].as_u64().unwrap_or(3) as usize;
             (crate::notes::for_brain(app, input["query"].as_str().unwrap_or(""), limit), false)
         }
+        "desk" if !allowed("desk") => ("Speaking up is off (Ciel window → Chat → Speak up): there is nothing to tell Ciel about the desk.".into(), false),
+        "desk" => crate::desk::for_brain(input),
+        "permission" if !allowed("permission") => ("Answering agents by voice is off (Ciel window → Chat → Speak up).".into(), false),
+        "permission" => crate::asked::tool(app, input),
+        "learn" if !allowed("learn") => ("Learning from the user's answers is off (Ciel window → Chat → Speak up).".into(), false),
+        "learn" => crate::learn::tool(app, input),
         "open_app" => open_app(input["name"].as_str().unwrap_or("")),
+        "session" => crate::agent::launch::tool(app, input),
         "timer" => crate::timers::for_brain(input),
         "weather" => (crate::weather::for_brain(), false),
         "controls" => crate::controls::for_brain(input),
@@ -725,6 +821,14 @@ pub fn may_read(settings: &crate::settings::Settings, cloud: bool, what: &str) -
         "finance" => on(crate::finance::PILL_ID) && (!cloud || reads.finance),
         "calendar" => on(crate::calendar::PILL_ID) && (!cloud || reads.calendar),
         "notes" => !cloud || reads.notes,
+        // The folders the user named for it are the switch, with any brain.
+        "work" => crate::work::on(settings),
+        // Told only once Ciel speaks up: otherwise there is nothing to tell.
+        "desk" => settings.speak_up.on || settings.speak_up.discord,
+        // Answering an agent's request: once the user turned that on.
+        "permission" => settings.speak_up.on && settings.speak_up.answer,
+        // Asking whether Ciel may allow on its own what the user always allows.
+        "learn" => settings.speak_up.on && settings.speak_up.learn,
         _ => true,
     }
 }

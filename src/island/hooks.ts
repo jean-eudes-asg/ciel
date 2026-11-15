@@ -254,6 +254,22 @@ export function registerHookHandlers(island: Island) {
   // The last plan numbers seen survive a restart, as on the Mac.
   State.planUsage ??= restorePlanUsage(storedClaudePlanUsage());
   void onEvent<HookPayload>("hook", (payload) => handleHook(island, payload));
+  // A request answered without a click: by the user's spoken answer, or by
+  // their reply on Discord with its code (asked.rs). Rust has answered it;
+  // the card goes and the session keeps a line saying how.
+  void onEvent<{ requestId: string; decision: string; by: string }>("approval-answered", (answered) => {
+    const pending = State.pendingApproval;
+    if (!pending || pending.requestId !== answered.requestId) return;
+    if (pendingTimeout != null) window.clearTimeout(pendingTimeout);
+    pendingTimeout = null;
+    const allowed = answered.decision === "allow";
+    const step = answered.by === "discord"
+      ? (allowed ? t("Allowed from Discord") : t("Denied from Discord"))
+      : (allowed ? t("Allowed by voice") : t("Denied by voice"));
+    State.appendStep(pending.pillId, step);
+    Sound.play(allowed ? "approve" : "blip");
+    dropPendingCard(island);
+  });
 }
 
 /** One hook event, from Rust — or from the demo (src/demo), which feeds its own. */
@@ -501,7 +517,9 @@ export function handleHook(island: Island, payload: HookPayload) {
       if (rule && requestId) {
         ensurePill();
         void Bridge.approvalByRule(requestId);
-        State.appendStep(agentId, t("Allowed by your rule · {what}", { what: ruleLabel(rule) }));
+        State.appendStep(agentId, rule.learned
+          ? t("Allowed by what Ciel learned · {what}", { what: ruleLabel(rule) })
+          : t("Allowed by your rule · {what}", { what: ruleLabel(rule) }));
         break;
       }
       // One card, one request. A second one must never quietly replace the first

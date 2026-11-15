@@ -116,6 +116,21 @@ pub struct Settings {
     /// The user's company folder (Ciel window → Notetaker): what the answer
     /// key reads for the passages that fit the question (notes/folder.rs). "" for none.
     pub company_folder: String,
+    /// The folders of the user's work (Ciel window → Chat → Your work): what
+    /// « OK Ciel » is told of their projects at the start of a conversation
+    /// (work.rs). Empty until they name one: nothing is looked at.
+    pub work_folders: Vec<String>,
+    /// « OK Ciel » notes what is asked and answered in a file of the user's and
+    /// reads the latest back at the start of a conversation (talks.rs). Off by
+    /// default: a conversation otherwise lives in memory only.
+    pub remember_talks: bool,
+    /// The tasks the user scheduled in the Claude app are told with their
+    /// work (schedules.rs): read from Claude's own file, their names and
+    /// times only. Off by default.
+    pub scheduled_tasks: bool,
+    /// What Ciel says aloud without being asked, and when the user is at
+    /// their desk to hear it (speakup.rs, desk.rs). Off by default.
+    pub speak_up: SpeakUp,
     /// The answer key prepares the answer as soon as the others ask a question
     /// in a call, before the key is pressed (notes/answer.rs). Off by default:
     /// with Claude, up to the call's last half hour then goes to Anthropic for
@@ -191,6 +206,78 @@ impl Default for ToolsPrefs {
             world_clocks: Vec::new(),
         }
     }
+}
+
+/// What Ciel says aloud without being asked (speakup.rs), and the days and
+/// hours the user is at their desk to hear it (desk.rs).
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct SpeakUp {
+    /// Off until the user turns it on: Ciel then never speaks first.
+    pub on: bool,
+    /// An agent waits for a permission or an answer.
+    pub needs: bool,
+    /// An agent finished a turn that took a while.
+    pub done: bool,
+    /// A meeting of the Calendar pill is about to start.
+    pub meeting: bool,
+    /// The day's brief, the first time they are at their desk in the first
+    /// hours of their day.
+    pub brief: bool,
+    /// The days they are at their desk: 0 Monday … 6 Sunday.
+    pub days: Vec<u8>,
+    /// From and to, "HH:MM" on the computer's clock.
+    pub from: String,
+    pub to: String,
+    /// Their hours as several periods, each with its own days: a day split in
+    /// two, the weekend all day. When there are some, they are the hours, and
+    /// `days`, `from` and `to` only repeat the first for an older Ciel.
+    pub periods: Vec<Period>,
+    /// Away from their desk, the same lines are written to them on Discord
+    /// by a bot of their own (discord.rs), whose token is in the keychain.
+    pub discord: bool,
+    /// Their own Discord user ID: the only one the bot writes to and reads.
+    pub discord_user: String,
+    /// An agent's permission request is read to them, and their spoken answer
+    /// allows or denies it; away, it is written on Discord with a code, and
+    /// their reply with the code answers it (asked.rs). Off by default.
+    pub answer: bool,
+    /// Each answer the user gives to an agent is written in a journal, and
+    /// Ciel asks them at the desk, now and then, whether it may allow on its
+    /// own what they always allow (learn.rs). Off by default.
+    pub learn: bool,
+}
+
+impl Default for SpeakUp {
+    fn default() -> Self {
+        Self {
+            on: false,
+            needs: true,
+            done: true,
+            meeting: true,
+            brief: true,
+            days: vec![0, 1, 2, 3, 4],
+            from: "09:00".into(),
+            to: "18:00".into(),
+            periods: Vec::new(),
+            discord: false,
+            discord_user: String::new(),
+            answer: false,
+            learn: false,
+        }
+    }
+}
+
+/// Some days, from one hour to another (desk.rs). The same hour twice is the
+/// whole day; hours that end before they start run past midnight.
+#[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct Period {
+    /// 0 Monday … 6 Sunday.
+    pub days: Vec<u8>,
+    /// "HH:MM" on the computer's clock.
+    pub from: String,
+    pub to: String,
 }
 
 /// What « OK Ciel » may read when its brain is Claude, with a key: what it
@@ -368,6 +455,10 @@ impl Default for Settings {
             desktop_cloud: DesktopCloudPref::default(),
             finance_folder: String::new(),
             company_folder: String::new(),
+            work_folders: Vec::new(),
+            remember_talks: false,
+            scheduled_tasks: false,
+            speak_up: SpeakUp::default(),
             prepare_answers: false,
             alerts_port: crate::alerts::DEFAULT_PORT,
             alerts_lan: false,
@@ -675,6 +766,10 @@ mod tests {
   "desktopCloud": { "onDesktop": true, "spot": { "x": 1500.5, "y": -300.0, "space": "screen" } },
   "financeFolder": "/srv/dashboard/data",
   "companyFolder": "/srv/company",
+  "workFolders": ["/srv/work", "/home/me/Drive"],
+  "rememberTalks": true,
+  "scheduledTasks": true,
+  "speakUp": { "on": true, "needs": false, "done": true, "meeting": true, "brief": false, "days": [0, 2, 5], "from": "08:30", "to": "22:00", "periods": [{ "days": [5, 6], "from": "00:00", "to": "00:00" }], "discord": true, "discordUser": "123456789012345678", "answer": true, "learn": true },
   "prepareAnswers": true,
   "alertsPort": 8080,
   "alertsLan": true,
@@ -1161,6 +1256,10 @@ mod tests {
                 "desktopCloud",
                 "financeFolder",
                 "companyFolder",
+                "workFolders",
+                "rememberTalks",
+                "scheduledTasks",
+                "speakUp",
                 "prepareAnswers",
                 "alertsPort",
                 "alertsLan",

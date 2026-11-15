@@ -318,6 +318,12 @@ export const Bridge = {
   /** During a call the Notetaker records: a card with the answer to the last question (notes/mod.rs). */
   notesAnswer: () => call<void>("notes_answer"),
   notesFolderInfo: (path: string) => call<{ exists: boolean; files: number }>("notes_folder_info", { path }),
+  /** Your work (work.rs): which of these folders are there, where the list of what must be done is, and opening it. */
+  workFoldersExist: (paths: string[]) => call<boolean[]>("work_folders_exist", { paths }),
+  workFile: () => call<string>("work_file"),
+  workOpen: () => call<void>("work_open"),
+  /** Speak up on Discord (discord.rs): one line to you from your bot, to see that it can write to you. */
+  discordTest: () => callOrThrow<void>("discord_test"),
   /** Minutes awake; 0 lets it sleep, a negative number until turned off. */
   awakeSet: (minutes: number) => call<Controls>("awake_set", { minutes }),
   /** Open-Meteo (src-tauri/src/weather.rs). */

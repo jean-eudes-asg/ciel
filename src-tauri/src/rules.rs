@@ -1,6 +1,7 @@
 // Remembered answers — "Don't ask again" on a permission card.
 //
-// A rule is made by one click on that button, and by nothing else. It says
+// A rule is made by one click on that button, or by the user's spoken yes to
+// one Ciel put forward from their own answers (learn.rs), and by nothing else. It says
 // which requests of one agent, in one project folder, Ciel may answer "allow"
 // to from then on without a card: the click that made the rule is the click
 // behind each of those answers. Rules stay until the user removes them
@@ -82,6 +83,10 @@ pub struct Rule {
     #[serde(flatten)]
     pub what: What,
     pub created: i64,
+    /// Ciel put it forward from the user's own answers and they said yes to
+    /// it (learn.rs). It answers like any other.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub learned: bool,
 }
 
 #[derive(Serialize, Deserialize, Default)]
@@ -330,6 +335,7 @@ impl Rules {
             tool,
             what,
             created: now,
+            learned: false,
         };
         let view = json!(rule);
         self.waiting.insert(request_id.to_string(), Waiting { rule: None, offer: Some(rule) });
@@ -465,6 +471,29 @@ pub fn forget(app: &AppHandle, request_id: &str) {
     }
 }
 
+/// The rules as they stand (learn.rs).
+pub fn list(app: &AppHandle) -> Vec<Rule> {
+    app.try_state::<Store>().map(|store| store.lock().list().to_vec()).unwrap_or_default()
+}
+
+/// The user said yes to a rule Ciel put forward from their own answers
+/// (learn.rs): kept like one of « Don't ask again », marked learned. True
+/// when it is on the list.
+pub fn learn(app: &AppHandle, agent: &str, cwd: &str, tool: &str, what: What) -> bool {
+    let Some(store) = app.try_state::<Store>() else { return false };
+    let mut rules = store.lock();
+    if rules.rules.iter().any(|r| r.agent == agent && r.cwd == cwd && r.tool == tool && r.what == what) {
+        return true;
+    }
+    if rules.rules.len() >= MAX_RULES {
+        return false;
+    }
+    let now = now();
+    rules.rules.push(Rule { id: new_id(now), agent: agent.into(), cwd: cwd.into(), tool: tool.into(), what, created: now, learned: true });
+    rules.save();
+    true
+}
+
 #[tauri::command]
 pub fn rules_list(store: State<Store>) -> Vec<Rule> {
     store.lock().list().to_vec()
@@ -508,7 +537,7 @@ mod tests {
     }
 
     fn rule(cwd: &str, tool: &str, what: What) -> Rule {
-        Rule { id: "r".into(), agent: String::new(), cwd: cwd.into(), tool: tool.into(), what, created: T0 }
+        Rule { id: "r".into(), agent: String::new(), cwd: cwd.into(), tool: tool.into(), what, created: T0, learned: false }
     }
 
     #[test]

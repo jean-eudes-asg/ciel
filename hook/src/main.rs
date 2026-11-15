@@ -24,7 +24,8 @@
 //! user had before, so that keeps working. Started by a browser with an
 //! extension's origin, it is the bridge of Ciel for Chrome (chrome.rs). With
 //! `--mcp`, it is the server of Ciel's own tools for « OK Ciel » on the user's
-//! Claude Code (mcp.rs).
+//! Claude Code (mcp.rs). With `--session <token>`, in a terminal Ciel opened, it
+//! starts the coding session the user said yes to (session.rs).
 
 use std::io::{Read, Write};
 use std::sync::mpsc;
@@ -36,6 +37,7 @@ mod chrome;
 mod mcp;
 mod normalize;
 mod reply;
+mod session;
 
 /// Budget for getting a pipe connection. Beyond this the agent wins, always.
 const CONNECT_TIMEOUT: Duration = Duration::from_millis(300);
@@ -115,6 +117,10 @@ fn main() {
     // Started by the Claude Code Ciel runs for « OK Ciel »: Ciel's tools.
     if mcp::is_mcp(&std::env::args().skip(1).collect::<Vec<_>>()) {
         mcp::run();
+    }
+    // Started by Ciel in a terminal, for a session the user asked for by voice.
+    if session::is_session(&std::env::args().skip(1).collect::<Vec<_>>()) {
+        session::run();
     }
     let args = args();
     let mut raw = Vec::new();

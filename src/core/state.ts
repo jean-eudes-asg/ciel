@@ -107,6 +107,45 @@ export interface IntegrationInfo {
 }
 
 /**
+ * What Ciel says aloud without being asked (speakup.rs), and the days and
+ * hours you are at your desk to hear it (desk.rs). Off until turned on.
+ */
+/** Some days, from one hour to another. The same hour twice is the whole day. */
+export interface Period {
+  /** 0 Monday … 6 Sunday. */
+  days: number[];
+  from: string;
+  to: string;
+}
+
+export interface SpeakUp {
+  on: boolean;
+  /** An agent waits for a permission or an answer. */
+  needs: boolean;
+  /** An agent finished a turn that took a while. */
+  done: boolean;
+  /** A meeting of the Calendar pill is about to start. */
+  meeting: boolean;
+  /** The day's brief, in the first hours at the desk. */
+  brief: boolean;
+  /** 0 Monday … 6 Sunday. */
+  days: number[];
+  /** "HH:MM" on the computer's clock. */
+  from: string;
+  to: string;
+  /** Your hours as several periods, each with its days; when there are some, they are the hours. */
+  periods: Period[];
+  /** Away, the same lines are written to you on Discord by your own bot (discord.rs). */
+  discord: boolean;
+  /** Your own Discord user ID: the only one the bot writes to and reads. */
+  discordUser: string;
+  /** A permission request is read to you and your answer, aloud or with its code on Discord, gives it (asked.rs). */
+  answer: boolean;
+  /** Your answers to agents go in a journal, and Ciel asks you now and then whether it may allow what you always allow (learn.rs). */
+  learn: boolean;
+}
+
+/**
  * What « OK Ciel » may read when its brain is Claude: what it reads then
  * leaves the computer, so the user picks. A local model reads it all.
  */
@@ -210,6 +249,17 @@ export interface Settings {
   /** The answer key's company folder (src-tauri/src/notes/folder.rs); "" for none. */
   companyFolder: string;
   /**
+   * The folders of the user's work (src-tauri/src/work.rs): what « OK Ciel » is
+   * told of their projects at the start of a conversation. None: nothing is looked at.
+   */
+  workFolders: string[];
+  /** « OK Ciel » notes what is said and reads the latest back at the start of a conversation (src-tauri/src/talks.rs). Off by default. */
+  rememberTalks: boolean;
+  /** The tasks you scheduled in the Claude app are told with your work (schedules.rs). */
+  scheduledTasks: boolean;
+  /** What Ciel says aloud without being asked, and when you are at your desk. */
+  speakUp: SpeakUp;
+  /**
    * The answer key prepares the answer as soon as the others ask a question
    * (src-tauri/src/notes/answer.rs). Off by default: with Claude, each question
    * sends up to the call's last half hour to Anthropic.
@@ -286,6 +336,10 @@ export const DEFAULT_SETTINGS: Settings = {
   language: "",
   financeFolder: "",
   companyFolder: "",
+  workFolders: [],
+  rememberTalks: false,
+  scheduledTasks: false,
+  speakUp: { on: false, needs: true, done: true, meeting: true, brief: true, days: [0, 1, 2, 3, 4], from: "09:00", to: "18:00", periods: [], discord: false, discordUser: "", answer: false, learn: false },
   prepareAnswers: false,
   alertsPort: 9797,
   alertsLan: false,

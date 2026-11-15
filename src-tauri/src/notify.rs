@@ -81,6 +81,9 @@ pub enum Target {
     Timer(String),
     /// The answer key pressed with no call noted (notes/answer.rs): Take notes starts the Notetaker.
     Notetaker,
+    /// A coding session « OK Ciel » proposed (agent/launch.rs): Start starts
+    /// it, Dismiss drops it.
+    Session,
     /// An answer of the answer key's, with its text (none yet while it is
     /// being written): Copy puts it on the clipboard and the card stays. Once
     /// it leaves the island, Ciel is left out of screen shares again, if so
@@ -250,6 +253,8 @@ enum Own {
     Copy(String),
     /// An answer left the island.
     AnswerGone,
+    /// A proposed session's card: Start (true), or dismissed.
+    Session(bool),
 }
 
 /// The island's Open or Dismiss, or one of the card's own buttons.
@@ -274,6 +279,7 @@ pub fn notification_action(app: AppHandle, id: String, action: String) {
             crate::capture::answer_gone(&app);
             crate::notes::answer::dismissed(&app, &id);
         }
+        Own::Session(start) => crate::agent::launch::clicked(&id, start),
     });
 }
 
@@ -293,6 +299,9 @@ fn act(id: &str, action: &str, ciel: impl FnOnce(Own)) {
         // Copy leaves the answer where it is; whatever else was pressed, its card leaves the island.
         (Target::Answer(text), "copy") => ciel(Own::Copy(text)),
         (Target::Answer(_), _) => ciel(Own::AnswerGone),
+        // Only the user's click on Start starts it; anything else but Dismiss leaves it waiting.
+        (Target::Session, "start") => ciel(Own::Session(true)),
+        (Target::Session, "dismiss") => ciel(Own::Session(false)),
         (Target::Timer(id), action) => {
             crate::timers::act(&id, action, None);
         }

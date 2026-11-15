@@ -51,7 +51,7 @@ fn exe_name() -> &'static str {
 
 /// `claude` on the PATH, else where its installer puts it. Never a `.cmd`
 /// shim, which can't be started without a shell.
-fn find() -> Option<PathBuf> {
+pub(super) fn find() -> Option<PathBuf> {
     let on_path: Vec<PathBuf> = std::env::var_os("PATH").map(|p| std::env::split_paths(&p).map(|d| d.join(exe_name())).collect()).unwrap_or_default();
     let installed = crate::platform::home_dir().join(".local").join("bin").join(exe_name());
     on_path.into_iter().chain(std::iter::once(installed)).find(|p| p.is_file())

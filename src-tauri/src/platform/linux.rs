@@ -260,6 +260,53 @@ pub fn reveal_folder(path: &str) {
     let _ = Command::new("xdg-open").arg(path).spawn();
 }
 
+/// The terminals tried, and what each wants before the command to run.
+const TERMINALS: [(&str, &[&str]); 11] = [
+    ("x-terminal-emulator", &["-e"]),
+    ("gnome-terminal", &["--"]),
+    ("ptyxis", &["--"]),
+    ("kgx", &["-e"]),
+    ("konsole", &["-e"]),
+    ("xfce4-terminal", &["-x"]),
+    ("kitty", &[]),
+    ("alacritty", &["-e"]),
+    ("foot", &[]),
+    ("wezterm", &["start", "--"]),
+    ("xterm", &["-e"]),
+];
+
+/// The session is locked, as logind knows it (GNOME and KDE tell it): asked
+/// at that moment, nothing is watched (desk.rs). Unknown reads as unlocked.
+pub fn session_locked() -> bool {
+    use dbus::blocking::stdintf::org_freedesktop_dbus::Properties;
+    let Ok(bus) = dbus::blocking::Connection::new_system() else { return false };
+    let session = bus.with_proxy("org.freedesktop.login1", "/org/freedesktop/login1/session/auto", std::time::Duration::from_secs(2));
+    session.get::<bool>("org.freedesktop.login1.Session", "LockedHint").unwrap_or(false)
+}
+
+/// Nothing says so on Linux yet.
+pub fn presenting() -> bool {
+    false
+}
+
+/// Runs `exe` in a terminal the user sees: theirs ($TERMINAL), the desktop's,
+/// or the first one installed. True once one opened.
+pub fn run_in_terminal(exe: &Path, args: &[String], _title: &str) -> bool {
+    let run = |terminal: &str, before: &[&str]| {
+        Command::new(terminal)
+            .args(before)
+            .arg(exe)
+            .args(args)
+            .stdin(std::process::Stdio::null())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .spawn()
+            .is_ok()
+    };
+    let own = std::env::var("TERMINAL").ok().filter(|t| !t.trim().is_empty());
+    own.is_some_and(|t| run(t.trim(), &["-e"])) || TERMINALS.iter().any(|(terminal, before)| run(terminal, before))
+}
+
 /// Our own `which`: the first executable file named `stem` on $PATH.
 pub fn find_on_path(stem: &str) -> Option<PathBuf> {
     let dirs = std::env::var_os("PATH")?;

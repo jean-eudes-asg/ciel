@@ -19,6 +19,8 @@ export interface Rule {
   text?: string;
   /** Seconds since 1970. */
   created: number;
+  /** Ciel put it forward from your own answers and you said yes (learn.rs). */
+  learned?: boolean;
 }
 
 const KINDS: ReadonlySet<string> = new Set(["exact", "prefix", "domain", "tool", "edits"]);
@@ -37,6 +39,7 @@ export function asRule(value: unknown): Rule | null {
     kind: v.kind as RuleKind,
     ...(typeof v.text === "string" ? { text: v.text } : {}),
     created: typeof v.created === "number" ? v.created : 0,
+    ...(v.learned === true ? { learned: true } : {}),
   };
 }
 

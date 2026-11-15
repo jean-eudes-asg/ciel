@@ -124,6 +124,39 @@ pub fn reveal_folder(path: &str) {
     let _ = Command::new("explorer").arg(path).spawn();
 }
 
+/// The session is locked, under a screen saver or another user's: asked of
+/// Windows at that moment, nothing is watched (desk.rs).
+pub fn session_locked() -> bool {
+    use ::windows::Win32::UI::Shell::{SHQueryUserNotificationState, QUNS_NOT_PRESENT};
+    matches!(unsafe { SHQueryUserNotificationState() }, Ok(state) if state == QUNS_NOT_PRESENT)
+}
+
+/// The user is presenting (Windows' presentation mode) or in a full-screen
+/// game: not a moment to speak up (speakup.rs).
+pub fn presenting() -> bool {
+    use ::windows::Win32::UI::Shell::{SHQueryUserNotificationState, QUNS_PRESENTATION_MODE, QUNS_RUNNING_D3D_FULL_SCREEN};
+    matches!(unsafe { SHQueryUserNotificationState() }, Ok(state) if state == QUNS_PRESENTATION_MODE || state == QUNS_RUNNING_D3D_FULL_SCREEN)
+}
+
+/// Runs `exe` in a terminal the user sees: a new tab of Windows Terminal named
+/// `title`, in the window that is there, else a console window of its own.
+/// True once one opened.
+pub fn run_in_terminal(exe: &std::path::Path, args: &[String], title: &str) -> bool {
+    const CREATE_NEW_CONSOLE: u32 = 0x0000_0010;
+    // Windows Terminal reads `;` as the end of a command and re-quotes what it
+    // is given: only what has neither goes on its command line.
+    let plain = |s: &str| !s.contains([';', '"']);
+    let title: String = title.chars().filter(|c| c.is_alphanumeric() || matches!(c, ' ' | '-' | '_' | '.')).collect();
+    if plain(&exe.to_string_lossy()) && args.iter().all(|a| plain(a)) {
+        let mut wt = Command::new("wt.exe");
+        wt.args(["-w", "0", "new-tab", "--title", if title.trim().is_empty() { "Ciel" } else { title.trim() }]).arg(exe).args(args);
+        if no_console(&mut wt).spawn().is_ok() {
+            return true;
+        }
+    }
+    Command::new(exe).args(args).creation_flags(CREATE_NEW_CONSOLE).spawn().is_ok()
+}
+
 /// Our own `where`: walks %PATH% against %PATHEXT%, no shell involved.
 /// Rust quotes arguments correctly for `.cmd`/`.bat` targets since 1.77, so
 /// spawning `code.cmd` directly is safe.

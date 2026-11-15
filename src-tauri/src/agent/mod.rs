@@ -26,6 +26,7 @@
 // Without the feature, the command line is built by the tests alone.
 #![cfg_attr(not(feature = "claude-code"), allow(dead_code))]
 
+pub mod launch;
 #[cfg(feature = "claude-code")]
 mod session;
 pub mod stream;
@@ -255,12 +256,30 @@ fn token_ok(given: &str) -> bool {
 /// Ciel's tools as MCP lists them: the brain's own but the web search (Claude
 /// Code has its own), with what the user lets Claude read.
 pub fn mcp_tools(settings: &crate::settings::Settings) -> Vec<Value> {
-    crate::voice::brain::agent_tools(settings)
+    let mut tools: Vec<Value> = crate::voice::brain::agent_tools(settings)
         .into_iter()
         .filter_map(|t| {
             Some(json!({ "name": t.get("name")?, "description": t.get("description")?, "inputSchema": t.get("input_schema")? }))
         })
-        .collect()
+        .collect();
+    // Starting a coding session (launch.rs): in a project of the folders the
+    // user named for their work, so only once they named one.
+    if cfg!(feature = "claude-code") && crate::work::on(settings) {
+        tools.push(launch::tool_def());
+    }
+    tools
+}
+
+/// Where the user's `claude` is; None in a build without the engine.
+fn claude_path() -> Option<std::path::PathBuf> {
+    #[cfg(feature = "claude-code")]
+    {
+        session::find()
+    }
+    #[cfg(not(feature = "claude-code"))]
+    {
+        None
+    }
 }
 
 /// Ciel's answer to `ciel-hook --mcp` (pipe.rs): its tools, or what one did.
@@ -378,5 +397,11 @@ mod tests {
         assert!(!names(&settings).iter().any(|n| n == "finance"), "off until the user turns it on");
         settings.brain_reads.finance = true;
         assert!(names(&settings).iter().any(|n| n == "finance"));
+        // Starting a session: with the engine only, and once a folder of work is named.
+        assert!(!names(&settings).iter().any(|n| n == "session" || n == "work"));
+        settings.work_folders.push("/srv/work".into());
+        assert!(names(&settings).iter().any(|n| n == "work"));
+        assert_eq!(names(&settings).iter().any(|n| n == "session"), cfg!(feature = "claude-code"));
+        assert!(mcp_tools(&settings).iter().all(|t| t["inputSchema"]["type"] == "object"));
     }
 }

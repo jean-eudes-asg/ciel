@@ -49,7 +49,7 @@ pub fn run() -> ! {
 }
 
 /// Asks Ciel over the pipe, within `budget`: its one-line answer, or None.
-fn ask_ciel(payload: &str, budget: Duration) -> Option<String> {
+pub(crate) fn ask_ciel(payload: &str, budget: Duration) -> Option<String> {
     let payload = payload.to_string();
     let (tx, rx) = mpsc::channel();
     // As for a hook event: the worker owns the blocking calls, and is left

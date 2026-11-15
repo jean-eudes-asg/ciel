@@ -1,6 +1,7 @@
 // Ciel for Windows — app wiring and the commands the island calls.
 
 mod agent_hooks;
+mod asked;
 mod agents;
 mod alerts;
 mod browser_bridge;
@@ -19,6 +20,8 @@ mod github;
 mod gnome_ext;
 mod gmail;
 mod calendar;
+mod desk;
+mod discord;
 mod capture;
 mod agent;
 mod ytmusic;
@@ -49,6 +52,10 @@ mod screensaver;
 mod settings;
 mod shelf;
 mod system;
+mod learn;
+mod schedules;
+mod speakup;
+mod talks;
 mod timers;
 mod shortcuts;
 mod sounds;
@@ -60,6 +67,7 @@ mod wallpaper;
 #[cfg(windows)]
 mod webview_drop;
 mod weather;
+mod work;
 
 use std::process::Command;
 use std::sync::atomic::Ordering;
@@ -153,6 +161,8 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     updates::sync(&app, settings.check_updates);
     gmail::sync(&app, &settings.active_integrations, false);
     calendar::settings_saved(&settings.active_integrations);
+    speakup::settings_saved();
+    discord::settings_saved();
     alerts::sync(&app, &settings);
     system::sync();
     clipboard::sync(&app, settings.tools.clipboard);
@@ -515,6 +525,8 @@ fn approval_decision(app: AppHandle, request_id: String, decision: String) {
     if decision == "always" {
         rules::remember(&app, &request_id);
     }
+    // In the journal Ciel learns from, if the user wants that (learn.rs).
+    learn::answered(&app, &request_id, &decision, "click");
     recap::record_decision(&app, &request_id, &decision);
     pipe::answer(&app, &request_id, &decision);
 }
@@ -636,6 +648,9 @@ fn secret_set(app: AppHandle, shared: State<Shared>, key: String, value: String)
     if calendar::is_link_key(&key) {
         calendar::wake();
     }
+    if key == discord::TOKEN_KEY {
+        discord::token_changed();
+    }
     Ok(())
 }
 
@@ -660,6 +675,9 @@ fn secret_clear(app: AppHandle, shared: State<Shared>, key: String) -> Result<()
     gmail_credentials(&app, &shared, &key);
     if calendar::is_link_key(&key) {
         calendar::wake();
+    }
+    if key == discord::TOKEN_KEY {
+        discord::token_changed();
     }
     Ok(())
 }
@@ -1011,6 +1029,10 @@ pub fn run() {
             notes::notes_stop,
             notes::notes_answer,
             notes::notes_folder_info,
+            work::work_file,
+            discord::discord_test,
+            work::work_open,
+            work::work_folders_exist,
             notes::notes_rename,
             notes::notes_rename_speaker,
             notes::notes_toggle_todo,
@@ -1100,6 +1122,9 @@ pub fn run() {
             integrations::start(handle.clone());
             calendar::settings_saved(&loaded.active_integrations);
             calendar::start(handle.clone());
+            speakup::start(handle.clone());
+    learn::start(handle.clone());
+            discord::start(handle.clone());
             spotify::sync(&handle, &loaded.active_integrations);
             ytmusic::sync(&loaded.active_integrations);
             updates::sync(&handle, loaded.check_updates);

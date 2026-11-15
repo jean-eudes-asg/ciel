@@ -224,6 +224,16 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
         pipe.finish();
         return;
     }
+    // The relay in a terminal Ciel just opened asks what to start there
+    // (agent/launch.rs): told once, to the token Ciel gave that terminal.
+    if payload.get("ciel_session").is_some() {
+        if let Some(reply) = crate::agent::launch::collect(&payload) {
+            let _ = pipe.write_all(format!("{reply}\n").as_bytes()).await;
+            let _ = pipe.flush().await;
+        }
+        pipe.finish();
+        return;
+    }
     // Ciel's tools, for the brain on the user's Claude Code (agent/mod.rs):
     // they may take a moment (the island answers some), so off the async threads.
     if payload.get("ciel_mcp").is_some() {
@@ -258,6 +268,8 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
         if event != "StatusLine" {
             log::line(format!("hook {event}"));
         }
+        // A long turn that ends is said aloud, if the user asked for that (speakup.rs).
+        crate::speakup::agent_event(&app, &event, &payload);
         let _ = app.emit_to(WINDOW_LABEL, "hook", payload);
         pipe.finish();
         return;
@@ -278,12 +290,21 @@ async fn handle(app: AppHandle, mut pipe: impl Relay) {
     // one: the island is told which (rules.rs). It is still the island that
     // passes the answer on, so a paused island answers nothing.
     crate::rules::note_request(&app, &id, &mut payload);
+    // Kept for the journal Ciel learns from, if the user wants it (learn.rs).
+    crate::learn::note_request(&app, &id, &payload);
+    // Said aloud too, if the user asked for that and is at their desk, or
+    // written on Discord while they are away. If they turned on answering
+    // that way, Ciel asks, and their spoken yes or their reply with its code
+    // answers it (asked.rs); otherwise only that an agent waits.
+    crate::speakup::needs(&app, &payload);
     log::line(format!("hook PermissionRequest id={id}"));
     let _ = app.emit_to(WINDOW_LABEL, "hook", payload);
 
     let decision = wait_for_decision(&id, &mut rx).await;
     app.state::<Pending>().0.lock().unwrap().remove(&id);
     crate::rules::forget(&app, &id);
+    crate::asked::closed(&id, decision.is_some());
+    crate::learn::forget(&id);
 
     // No decision: say nothing at all. ciel-hook then writes nothing to stdout
     // and Claude Code asks in the terminal, exactly as if Ciel were closed.

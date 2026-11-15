@@ -34,7 +34,7 @@ export function rulesSection(): HTMLElement {
         h("div", { class: "row" },
           h("div", { style: "display:flex;flex-direction:column;gap:2px;min-width:0" },
             h("span", { class: "path", text: ruleLabel(rule) }),
-            h("span", { class: "hint", text: [who(rule), rule.tool, rule.cwd].join(" · ") }),
+            h("span", { class: "hint", text: [who(rule), rule.tool, rule.cwd, ...(rule.learned ? [t("learned from your answers")] : [])].join(" · ") }),
           ),
           h("span", { class: "spacer" }),
           h("button", {
