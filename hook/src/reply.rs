@@ -12,9 +12,11 @@
 use serde_json::{json, Map, Value};
 
 /// The agents whose permission requests the island can answer: Claude Code
-/// (no `--agent`), Codex, Copilot CLI, Muse Code, and Ciel's own brain on the
-/// user's Claude Code (`ciel`, src-tauri/src/agent/). Any decision for another
-/// agent is ignored here too, whatever the app sent.
+/// (no `--agent`, in a terminal or in the Claude app, which the app tells
+/// apart by the payload's `ciel_agent` only), Codex, Copilot CLI, Muse Code,
+/// and Ciel's own brain on the user's Claude Code (`ciel`,
+/// src-tauri/src/agent/). Any decision for another agent is ignored here too,
+/// whatever the app sent.
 pub fn takes_decisions(agent: &str) -> bool {
     matches!(agent, "" | "codex" | "copilot" | "muse" | "ciel")
 }

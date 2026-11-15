@@ -372,9 +372,12 @@ test("a Claude Desktop session gets the Claude Desktop pill, in its colour (Mac 
   assert.equal(desktop.color, "#D97757");
   assert.equal(desktop.sessionId, "d1");
   assert.equal(task().state, "idle");
-  // Its permission requests are answered in the app, as on macOS.
-  hook({ hook_event_name: "PermissionRequest", request_id: "r1", ciel_agent: "claude-desktop", tool_name: "Bash" });
-  assert.deepEqual(sent("approval_decline"), [{ requestId: "r1" }]);
+  // Its permission requests get a card, as Claude Code's do in a terminal.
+  hook({ hook_event_name: "PermissionRequest", request_id: "r1", session_id: "d1", ciel_agent: "claude-desktop", tool_name: "Bash", tool_input: { command: "npm test" } });
+  assert.deepEqual(sent("approval_decline"), []);
+  assert.deepEqual(sent("approval_ack"), [{ requestId: "r1" }]);
+  assert.equal(State.pendingApproval?.pillId, "agent_claude-desktop");
+  assert.equal(State.pendingApproval?.command, "Bash · npm test");
 });
 
 // ── Main tool and Cursor ──────────────────────────────────────────────────────

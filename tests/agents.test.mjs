@@ -34,6 +34,7 @@ test("the agent tag is checked the Mac's way, and claude is reserved", () => {
 
 test("approval cards are for the agents the relay answers, no one else", () => {
   // Must match takes_decisions() in hook/src/reply.rs ("ciel": Ciel's own
-  // brain on the user's Claude Code).
-  assert.deepEqual([...APPROVAL_AGENTS].sort(), ["ciel", "codex", "copilot", "muse"]);
+  // brain on the user's Claude Code; "claude-desktop": Claude Code in the
+  // Claude app, which the relay answers as Claude Code).
+  assert.deepEqual([...APPROVAL_AGENTS].sort(), ["ciel", "claude-desktop", "codex", "copilot", "muse"]);
 });

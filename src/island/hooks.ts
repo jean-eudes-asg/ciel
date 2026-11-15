@@ -10,7 +10,7 @@ import { buildFileDiff, fileName, lastTextStep, makeDiffStep, toOneLine } from "
 import { Sound } from "../core/sound";
 import { State, type AskedQuestion } from "../core/state";
 import { pillDefinition } from "../core/pills";
-import { APPROVAL_AGENTS, CIEL_AGENT, agentColor, agentName, validateAgent } from "./agents";
+import { APPROVAL_AGENTS, CIEL_AGENT, DESKTOP_AGENT, agentColor, agentName, validateAgent } from "./agents";
 import type { Island } from "./island";
 import { parseClaudePlan, restorePlanUsage } from "../core/plan";
 import { setClaudePlanUsage, storedClaudePlanUsage } from "../views/usage";
@@ -536,8 +536,9 @@ export function handleHook(island: Island, payload: HookPayload) {
       const input = payload.tool_input ?? {};
       // Claude Code asking a question is not a permission to grant: the island
       // shows the options and sends back the one that was picked. Only Claude
-      // Code asks questions this way.
-      const questions = isExternalAgent ? null : askedQuestions(tool, input);
+      // Code asks questions this way, in a terminal or in the Claude app.
+      const claudeCode = !isExternalAgent || validAgent === DESKTOP_AGENT;
+      const questions = claudeCode ? askedQuestions(tool, input) : null;
       const view = questions ? "question" : "approval";
       const remember = questions ? null : asRule(payload.ciel_remember);
       // The card always comes up, even over another pill or an island that is

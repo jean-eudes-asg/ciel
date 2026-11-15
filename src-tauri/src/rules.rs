@@ -49,8 +49,15 @@ const MAX_WAITING: usize = 64;
 const MAX_FILE_BYTES: u64 = 2 * 1024 * 1024;
 
 /// The agents whose requests the island answers (hook/src/reply.rs), as the
-/// relay tags them: Claude Code has no tag. Ciel's own brain is left out.
-const AGENTS: &[&str] = &["", "codex", "copilot", "muse"];
+/// relay tags them: Claude Code has no tag, and `claude-desktop` when the
+/// Claude app runs it. Ciel's own brain is left out.
+const AGENTS: &[&str] = &["", "claude-desktop", "codex", "copilot", "muse"];
+
+/// Claude Code, in a terminal or in the Claude app: the only one whose edits
+/// a rule may remember.
+fn claude_code(agent: &str) -> bool {
+    agent.is_empty() || agent == "claude-desktop"
+}
 /// Not permissions to grant: a question to answer, a plan to read.
 const NEVER: &[&str] = &["AskUserQuestion", "ExitPlanMode"];
 /// Claude Code's tools that write a file named in `file_path` / `notebook_path`.
@@ -253,7 +260,7 @@ pub fn offer(payload: &Value) -> Option<(String, What)> {
     }
     let input = input_of(payload);
     let what = if EDIT_TOOLS.contains(&tool) {
-        (agent.is_empty() && edit_in(input, cwd)).then_some(What::Edits)?
+        (claude_code(agent) && edit_in(input, cwd)).then_some(What::Edits)?
     } else if let Some(line) = command(input) {
         match suggested_prefix(payload, tool).filter(|prefix| plain(line) && starts(line, prefix)) {
             Some(prefix) => What::Prefix(prefix),
@@ -287,7 +294,7 @@ pub fn covers(rule: &Rule, payload: &Value) -> bool {
         What::Prefix(prefix) => command(input).is_some_and(|line| plain(line) && starts(line, prefix)),
         What::Domain(name) => tool == "WebFetch" && host(input).as_deref() == Some(name.as_str()),
         What::Tool => whole_tool(tool),
-        What::Edits => agent.is_empty() && EDIT_TOOLS.contains(&tool) && edit_in(input, &rule.cwd),
+        What::Edits => claude_code(agent) && EDIT_TOOLS.contains(&tool) && edit_in(input, &rule.cwd),
     }
 }
 
@@ -623,7 +630,7 @@ mod tests {
 
     #[test]
     fn only_the_agents_the_island_answers_for_get_a_rule() {
-        for agent in ["codex", "copilot", "muse"] {
+        for agent in ["claude-desktop", "codex", "copilot", "muse"] {
             let mut payload = bash("/home/me/app", "ls");
             payload["ciel_agent"] = json!(agent);
             assert!(offer(&payload).is_some(), "{agent}");
@@ -724,6 +731,14 @@ mod tests {
         let mut codex = edit(&root, &root.join("src/a.rs"));
         codex["ciel_agent"] = json!("codex");
         assert!(offer(&codex).is_none());
+        // Claude Code in the Claude app is Claude Code: its edits, under its own rule.
+        let mut desktop = edit(&root, &root.join("src/a.rs"));
+        desktop["ciel_agent"] = json!("claude-desktop");
+        assert_eq!(offer(&desktop).map(|(_, what)| what), Some(What::Edits));
+        assert!(!covers(&rule, &desktop), "a terminal session's rule is not the app's");
+        let mut theirs = rule.clone();
+        theirs.agent = "claude-desktop".into();
+        assert!(covers(&theirs, &desktop));
     }
 
     #[cfg(unix)]

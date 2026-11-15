@@ -27,11 +27,16 @@ export const KNOWN_AGENTS: Record<string, KnownAgent> = {
 export const CIEL_AGENT = "ciel";
 
 /**
- * Agents whose permission requests get an Allow / Deny card, as on the Mac.
- * Must match `takes_decisions` in the relay (hook/src/reply.rs): any other
- * agent's request is handed straight back to its terminal.
+ * Agents whose permission requests get an Allow / Deny card. Must match
+ * `takes_decisions` in the relay (hook/src/reply.rs): any other agent's
+ * request is handed straight back to its terminal. A Claude Desktop session
+ * is Claude Code run by the Claude app: the relay answers it as Claude Code
+ * (no `--agent`), so it gets a card too, unlike on the Mac (#191).
  */
-export const APPROVAL_AGENTS = new Set(["codex", "copilot", "muse", CIEL_AGENT]);
+export const APPROVAL_AGENTS = new Set(["codex", "copilot", "muse", "claude-desktop", CIEL_AGENT]);
+
+/** Claude Code run by the Claude app: Claude Code in all but its pill. */
+export const DESKTOP_AGENT = "claude-desktop";
 
 /** Same rule as HookServer.validateAgent on macOS. "claude" is reserved. */
 export function validateAgent(raw: string | undefined): string | null {

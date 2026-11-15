@@ -58,6 +58,9 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   that deletes, publishes, installs or reaches out is ever put forward.
 
 ### Changed
+- Claude Code sessions run from the Claude app now ask on a card in the
+  island like a terminal session's, so they can be answered by voice, on
+  Discord and with « Don't ask again » too. They used to be left to the app.
 - Islets draw back into the sky island as they go, instead of vanishing:
   when the island opens, when it hides, and when what they show is over.
 - A second reply while the bubble shows brings its words up anew.
