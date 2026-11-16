@@ -205,6 +205,17 @@ pub async fn send(
     context: Option<ChatContext>,
 ) -> Result<ChatReply, String> {
     let context = context.map(checked_context).transpose()?;
+    // Written to Ciel, the same as said aloud: through the user's own Claude
+    // Code when they turned it on (agent/), so it knows their work and may
+    // start a session. Never a voice turn: it answers no agent's request.
+    // ponytail: an attached file or window isn't passed on this way.
+    let (asker, question) = (app.clone(), query.clone());
+    let agent = tauri::async_runtime::spawn_blocking(move || {
+        if crate::agent::wanted(&asker) { crate::agent::ask(&asker, &question) } else { None }
+    });
+    if let Some(reply) = agent.await.ok().flatten() {
+        return Ok(ChatReply { text: reply.text });
+    }
     let provider = settings.chat_provider.as_str();
     let model = model_for(settings, provider);
     if provider == ANTHROPIC || provider.is_empty() {
