@@ -83,6 +83,9 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   violet for do not disturb. The tiles share their row, their names in full.
 
 ### Fixed
+- Ciel's own voices speak up: Kokoro and Kitten answers were about 10 dB
+  quieter than other sounds, too soft to hear even at full volume. They are
+  now brought to the level of other sounds, their peaks rounded off.
 - Kokoro downloads again: its maker replaced the file Ciel was waiting for,
   and every download was turned away as not the expected one.
 - In the sky island, a plan's card hangs from the rings' islet, its tail at

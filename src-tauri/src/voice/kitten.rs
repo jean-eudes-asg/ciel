@@ -128,7 +128,7 @@ pub fn say(text: &str, gender: &str) -> Option<Vec<u8>> {
         samples.len() as f64 / rate as f64,
         started.elapsed()
     ));
-    (!samples.is_empty()).then(|| pack::wav(samples, rate))
+    (!samples.is_empty()).then(|| pack::wav(&pack::louder(samples), rate))
 }
 
 #[cfg(test)]

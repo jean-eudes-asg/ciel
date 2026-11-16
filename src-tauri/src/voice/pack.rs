@@ -213,6 +213,24 @@ pub fn wav(samples: &[f32], rate: u32) -> Vec<u8> {
     out
 }
 
+/// A voice made on the computer brought to about -16 dBFS RMS, as loud as
+/// other sounds: Kokoro and Kitten come out near -23. At most four times
+/// louder, so a near silence stays one, and what would pass 0.8 is rounded
+/// off towards full scale instead of clipping.
+pub fn louder(samples: &[f32]) -> Vec<f32> {
+    const TARGET: f32 = 0.158; // -16 dBFS
+    const KNEE: f32 = 0.8;
+    let rms = (samples.iter().map(|s| s * s).sum::<f32>() / samples.len().max(1) as f32).sqrt();
+    let gain = if rms > 0.0 { (TARGET / rms).clamp(1.0, 4.0) } else { 1.0 };
+    samples
+        .iter()
+        .map(|s| {
+            let x = s * gain;
+            if x.abs() <= KNEE { x } else { x.signum() * (KNEE + (1.0 - KNEE) * ((x.abs() - KNEE) / (1.0 - KNEE)).tanh()) }
+        })
+        .collect()
+}
+
 /// How long a WAV made by `wav` lasts.
 pub fn wav_seconds(wav: &[u8]) -> f64 {
     let rate = wav.get(24..28).map_or(0, |b| u32::from_le_bytes(b.try_into().unwrap()));
@@ -241,6 +259,21 @@ mod tests {
         assert_eq!(s, [0, 32767, -32767, 32767, -32767]);
         assert!((wav_seconds(&wav(&[0.0; 48_000], 24_000)) - 2.0).abs() < 1e-9);
         assert_eq!(wav_seconds(b"short"), 0.0);
+    }
+
+    #[test]
+    fn a_quiet_voice_is_brought_up_without_going_past_full_scale() {
+        let rms = |s: &[f32]| (s.iter().map(|x| x * x).sum::<f32>() / s.len() as f32).sqrt();
+        // A -23 dBFS voice with a peak near 0.7, like Kokoro's.
+        let quiet: Vec<f32> = (0..24_000).map(|i| 0.1 * (i as f32 * 0.05).sin() + if i % 500 == 0 { 0.6 } else { 0.0 }).collect();
+        let loud = louder(&quiet);
+        assert!((rms(&loud) - 0.158).abs() < 0.02, "{}", rms(&loud));
+        assert!(loud.iter().all(|x| x.abs() < 1.0));
+        // Already loud: left as it is. Silence: stays silence.
+        let full = vec![0.5f32; 100];
+        assert_eq!(louder(&full), full);
+        assert_eq!(louder(&[0.0; 10]), vec![0.0; 10]);
+        assert!(louder(&[]).is_empty());
     }
 
     fn tar_bz2(entries: &[(&str, &[u8])]) -> Vec<u8> {

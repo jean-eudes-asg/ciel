@@ -159,7 +159,7 @@ fn generate(tts: &OfflineTts, text: &str, sid: i32) -> Option<Vec<u8>> {
     let samples = audio.samples();
     let rate = audio.sample_rate().max(1) as u32;
     crate::log::line(format!("voice: Kokoro said {:.1} s in {:?}", samples.len() as f64 / rate as f64, started.elapsed()));
-    (!samples.is_empty()).then(|| pack::wav(samples, rate))
+    (!samples.is_empty()).then(|| pack::wav(&pack::louder(samples), rate))
 }
 
 #[cfg(test)]
