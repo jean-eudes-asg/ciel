@@ -772,6 +772,7 @@ pub fn run_tool(app: &AppHandle, name: &str, input: &Value, cloud: bool) -> (Str
         "permission" => crate::asked::tool(app, input),
         "learn" if !allowed("learn") => ("Learning from the user's answers is off (Ciel window → Chat → Speak up).".into(), false),
         "learn" => crate::learn::tool(app, input),
+        "canvas" => crate::canvas::tool(app, input),
         "open_app" => open_app(input["name"].as_str().unwrap_or("")),
         "session" => crate::agent::launch::tool(app, input),
         "timer" => crate::timers::for_brain(input),
@@ -829,6 +830,8 @@ pub fn may_read(settings: &crate::settings::Settings, cloud: bool, what: &str) -
         "permission" => settings.speak_up.on && settings.speak_up.answer,
         // Asking whether Ciel may allow on its own what the user always allows.
         "learn" => settings.speak_up.on && settings.speak_up.learn,
+        // Drawing for the user: no data of theirs is read.
+        "canvas" => true,
         _ => true,
     }
 }

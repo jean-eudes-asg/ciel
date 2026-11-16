@@ -6,6 +6,7 @@ import { Sound } from "./core/sound";
 import { State, type Settings } from "./core/state";
 import { Island } from "./island/island";
 import { registerHookHandlers } from "./island/hooks";
+import { registerCanvas } from "./island/canvas";
 import { registerIntegrationHandlers, refreshConfigured } from "./island/integrations";
 import { registerShortcutHandlers } from "./island/shortcuts";
 import { registerVoiceHandlers } from "./island/voice";
@@ -140,6 +141,7 @@ async function main() {
   await onEvent<boolean>("voice-speaking", (on) => island.setTalking(on));
 
   registerHookHandlers(island);
+  registerCanvas(island);
   registerIntegrationHandlers(island);
   // Timers, the clipboard, the controls, the weather (src/tools).
   Tools.start();

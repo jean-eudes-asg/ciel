@@ -11649,6 +11649,61 @@
    "pt-BR": "Adicionar horários",
    "ru": "Добавить часы",
    "id": "Tambah jam"
+  },
+  "Canvas": {
+   "zh-Hans": "画布",
+   "hi": "कैनवास",
+   "es": "Lienzo",
+   "ar": "اللوحة",
+   "fr": "Canevas",
+   "bn": "ক্যানভাস",
+   "pt-BR": "Tela",
+   "ru": "Холст",
+   "id": "Kanvas"
+  },
+  "Drawing": {
+   "zh-Hans": "图画",
+   "hi": "चित्र",
+   "es": "Dibujo",
+   "ar": "رسم",
+   "fr": "Dessin",
+   "bn": "ছবি",
+   "pt-BR": "Desenho",
+   "ru": "Рисунок",
+   "id": "Gambar"
+  },
+  "Open in the window": {
+   "zh-Hans": "在窗口中打开",
+   "hi": "विंडो में खोलें",
+   "es": "Abrir en la ventana",
+   "ar": "فتح في النافذة",
+   "fr": "Ouvrir dans la fenêtre",
+   "bn": "উইন্ডোতে খুলুন",
+   "pt-BR": "Abrir na janela",
+   "ru": "Открыть в окне",
+   "id": "Buka di jendela"
+  },
+  "What Ciel drew for you while you talked, the last ten.": {
+   "zh-Hans": "你们交谈时 Ciel 为你画的东西，最近十个。",
+   "hi": "बात करते समय Ciel ने आपके लिए जो बनाया, आख़िरी दस।",
+   "es": "Lo que Ciel dibujó para ti mientras hablaban, los diez últimos.",
+   "ar": "ما رسمه Ciel لك أثناء حديثكما، آخر عشرة.",
+   "fr": "Ce que Ciel a dessiné pour vous pendant que vous parliez, les dix derniers.",
+   "bn": "কথা বলার সময় Ciel আপনার জন্য যা এঁকেছে, শেষ দশটি।",
+   "pt-BR": "O que o Ciel desenhou para você enquanto conversavam, os dez últimos.",
+   "ru": "Что Ciel нарисовал для вас во время разговора, последние десять.",
+   "id": "Apa yang digambar Ciel untuk Anda saat berbicara, sepuluh terakhir."
+  },
+  "Nothing drawn yet. Ask Ciel to show you something: a plan, a chart, your week.": {
+   "zh-Hans": "还没有画任何东西。让 Ciel 给你看点什么：一个计划、一张图表、你的一周。",
+   "hi": "अभी कुछ नहीं बना। Ciel से कुछ दिखाने को कहें: एक योजना, एक चार्ट, आपका हफ़्ता।",
+   "es": "Aún no hay nada dibujado. Pídele a Ciel que te muestre algo: un plan, un gráfico, tu semana.",
+   "ar": "لم يُرسم شيء بعد. اطلب من Ciel أن يريك شيئًا: خطة، رسمًا بيانيًا، أسبوعك.",
+   "fr": "Rien de dessiné pour l'instant. Demandez à Ciel de vous montrer quelque chose : un plan, un graphique, votre semaine.",
+   "bn": "এখনো কিছু আঁকা হয়নি। Ciel-কে কিছু দেখাতে বলুন: একটি পরিকল্পনা, একটি চার্ট, আপনার সপ্তাহ।",
+   "pt-BR": "Nada desenhado ainda. Peça ao Ciel para mostrar algo: um plano, um gráfico, sua semana.",
+   "ru": "Пока ничего не нарисовано. Попросите Ciel что-нибудь показать: план, график, вашу неделю.",
+   "id": "Belum ada yang digambar. Minta Ciel menunjukkan sesuatu: rencana, grafik, minggu Anda."
   }
  }
 }

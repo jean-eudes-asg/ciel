@@ -172,6 +172,25 @@ fn permission_tool() -> Value {
 const PERMISSION_PROMPT: &str = "
 Permissions: when Ciel has just read the user an agent's request and asked whether to allow it, their next words may answer it: if they agree, call permission with action allow; if they refuse, action deny. Then a word, nothing more. Never call it otherwise, and never for a request they didn't hear.";
 
+fn canvas_tool() -> Value {
+    json!({
+        "name": "canvas",
+        "description": "Draw something for the user while you talk: a diagram, a chart, a table, a plan, a small live page. It shows small in the island and big in the Ciel window, where the last ten stay.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "title": { "type": "string", "description": "A few words." },
+                "kind": { "type": "string", "enum": ["html", "markdown"], "description": "html: a whole self-contained page (inline CSS, SVG and JavaScript). markdown: formatted text and tables." },
+                "content": { "type": "string" }
+            },
+            "required": ["title", "kind", "content"]
+        }
+    })
+}
+
+const CANVAS_PROMPT: &str = "
+Canvas: when a picture helps more than words — a diagram, a chart of numbers, a table, a plan, a timeline, a small interactive page — call canvas. For html, write one self-contained page: inline CSS, inline SVG or JavaScript, nothing loaded from the network (it is blocked), a black background and light text, readable both small (about 600 by 260) and big. Then say in a few words what you drew; never read it out.";
+
 fn learn_tool() -> Value {
     json!({
         "name": "learn",
@@ -205,6 +224,8 @@ fn reading_tools(settings: &crate::settings::Settings, cloud: bool) -> (Vec<Valu
         ("permission", permission_tool, PERMISSION_PROMPT),
         // Nor this: what Ciel learned from the user's answers (learn.rs).
         ("learn", learn_tool, LEARN_PROMPT),
+        // Nor this: what the brain draws for the user (canvas.rs).
+        ("canvas", canvas_tool, CANVAS_PROMPT),
     ] {
         if super::may_read(settings, cloud, what) {
             tools.push(tool());

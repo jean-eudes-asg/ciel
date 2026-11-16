@@ -1332,6 +1332,7 @@ export class Island {
       const on = name === State.view;
       view.el.classList.toggle("on", on);
       if (on) view.sync();
+      else view.idle?.();
     }
 
     // The chat is the only view with a text field, so it is the only time the

@@ -2,10 +2,11 @@
 // page is opened in a plain browser, so the island can be iterated on with
 // `npm run dev` alone.
 
-import { invoke } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { emit, emitTo, listen } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import type { Settings } from "./state";
+import type { Drawing, DrawingMeta } from "./canvas";
 import type { RecapHistory, RecapPrefs } from "../recap/summary";
 import type { SpotifyState } from "./spotify";
 import type { FinanceFolderInfo, FinancePoll, NewExpense } from "./finance";
@@ -324,6 +325,13 @@ export const Bridge = {
   workOpen: () => call<void>("work_open"),
   /** Speak up on Discord (discord.rs): one line to you from your bot, to see that it can write to you. */
   discordTest: () => callOrThrow<void>("discord_test"),
+  /** What the brain drew (canvas.rs), newest first, without their content. */
+  canvasList: () => call<DrawingMeta[]>("canvas_list"),
+  canvasGet: (id: string) => call<Drawing>("canvas_get", { id }),
+  canvasRemove: (id: string) => call<void>("canvas_remove", { id }),
+  canvasClear: () => call<void>("canvas_clear"),
+  /** Where an HTML drawing is served, sealed off from Ciel; null outside Ciel. */
+  canvasUrl: (id: string) => (IS_TAURI ? convertFileSrc(id, "ciel-canvas") : null),
   /** Minutes awake; 0 lets it sleep, a negative number until turned off. */
   awakeSet: (minutes: number) => call<Controls>("awake_set", { minutes }),
   /** Open-Meteo (src-tauri/src/weather.rs). */

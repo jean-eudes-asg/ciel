@@ -35,6 +35,7 @@ import { buildSessions } from "./sessions";
 import { buildFlipClock, tick as tickClock } from "./flipclock";
 import { onWhite } from "../core/theme";
 import { ruleLabel } from "../core/rules";
+import { hideDrawing, showDrawing } from "../core/canvas";
 
 export interface ViewActions {
   setView(v: IslandViewName): void;
@@ -72,6 +73,8 @@ export interface ViewHost {
   tick?(nowMs: number): boolean | void;
   /** Ctrl+O / Ctrl+E while the view is on screen (island/shortcuts.ts). */
   command?(command: ViewCommand): void;
+  /** Called while the view is not on screen: what runs in it stops. */
+  idle?(): void;
 }
 
 // ── Shared pieces ─────────────────────────────────────────────────────────────
@@ -1064,6 +1067,44 @@ function buildSettings(actions: ViewActions): ViewHost {
   };
 }
 
+// ── Canvas ────────────────────────────────────────────────────────────────────
+
+/**
+ * What the brain just drew (core/canvas.ts), small, with a button to see it
+ * big in the Ciel window. Shown only while the island is open on it: a live
+ * page stops as soon as the island folds, hides or turns to another view.
+ */
+function buildCanvas(): ViewHost {
+  const title = h("div", { class: "canvas-title" });
+  const open = h("button", {
+    class: "canvas-open",
+    text: t("Open in the window"),
+    onclick: () => void Bridge.openSettingsWindow("canvas"),
+  });
+  const stage = h("div", { class: "canvas-stage" });
+  const el = h("div", { class: "view canvas-view" },
+    h("div", { class: "card" }, h("div", { class: "canvas-body" }, h("div", { class: "canvas-head" }, title, open), stage)));
+  let shown: string | null = null;
+  const take = () => {
+    if (shown === null) return;
+    shown = null;
+    hideDrawing(stage);
+  };
+  return {
+    el,
+    sync() {
+      const drawing = State.canvas;
+      title.textContent = drawing?.title ?? "";
+      const wanted = State.mode === "expanded" && drawing ? drawing.id : null;
+      if (wanted === shown) return;
+      if (!wanted || !drawing) return take();
+      shown = wanted;
+      void showDrawing(stage, drawing);
+    },
+    idle: take,
+  };
+}
+
 // ── Placeholders filled in later stages ───────────────────────────────────────
 
 function buildPlaceholder(title: Msg, sub: string): ViewHost {
@@ -1101,6 +1142,7 @@ export function buildViews(
   map.set("recap", buildRecap(actions));
   map.set("notifications", buildInbox(actions, onInboxRows));
   map.set("agents", buildSessions(actions, onHeightChange));
+  map.set("canvas", buildCanvas());
   // Not in the Windows v1: sending a file by email, window attach + web result.
   map.set("mail", buildPlaceholder(tl("Sending by email isn't in this version."), ""));
   map.set("searching", buildPlaceholder(tl("Claude is searching…"), ""));

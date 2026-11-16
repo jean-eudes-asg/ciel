@@ -13,6 +13,7 @@ import type { CielNotification } from "./notifications";
 import type { Bindings } from "./shortcuts";
 import type { AiEngine } from "./brain";
 import type { Rule } from "./rules";
+import type { DrawingMeta } from "./canvas";
 import { pillColor } from "./pill-colors";
 import { Spotify, musicPlaying } from "./spotify";
 import { YTMUSIC_ID, YtMusic } from "./ytmusic";
@@ -395,6 +396,8 @@ class AppState {
   searchResult: SearchResult | null = null;
   chatHistory: ChatMessage[] = [];
   pendingApproval: ApprovalInfo | null = null;
+  /** The brain's latest drawing, shown by the island's canvas view (core/canvas.ts). */
+  canvas: DrawingMeta | null = null;
   /** The pill that was in front when the card came up; it comes back after. */
   focusBeforeApproval: string | null = null;
 

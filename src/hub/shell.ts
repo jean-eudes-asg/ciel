@@ -15,7 +15,7 @@ import { cielMark, constellation } from "./constellation";
 import { icon, keyLabel } from "./ui";
 
 export type PageId =
-  | "home" | "games"
+  | "home" | "games" | "canvas"
   | "dictation" | "notes" | "insights" | "dictionary" | "snippets" | "styles" | "flowsettings"
   | "general" | "pills" | "agents" | "chat" | "voice" | "tools" | "integrations" | "shortcuts" | "wallpaper"
   | "screensaver" | "updates" | "setup";
@@ -43,6 +43,7 @@ export const SPACES: SpaceDef[] = [
     id: "today", icon: "sun", title: () => t("Today"), pages: [
       { id: "home", title: () => t("Your day"), wide: true },
       { id: "games", title: () => t("Games"), wide: true },
+      { id: "canvas", title: () => t("Canvas"), wide: true },
     ],
   },
   {

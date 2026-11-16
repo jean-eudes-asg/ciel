@@ -2,6 +2,7 @@
 
 mod agent_hooks;
 mod asked;
+mod canvas;
 mod agents;
 mod alerts;
 mod browser_bridge;
@@ -869,6 +870,8 @@ pub fn run() {
         .manage(rules::load())
         // Hide from screen sharing, for the windows made after launch too.
         .on_page_load(capture::page_load)
+        // What the brain draws, each page sealed off from Ciel (canvas.rs).
+        .register_uri_scheme_protocol(canvas::SCHEME, |_ctx, request| canvas::protocol(&request))
         .invoke_handler(tauri::generate_handler![
             boot,
             notify::notification_action,
@@ -1031,6 +1034,10 @@ pub fn run() {
             notes::notes_folder_info,
             work::work_file,
             discord::discord_test,
+            canvas::canvas_list,
+            canvas::canvas_get,
+            canvas::canvas_remove,
+            canvas::canvas_clear,
             work::work_open,
             work::work_folders_exist,
             notes::notes_rename,

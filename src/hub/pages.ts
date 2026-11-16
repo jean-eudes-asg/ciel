@@ -11,10 +11,12 @@ import { flowSettingsPage } from "./pages/flowsettings";
 import { voicePage } from "./pages/voice";
 import { homePage } from "./pages/home";
 import { gamesPage } from "./pages/games";
+import { canvasPage } from "./pages/canvas";
 
 export const FLOW_PAGE_RENDERERS: Partial<Record<PageId, FlowPageRenderer>> = {
   home: homePage,
   games: gamesPage,
+  canvas: canvasPage,
   dictation: dictationPage,
   notes: notesPage,
   insights: insightsPage,

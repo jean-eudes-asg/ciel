@@ -25,7 +25,8 @@ export type IslandViewName =
   | "recap"
   | "notifications"
   | "tools"
-  | "agents";
+  | "agents"
+  | "canvas";
 
 export type BotStateName =
   | "idle"
@@ -109,6 +110,8 @@ export const VIEW_LAYOUTS: Record<IslandViewName, ViewLayout> = {
   notifications: { height: 280, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },
   // A tool (src/tools): the tool has the island to itself.
   tools: { height: 236, botX: 46, botY: 74, botDiameter: 0, agentMode: "none" },
+  // What the brain drew (core/canvas.ts), small, the whole width.
+  canvas: { height: 300, botX: 46, botY: 74, botDiameter: 0, agentMode: "none" },
   // Every agent session in one list (views/sessions.ts): Ciel small at the top
   // left, a row a session beside him. The height follows the rows (agentsHeight).
   agents: { height: 160, botX: 46, botY: 74, botDiameter: 38, agentMode: "none" },

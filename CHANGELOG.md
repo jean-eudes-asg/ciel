@@ -49,6 +49,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   with that code answers it. Never « Don't ask again », never Ciel's own
   requests, never an agent's question: those wait for a click. Each answer
   leaves a line on the session in the island.
+- **Canvas**: « OK Ciel » can draw while it talks to you — a diagram, a
+  chart, a table, a plan, a small live page. It shows small in the island
+  and big on the new Canvas page of the Ciel window, where the last ten
+  stay. A page runs sealed off from Ciel, with no network, and stops as
+  soon as it is out of sight.
 - **Learn from my answers** (same place), off by default: each answer you
   give an agent goes in a journal on your computer (approvals.jsonl). When
   you always allow the same thing in a project, Ciel's brain judges whether
