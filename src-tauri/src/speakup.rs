@@ -310,6 +310,14 @@ pub fn needs(app: &AppHandle, payload: &Value) {
     tell(app, &prefs, "an agent needs the user", needs_line(&agent, &project));
 }
 
+/// The answer to what the user wrote in the chat (chat.rs), said too when
+/// Ciel may speak: they often ask and move on to something else.
+pub fn answer(app: &AppHandle, text: &str) {
+    if prefs(app).is_some_and(|p| may(app, &p)) {
+        line("a written question was answered", text.to_string());
+    }
+}
+
 /// Something the user always allows, to be asked about between two
 /// conversations (learn.rs): only at the desk, with Ciel free to speak, and
 /// one at a time.

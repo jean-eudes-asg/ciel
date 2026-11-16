@@ -214,6 +214,7 @@ pub async fn send(
         if crate::agent::wanted(&asker) { crate::agent::ask(&asker, &question) } else { None }
     });
     if let Some(reply) = agent.await.ok().flatten() {
+        crate::speakup::answer(app, &reply.text);
         return Ok(ChatReply { text: reply.text });
     }
     let provider = settings.chat_provider.as_str();
