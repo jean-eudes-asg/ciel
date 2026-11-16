@@ -83,6 +83,8 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   violet for do not disturb. The tiles share their row, their names in full.
 
 ### Fixed
+- Kokoro downloads again: its maker replaced the file Ciel was waiting for,
+  and every download was turned away as not the expected one.
 - In the sky island, a plan's card hangs from the rings' islet, its tail at
   the ring, instead of from the island's right edge.
 - On Windows the microphone keeps a fifth of a second of sound waiting
