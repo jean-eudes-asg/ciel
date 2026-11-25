@@ -68,6 +68,7 @@ export default defineConfig({
         wallpaper: resolve(__dirname, "wallpaper.html"),
         screensaver: resolve(__dirname, "screensaver.html"),
         games: resolve(__dirname, "games.html"),
+        dock: resolve(__dirname, "dock.html"),
         // The island in demo mode in a plain browser page (src/demo/web.ts).
         demo: resolve(__dirname, "demo.html"),
       },

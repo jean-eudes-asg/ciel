@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ciel - Dock preview</title>
+    <style>
+      body { margin: 0; padding: 24px 16px 80px; background: #3a3d44 !important; font: 12px system-ui; color: #ddd; overflow: auto !important; height: auto !important; }
+      h1 { font: 600 14px system-ui; text-align: center; margin: 0 0 18px; }
+      .cases { display: flex; flex-direction: column; align-items: center; gap: 22px; }
+      .case { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+      .slot { position: relative; width: min(1200px, 100vw - 32px); height: 112px; }
+    </style>
+  </head>
+  <body>
+    <h1>The dock (src/dock): agents working, one asking, quiet, and on white. Point at the icons, drag a pin, right-click (the console says what Rust would be asked)</h1>
+    <div class="cases" id="cases"></div>
+    <script type="module" src="./dock-preview.ts"></script>
+  </body>
+</html>

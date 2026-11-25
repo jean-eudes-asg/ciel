@@ -502,7 +502,8 @@ pub fn window_owners(ancestors: &[u32]) -> Vec<u32> {
     first_with_window(ancestors).into_iter().collect()
 }
 
-fn bring_forward(raw: isize) -> bool {
+/// A window in front, restored if it was minimized (the dock's apps too).
+pub fn bring_forward(raw: isize) -> bool {
     let hwnd = HWND(raw as *mut _);
     unsafe {
         if IsIconic(hwnd).as_bool() {

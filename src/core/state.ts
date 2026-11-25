@@ -13,6 +13,7 @@ import type { CielNotification } from "./notifications";
 import type { Bindings } from "./shortcuts";
 import type { AiEngine } from "./brain";
 import type { Rule } from "./rules";
+import type { DockPrefs } from "./dock";
 import type { DrawingMeta } from "./canvas";
 import { pillColor } from "./pill-colors";
 import { Spotify, musicPlaying } from "./spotify";
@@ -280,6 +281,8 @@ export interface Settings {
   brainReads: BrainReads;
   /** The island's Tools (src/tools): each off until turned on there. */
   tools: ToolPrefs;
+  /** The dock at the bottom of the screen (src/dock, src-tauri/src/dock): off by default. */
+  dock: DockPrefs;
   /** The Ciel window's colours (hub/shell.ts applyTheme). */
   windowTheme: "black" | "white" | "system";
   /** The island's colours (core/theme.ts), on their own: a white window may keep a black island. */
@@ -347,6 +350,7 @@ export const DEFAULT_SETTINGS: Settings = {
   wallpaper: { ...DEFAULT_WALLPAPER },
   brainReads: { calendar: true, notes: true, finance: false },
   tools: { ...DEFAULT_TOOL_PREFS },
+  dock: { on: false, hideTaskbar: false, magnify: true, taskView: true, widgets: false, pins: null },
   windowTheme: "black",
   islandTheme: "black",
   islandShape: "notch",

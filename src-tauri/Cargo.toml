@@ -124,6 +124,10 @@ windows = { version = "0.61", features = [
   "Networking_Connectivity",
   # The taskbar's apps and their icons (quick.rs).
   "Win32_Storage_FileSystem",
+  # The dock (dock/): icons at 48 px from the system image list, and the
+  # screen's density for its place at the bottom.
+  "Win32_UI_Controls",
+  "Win32_UI_HiDpi",
 ] }
 # The clipboard for Flow dictation, kept out of the clipboard history, and the
 # clipboard history's text, files and pictures (clipboard.rs). MIT/Apache-2.0.

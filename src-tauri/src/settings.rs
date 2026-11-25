@@ -148,6 +148,8 @@ pub struct Settings {
     pub brain_reads: BrainReads,
     /// The island's Tools (src/tools): each one off until the user turns it on.
     pub tools: ToolsPrefs,
+    /// The dock at the bottom of the screen (dock/): off by default.
+    pub dock: DockPrefs,
     /// The Ciel window's colours: "black", "white" or "system" (src/hub/shell.ts).
     pub window_theme: String,
     /// The island's colours, the same three (src/core/theme.ts).
@@ -159,6 +161,40 @@ pub struct Settings {
     /// The steps of the window's setup the user went through (src/settings/setup.ts),
     /// and "later" once they put it off; empty until it was first shown.
     pub setup_steps: Vec<String>,
+}
+
+/// The dock (Windows): a bar at the bottom of the screen with the apps pinned
+/// to the taskbar and the ones open, the agents, what plays and the time.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct DockPrefs {
+    pub on: bool,
+    /// While the dock shows, the Windows taskbar of the main screen is hidden
+    /// and the dock has its place (dock/taskbar.rs). Back as it was when the
+    /// dock goes or Ciel quits.
+    pub hide_taskbar: bool,
+    /// The icons grow under the pointer.
+    pub magnify: bool,
+    /// Windows' own buttons beside Start, as the taskbar has them (Start
+    /// searches too, so there is no search button).
+    pub task_view: bool,
+    pub widgets: bool,
+    /// The dock's own pins, shortcuts (.lnk) and programs (.exe) in their
+    /// order. None until the user pins, unpins or moves one: the taskbar's.
+    pub pins: Option<Vec<String>>,
+}
+
+impl Default for DockPrefs {
+    fn default() -> Self {
+        DockPrefs {
+            on: false,
+            hide_taskbar: false,
+            magnify: true,
+            task_view: true,
+            widgets: false,
+            pins: None,
+        }
+    }
 }
 
 /// The Tools tab: what reads the clipboard or reaches the network does so only
@@ -465,6 +501,7 @@ impl Default for Settings {
             wallpaper: WallpaperPrefs::default(),
             brain_reads: BrainReads::default(),
             tools: ToolsPrefs::default(),
+            dock: DockPrefs::default(),
             window_theme: "black".into(),
             island_theme: "black".into(),
             island_shape: "notch".into(),
@@ -784,6 +821,10 @@ mod tests {
     "clipboard": true, "lyrics": true, "weatherPlace": "Lyon, France", "weatherLat": 45.75, "weatherLon": 4.85,
     "weatherUnits": "c", "rainWarnings": true, "skyWeather": true,
     "worldClocks": [{ "name": "Cotonou", "tz": "Africa/Porto-Novo" }]
+  },
+  "dock": {
+    "on": true, "hideTaskbar": true, "magnify": false, "taskView": false, "widgets": true,
+    "pins": ["C:\\Users\\me\\Pinned\\Files.lnk", "C:\\Tools\\editor.exe"]
   },
   "windowTheme": "white",
   "islandTheme": "white",
@@ -1266,6 +1307,7 @@ mod tests {
                 "wallpaper",
                 "brainReads",
                 "tools",
+                "dock",
                 "windowTheme",
                 "islandTheme",
                 "islandShape",

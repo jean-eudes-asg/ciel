@@ -9,6 +9,7 @@ import type { Settings } from "./state";
 import type { Drawing, DrawingMeta } from "./canvas";
 import type { RecapHistory, RecapPrefs } from "../recap/summary";
 import type { SpotifyState } from "./spotify";
+import type { DockPanel, DockState } from "./dock";
 import type { FinanceFolderInfo, FinancePoll, NewExpense } from "./finance";
 import type { ClipState, Controls, LauncherApp, Lyrics, Place, ShelfFile, TimerItem, Weather } from "./tools";
 
@@ -315,6 +316,27 @@ export const Bridge = {
   systemAction: (what: string) => call<boolean>("system_action", { what }),
   launcherApps: () => call<LauncherApp[]>("launcher_apps"),
   launcherOpen: (id: string) => call<boolean>("launcher_open", { id }),
+  // ── The dock (src-tauri/src/dock) ──
+  dockState: () => call<DockState>("dock_state"),
+  /** The bar is this wide (CSS pixels): its window takes the size. */
+  dockFit: (width: number) => call<void>("dock_fit", { width }),
+  /** A click on an app of the row; `newWindow` (middle click) starts another. */
+  dockOpen: (id: string, newWindow: boolean) => call<boolean>("dock_open", { id, newWindow }),
+  dockStart: () => call<boolean>("dock_start"),
+  /** The hidden Windows taskbar, for a moment. */
+  dockTaskbar: () => call<boolean>("dock_taskbar"),
+  /** The pointer is on the bar: the window's room above it takes clicks too. */
+  dockRegion: (hover: boolean) => call<void>("dock_region", { hover }),
+  /** One of Windows' panels, as its keys open it. */
+  dockKey: (what: DockPanel) => call<boolean>("dock_key", { what }),
+  /** The wheel on the sound icon, by notches (up is positive). */
+  dockVolume: (notches: number) => call<boolean>("dock_volume", { notches }),
+  /** The menu of a right click: an app's, or the bar's (null). */
+  dockMenu: (id: string | null) => call<void>("dock_menu", { id }),
+  /** An app's windows above its icon (x: CSS pixels across the window), or null for them to go. */
+  dockPreview: (id: string | null, x: number, light: boolean) => call<void>("dock_preview", { id, x, light }),
+  /** An app dragged to `to` among the pins. */
+  dockPinMove: (id: string, to: number) => call<boolean>("dock_pin_move", { id, to }),
   micToggle: () => call<boolean>("mic_toggle"),
   /** During a call the Notetaker records: a card with the answer to the last question (notes/mod.rs). */
   notesAnswer: () => call<void>("notes_answer"),

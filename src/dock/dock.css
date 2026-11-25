@@ -1,0 +1,359 @@
+/* The dock (dock.html): one black bar (white with the white island) at the
+   bottom of its window, with room above it and on each side where the icons
+   grow under the pointer (clicks go through that room while the pointer is
+   away: a window region, dock/win.rs). Monochrome like the island: colour
+   comes only from the apps' own icons; what needs you is drawn inverted,
+   never tinted. */
+
+:root {
+  --bar: #000;
+  --line: rgba(255, 255, 255, 0.1);
+  --ink: #f5f6f8;
+  --dim: rgba(255, 255, 255, 0.55);
+  --fg: 255 255 255;
+  --font: system-ui, "Segoe UI Variable Text", "Segoe UI", "Segoe UI Emoji", "Nirmala UI",
+    "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans", "Noto Sans Devanagari", "Noto Sans Bengali",
+    "Noto Sans Arabic", "Noto Sans CJK SC", "Noto Sans SC", sans-serif;
+}
+
+:root[data-theme="white"],
+.theme-white {
+  --bar: #fff;
+  --line: rgba(0, 0, 0, 0.1);
+  --ink: #111214;
+  --dim: rgba(0, 0, 0, 0.55);
+  --fg: 0 0 0;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+  font: 500 13px var(--font);
+  color: var(--ink);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  outline: none;
+}
+
+/* The window: the bar at its bottom, in the middle. */
+.dock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bar {
+  position: relative;
+  flex: none;
+  height: 52px;
+  width: max-content;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 6px;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+/* The bar's own colour, which widens as the icons grow (bar.ts). */
+.bar > .bg {
+  position: absolute;
+  inset: 0;
+  background: var(--bar);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.bar > :not(.bg):not(.drop),
+.apps > * {
+  position: relative;
+}
+
+.hit {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  transition: background-color 120ms ease;
+  transform-origin: 50% 85%;
+  /* No will-change: on its own layer an icon is drawn once at rest size and
+     then stretched, blurred. Without, it is drawn again at its grown size,
+     from its 96 px picture. */
+}
+
+.hit:hover {
+  background: rgb(var(--fg) / 0.08);
+}
+
+.hit:active {
+  background: rgb(var(--fg) / 0.13);
+}
+
+/* Grown icons draw no hover tile: their size says it. */
+.dock.magnify .hit.mag:hover {
+  background: none;
+}
+
+.sep {
+  width: 1px;
+  height: 22px;
+  margin: 0 6px;
+  background: var(--line);
+  flex: none;
+}
+
+.sep[hidden],
+[hidden] {
+  display: none !important;
+}
+
+/* The name of what the pointer is on, above it. */
+.label {
+  position: absolute;
+  z-index: 2;
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: var(--bar);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.35;
+  white-space: pre-line;
+  max-width: 320px;
+  pointer-events: none;
+}
+
+/* Start and Windows' panels */
+
+.start {
+  width: 40px;
+  justify-content: center;
+  color: var(--ink);
+}
+
+/* Ciel and his agents */
+
+.agents {
+  gap: 8px;
+  padding: 0 6px;
+}
+
+.agents.quiet {
+  width: 40px;
+  justify-content: center;
+}
+
+.agents .ciel {
+  width: 26px;
+  height: 20px;
+  flex: none;
+}
+
+.agents .ciel .body {
+  fill: var(--ink);
+}
+
+.agents .ciel .eye {
+  fill: var(--bar);
+}
+
+.txt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  max-width: 190px;
+  line-height: 1.2;
+  text-align: start;
+}
+
+.txt .top {
+  font-size: 11px;
+  color: var(--dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.txt .main {
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.agents.asking {
+  background: var(--ink);
+  color: var(--bar);
+}
+
+.agents.asking .txt .top {
+  color: inherit;
+  opacity: 0.6;
+}
+
+.agents.asking .ciel .body {
+  fill: var(--bar);
+}
+
+.agents.asking .ciel .eye {
+  fill: var(--ink);
+}
+
+/* Apps: their buttons are the bar's own items, to grow in one row. */
+
+.apps {
+  display: contents;
+}
+
+.app {
+  width: 40px;
+  justify-content: center;
+}
+
+.app img,
+.app .letter {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+
+.app .letter {
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  background: rgb(var(--fg) / 0.12);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.app .dot {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 4px;
+  height: 3px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--dim);
+  transition: width 160ms ease, margin-left 160ms ease;
+}
+
+.app.active .dot {
+  width: 14px;
+  margin-left: -7px;
+  background: var(--ink);
+}
+
+.app.attention {
+  background: rgb(var(--fg) / 0.16);
+}
+
+.app.attention .dot {
+  background: var(--ink);
+}
+
+.app.dragging {
+  z-index: 1;
+  opacity: 0.85;
+  transition: none;
+}
+
+/* Where a dragged app goes among the pins. */
+.drop {
+  position: absolute;
+  top: 10px;
+  width: 2px;
+  height: 32px;
+  border-radius: 1px;
+  background: var(--ink);
+  pointer-events: none;
+}
+
+/* What plays */
+
+.media {
+  gap: 4px;
+  padding: 0 4px 0 10px;
+}
+
+.media .play {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+  flex: none;
+}
+
+.media .play:hover {
+  background: rgb(var(--fg) / 0.1);
+}
+
+/* The hidden taskbar, the sound, the network, the battery, the clock */
+
+.tray {
+  width: 30px;
+  justify-content: center;
+  color: var(--dim);
+}
+
+.system {
+  gap: 9px;
+  padding: 0 10px;
+}
+
+.system svg {
+  flex: none;
+}
+
+.system .off {
+  opacity: 0.4;
+}
+
+.clock {
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 8px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock .date {
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.clock .time {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+[data-dir="rtl"] .clock {
+  align-items: flex-start;
+}
+
+/* Show desktop: a narrow button at the end, as the taskbar's corner. */
+.desktop {
+  width: 26px;
+  justify-content: center;
+  color: var(--dim);
+}

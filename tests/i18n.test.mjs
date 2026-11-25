@@ -237,7 +237,7 @@ test("lookup() answers from the merged tables", () => {
 // upload canvas or the recap that is exactly a translated string, and is not
 // the argument of t() / tl() / tn() / N_(), is English that would stay English.
 
-const CHECKED = ["src/views", "src/settings", "src/island", "src/upload", "src/recap", "src/main.ts"];
+const CHECKED = ["src/views", "src/settings", "src/island", "src/upload", "src/recap", "src/dock", "src/main.ts"];
 /** Literals that are a translated word but are values in the code, not text on screen. */
 const NOT_TEXT = new Set([
   "file", // the kind of a chat context: { kind: "file" }

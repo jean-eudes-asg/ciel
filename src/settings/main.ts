@@ -19,6 +19,7 @@ import {
 } from "../core/pills";
 import { h, clear } from "../views/dom";
 import { DEFAULT_TOOL_PREFS, type ToolPrefs } from "../core/tools";
+import type { DockPrefs } from "../core/dock";
 import { applyTheme, startHub, type PageId, type WindowTheme } from "../hub/shell";
 import { renderSetup, setupFirstTime, setupProgress, type SetupHost } from "./setup";
 import { FLOW_PAGE_RENDERERS } from "../hub/pages";
@@ -78,6 +79,52 @@ function toggle(on: boolean, onChange: (v: boolean) => void): HTMLElement {
     onChange(next);
   });
   return el;
+}
+
+// ── Dock ──────────────────────────────────────────────────────────────────────
+
+/** The dock at the bottom of the screen (src/dock, src-tauri/src/dock), Windows only. */
+function dockSection(): HTMLElement {
+  const dock = (): DockPrefs => ({ ...DEFAULT_SETTINGS.dock, ...settings.dock });
+  const set = (change: Partial<DockPrefs>) => {
+    settings.dock = { ...dock(), ...change };
+    void save();
+  };
+  return h("section", {},
+    h("h2", {}, h("span", { text: t("Dock") })),
+    h("div", { class: "row" },
+      h("label", { text: t("Show the dock") }),
+      toggle(dock().on, (v) => set({ on: v })),
+    ),
+    h("div", {
+      class: "hint",
+      text: t("The apps pinned to your taskbar and the ones open, Ciel with your agents, what is playing and the time. It never takes the keyboard, and steps aside for a full-screen game or video."),
+    }),
+    h("div", { class: "row" },
+      h("label", { text: t("Magnify icons under the pointer") }),
+      toggle(dock().magnify, (v) => set({ magnify: v })),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Task view") }),
+      toggle(dock().taskView, (v) => set({ taskView: v })),
+    ),
+    h("div", { class: "row" },
+      h("label", { text: t("Widgets") }),
+      toggle(dock().widgets, (v) => set({ widgets: v })),
+    ),
+    h("div", {
+      class: "hint",
+      text: t("Drag an app along the dock to move it among the pins, or to pin it. Right-click an app to pin, unpin or close it. Its windows show when the pointer rests on it."),
+    }),
+    h("div", { class: "row" },
+      h("label", { text: t("Hide the Windows taskbar") }),
+      toggle(dock().hideTaskbar, (v) => set({ hideTaskbar: v })),
+    ),
+    h("div", {
+      class: "hint",
+      text: t("While the dock shows, it takes the taskbar's place on the main screen. Turn this off or quit Ciel and the taskbar comes back as it was. The arrow on the dock shows it for a moment, for the icons in its corner."),
+    }),
+  );
 }
 
 // ── Tools ─────────────────────────────────────────────────────────────────────
@@ -2262,6 +2309,7 @@ async function render() {
       integrationsSection(present),
     ],
     tools: () => [toolsSection()],
+    dock: () => [dockSection()],
     shortcuts: () => [shortcutsSection(shortcutReport)],
     wallpaper: () => wallpaper,
   };

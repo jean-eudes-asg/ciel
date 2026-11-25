@@ -14,6 +14,7 @@ mod codex_plan;
 mod config_file;
 mod controls;
 mod desktop;
+mod dock;
 mod files;
 mod finance;
 mod flow;
@@ -192,6 +193,7 @@ fn save_settings(app: AppHandle, shared: State<Shared>, settings: Settings) {
     // Ciel's brain may have changed (its setting, a local server): « OK Ciel » follows.
     voice::sync(&app);
     wallpaper::sync(&app, &settings.wallpaper);
+    dock::sync(&app, &settings.dock);
     // Keep the other window in step (island ⇄ settings window).
     let _ = app.emit("settings-changed", settings);
 }
@@ -828,6 +830,8 @@ pub(crate) fn before_exit(app: &AppHandle) {
     notes::shutdown(app);
     agent::shutdown();
     wallpaper::shutdown(app);
+    // The Windows taskbar comes back, if the dock had its place.
+    dock::shutdown();
     // Nothing shows the desktop's notifications once Ciel is gone:
     // GNOME's banners come back if Ciel turned them off.
     #[cfg(target_os = "linux")]
@@ -902,6 +906,17 @@ pub fn run() {
             quick::system_action,
             quick::launcher_apps,
             quick::launcher_open,
+            dock::dock_state,
+            dock::dock_fit,
+            dock::dock_open,
+            dock::dock_start,
+            dock::dock_taskbar,
+            dock::dock_region,
+            dock::dock_key,
+            dock::dock_volume,
+            dock::dock_menu,
+            dock::dock_preview,
+            dock::dock_pin_move,
             controls::mic_toggle,
             controls::awake_set,
             weather::weather_search,
@@ -1077,6 +1092,7 @@ pub fn run() {
             screensaver::setup(&handle);
             play::setup(&handle);
             notes::setup(&handle);
+            dock::setup(&handle);
             // Every window made so far, before the island is placed and drawn.
             capture::sync(&handle, loaded.hide_from_screen_sharing);
 
@@ -1100,6 +1116,7 @@ pub fn run() {
             timers::start(&handle);
             controls::setup(&handle);
             weather::start(&handle);
+            dock::sync(&handle, &loaded.dock);
             // A panel coming or going moves the top of the screen: the island follows.
             #[cfg(target_os = "linux")]
             if !platform::is_layer_surface() {

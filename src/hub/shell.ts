@@ -17,7 +17,7 @@ import { icon, keyLabel } from "./ui";
 export type PageId =
   | "home" | "games" | "canvas"
   | "dictation" | "notes" | "insights" | "dictionary" | "snippets" | "styles" | "flowsettings"
-  | "general" | "pills" | "agents" | "chat" | "voice" | "tools" | "integrations" | "shortcuts" | "wallpaper"
+  | "general" | "pills" | "agents" | "chat" | "voice" | "tools" | "dock" | "integrations" | "shortcuts" | "wallpaper"
   | "screensaver" | "updates" | "setup";
 
 export type SpaceId = "today" | "island" | "listen" | "sky" | "prefs";
@@ -38,6 +38,9 @@ interface SpaceDef {
   pages: PageDef[];
 }
 
+/** The dock is Windows' for now (src-tauri/src/dock). */
+const ON_WINDOWS = typeof navigator !== "undefined" && /Windows/.test(navigator.userAgent ?? "");
+
 export const SPACES: SpaceDef[] = [
   {
     id: "today", icon: "sun", title: () => t("Today"), pages: [
@@ -51,6 +54,9 @@ export const SPACES: SpaceDef[] = [
       { id: "pills", title: () => t("Active pills"), subtitle: () => t("The pills shown in the island, their order and their colours.") },
       { id: "agents", title: () => t("Agents"), subtitle: () => t("Claude Code, Codex and the other agents Ciel follows.") },
       { id: "tools", title: () => t("Tools"), subtitle: () => t("The island's clipboard, timers, controls, weather and shelf.") },
+      ...(ON_WINDOWS
+        ? [{ id: "dock" as const, title: () => t("Dock"), subtitle: () => t("Your apps, your agents and the time, in a bar at the bottom of the screen.") }]
+        : []),
       { id: "integrations", title: () => t("Integrations"), subtitle: () => t("Stripe, GitHub, Vercel, n8n, Notion and the rest.") },
       { id: "chat", title: () => t("Chat"), subtitle: () => t("The AI of the island's chat, with your own keys.") },
     ],

@@ -14,6 +14,7 @@ import { applySpotify, registerSpotifyHandlers } from "./island/spotify";
 import { SPOTIFY_ID } from "./core/spotify";
 import { registerFinanceHandlers } from "./island/finance";
 import { registerWallpaper } from "./island/wallpaper";
+import { registerDock } from "./island/dock";
 import { Tools } from "./tools/store";
 import { registerDemo } from "./demo/app";
 import { Recap } from "./recap/recap";
@@ -148,6 +149,8 @@ async function main() {
   registerShortcutHandlers(island, () => setPaused(false));
   registerVoiceHandlers();
   registerSpotifyHandlers(island);
+  // The dock at the bottom of the screen hears of the agents and the music from here.
+  registerDock(island);
   registerFinanceHandlers();
   // Settings → General → Try demo mode plays here (src/demo).
   registerDemo(island);

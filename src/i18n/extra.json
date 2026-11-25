@@ -11704,6 +11704,215 @@
    "pt-BR": "Nada desenhado ainda. Peça ao Ciel para mostrar algo: um plano, um gráfico, sua semana.",
    "ru": "Пока ничего не нарисовано. Попросите Ciel что-нибудь показать: план, график, вашу неделю.",
    "id": "Belum ada yang digambar. Minta Ciel menunjukkan sesuatu: rencana, grafik, minggu Anda."
+  },
+  "Dock": {
+   "zh-Hans": "程序坞",
+   "hi": "डॉक",
+   "es": "Dock",
+   "ar": "شريط الإرساء",
+   "fr": "Dock",
+   "bn": "ডক",
+   "pt-BR": "Dock",
+   "ru": "Док",
+   "id": "Dock"
+  },
+  "Your apps, your agents and the time, in a bar at the bottom of the screen.": {
+   "zh-Hans": "你的应用、你的代理和时间，集中在屏幕底部的一条栏里。",
+   "hi": "आपके ऐप्स, आपके एजेंट्स और समय, स्क्रीन के नीचे एक बार में।",
+   "es": "Tus apps, tus agentes y la hora, en una barra al pie de la pantalla.",
+   "ar": "تطبيقاتك ووكلاؤك والوقت، في شريط أسفل الشاشة.",
+   "fr": "Vos apps, vos agents et l'heure, dans une barre en bas de l'écran.",
+   "bn": "আপনার অ্যাপ, আপনার এজেন্ট আর সময়, স্ক্রিনের নিচে একটি বারে।",
+   "pt-BR": "Seus apps, seus agentes e a hora, numa barra na parte de baixo da tela.",
+   "ru": "Ваши приложения, ваши агенты и время — в панели внизу экрана.",
+   "id": "Aplikasi Anda, agen Anda, dan waktu, dalam satu bilah di bawah layar."
+  },
+  "Show the dock": {
+   "zh-Hans": "显示程序坞",
+   "hi": "डॉक दिखाएँ",
+   "es": "Mostrar el dock",
+   "ar": "إظهار شريط الإرساء",
+   "fr": "Afficher le dock",
+   "bn": "ডক দেখান",
+   "pt-BR": "Mostrar o dock",
+   "ru": "Показывать док",
+   "id": "Tampilkan dock"
+  },
+  "The apps pinned to your taskbar and the ones open, Ciel with your agents, what is playing and the time. It never takes the keyboard, and steps aside for a full-screen game or video.": {
+   "zh-Hans": "固定在任务栏上的应用和已打开的应用、Ciel 和你的代理、正在播放的内容以及时间。它从不抢占键盘，遇到全屏游戏或视频时会自动让开。",
+   "hi": "आपके टास्कबार पर पिन किए गए ऐप्स और खुले हुए ऐप्स, आपके एजेंट्स के साथ Ciel, जो चल रहा है वह, और समय। यह कभी कीबोर्ड नहीं लेता, और फ़ुल-स्क्रीन गेम या वीडियो के लिए हट जाता है।",
+   "es": "Las apps fijadas en tu barra de tareas y las abiertas, Ciel con tus agentes, lo que suena y la hora. Nunca toma el teclado y se aparta ante un juego o un vídeo a pantalla completa.",
+   "ar": "التطبيقات المثبتة على شريط المهام والمفتوحة، وCiel مع وكلائك، وما يُشغَّل الآن، والوقت. لا يأخذ لوحة المفاتيح أبدًا، ويتنحى جانبًا أمام لعبة أو فيديو بملء الشاشة.",
+   "fr": "Les apps épinglées à votre barre des tâches et celles ouvertes, Ciel avec vos agents, ce qui joue et l'heure. Il ne prend jamais le clavier, et s'efface devant un jeu ou une vidéo en plein écran.",
+   "bn": "আপনার টাস্কবারে পিন করা অ্যাপ আর খোলা অ্যাপগুলো, আপনার এজেন্টদের সঙ্গে Ciel, যা চলছে, আর সময়। এটি কখনো কিবোর্ড নেয় না, আর ফুল-স্ক্রিন গেম বা ভিডিওর সময় সরে যায়।",
+   "pt-BR": "Os apps fixados na barra de tarefas e os abertos, o Ciel com seus agentes, o que está tocando e a hora. Ele nunca pega o teclado e sai da frente de um jogo ou vídeo em tela cheia.",
+   "ru": "Приложения, закреплённые на панели задач, и открытые, Ciel с вашими агентами, то, что играет, и время. Док никогда не забирает клавиатуру и уступает место игре или видео на весь экран.",
+   "id": "Aplikasi yang disematkan di taskbar dan yang sedang terbuka, Ciel bersama agen Anda, yang sedang diputar, dan waktu. Dock tidak pernah mengambil keyboard, dan menyingkir saat ada game atau video layar penuh."
+  },
+  "Hide the Windows taskbar": {
+   "zh-Hans": "隐藏 Windows 任务栏",
+   "hi": "Windows टास्कबार छिपाएँ",
+   "es": "Ocultar la barra de tareas de Windows",
+   "ar": "إخفاء شريط مهام Windows",
+   "fr": "Masquer la barre des tâches de Windows",
+   "bn": "Windows টাস্কবার লুকান",
+   "pt-BR": "Ocultar a barra de tarefas do Windows",
+   "ru": "Скрыть панель задач Windows",
+   "id": "Sembunyikan taskbar Windows"
+  },
+  "While the dock shows, it takes the taskbar's place on the main screen. Turn this off or quit Ciel and the taskbar comes back as it was. The arrow on the dock shows it for a moment, for the icons in its corner.": {
+   "zh-Hans": "程序坞显示时，它会在主屏幕上取代任务栏的位置。关闭此项或退出 Ciel，任务栏就会恢复原样。程序坞上的箭头可暂时显示任务栏，方便使用角落里的图标。",
+   "hi": "जब डॉक दिखता है, तो मुख्य स्क्रीन पर वह टास्कबार की जगह ले लेता है। इसे बंद करें या Ciel से बाहर निकलें, और टास्कबार पहले जैसा लौट आता है। डॉक पर बना तीर उसे कुछ पल के लिए दिखाता है, उसके कोने के आइकनों के लिए।",
+   "es": "Mientras el dock se muestra, ocupa el lugar de la barra de tareas en la pantalla principal. Desactiva esto o cierra Ciel y la barra de tareas vuelve tal como estaba. La flecha del dock la muestra un momento, para los iconos de su esquina.",
+   "ar": "ما دام شريط الإرساء ظاهرًا، فإنه يحل محل شريط المهام على الشاشة الرئيسية. أوقف هذا الخيار أو أغلق Ciel ويعود شريط المهام كما كان. يُظهره السهم على شريط الإرساء لحظةً، من أجل الأيقونات في زاويته.",
+   "fr": "Tant que le dock s'affiche, il prend la place de la barre des tâches sur l'écran principal. Désactivez ceci ou quittez Ciel et la barre des tâches revient telle qu'elle était. La flèche du dock l'affiche un instant, pour les icônes de son coin.",
+   "bn": "ডক দেখা গেলে মূল স্ক্রিনে সেটি টাস্কবারের জায়গা নেয়। এটি বন্ধ করুন বা Ciel থেকে বেরিয়ে যান, টাস্কবার আগের মতো ফিরে আসবে। ডকের তীরচিহ্নটি কোণের আইকনগুলোর জন্য টাস্কবারকে কিছুক্ষণ দেখায়।",
+   "pt-BR": "Enquanto o dock aparece, ele ocupa o lugar da barra de tarefas na tela principal. Desative isto ou feche o Ciel e a barra de tarefas volta como estava. A seta no dock a mostra por um momento, para os ícones do canto.",
+   "ru": "Пока док на экране, он занимает место панели задач на главном экране. Выключите это или закройте Ciel — и панель задач вернётся такой, какой была. Стрелка на доке ненадолго показывает её, чтобы добраться до значков в углу.",
+   "id": "Selama dock tampil, dock mengambil tempat taskbar di layar utama. Matikan ini atau keluar dari Ciel, dan taskbar kembali seperti semula. Panah di dock menampilkannya sebentar, untuk ikon di pojoknya."
+  },
+  "Start menu": {
+   "zh-Hans": "开始菜单",
+   "hi": "स्टार्ट मेनू",
+   "es": "Menú Inicio",
+   "ar": "قائمة ابدأ",
+   "fr": "Menu Démarrer",
+   "bn": "স্টার্ট মেনু",
+   "pt-BR": "Menu Iniciar",
+   "ru": "Меню «Пуск»",
+   "id": "Menu Start"
+  },
+  "Show the Windows taskbar": {
+   "zh-Hans": "显示 Windows 任务栏",
+   "hi": "Windows टास्कबार दिखाएँ",
+   "es": "Mostrar la barra de tareas de Windows",
+   "ar": "إظهار شريط مهام Windows",
+   "fr": "Afficher la barre des tâches de Windows",
+   "bn": "Windows টাস্কবার দেখান",
+   "pt-BR": "Mostrar a barra de tarefas do Windows",
+   "ru": "Показать панель задач Windows",
+   "id": "Tampilkan taskbar Windows"
+  },
+  "Task view": {
+   "zh-Hans": "任务视图",
+   "hi": "टास्क व्यू",
+   "es": "Vista de tareas",
+   "ar": "طريقة عرض المهام",
+   "fr": "Vue des tâches",
+   "bn": "টাস্ক ভিউ",
+   "pt-BR": "Visão de Tarefas",
+   "ru": "Представление задач",
+   "id": "Tampilan tugas"
+  },
+  "Widgets": {
+   "zh-Hans": "小组件",
+   "hi": "विजेट",
+   "es": "Widgets",
+   "ar": "عناصر واجهة الاستخدام",
+   "fr": "Widgets",
+   "bn": "উইজেট",
+   "pt-BR": "Widgets",
+   "ru": "Мини-приложения",
+   "id": "Widget"
+  },
+  "Show desktop": {
+   "zh-Hans": "显示桌面",
+   "hi": "डेस्कटॉप दिखाएँ",
+   "es": "Mostrar escritorio",
+   "ar": "إظهار سطح المكتب",
+   "fr": "Afficher le Bureau",
+   "bn": "ডেস্কটপ দেখান",
+   "pt-BR": "Mostrar área de trabalho",
+   "ru": "Показать рабочий стол",
+   "id": "Tampilkan desktop"
+  },
+  "Magnify icons under the pointer": {
+   "zh-Hans": "指针下的图标放大",
+   "hi": "पॉइंटर के नीचे के आइकन बड़े करें",
+   "es": "Ampliar los iconos bajo el puntero",
+   "ar": "تكبير الأيقونات تحت المؤشر",
+   "fr": "Agrandir les icônes sous le pointeur",
+   "bn": "পয়েন্টারের নিচের আইকন বড় করুন",
+   "pt-BR": "Ampliar os ícones sob o ponteiro",
+   "ru": "Увеличивать значки под указателем",
+   "id": "Perbesar ikon di bawah penunjuk"
+  },
+  "Drag an app along the dock to move it among the pins, or to pin it. Right-click an app to pin, unpin or close it. Its windows show when the pointer rests on it.": {
+   "zh-Hans": "沿着程序坞拖动应用，可在固定的应用之间移动它，或将其固定。右键点击应用可固定、取消固定或关闭它。指针停在应用上时会显示它的窗口。",
+   "hi": "किसी ऐप को डॉक पर खींचकर पिन किए गए ऐप्स के बीच ले जाएँ, या उसे पिन करें। किसी ऐप पर राइट-क्लिक करके उसे पिन करें, अनपिन करें या बंद करें। पॉइंटर उस पर रुकने पर उसकी विंडो दिखती हैं।",
+   "es": "Arrastra una app por el dock para moverla entre las ancladas o para anclarla. Haz clic derecho en una app para anclarla, desanclarla o cerrarla. Sus ventanas aparecen cuando el puntero se detiene sobre ella.",
+   "ar": "اسحب تطبيقًا على شريط الإرساء لنقله بين التطبيقات المثبتة أو لتثبيته. انقر بزر الماوس الأيمن على تطبيق لتثبيته أو إلغاء تثبيته أو إغلاقه. تظهر نوافذه عندما يستقر المؤشر عليه.",
+   "fr": "Faites glisser une app le long du dock pour la déplacer parmi les épinglées, ou pour l'épingler. Un clic droit sur une app l'épingle, la désépingle ou la ferme. Ses fenêtres s'affichent quand le pointeur s'y arrête.",
+   "bn": "কোনো অ্যাপ ডকের ওপর টেনে পিন করা অ্যাপগুলোর মধ্যে সরান, বা পিন করুন। কোনো অ্যাপে ডান-ক্লিক করে পিন, আনপিন বা বন্ধ করুন। পয়েন্টার থামলে তার উইন্ডোগুলো দেখা যায়।",
+   "pt-BR": "Arraste um app pelo dock para movê-lo entre os fixados, ou para fixá-lo. Clique com o botão direito em um app para fixar, desafixar ou fechá-lo. Suas janelas aparecem quando o ponteiro para sobre ele.",
+   "ru": "Перетащите приложение по доку, чтобы переставить его среди закреплённых или закрепить. Щёлкните приложение правой кнопкой, чтобы закрепить, открепить или закрыть его. Его окна появляются, когда указатель задерживается на нём.",
+   "id": "Seret aplikasi di sepanjang dock untuk memindahkannya di antara yang disematkan, atau untuk menyematkannya. Klik kanan aplikasi untuk menyematkan, melepas sematan, atau menutupnya. Jendelanya muncul saat penunjuk berhenti di atasnya."
+  },
+  "Pin to the dock": {
+   "zh-Hans": "固定到程序坞",
+   "hi": "डॉक पर पिन करें",
+   "es": "Anclar al dock",
+   "ar": "تثبيت في شريط الإرساء",
+   "fr": "Épingler au dock",
+   "bn": "ডকে পিন করুন",
+   "pt-BR": "Fixar no dock",
+   "ru": "Закрепить в доке",
+   "id": "Sematkan ke dock"
+  },
+  "Unpin from the dock": {
+   "zh-Hans": "从程序坞取消固定",
+   "hi": "डॉक से अनपिन करें",
+   "es": "Desanclar del dock",
+   "ar": "إلغاء التثبيت من شريط الإرساء",
+   "fr": "Désépingler du dock",
+   "bn": "ডক থেকে আনপিন করুন",
+   "pt-BR": "Desafixar do dock",
+   "ru": "Открепить от дока",
+   "id": "Lepas sematan dari dock"
+  },
+  "Close window": {
+   "zh-Hans": "关闭窗口",
+   "hi": "विंडो बंद करें",
+   "es": "Cerrar ventana",
+   "ar": "إغلاق النافذة",
+   "fr": "Fermer la fenêtre",
+   "bn": "উইন্ডো বন্ধ করুন",
+   "pt-BR": "Fechar janela",
+   "ru": "Закрыть окно",
+   "id": "Tutup jendela"
+  },
+  "Close all windows": {
+   "zh-Hans": "关闭所有窗口",
+   "hi": "सभी विंडो बंद करें",
+   "es": "Cerrar todas las ventanas",
+   "ar": "إغلاق كل النوافذ",
+   "fr": "Fermer toutes les fenêtres",
+   "bn": "সব উইন্ডো বন্ধ করুন",
+   "pt-BR": "Fechar todas as janelas",
+   "ru": "Закрыть все окна",
+   "id": "Tutup semua jendela"
+  },
+  "Task Manager": {
+   "zh-Hans": "任务管理器",
+   "hi": "कार्य प्रबंधक",
+   "es": "Administrador de tareas",
+   "ar": "إدارة المهام",
+   "fr": "Gestionnaire des tâches",
+   "bn": "টাস্ক ম্যানেজার",
+   "pt-BR": "Gerenciador de Tarefas",
+   "ru": "Диспетчер задач",
+   "id": "Pengelola Tugas"
+  },
+  "Dock settings": {
+   "zh-Hans": "程序坞设置",
+   "hi": "डॉक सेटिंग्स",
+   "es": "Configuración del dock",
+   "ar": "إعدادات شريط الإرساء",
+   "fr": "Paramètres du dock",
+   "bn": "ডক সেটিংস",
+   "pt-BR": "Configurações do dock",
+   "ru": "Настройки дока",
+   "id": "Pengaturan dock"
   }
  }
 }

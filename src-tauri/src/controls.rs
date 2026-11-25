@@ -90,6 +90,29 @@ pub struct Battery {
     pub charging: bool,
 }
 
+// The dock's corner (dock/): the speakers, the connection and the battery,
+// each read at once, and the wheel on the sound icon.
+
+#[cfg(windows)]
+pub(crate) fn volume() -> Option<(f64, bool)> {
+    platform::volume()
+}
+
+#[cfg(windows)]
+pub(crate) fn set_volume(level: f64) -> bool {
+    platform::set_volume(level.clamp(0.0, 1.0))
+}
+
+#[cfg(windows)]
+pub(crate) fn network() -> Option<Network> {
+    platform::network().0
+}
+
+#[cfg(windows)]
+pub(crate) fn battery() -> Option<Battery> {
+    platform::battery()
+}
+
 /// Do not disturb where the desktop has no switch of its own (Windows): Ciel's cards only.
 static DND: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 

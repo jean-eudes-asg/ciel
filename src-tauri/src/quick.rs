@@ -237,6 +237,10 @@ mod platform {
     }
 }
 
+/// The dock's apps share the taskbar's pins and how their icons are read (dock/).
+#[cfg(windows)]
+pub(crate) use platform::{dock_icon, pinned};
+
 #[cfg(windows)]
 mod platform {
     use std::path::PathBuf;
@@ -249,7 +253,11 @@ mod platform {
     };
     use windows::Win32::Storage::FileSystem::FILE_FLAGS_AND_ATTRIBUTES;
     use windows::Win32::System::Power::SetSuspendState;
-    use windows::Win32::UI::Shell::{ShellExecuteW, SHGetFileInfoW, SHFILEINFOW, SHGFI_ICON, SHGFI_LARGEICON};
+    use windows::Win32::UI::Controls::{IImageList, ILD_TRANSPARENT};
+    use windows::Win32::UI::Shell::{
+        SHGetFileInfoW, SHGetImageList, ShellExecuteW, SHFILEINFOW, SHGFI_ICON, SHGFI_LARGEICON, SHGFI_SYSICONINDEX,
+        SHIL_EXTRALARGE, SHIL_JUMBO,
+    };
     use windows::Win32::UI::WindowsAndMessaging::{DestroyIcon, GetIconInfo, HICON, ICONINFO, SW_SHOWNORMAL};
 
     fn open_uri(uri: &str) -> bool {
@@ -280,7 +288,7 @@ mod platform {
     }
 
     /// The shortcuts of the apps pinned to the taskbar.
-    fn pinned() -> Vec<PathBuf> {
+    pub(crate) fn pinned() -> Vec<PathBuf> {
         let Some(appdata) = std::env::var_os("APPDATA") else { return Vec::new() };
         let dir = PathBuf::from(appdata).join(r"Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar");
         let mut out: Vec<PathBuf> = std::fs::read_dir(dir)
@@ -290,9 +298,40 @@ mod platform {
         out
     }
 
-    /// The shortcut's icon as Explorer shows it, 32 px, as a PNG.
-    // ponytail: 32 px (SHGFI_LARGEICON); the system image list's 48 px is sharper on a dense screen.
-    fn icon_of(path: &PathBuf) -> Option<String> {
+    /// A file's icon as Explorer shows it, as a PNG: 48 px from the system
+    /// image list, sharp in the dock and on a dense screen, else 32 px.
+    pub(crate) fn icon_of(path: &std::path::Path) -> Option<String> {
+        large_icon(path).or_else(|| small_icon(path))
+    }
+
+    fn large_icon(path: &std::path::Path) -> Option<String> {
+        let mut info = SHFILEINFOW::default();
+        let wide = HSTRING::from(path.as_os_str());
+        let got = unsafe {
+            SHGetFileInfoW(
+                PCWSTR(wide.as_ptr()),
+                FILE_FLAGS_AND_ATTRIBUTES(0),
+                Some(&mut info),
+                std::mem::size_of::<SHFILEINFOW>() as u32,
+                SHGFI_SYSICONINDEX,
+            )
+        };
+        if got == 0 {
+            return None;
+        }
+        let list: IImageList = unsafe { SHGetImageList(SHIL_EXTRALARGE as i32) }.ok()?;
+        let icon = unsafe { list.GetIcon(info.iIcon, ILD_TRANSPARENT.0) }.ok()?;
+        if icon.is_invalid() {
+            return None;
+        }
+        let png = png_of(icon);
+        unsafe {
+            let _ = DestroyIcon(icon);
+        }
+        png
+    }
+
+    fn small_icon(path: &std::path::Path) -> Option<String> {
         let mut info = SHFILEINFOW::default();
         let wide = HSTRING::from(path.as_os_str());
         let got = unsafe {
@@ -314,8 +353,66 @@ mod platform {
         png
     }
 
+    /// For the dock, whose icons grow under the pointer: 96 px, from the
+    /// system's 256 px list when the program has an icon that large, else as
+    /// `icon_of`. (Without one, Windows gives its 48 px icon in a corner of an
+    /// empty 256 px square: that one is left alone.)
+    pub(crate) fn dock_icon(path: &std::path::Path) -> Option<String> {
+        jumbo(path).or_else(|| icon_of(path))
+    }
+
+    fn jumbo(path: &std::path::Path) -> Option<String> {
+        let mut info = SHFILEINFOW::default();
+        let wide = HSTRING::from(path.as_os_str());
+        let got = unsafe {
+            SHGetFileInfoW(
+                PCWSTR(wide.as_ptr()),
+                FILE_FLAGS_AND_ATTRIBUTES(0),
+                Some(&mut info),
+                std::mem::size_of::<SHFILEINFOW>() as u32,
+                SHGFI_SYSICONINDEX,
+            )
+        };
+        if got == 0 {
+            return None;
+        }
+        let list: IImageList = unsafe { SHGetImageList(SHIL_JUMBO as i32) }.ok()?;
+        let icon = unsafe { list.GetIcon(info.iIcon, ILD_TRANSPARENT.0) }.ok()?;
+        if icon.is_invalid() {
+            return None;
+        }
+        let image = rgba_of(icon);
+        unsafe {
+            let _ = DestroyIcon(icon);
+        }
+        let image = image?;
+        // What is drawn in it, by its alpha: a small icon in a corner is no 256 px one.
+        let (mut right, mut bottom) = (0u32, 0u32);
+        for (x, y, p) in image.enumerate_pixels() {
+            if p[3] > 0 {
+                right = right.max(x + 1);
+                bottom = bottom.max(y + 1);
+            }
+        }
+        if right <= image.width() / 3 && bottom <= image.height() / 3 {
+            return None;
+        }
+        let small = image::imageops::resize(&image, 96, 96, image::imageops::FilterType::CatmullRom);
+        png_url(&small)
+    }
+
     fn png_of(icon: HICON) -> Option<String> {
+        png_url(&rgba_of(icon)?)
+    }
+
+    fn png_url(image: &image::RgbaImage) -> Option<String> {
         use base64::Engine;
+        let mut png = Vec::new();
+        image.write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png).ok()?;
+        Some(format!("data:image/png;base64,{}", base64::engine::general_purpose::STANDARD.encode(png)))
+    }
+
+    fn rgba_of(icon: HICON) -> Option<image::RgbaImage> {
         let mut ii = ICONINFO::default();
         unsafe { GetIconInfo(icon, &mut ii) }.ok()?;
         let free = |ii: &ICONINFO| unsafe {
@@ -358,10 +455,7 @@ mod platform {
                 p[3] = 255;
             }
         }
-        let image = image::RgbaImage::from_raw(w as u32, h as u32, pixels)?;
-        let mut png = Vec::new();
-        image.write_to(&mut std::io::Cursor::new(&mut png), image::ImageFormat::Png).ok()?;
-        Some(format!("data:image/png;base64,{}", base64::engine::general_purpose::STANDARD.encode(png)))
+        image::RgbaImage::from_raw(w as u32, h as u32, pixels)
     }
 
     pub fn apps() -> Vec<super::App> {

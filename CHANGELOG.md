@@ -5,6 +5,31 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 ## [Unreleased]
 
 ### Added
+- **The dock** (Ciel window → Island → Dock, Windows), off by default: a
+  bar at the bottom of the screen with what the taskbar holds, in Ciel's
+  look. Start (which searches as you type), then Task view and Widgets
+  (each can be turned off, and opens Windows' own). Ciel and your agents (how many work, and who
+  asks you something, in one click to the island). The apps pinned to your
+  taskbar and the ones open: a dot under those, a longer one under the app
+  in front; a click brings it forward, minimizes it or starts it, a middle
+  click opens another window. With the pointer on an app, its windows show
+  above it, live; click one to bring it forward, or close it from there.
+  A right click pins, unpins or closes an app, and on the bar opens Task
+  Manager or the dock's settings. Drag an app to move it among the pins,
+  or to pin it: from then on the dock keeps its own pins. What is playing
+  with play and pause; the network, the sound and the battery (a click
+  opens Windows' quick settings, the wheel turns the sound); the date and
+  time (a click opens the notifications and the calendar); show desktop.
+  The icons grow under the pointer, the others making room, the name of
+  the one pointed at above it (can be turned off). It never takes the
+  keyboard, maximized windows stop above it, and it steps aside for a
+  full-screen game or video. Nothing runs while it is off.
+- **Hide the Windows taskbar** (same place), off by default: while the dock
+  shows, it takes the taskbar's place on the main screen; the arrow on the
+  dock brings the taskbar up for a moment, for the icons in its corner.
+  Turn it off or quit Ciel and the taskbar comes back as it was, and at the
+  next launch should Ciel ever stop without doing it. Windows' own files
+  are never touched.
 - **Your work** (Ciel window → Chat → Your work): name the folders you work
   in, and « OK Ciel » knows where things stand when you talk to it. For each
   project, its branch, what isn't committed, what isn't pushed and its last
@@ -63,6 +88,7 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   that deletes, publishes, installs or reaches out is ever put forward.
 
 ### Changed
+- Your apps in Tools → Controls have sharper icons, at 48 pixels.
 - Claude Code sessions run from the Claude app now ask on a card in the
   island like a terminal session's, so they can be answered by voice, on
   Discord and with « Don't ask again » too. They used to be left to the app.

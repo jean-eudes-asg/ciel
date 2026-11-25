@@ -108,6 +108,11 @@ export const ICONS = {
   apps: "M5 5h4.4v4.4H5zM14.6 5H19v4.4h-4.4zM5 14.6h4.4V19H5zM14.6 14.6H19V19h-4.4z",
   calendar: "M4.6 6.4h14.8v13H4.6zM4.6 10.4h14.8M8.6 4v4M15.4 4v4",
   search: "M10.5 4.2a6.3 6.3 0 1 0 0 12.6 6.3 6.3 0 0 0 0-12.6zM15.2 15.2 20 20",
+  // The dock's buttons (src/dock): two windows one behind the other, four
+  // tiles, a screen on its foot. Stroked.
+  taskView: "M3.6 8.2h11.6v10.2H3.6zM8.8 5.2h11.6v10.2h-2.4",
+  widgets: "M4 4.6h7v7.2H4zM13 4.6h7v4.2h-7zM13 10.8h7v8.6h-7zM4 13.8h7v5.6H4z",
+  desktop: "M3.6 5h16.8v10.8H3.6zM9 19.6h6M12 15.8v3.8",
   pasteIn: "M12 3.8v10.8M7.6 10.2 12 14.6l4.4-4.4M5 19.8h14",
   folder: "M3.6 7.3A1.5 1.5 0 0 1 5.1 5.8h4l2 2.2h7.8a1.5 1.5 0 0 1 1.5 1.5v8.2a1.5 1.5 0 0 1-1.5 1.5H5.1a1.5 1.5 0 0 1-1.5-1.5z",
   link: "M10.2 13.8a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.1 1.1M13.8 10.2a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.1-1.1",

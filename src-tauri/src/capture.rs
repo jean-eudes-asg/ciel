@@ -64,6 +64,13 @@ pub fn answer_gone(app: &AppHandle) {
     apply(app);
 }
 
+/// Ciel's windows are left out of shares now: for a window of its own that
+/// isn't a webview (the dock's window previews), set each time it shows.
+#[cfg_attr(not(windows), allow(dead_code))]
+pub fn hidden() -> bool {
+    HIDDEN.load(Ordering::Relaxed)
+}
+
 /// Left out of shares: what the user picked, except while an answer is on screen.
 fn hidden_now(setting: bool, answer_until: u64, now: u64) -> bool {
     setting && now >= answer_until
