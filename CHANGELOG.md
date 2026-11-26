@@ -2,7 +2,7 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.5.0] - 2026-11-26
 
 ### Added
 - **The dock** (Ciel window → Island → Dock, Windows), off by default: a
@@ -109,7 +109,7 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   with that code answers it. Never « Don't ask again », never Ciel's own
   requests, never an agent's question: those wait for a click. Each answer
   leaves a line on the session in the island.
-- **Canvas**: « OK Ciel » can draw while it talks to you — a diagram, a
+- **Canvas**: « OK Ciel » can draw while it talks to you: a diagram, a
   chart, a table, a plan, a small live page. It shows small in the island
   and big on the new Canvas page of the Ciel window, where the last ten
   stay. A page runs sealed off from Ciel, with no network, and stops as
@@ -731,6 +731,7 @@ an eye on your AI coding agents. Windows 10/11; Linux builds from source.
 Ciel is a fork of [Coucou](https://github.com/Louis-CFM/coucou) by Louis
 Raillé (MIT). Thank you.
 
+[0.5.0]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.5.0
 [0.4.3]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.4.3
 [0.4.2]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.4.2
 [0.4.1]: https://github.com/jean-eudes-asg/ciel/releases/tag/v0.4.1
