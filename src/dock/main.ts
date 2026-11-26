@@ -25,12 +25,17 @@ const bar = buildDockBar({
   start: () => void Bridge.dockStart(),
   panel: (what) => void Bridge.dockKey(what),
   agents: (waiting) => void emitToWindow(ISLAND, DOCK_EVENTS.open, waiting ? "waiting" : "agents"),
+  hoverAgents: (on) => void Bridge.dockHover(on === "close" ? "close" : "tile", on === true),
   open: (id, newWindow) => void Bridge.dockOpen(id, newWindow),
   menu: (id) => void Bridge.dockMenu(id),
   preview: (id, x) => void Bridge.dockPreview(id, x, onWhite()),
   pinMove: (id, to) => void Bridge.dockPinMove(id, to),
   volume: (notches) => void Bridge.dockVolume(notches),
-  playPause: () => void Bridge.spotifyControl("playPause"),
+  music: (action, source) => {
+    if (source === "ytmusic") void Bridge.ytMusicControl(action === "open" ? "focus" : action);
+    else if (action === "open") void Bridge.spotifyOpen();
+    else void Bridge.spotifyControl(action);
+  },
   taskbar: () => void Bridge.dockTaskbar(),
   hover: (on) => {
     hover = on;
@@ -89,6 +94,7 @@ onLanguageChange(() => bar.relabel());
 void onEvent<DockState>(DOCK_EVENTS.state, take);
 void onEvent<SystemIcons>(DOCK_EVENTS.system, (s) => bar.setSystem(s));
 void onEvent<DockSnapshot>(DOCK_EVENTS.island, (s) => bar.setSnapshot(s));
+void onEvent<string | null>(DOCK_EVENTS.art, (url) => bar.setArt(url));
 void onEvent<Settings>("settings-changed", apply);
 
 void Bridge.boot()

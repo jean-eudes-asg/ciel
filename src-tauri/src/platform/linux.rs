@@ -1076,6 +1076,86 @@ pub fn set_pill_input(win: &WebviewWindow, rects: Vec<(f64, f64, f64, f64)>) {
     apply_rects(&gw, &rects);
 }
 
+// ── The dock's window (dock/linux.rs) ─────────────────────────────────────────
+// A Dock window on X11 (XWayland on GNOME's Wayland): above the others, never
+// focused, its input shape the bar, and its strut the bottom of one screen.
+
+/// Each dock window's input shape, by label, for when it is mapped again.
+static DOCK_SHAPE: Mutex<Option<std::collections::HashMap<String, Vec<(f64, f64, f64, f64)>>>> = Mutex::new(None);
+
+extern "C" {
+    fn gdk_x11_window_get_xid(window: *mut gtk::gdk::ffi::GdkWindow) -> std::os::raw::c_ulong;
+}
+
+/// Before it is first shown. Main thread.
+pub fn prepare_dock_window(win: &WebviewWindow) {
+    let Ok(gw) = win.gtk_window() else { return };
+    gw.set_accept_focus(false);
+    if !gw.is_realized() {
+        gw.set_type_hint(gtk::gdk::WindowTypeHint::Dock);
+    }
+    gw.set_keep_above(true);
+    let label = win.label().to_string();
+    gw.connect_map_event(move |w, _| {
+        if let Some(rects) = DOCK_SHAPE.lock().unwrap().as_ref().and_then(|s| s.get(&label)) {
+            apply_rects(w, rects);
+        }
+        gtk::glib::Propagation::Proceed
+    });
+}
+
+/// Moves and resizes a window in one go (physical pixels), as one request to
+/// the window manager: no frame where it has its new size at its old place.
+/// Main thread.
+pub fn move_resize(win: &WebviewWindow, x: i32, y: i32, width: i32, height: i32) {
+    let Ok(gw) = win.gtk_window() else { return };
+    let scale = win.scale_factor().unwrap_or(1.0);
+    let at = |v: i32| (v as f64 / scale).round() as i32;
+    gw.resize(at(width).max(1), at(height).max(1));
+    gw.move_(at(x), at(y));
+}
+
+/// A window over the others that never takes the keyboard, even when shown
+/// or clicked (the dock's hover window): what was typed in stays where it was.
+pub fn prepare_popup_window(win: &WebviewWindow) {
+    let Ok(gw) = win.gtk_window() else { return };
+    gw.set_accept_focus(false);
+    gw.set_focus_on_map(false);
+    gw.set_keep_above(true);
+}
+
+/// The parts of the dock's window that take the mouse. Main thread.
+pub fn set_dock_input(win: &WebviewWindow, rects: Vec<(f64, f64, f64, f64)>) {
+    DOCK_SHAPE.lock().unwrap().get_or_insert_with(Default::default).insert(win.label().to_string(), rects.clone());
+    let Ok(gw) = win.gtk_window() else { return };
+    apply_rects(&gw, &rects);
+}
+
+/// Keeps `height` physical pixels at the bottom of the screen at `x`…`x + width`
+/// for the dock: maximized windows stop above it (_NET_WM_STRUT_PARTIAL, which
+/// counts from the bottom of the whole X screen). Main thread.
+pub fn set_dock_strut(win: &WebviewWindow, x: i32, width: i32, bottom: i32, height: i32) {
+    use x11rb::connection::Connection;
+    use x11rb::protocol::xproto::{AtomEnum, ConnectionExt as _, PropMode};
+    use x11rb::wrapper::ConnectionExt as _;
+    let Ok(gw) = win.gtk_window() else { return };
+    let Some(gdk_window) = gw.window() else { return };
+    if !gdk_window.display().type_().name().contains("X11") {
+        return;
+    }
+    let xid = unsafe { gdk_x11_window_get_xid(gdk_window.to_glib_none().0) } as u32;
+    let Ok((conn, screen)) = x11rb::connect(None) else { return };
+    let Some(root_h) = conn.setup().roots.get(screen).map(|s| s.height_in_pixels as i32) else { return };
+    let from_bottom = (root_h - bottom + height).max(0) as u32;
+    let (start, end) = (x.max(0) as u32, (x + width - 1).max(0) as u32);
+    // left, right, top, bottom, then the start and end of each along its edge.
+    let strut = [0, 0, 0, from_bottom, 0, 0, 0, 0, 0, 0, start, end];
+    let Ok(atom) = conn.intern_atom(false, b"_NET_WM_STRUT_PARTIAL").map(|c| c.reply()) else { return };
+    let Ok(atom) = atom else { return };
+    let _ = conn.change_property32(PropMode::REPLACE, xid, atom.atom, AtomEnum::CARDINAL, &strut);
+    let _ = conn.flush();
+}
+
 fn apply_rects(gw: &impl IsA<gtk::Widget>, rects: &[(f64, f64, f64, f64)]) {
     use gtk::cairo::{RectangleInt, Region};
     let Some(gdk_window) = gw.window() else { return };

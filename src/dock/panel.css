@@ -1,0 +1,302 @@
+/* The panel over the dock (panel.ts): the island's card, as tall as what it
+   holds. The corner's: Tools → Controls without the apps, which the dock
+   has. The clock's: the month (Tools → Calendar), the notifications under. */
+
+.dock-panel.card {
+  width: 380px;
+  height: auto;
+  padding: 12px 14px 14px;
+}
+
+.dock-panel .tool {
+  height: auto;
+}
+
+.dock-panel .ctl-apps {
+  display: none !important;
+}
+
+/* The dock's colour, not the island's grey: it opens from the dock. */
+.dock-panel.card {
+  background: #000;
+  border-color: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+}
+
+:root[data-theme="white"] .dock-panel.card {
+  background: #fff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.dock-panel[data-kind="clock"] {
+  width: 560px;
+}
+
+.panel-clock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-notes {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  border-top: 1px solid var(--hairline);
+}
+
+.panel-notes .inbox-head {
+  padding: 0 0 6px 2px;
+}
+
+.panel-notes .inbox-list {
+  max-height: 260px;
+}
+
+.panel-notes .inbox-empty {
+  padding: 14px 0 6px;
+}
+
+/* Over Ciel's tile (dock-hover): the request that waits, the agents, the plans. */
+.dock-panel[data-kind="agents"] {
+  width: 340px;
+}
+
+.panel-agents {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ag-title,
+.ag-plan-name {
+  font: 600 11px var(--font);
+  color: var(--dim-2);
+}
+
+.ag-plan-name {
+  margin-top: 2px;
+  color: var(--ink);
+}
+
+/* The request: drawn over, as what needs the user always is. */
+.ag-request {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--card);
+}
+
+.ag-who {
+  font: 600 11px var(--font);
+  opacity: 0.6;
+}
+
+.ag-what {
+  font: 500 12px/1.4 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ag-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.ag-btn {
+  padding: 5px 14px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font: 600 12px var(--font);
+  cursor: pointer;
+}
+
+.ag-btn.primary {
+  background: var(--card);
+  border-color: var(--card);
+  color: var(--ink);
+}
+
+.ag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ag-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 5px 4px;
+}
+
+.ag-pip {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--dim-2);
+}
+
+.ag-row.asking .ag-pip,
+.ag-row.done .ag-pip {
+  background: var(--ink);
+}
+
+.ag-row.error .ag-pip {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px var(--dim-2);
+}
+
+.ag-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ag-name {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.ag-name span {
+  font-size: 11px;
+  color: var(--dim-3);
+}
+
+.ag-doing {
+  margin-top: 1px;
+  font-size: 11.5px;
+  color: var(--ink-4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ag-age {
+  flex: none;
+  font-size: 10.5px;
+  color: var(--dim-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.ag-none {
+  padding: 4px;
+  font-size: 12px;
+  color: var(--dim-3);
+}
+
+.ag-plans {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 8px;
+  border-top: 1px solid var(--hairline);
+}
+
+.ag-window {
+  display: grid;
+  grid-template-columns: 52px 1fr 34px auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--ink-4);
+}
+
+.ag-bar {
+  position: relative;
+  height: 4px;
+  border-radius: 2px;
+  background: rgb(var(--fg) / 0.12);
+  overflow: hidden;
+}
+
+.ag-bar i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--used, 0%);
+  border-radius: 2px;
+  background: var(--ink);
+}
+
+.ag-bar.high {
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.ag-pct {
+  text-align: end;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.ag-reset {
+  color: var(--dim-3);
+  white-space: nowrap;
+}
+
+.panel-agents .tool-link {
+  align-self: flex-start;
+}
+
+.panel-agents [hidden] {
+  display: none;
+}
+
+/* Opening, it rises a little from the dock with the island's spring;
+   going, it fades as it settles back (FADE_MS in dock/linux.rs). */
+.dock-panel {
+  transform-origin: 50% 100%;
+}
+
+.dock-panel.enter {
+  animation: panel-in 320ms cubic-bezier(0.3, 1.2, 0.4, 1);
+}
+
+.dock-panel.leave {
+  opacity: 0;
+  transform: translateY(4px) scale(0.99);
+  transition: opacity 140ms ease-in, transform 140ms ease-in;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+}
+
+/* What comes and goes inside: softly, never a jump. */
+.ag-request:not([hidden]) {
+  animation: panel-fade 220ms ease-out;
+}
+
+@keyframes panel-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-panel.enter,
+  .ag-request:not([hidden]) {
+    animation: none;
+  }
+
+  .dock-panel.leave {
+    transition: none;
+  }
+}

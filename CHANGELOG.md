@@ -8,8 +8,13 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
 - **The dock** (Ciel window → Island → Dock, Windows), off by default: a
   bar at the bottom of the screen with what the taskbar holds, in Ciel's
   look. Start (which searches as you type), then Task view and Widgets
-  (each can be turned off, and opens Windows' own). Ciel and your agents (how many work, and who
-  asks you something, in one click to the island). The apps pinned to your
+  (each can be turned off, and opens Windows' own). Ciel, with a dot under him for each of your
+  agents' sessions, as under an open app: small while it works, bright for
+  a minute once done, hollow if it failed, long and beating when it asks
+  you, and only then a line saying who asks. Beside him a slim gauge of your
+  Claude plan, filling as the limit comes near (the higher of the 5 hours
+  and the week, as Claude Code reports them), outlined from 80 %. Point at
+  him for who does what where and both numbers; one click to the island. The apps pinned to your
   taskbar and the ones open: a dot under those, a longer one under the app
   in front; a click brings it forward, minimizes it or starts it, a middle
   click opens another window. With the pointer on an app, its windows show
@@ -17,11 +22,19 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   A right click pins, unpins or closes an app, and on the bar opens Task
   Manager or the dock's settings. Drag an app to move it among the pins,
   or to pin it: from then on the dock keeps its own pins. What is playing
-  with play and pause; the network, the sound and the battery (a click
-  opens Windows' quick settings, the wheel turns the sound); the date and
-  time (a click opens the notifications and the calendar); show desktop.
+  (Spotify, YouTube Music or another player), with its cover, back, play
+  and next, a hairline for how far the song has gone and, with lyrics on,
+  the line being sung in place of the artist; while the dock has the music
+  the island no longer comes up for it or sings it (same place, Music in
+  the dock, on by default; off, it is the island's again). A click on the
+  cover brings the player forward. The network, the sound and the battery
+  (a click opens Windows' quick settings, the wheel turns the sound); the
+  time, large, with the date under it (a click opens the notifications and
+  the calendar); show desktop.
   The icons grow under the pointer, the others making room, the name of
-  the one pointed at above it (can be turned off). It never takes the
+  the one pointed at above it (can be turned off). Its motion is the
+  island's: the icons settle on its spring, the names fade in, an app that
+  opens grows in once, a press sinks a little. It never takes the
   keyboard, maximized windows stop above it, and it steps aside for a
   full-screen game or video. Nothing runs while it is off.
 - **Hide the Windows taskbar** (same place), off by default: while the dock
@@ -30,6 +43,25 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   Turn it off or quit Ciel and the taskbar comes back as it was, and at the
   next launch should Ciel ever stop without doing it. Windows' own files
   are never touched.
+- **The dock on GNOME** (same place; GNOME on X11, Wayland not tried yet), off by default,
+  through Ciel's extension for GNOME Shell (version 5: install it again from
+  Integrations → Notifications, then restart GNOME Shell or log in again).
+  One on every screen, each stepping aside for a full-screen app there.
+  Your favourite apps and the ones open, as the Shell sees them; a click
+  brings an app forward, minimizes it or starts it, a middle click opens
+  another window, a right click opens the app's own menu, as on GNOME's
+  dock. Drag an app to move it among your favourites, or to add it. Start
+  is Show Apps, Task view is Activities. The corner and the clock open
+  Ciel's own panels over the dock clicked, in the dock's black: the quick
+  settings (Tools → Controls), and the month (Tools → Calendar) with your
+  notifications under it, to open or dismiss. Rest the pointer on Ciel and
+  a window opens over him, without taking the keyboard: the request that
+  waits, whole, with Deny and Allow (a question opens the island), your
+  agents at work and for how long, and your Claude and Codex plans' usage
+  with when each resets. No window previews yet. **Turn off GNOME's dock**: while
+  Ciel's dock shows, the Ubuntu Dock (or Dash to Dock) is turned off, as in
+  Extensions, and back on when it goes, when Ciel quits, or at the next
+  launch should Ciel ever stop without doing it.
 - **Your work** (Ciel window → Chat → Your work): name the folders you work
   in, and « OK Ciel » knows where things stand when you talk to it. For each
   project, its branch, what isn't committed, what isn't pushed and its last
@@ -120,6 +152,9 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   instead of about a hundredth: a busy moment no longer loses what was said,
   often the first word, so « OK Ciel », the other name it answers to and
   dictation hear the whole phrase.
+- On Linux, Tools → Controls shows the network, the power mode, night light
+  and dark style again on a computer without Bluetooth: they waited for ever
+  on bluetoothctl, which hangs there.
 
 ## [0.4.3] - 2026-11-13
 

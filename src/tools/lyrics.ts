@@ -9,39 +9,43 @@ import { lineAt, parseLrc, type LyricLine } from "../core/lyrics";
 import { spotifyPosition, type SpotifyState } from "../core/spotify";
 import { Tools } from "./store";
 
+/** The song a player is on, as the words are kept: "" with none. */
+function songOf(s: SpotifyState): string {
+  const track = s.track;
+  return track && track.title ? `${track.title}\u001f${track.artist}` : "";
+}
+
+/** The last few songs' words, each asked once: the card and the dock may follow two players at once. */
 class LyricsStore {
-  private key = "";
-  lines: LyricLine[] = [];
-  /** Words without times: nothing to follow, but the card can say there are some. */
-  plain = false;
-  instrumental = false;
+  private found = new Map<string, LyricLine[]>();
 
   /** Asks for the track's words once, when lyrics are on. */
   want(s: SpotifyState) {
-    const track = s.track;
-    if (!Tools.prefs.lyrics || !track || !track.title) return;
-    const key = `${track.title}\u001f${track.artist}`;
-    if (key === this.key) return;
-    this.key = key;
-    this.lines = [];
-    this.plain = false;
-    this.instrumental = false;
+    const song = songOf(s);
+    if (!Tools.prefs.lyrics || !song || this.found.has(song)) return;
+    this.found.set(song, []);
+    while (this.found.size > 8) this.found.delete(this.found.keys().next().value!);
+    const track = s.track!;
     void Bridge.lyricsGet(track.title, track.artist, track.album, track.duration).then((found) => {
-      if (this.key !== key) return;
-      this.lines = found?.synced ? parseLrc(found.synced) : [];
-      this.plain = !!found?.plain && !this.lines.length;
-      this.instrumental = !!found?.instrumental;
+      const lines = found?.synced ? parseLrc(found.synced) : [];
+      if (!lines.length) return;
+      this.found.set(song, lines);
       State.notify();
     });
   }
 
+  /** The track's timed words; none with lyrics off or not found. */
+  timed(s: SpotifyState): LyricLine[] {
+    const song = songOf(s);
+    return Tools.prefs.lyrics && song ? this.found.get(song) ?? [] : [];
+  }
+
   /** The line being sung now, "" between lines, null with nothing to show. */
   current(s: SpotifyState, nowMs = Date.now()): string | null {
-    if (!Tools.prefs.lyrics || !s.track || !this.lines.length) return null;
-    if (this.key !== `${s.track.title}\u001f${s.track.artist}`) return null;
-    const i = lineAt(this.lines, spotifyPosition(s, nowMs));
-    if (i < 0) return "";
-    return this.lines[i].text;
+    const lines = this.timed(s);
+    if (!lines.length) return null;
+    const i = lineAt(lines, spotifyPosition(s, nowMs));
+    return i < 0 ? "" : lines[i].text;
   }
 }
 

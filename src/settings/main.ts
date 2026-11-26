@@ -83,13 +83,25 @@ function toggle(on: boolean, onChange: (v: boolean) => void): HTMLElement {
 
 // ── Dock ──────────────────────────────────────────────────────────────────────
 
-/** The dock at the bottom of the screen (src/dock, src-tauri/src/dock), Windows only. */
+/** The dock at the bottom of the screen (src/dock, src-tauri/src/dock): Windows, and GNOME through Ciel's extension. */
 function dockSection(): HTMLElement {
+  const gnome = !navigator.userAgent.includes("Windows");
   const dock = (): DockPrefs => ({ ...DEFAULT_SETTINGS.dock, ...settings.dock });
   const set = (change: Partial<DockPrefs>) => {
     settings.dock = { ...dock(), ...change };
     void save();
   };
+  // GNOME: the dock hears of the apps and windows from Ciel's extension, version 5 on.
+  const needs = h("div", { class: "hint", hidden: true });
+  if (gnome) {
+    void Bridge.gnomeExtensionStatus().then((ext) => {
+      if (ext?.dock) return;
+      needs.hidden = false;
+      needs.textContent = !ext?.available ? t("On Linux, the dock needs GNOME.")
+        : ext.installed ? t("Restart GNOME Shell to turn it on: Alt+F2, then r (or log out and back in).")
+        : t("Needs Ciel's extension for GNOME Shell: Integrations → Notifications → Open in the app.");
+    });
+  }
   return h("section", {},
     h("h2", {}, h("span", { text: t("Dock") })),
     h("div", { class: "row" },
@@ -98,31 +110,46 @@ function dockSection(): HTMLElement {
     ),
     h("div", {
       class: "hint",
-      text: t("The apps pinned to your taskbar and the ones open, Ciel with your agents, what is playing and the time. It never takes the keyboard, and steps aside for a full-screen game or video."),
+      text: gnome
+        ? t("Your favourite apps and the ones open, Ciel with your agents, what is playing and the time. It never takes the keyboard, and steps aside for a full-screen game or video.")
+        : t("The apps pinned to your taskbar and the ones open, Ciel with your agents, what is playing and the time. It never takes the keyboard, and steps aside for a full-screen game or video."),
     }),
+    needs,
     h("div", { class: "row" },
       h("label", { text: t("Magnify icons under the pointer") }),
       toggle(dock().magnify, (v) => set({ magnify: v })),
     ),
     h("div", { class: "row" },
-      h("label", { text: t("Task view") }),
+      h("label", { text: gnome ? t("Activities") : t("Task view") }),
       toggle(dock().taskView, (v) => set({ taskView: v })),
     ),
-    h("div", { class: "row" },
+    ...(gnome ? [] : [h("div", { class: "row" },
       h("label", { text: t("Widgets") }),
       toggle(dock().widgets, (v) => set({ widgets: v })),
+    )]),
+    h("div", { class: "row" },
+      h("label", { text: t("Music in the dock") }),
+      toggle(dock().music, (v) => set({ music: v })),
     ),
     h("div", {
       class: "hint",
-      text: t("Drag an app along the dock to move it among the pins, or to pin it. Right-click an app to pin, unpin or close it. Its windows show when the pointer rests on it."),
+      text: t("What is playing, with its cover, its buttons and the words being sung, is in the dock and no longer comes up in the island."),
+    }),
+    h("div", {
+      class: "hint",
+      text: gnome
+        ? t("Drag an app along the dock to move it among your favourites, or to add it. Right-click an app for its own menu.")
+        : t("Drag an app along the dock to move it among the pins, or to pin it. Right-click an app to pin, unpin or close it. Its windows show when the pointer rests on it."),
     }),
     h("div", { class: "row" },
-      h("label", { text: t("Hide the Windows taskbar") }),
+      h("label", { text: gnome ? t("Turn off GNOME's dock") : t("Hide the Windows taskbar") }),
       toggle(dock().hideTaskbar, (v) => set({ hideTaskbar: v })),
     ),
     h("div", {
       class: "hint",
-      text: t("While the dock shows, it takes the taskbar's place on the main screen. Turn this off or quit Ciel and the taskbar comes back as it was. The arrow on the dock shows it for a moment, for the icons in its corner."),
+      text: gnome
+        ? t("While Ciel's dock shows, the Ubuntu Dock (or Dash to Dock) is turned off, as in Extensions. Turn this off or quit Ciel and it comes back.")
+        : t("While the dock shows, it takes the taskbar's place on the main screen. Turn this off or quit Ciel and the taskbar comes back as it was. The arrow on the dock shows it for a moment, for the icons in its corner."),
     }),
   );
 }

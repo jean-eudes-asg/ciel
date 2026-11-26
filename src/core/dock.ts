@@ -2,19 +2,25 @@
 // tells it, and the little logic drawn from them. Types and pure functions
 // only: no DOM, no Tauri, so Node runs the tests.
 
+import type { CielNotification } from "./notifications";
+import type { CodexPlanUsage, PlanUsage } from "./plan";
 import type { SessionRow } from "./sessions";
+import { lineAt, type LyricLine } from "./lyrics";
 import type { SpotifyState } from "./spotify";
+import type { IntegrationInfo } from "./state";
 
 export interface DockPrefs {
   on: boolean;
-  /** Windows: the taskbar of the main screen hidden while the dock shows. */
+  /** While the dock shows, the Windows taskbar of the main screen is hidden; on GNOME, GNOME's own dock is off. */
   hideTaskbar: boolean;
   /** The icons grow under the pointer. */
   magnify: boolean;
   /** Windows' own buttons beside Start (which searches too). */
   taskView: boolean;
   widgets: boolean;
-  /** The dock's own pins (paths, in order); null while they are the taskbar's. */
+  /** What plays is in the dock, with its words, and no longer in the island. */
+  music: boolean;
+  /** Windows: the dock's own pins (paths, in order); null while they are the taskbar's. GNOME's are its favourites. */
   pins: string[] | null;
 }
 
@@ -67,8 +73,61 @@ export interface DockSnapshot {
   agents: { asking: number; working: number; done: number; error: number };
   /** The agent of the session waiting for an answer, if one does. */
   asker: string | null;
-  /** What plays, from the music pill, while it is on. */
-  playing: { title: string; artist: string; playing: boolean } | null;
+  /** What plays, while the dock has the music (DockPrefs.music). */
+  playing: DockPlaying | null;
+  /** Each session that isn't idle, a dot under Ciel: who needs the user first. */
+  crew: CrewMate[];
+  /** The Claude plan's usage, from Claude Code's status line: the gauge beside Ciel. */
+  plan: PlanUsage | null;
+}
+
+/** The song in the dock: its player, where it is, and its words. */
+export interface DockPlaying {
+  title: string;
+  artist: string;
+  playing: boolean;
+  /** Whose buttons the dock's are. */
+  source: DockSource;
+  /** Its cover and title bring the player forward: Spotify, or the YouTube Music tab (not another app playing). */
+  opens: boolean;
+  /** Seconds at `positionAt` (Unix ms), running on from there while playing. */
+  position: number;
+  positionAt: number;
+  /** Seconds, 0 when the player doesn't say. */
+  duration: number;
+  /** Its timed words, when lyrics are on and lrclib.net has them. */
+  lyrics: LyricLine[];
+}
+
+export type DockSource = "spotify" | "ytmusic";
+
+/** What the island hands dockSnapshot: the player that plays (or last did) and the song's words. */
+export interface DockMusic {
+  source: DockSource;
+  state: SpotifyState;
+  lyrics: LyricLine[];
+}
+
+/** One agent's session, as the dock shows it: a dot under Ciel, a line of his label. */
+export interface CrewMate {
+  key: string;
+  agent: string;
+  project: string;
+  /** What it is doing, or the last thing it said. */
+  line: string;
+  phase: "asking" | "working" | "done" | "error";
+  /** When the phase last changed, ms since 1970. */
+  since: number;
+}
+
+/** How many sessions have a dot under Ciel. */
+export const CREW_MAX = 5;
+/** How long one that finished or failed stays in the dock. */
+export const CREW_STAYS_MS = 60_000;
+
+/** The sessions now: the ones done or failed for a while have gone. */
+export function crewNow(crew: readonly CrewMate[], now: number): CrewMate[] {
+  return crew.filter((m) => (m.phase !== "done" && m.phase !== "error") || now - m.since < CREW_STAYS_MS);
 }
 
 export const DOCK_EVENTS = {
@@ -78,30 +137,87 @@ export const DOCK_EVENTS = {
   system: "dock-system",
   /** Island → dock: its agents and what plays. */
   island: "dock-island",
+  /** Island → dock: the cover of what plays (a data: URL), or null. */
+  art: "dock-art",
   /** Dock → island: the page is there, tell it everything. */
   ready: "dock-ready",
   /** Dock → island: open on the agents, or on what waits for the user. */
   open: "dock-open",
+  /** Island → the panel over the dock (GNOME): the notifications and the calendar's events. */
+  panel: "dock-panel-island",
+  /** Panel → island: the page is there, tell it everything. */
+  panelReady: "dock-panel-ready",
+  /** Panel → island: a notification opened or dismissed ({ id, action }), all cleared (id null). */
+  note: "dock-note",
+  /** Panel → island: the user's click on Allow or Deny ({ requestId, decision }), for the island to make. */
+  decide: "dock-decide",
 } as const;
+
+/** The request that waits, as the hover window over Ciel shows it. */
+export interface DockRequest {
+  requestId: string;
+  agent: string;
+  project: string;
+  tool: string;
+  command: string;
+  /** A question (AskUserQuestion): answered in the island, not here. */
+  question: boolean;
+}
+
+/** What the panel over the dock shows of the island's. */
+export interface DockPanelSnapshot {
+  notifications: CielNotification[];
+  /** The Calendar pill as the island has it (its month), or null. */
+  calendar: IntegrationInfo | null;
+  /** The permission or question that waits for the user, if one does. */
+  request: DockRequest | null;
+  /** The Codex plan, when Codex has told it. */
+  codex: CodexPlanUsage | null;
+}
 
 export const EMPTY_SNAPSHOT: DockSnapshot = {
   agents: { asking: 0, working: 0, done: 0, error: 0 },
   asker: null,
   playing: null,
+  crew: [],
+  plan: null,
 };
 
 /** The island's sessions and player, as the dock shows them. */
-export function dockSnapshot(rows: readonly SessionRow[], music: SpotifyState | null): DockSnapshot {
+export function dockSnapshot(rows: readonly SessionRow[], music: DockMusic | null, plan: PlanUsage | null = null): DockSnapshot {
   const agents = { asking: 0, working: 0, done: 0, error: 0 };
+  const crew: CrewMate[] = [];
   for (const row of rows) {
-    if (row.phase !== "idle") agents[row.phase] += 1;
+    if (row.phase === "idle") continue;
+    agents[row.phase] += 1;
+    crew.push({ key: row.key, agent: row.agent, project: row.project, line: row.line, phase: row.phase, since: row.since });
   }
   const asker = rows.find((r) => r.phase === "asking")?.agent ?? null;
-  const track = music?.track;
-  const playing = track && track.title && !track.id.startsWith("spotify:ad:")
-    ? { title: track.title, artist: track.artist, playing: music.playing }
+  const s = music?.state;
+  const track = s?.track;
+  const playing = music && s && track && track.title && !track.id.startsWith("spotify:ad:")
+    ? {
+      title: track.title, artist: track.artist, playing: s.playing, source: music.source,
+      opens: music.source === "ytmusic" || s.spotify,
+      position: s.position, positionAt: s.positionAt, duration: track.duration, lyrics: music.lyrics,
+    }
     : null;
-  return { agents, asker, playing };
+  return { agents, asker, playing, crew, plan };
+}
+
+/** Where the song is now, in seconds. */
+export function playedAt(p: DockPlaying, nowMs: number): number {
+  const at = p.playing ? p.position + Math.max(0, nowMs - p.positionAt) / 1000 : p.position;
+  return p.duration > 0 ? Math.min(at, p.duration) : at;
+}
+
+/** The line sung now ("" between lines, or without words), and in how many ms the next one comes (null: none). */
+export function dockLyric(p: DockPlaying, nowMs: number): { text: string; nextIn: number | null } {
+  const at = playedAt(p, nowMs);
+  const i = lineAt(p.lyrics, at);
+  const next = p.lyrics[i + 1];
+  // lineAt takes a line from 0.15 s before its time.
+  return { text: i >= 0 ? p.lyrics[i].text : "", nextIn: next && p.playing ? Math.max(0, (next.t - 0.15 - at) * 1000) : null };
 }
 
 /** What the agents' tile says: who waits for the user first, then how many work. */
@@ -114,6 +230,30 @@ export function agentsLine(s: DockSnapshot): AgentsLine {
   if (s.agents.asking > 0) return { kind: "asking", agent: s.asker ?? "" };
   if (s.agents.working > 0) return { kind: "working", count: s.agents.working };
   return { kind: "quiet" };
+}
+
+/** Words before a command's name: wrappers, and what shells put first. */
+const LEAD_WORDS = new Set(["do", "then", "else", "elif", "time", "sudo", "env", "nohup", "exec", "command", "builtin", "timeout", "nice", "!"]);
+/** Pieces of a command line that run nothing worth naming. */
+const NOT_A_NAME = new Set(["for", "while", "until", "if", "case", "cd", "export", "set", "source", ".", "done", "fi", "esac", "{", "}"]);
+
+/**
+ * The name of what a shell line runs, as the dock says it: "npm" for
+ * `cd app && npm test 2>&1`, "python3" for `S=/tmp/x; python3 - <<E`. Empty
+ * when it can't tell (the line may come cut short).
+ */
+export function commandName(command: string): string {
+  for (const piece of command.split(/&&|\|\||[;|&\n]/)) {
+    const words = piece.trim().split(/\s+/).filter(Boolean);
+    let i = 0;
+    // VAR=value, sudo, timeout 60 and their flags.
+    while (i < words.length && (/^[A-Za-z_]\w*=/.test(words[i]) || LEAD_WORDS.has(words[i]) || (i > 0 && LEAD_WORDS.has(words[i - 1]) && /^(-|\d)/.test(words[i])))) i++;
+    const word = (words[i] ?? "").replace(/^["'(]+|["')]+$/g, "");
+    if (!word || NOT_A_NAME.has(word)) continue;
+    const name = word.slice(word.lastIndexOf("/") + 1);
+    if (name) return name;
+  }
+  return "";
 }
 
 /** The clock's hour as Settings → Clock wants it ("auto": the language's). */

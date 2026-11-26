@@ -3,9 +3,15 @@
    grow under the pointer (clicks go through that room while the pointer is
    away: a window region, dock/win.rs). Monochrome like the island: colour
    comes only from the apps' own icons; what needs you is drawn inverted,
-   never tinted. */
+   never tinted.
+
+   Motion as the island's: short, eased, a touch of spring, nothing that
+   bounces or keeps moving for its own sake. */
 
 :root {
+  /* The island's curves (style.css --spring, its 0.2 s transforms). */
+  --spring: cubic-bezier(0.3, 1.2, 0.4, 1);
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --bar: #000;
   --line: rgba(255, 255, 255, 0.1);
   --ink: #f5f6f8;
@@ -93,7 +99,7 @@ button {
   display: flex;
   align-items: center;
   border-radius: 10px;
-  transition: background-color 120ms ease;
+  transition: background-color 180ms ease, color 220ms ease;
   transform-origin: 50% 85%;
   /* No will-change: on its own layer an icon is drawn once at rest size and
      then stretched, blurred. Without, it is drawn again at its grown size,
@@ -104,8 +110,46 @@ button {
   background: rgb(var(--fg) / 0.08);
 }
 
+.hit,
+.hit button {
+  cursor: pointer;
+}
+
+.hit.dragging {
+  cursor: grabbing;
+}
+
 .hit:active {
   background: rgb(var(--fg) / 0.13);
+}
+
+/* A press sinks what is in the button a little, as the island's buttons do;
+   the button itself is the icons' to move (bar.ts). */
+.hit > :not(.dot) {
+  transition: transform 200ms var(--spring);
+}
+
+.hit:active > :not(.dot) {
+  transform: scale(0.92);
+}
+
+/* An app that opens comes in once: its icon grows from a little smaller. */
+.app.born > img,
+.app.born > .letter {
+  animation: dock-in 340ms var(--spring);
+}
+
+@keyframes dock-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes dock-fade {
+  from {
+    opacity: 0;
+  }
 }
 
 /* Grown icons draw no hover tile: their size says it. */
@@ -140,6 +184,14 @@ button {
   white-space: pre-line;
   max-width: 320px;
   pointer-events: none;
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity 140ms ease, transform 200ms var(--ease-out);
+}
+
+.label.on {
+  opacity: 1;
+  transform: none;
 }
 
 /* Start and Windows' panels */
@@ -158,7 +210,7 @@ button {
 }
 
 .agents.quiet {
-  width: 40px;
+  min-width: 40px;
   justify-content: center;
 }
 
@@ -174,6 +226,119 @@ button {
 
 .agents .ciel .eye {
   fill: var(--bar);
+}
+
+/* A dot under Ciel for each session, as under an open app: small while it
+   works, bright once done, long and beating while it asks the user, hollow
+   if it failed. Nothing else until one needs the user. */
+.agents .me {
+  position: relative;
+  display: flex;
+}
+
+.pips {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  display: flex;
+  gap: 2px;
+  transform: translateX(-50%);
+}
+
+.pips i {
+  width: 4px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--dim);
+  transition: width 260ms var(--spring), background-color 200ms ease, box-shadow 200ms ease;
+  animation: dock-fade 300ms ease-out;
+}
+
+.pips i.done {
+  background: currentColor;
+}
+
+.pips i.asking {
+  width: 12px;
+  background: currentColor;
+  animation: ask 1.6s ease-in-out infinite;
+}
+
+.pips i.error {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--dim);
+}
+
+/* On the tile turned over (one asks): the others in its colour, fainter. */
+.agents.asking .pips i:not(.asking) {
+  background: currentColor;
+  opacity: 0.45;
+}
+
+/* The Claude plan's gauge: a slim bar beside Ciel, filling from the
+   bottom; from 80 % its track is drawn too, so the bar reads as a warning. */
+.gauge {
+  position: relative;
+  width: 3px;
+  height: 20px;
+  margin-left: -4px;
+  border-radius: 2px;
+  overflow: hidden;
+  flex: none;
+}
+
+/* The track in the tile's own colour, faint: right on the tile turned over too. */
+.gauge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0.18;
+}
+
+.gauge i {
+  position: absolute;
+  inset: auto 0 0;
+  height: var(--used, 0%);
+  border-radius: 2px;
+  background: currentColor;
+  transition: height 500ms var(--ease-out);
+}
+
+.gauge.high {
+  box-shadow: 0 0 0 1px currentColor;
+}
+
+/* Ciel keeps an eye on them while they work. */
+.agents.working .ciel .eyes {
+  animation: watch 7s steps(1, end) infinite;
+}
+
+@keyframes watch {
+  0% { transform: none; }
+  58% { transform: translateX(0.09px); }
+  80% { transform: none; }
+}
+
+@keyframes ask {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* Who asks: the words come in softly as the tile turns over. */
+.agents .txt:not([hidden]),
+.media:not([hidden]) {
+  animation: dock-fade 240ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .agents .ciel .eyes,
+  .pips i.asking {
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 .txt {
@@ -253,7 +418,7 @@ button {
   margin-left: -2px;
   border-radius: 2px;
   background: var(--dim);
-  transition: width 160ms ease, margin-left 160ms ease;
+  transition: width 260ms var(--spring), margin-left 260ms var(--spring), background-color 200ms ease;
 }
 
 .app.active .dot {
@@ -290,21 +455,112 @@ button {
 /* What plays */
 
 .media {
-  gap: 4px;
-  padding: 0 4px 0 10px;
+  position: relative;
+  gap: 2px;
+  padding: 0 4px 0 5px;
+}
+
+.media .info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-right: 4px;
+  cursor: default;
+}
+
+.media.opens .info {
+  cursor: pointer;
+}
+
+.media .cover {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 7px;
+  background: rgb(var(--fg) / 0.1) center / cover no-repeat;
+  color: var(--dim);
+  transition: background-image 240ms ease;
+}
+
+.media .cover.art svg {
+  display: none;
+}
+
+/* With words, one width: the dock doesn't move with each line. */
+.media.words .txt {
+  width: 190px;
+}
+
+.media .txt .top,
+.media .txt .main {
+  white-space: nowrap;
+}
+
+/* The line being sung: brighter than the artist, and it comes up into place. */
+.media .txt .top.sung {
+  color: var(--ink);
+  opacity: 0.8;
+}
+
+.media .txt .top.rise {
+  animation: dock-rise 320ms var(--spring);
+}
+
+@keyframes dock-rise {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+
+.media .play,
+.media .skip {
+  display: grid;
+  place-items: center;
+  flex: none;
+  transition: background-color 180ms ease;
 }
 
 .media .play {
   width: 30px;
   height: 30px;
-  display: grid;
-  place-items: center;
   border-radius: 15px;
-  flex: none;
 }
 
-.media .play:hover {
+.media .skip {
+  width: 24px;
+  height: 30px;
+  border-radius: 12px;
+  color: var(--dim);
+}
+
+.media .play:hover,
+.media .skip:hover {
   background: rgb(var(--fg) / 0.1);
+}
+
+.media .skip:hover {
+  color: var(--ink);
+}
+
+/* How far the song has gone, a hairline along the bottom of the tile. */
+.media .gone {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 2px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.3;
+  transform-origin: left center;
+  transform: scaleX(0);
+  /* Not the press's spring (.hit > *): it steps, unanimated. */
+  transition: none;
+  pointer-events: none;
 }
 
 /* The hidden taskbar, the sound, the network, the battery, the clock */
@@ -328,23 +584,27 @@ button {
   opacity: 0.4;
 }
 
+/* The time large, the date under it. */
 .clock {
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
-  padding: 0 8px;
-  line-height: 1.2;
+  padding: 0 10px;
   font-variant-numeric: tabular-nums;
+}
+
+.clock .time {
+  order: -1;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .clock .date {
   font-size: 11px;
+  line-height: 1.2;
   color: var(--dim);
-}
-
-.clock .time {
-  font-size: 15px;
-  font-weight: 600;
 }
 
 [data-dir="rtl"] .clock {

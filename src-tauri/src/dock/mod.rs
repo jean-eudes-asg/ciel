@@ -3,35 +3,41 @@
 // the pinned apps and the ones open (a dot under those, a preview of
 // their windows on hover, a menu on right click), Ciel's agents, what plays,
 // the sound, the network and the battery, the time, and show desktop. Off by
-// default, in Settings → Island → Dock. Windows only for now: GNOME has a dock
-// of its own, and its Wayland lets no app place a window.
+// default, in Settings → Island → Dock. On Windows (win.rs) and on GNOME
+// (linux.rs, through Ciel's GNOME Shell extension, where it can stand in for
+// the Ubuntu Dock); the window previews are Windows' only for now.
 //
-// Nothing runs while it is off. While it shows, a hidden window of its own
-// (win.rs) waits in GetMessage: Explorer tells it when a window opens,
+// Nothing runs while it is off. While it shows on Windows, a hidden window of
+// its own (win.rs) waits in GetMessage: Explorer tells it when a window opens,
 // closes, comes to the front or flashes (a shell hook), when a full-screen app
 // starts (the dock is an app bar, and steps aside), and when Explorer starts
 // again; the speakers, the network and the battery tell it when they change.
 // It can hide the Windows taskbar and take its place (taskbar.rs).
 //
-// Its pins are the taskbar's until the user pins, unpins or moves one on the
-// dock (Windows lets no app pin to its taskbar): from then on, the dock's own
-// list, in Settings (DockPrefs::pins).
+// Its pins on Windows are the taskbar's until the user pins, unpins or moves
+// one on the dock (Windows lets no app pin to its taskbar): from then on, the
+// dock's own list, in Settings (DockPrefs::pins). On GNOME they are GNOME's
+// favourites, which an app may change.
 //
 // The page sends back the id of the app clicked: only ids from the list made
 // here are acted on, never a path or a window the page names.
 
-// The row's logic is Windows' for now; elsewhere only its tests use it.
-#![cfg_attr(not(windows), allow(dead_code))]
-
 use serde::Serialize;
 use tauri::AppHandle;
 
+#[cfg(target_os = "linux")]
+mod linux;
 #[cfg(windows)]
 mod preview;
 #[cfg(windows)]
 mod taskbar;
 #[cfg(windows)]
 mod win;
+
+#[cfg(target_os = "linux")]
+use linux as imp;
+#[cfg(windows)]
+use win as imp;
 
 pub const LABEL: &str = "dock";
 /// The bar's height and the space under it, in logical pixels.
@@ -42,7 +48,8 @@ pub const GAP: f64 = 8.0;
 /// the pointer is on the bar (a window region, `region`).
 pub const HEAD: f64 = 60.0;
 pub const SIDE: f64 = 110.0;
-/// The bar's corners, as dock.css draws them.
+/// The bar's corners, as dock.css draws them (Windows' window region).
+#[cfg(windows)]
 pub const RADIUS: f64 = 16.0;
 /// What the page hears, whole, on every change.
 pub const STATE_EVENT: &str = "dock-state";
@@ -205,6 +212,7 @@ pub fn pin_at(pins: &[String], path: &str, to: usize) -> Vec<String> {
     out
 }
 
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn unpin(pins: &[String], path: &str) -> Vec<String> {
     pins.iter().filter(|p| !same_path(p, path)).cloned().collect()
 }
@@ -236,28 +244,22 @@ pub fn volume_after(level: f64, notches: f64) -> f64 {
     (((level + notches * step) / step).round() * step).clamp(0.0, 1.0)
 }
 
-/// Creates the dock's window, off screen: before the island, for WebView2's
-/// sake (see create_settings_window in lib.rs). Puts the taskbar back first,
-/// should Ciel have stopped last time without doing it.
+/// Creates the dock's window, off screen (Windows: before the island, for
+/// WebView2's sake, see create_settings_window in lib.rs). Puts the taskbar,
+/// or GNOME's dock, back first, should Ciel have stopped last time without
+/// doing it.
 pub fn setup(app: &AppHandle) {
-    #[cfg(windows)]
-    win::setup(app);
-    #[cfg(not(windows))]
-    let _ = app;
+    imp::setup(app);
 }
 
 /// Shows or takes away the dock as Settings says (at launch, on each save).
 pub fn sync(app: &AppHandle, prefs: &crate::settings::DockPrefs) {
-    #[cfg(windows)]
-    win::sync(app, prefs);
-    #[cfg(not(windows))]
-    let _ = (app, prefs);
+    imp::sync(app, prefs);
 }
 
-/// Ciel quits: the taskbar comes back, the bottom of the screen is freed.
+/// Ciel quits: the taskbar (GNOME's dock) comes back, the bottom of the screen is freed.
 pub fn shutdown() {
-    #[cfg(windows)]
-    win::shutdown();
+    imp::shutdown();
 }
 
 /// The dock's own pins, kept in Settings and told to every window.
@@ -279,96 +281,108 @@ fn save_pins(app: &AppHandle, pins: Vec<String>) {
 
 #[tauri::command]
 pub fn dock_state() -> DockState {
-    #[cfg(windows)]
-    return win::state();
-    #[cfg(not(windows))]
-    DockState::default()
+    imp::state()
 }
 
 /// The page's bar is this wide (CSS pixels, its icons at rest): the window
 /// takes its size, with the room around it.
 #[tauri::command]
 pub fn dock_fit(width: f64) {
-    #[cfg(windows)]
-    win::fit(width);
-    #[cfg(not(windows))]
-    let _ = width;
+    imp::fit(width);
 }
 
 /// The pointer is on the bar (`hover`): the whole window takes clicks, for the
 /// icons grown into the room above; else only the bar does.
 #[tauri::command]
-pub fn dock_region(hover: bool) {
+pub fn dock_region(window: tauri::WebviewWindow, hover: bool) {
     #[cfg(windows)]
-    win::region(hover);
-    #[cfg(not(windows))]
-    let _ = hover;
+    let _ = window;
+    #[cfg(windows)]
+    imp::region(hover);
+    #[cfg(target_os = "linux")]
+    imp::region(&window, hover);
 }
 
 /// A click on an app of the row; `new_window` (a middle click) starts another.
 #[tauri::command]
 pub async fn dock_open(id: String, new_window: bool) -> bool {
-    #[cfg(windows)]
-    return tauri::async_runtime::spawn_blocking(move || win::open(&id, new_window)).await.unwrap_or(false);
-    #[cfg(not(windows))]
-    {
-        let _ = (id, new_window);
-        false
-    }
+    tauri::async_runtime::spawn_blocking(move || imp::open(&id, new_window)).await.unwrap_or(false)
 }
 
-/// The Start menu, as the Windows key opens it.
+/// The Start menu, as the Windows key opens it; GNOME's app grid.
 #[tauri::command]
 pub fn dock_start() -> bool {
-    #[cfg(windows)]
-    return win::start_menu();
-    #[cfg(not(windows))]
-    false
+    imp::start_menu()
 }
 
-/// One of Windows' own panels, as its keys open them: "taskView",
-/// "widgets", "quickSettings", "notifications", "desktop" (show desktop).
+/// One of the desktop's own panels, as Windows' keys open them: "taskView"
+/// (GNOME's overview), "widgets" (Windows only), "quickSettings",
+/// "notifications", "desktop" (show desktop).
 #[tauri::command]
 pub fn dock_key(what: String) -> bool {
-    #[cfg(windows)]
-    return win::panel(&what);
-    #[cfg(not(windows))]
-    {
-        let _ = what;
-        false
-    }
+    imp::panel(&what)
 }
 
 /// The wheel turned on the sound icon, by so many notches (up is positive).
 #[tauri::command]
 pub async fn dock_volume(notches: f64) -> bool {
-    #[cfg(windows)]
-    return tauri::async_runtime::spawn_blocking(move || win::turn_volume(notches)).await.unwrap_or(false);
-    #[cfg(not(windows))]
-    {
-        let _ = notches;
-        false
-    }
+    tauri::async_runtime::spawn_blocking(move || imp::turn_volume(notches)).await.unwrap_or(false)
 }
 
 /// The menu of a right click: an app's (`id`), or the bar's.
 #[tauri::command]
 pub fn dock_menu(id: Option<String>) {
-    #[cfg(windows)]
-    win::menu(id);
-    #[cfg(not(windows))]
-    let _ = id;
+    imp::menu(id);
 }
 
 /// The windows of an app (`id`), in a preview above its icon, centred on `x`
 /// (CSS pixels across the dock's window); none: the preview goes, unless the
-/// pointer went onto it. `light`: the dock is drawn white.
+/// pointer went onto it. `light`: the dock is drawn white. Windows only for now.
 #[tauri::command]
 pub fn dock_preview(id: Option<String>, x: f64, light: bool) {
     #[cfg(windows)]
     win::preview(id, x, light);
     #[cfg(not(windows))]
     let _ = (id, x, light);
+}
+
+/// The panel over the dock (GNOME): what it shows, "controls" or "clock"; "" while closed.
+#[tauri::command]
+pub fn dock_panel_kind(window: tauri::WebviewWindow) -> String {
+    #[cfg(target_os = "linux")]
+    return linux::panel_kind(window.label());
+    #[cfg(not(target_os = "linux"))]
+    {
+        let _ = window;
+        String::new()
+    }
+}
+
+/// The panel's page drew it this size (CSS pixels): it shows over the dock.
+#[tauri::command]
+pub fn dock_panel_fit(app: AppHandle, window: tauri::WebviewWindow, width: f64, height: f64) {
+    #[cfg(target_os = "linux")]
+    linux::panel_fit(&app, window.label(), width, height);
+    #[cfg(not(target_os = "linux"))]
+    let _ = (app, window, width, height);
+}
+
+/// The pointer on Ciel's tile ("tile", once it rests there) or on the window
+/// that opens over it ("panel"), or not; "close": away at once. GNOME only.
+#[tauri::command]
+pub fn dock_hover(part: String, on: bool) {
+    #[cfg(target_os = "linux")]
+    linux::hover(&part, on);
+    #[cfg(not(target_os = "linux"))]
+    let _ = (part, on);
+}
+
+#[tauri::command]
+pub fn dock_panel_close(app: AppHandle) {
+    #[cfg(target_os = "linux")]
+    linux::close_panel(&app, false);
+    #[cfg(not(target_os = "linux"))]
+    let _ = app;
 }
 
 /// An app dragged to `to` among the pins: moved there, or pinned there.
@@ -382,20 +396,18 @@ pub fn dock_pin_move(app: AppHandle, id: String, to: usize) -> bool {
         }
         None => false,
     };
-    #[cfg(not(windows))]
+    #[cfg(target_os = "linux")]
     {
-        let _ = (app, id, to);
-        false
+        let _ = app;
+        linux::pin_moved(&id, to)
     }
 }
 
-/// The hidden taskbar, for a moment: its notification area and the icons there.
+/// The hidden taskbar, for a moment: its notification area and the icons
+/// there. Windows only: on GNOME, Activities shows the hidden top bar.
 #[tauri::command]
 pub fn dock_taskbar() -> bool {
-    #[cfg(windows)]
-    return win::reveal_taskbar();
-    #[cfg(not(windows))]
-    false
+    imp::reveal_taskbar()
 }
 
 #[cfg(test)]

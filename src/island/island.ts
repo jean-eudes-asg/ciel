@@ -182,6 +182,18 @@ export class Island {
     });
   }
 
+  /**
+   * Allow or Deny clicked in the dock's window: made exactly as the card's
+   * own buttons make it, and only for the request that waits now, never a
+   * question (answered in the island) nor one already answered.
+   */
+  decide(requestId: string, decision: "allow" | "deny") {
+    const req = State.pendingApproval;
+    if (!req || req.requestId !== requestId || req.questions) return;
+    void Bridge.log(`dock: ${decision} clicked req=${requestId}`);
+    this.viewActions.decide(decision);
+  }
+
   /** The request has its answer: the card goes and the session carries on. */
   private closeApproval() {
     State.endApproval();

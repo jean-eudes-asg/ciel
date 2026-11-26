@@ -3,7 +3,8 @@
 // Windows taskbar holds, in Ciel's look: Start (which searches too), task view
 // and widgets;
 // Ciel with his agents; the apps (a dot under the open ones, a longer one
-// under the one in front); what plays; the hidden taskbar's arrow; the sound,
+// under the one in front); what plays (its cover, its buttons, how far it has
+// gone and the line being sung); the hidden taskbar's arrow; the sound,
 // the network and the battery; the time; show desktop.
 //
 // Under the pointer the icons grow, the others making room (core/dock.ts
@@ -12,11 +13,13 @@
 // its menu (Rust's too); dragged, it moves among the pins, or is pinned.
 
 import {
-  EMPTY_SNAPSHOT, NO_SYSTEM, agentsLine, dropIndex, hour12, magnifyLayout, magnifyScale, volumeLevel,
-  type DockApp, type DockPanel, type DockPrefs, type DockSnapshot, type DockState, type MagnifyItem, type SystemIcons,
+  CREW_MAX, EMPTY_SNAPSHOT, NO_SYSTEM, agentsLine, crewNow, dockLyric, dropIndex, hour12, magnifyLayout, magnifyScale, playedAt, volumeLevel,
+  type DockApp, type DockPanel, type DockPlaying, type DockPrefs, type DockSnapshot, type DockSource, type DockState, type MagnifyItem, type SystemIcons,
 } from "../core/dock";
 import type { Settings } from "../core/state";
 import { BASE, PUFFS } from "../cloud/shape";
+import { Spring } from "../core/anim";
+import { dominantPct, effectivePct } from "../core/plan";
 import { t } from "../i18n/i18n";
 import { ICONS } from "../views/icons";
 import { h, svg } from "../views/dom";
@@ -27,6 +30,8 @@ export interface DockActions {
   panel(what: DockPanel): void;
   /** Ciel's tile: `waiting` while a session waits for an answer. */
   agents(waiting: boolean): void;
+  /** The pointer rests on Ciel's tile, or has left it; "close": clicked, the window over it goes at once (GNOME). */
+  hoverAgents(on: boolean | "close"): void;
   open(id: string, newWindow: boolean): void;
   /** A right click: an app's menu, or the bar's (null). */
   menu(id: string | null): void;
@@ -36,7 +41,8 @@ export interface DockActions {
   pinMove(id: string, to: number): void;
   /** The wheel on the sound, by notches (up is positive). */
   volume(notches: number): void;
-  playPause(): void;
+  /** A button of what plays, or its cover and title ("open": the player's window). */
+  music(action: "playPause" | "next" | "previous" | "open", source: DockSource): void;
   taskbar(): void;
   /** The pointer came onto the bar, or has left it and the icons are back at rest. */
   hover(on: boolean): void;
@@ -53,6 +59,8 @@ export interface DockBar {
   /** The sound, the network and the battery, changed. */
   setSystem(s: SystemIcons): void;
   setSnapshot(s: DockSnapshot): void;
+  /** The cover of what plays (a data: URL), or null. */
+  setArt(url: string | null): void;
   setClockFormat(f: Settings["clockFormat"]): void;
   setLook(look: DockLook): void;
   /** Texts again in the language now set. */
@@ -69,14 +77,16 @@ function make(tag: string, attrs: Record<string, string | number>): SVGElement {
   return el;
 }
 
-/** Ciel's outline (cloud/shape.ts), still, with his two eyes. */
+/** Ciel's outline (cloud/shape.ts), with his two eyes. */
 function cielMark(): SVGSVGElement {
   const el = make("svg", { viewBox: "-1.1 -0.9 2.2 1.75", class: "ciel", "aria-hidden": "true" }) as SVGSVGElement;
   const body = make("g", { class: "body" });
   for (const [cx, cy, r] of PUFFS) body.append(make("circle", { cx, cy, r }));
   body.append(make("ellipse", { cx: 0, cy: BASE.cy, rx: BASE.ax, ry: BASE.ay }));
   el.append(body);
-  for (const cx of [-0.26, 0.26]) el.append(make("ellipse", { class: "eye", cx, cy: 0.12, rx: 0.085, ry: 0.13 }));
+  const eyes = make("g", { class: "eyes" });
+  for (const cx of [-0.26, 0.26]) eyes.append(make("ellipse", { class: "eye", cx, cy: 0.12, rx: 0.085, ry: 0.13 }));
+  el.append(eyes);
   return el;
 }
 
@@ -93,8 +103,16 @@ function batteryIcon(percent: number, charging: boolean): SVGSVGElement {
 
 const icon = (path: string, size = 18) => svg(path, size, { stroke: 1.7 });
 
+/** On GNOME, Start is the app grid, task view the overview, and there are no widgets. */
+const GNOME = typeof navigator !== "undefined" && !/Windows/.test(navigator.userAgent ?? "");
+
 /** The icons grow back to rest, or out, in this long (ms). */
-const EASE_MS = 140;
+/**
+ * How the icons grow and shrink back: the island's spring (core/anim.ts),
+ * quicker and damped enough never to overshoot, so they settle, not wobble.
+ */
+const GROW_RESPONSE = 0.3;
+const GROW_DAMPING = 0.9;
 /** The pointer rests on an app this long before its windows show. */
 const PREVIEW_MS = 450;
 /** A press moves this far before it is a drag. */
@@ -112,20 +130,50 @@ export function buildDockBar(actions: DockActions): DockBar {
   const taskView = h("button", { class: "hit start mag", onclick: () => actions.panel("taskView") }, icon(ICONS.taskView, 18));
   const widgets = h("button", { class: "hit start mag", onclick: () => actions.panel("widgets") }, icon(ICONS.widgets, 18));
 
+  // Ciel, a dot under him for each session, and words only when one asks the user.
+  const pips = h("span", { class: "pips" });
   const agentsTop = h("span", { class: "top" });
   const agentsMain = h("span", { class: "main" });
-  const agentsText = h("span", { class: "txt" }, agentsTop, agentsMain);
-  const agents = h("button", { class: "hit agents quiet mag" }, cielMark(), agentsText);
-  agents.addEventListener("click", () => actions.agents(snapshot.agents.asking > 0));
+  const agentsText = h("span", { class: "txt", hidden: true }, agentsTop, agentsMain);
+  // The Claude plan's usage, filling from the bottom as the limit comes near.
+  const gauge = h("span", { class: "gauge", hidden: true }, h("i"));
+  const agents = h("button", { class: "hit agents quiet mag" }, h("span", { class: "me" }, cielMark(), pips), gauge, agentsText);
+  let agentsTimer = 0;
+  agents.addEventListener("click", () => {
+    window.clearTimeout(agentsTimer);
+    actions.hoverAgents("close");
+    actions.agents(snapshot.agents.asking > 0);
+  });
+  // Resting on Ciel opens the window of the agents, their requests and the plan over him.
+  agents.addEventListener("pointerenter", () => {
+    window.clearTimeout(agentsTimer);
+    agentsTimer = window.setTimeout(() => actions.hoverAgents(true), PREVIEW_MS);
+  });
+  agents.addEventListener("pointerleave", () => {
+    window.clearTimeout(agentsTimer);
+    actions.hoverAgents(false);
+  });
 
   const apps = h("div", { class: "apps" });
   const appsSep = h("div", { class: "sep" });
   const drop = h("div", { class: "drop", hidden: true });
 
+  const mediaCover = h("span", { class: "cover" }, svg(ICONS.musicNote, 13));
   const mediaTitle = h("span", { class: "main" });
-  const mediaArtist = h("span", { class: "top" });
-  const mediaPlay = h("button", { class: "play", onclick: () => actions.playPause() });
-  const media = h("div", { class: "hit media" }, h("span", { class: "txt" }, mediaTitle, mediaArtist), mediaPlay);
+  // The artist, or the line being sung.
+  const mediaLine = h("span", { class: "top" });
+  const control = (action: "playPause" | "next" | "previous" | "open") => () => {
+    const p = snapshot.playing;
+    if (p && (action !== "open" || p.opens)) actions.music(action, p.source);
+  };
+  const mediaPrev = h("button", { class: "skip", "aria-label": t("Previous"), onclick: control("previous") }, svg(ICONS.backward, 11));
+  const mediaPlay = h("button", { class: "play", onclick: control("playPause") });
+  const mediaNext = h("button", { class: "skip", "aria-label": t("Next"), onclick: control("next") }, svg(ICONS.forward, 11));
+  // How far the song has gone.
+  const mediaGone = h("i", { class: "gone" });
+  const media = h("div", { class: "hit media" },
+    h("span", { class: "info", onclick: control("open") }, mediaCover, h("span", { class: "txt" }, mediaTitle, mediaLine)),
+    mediaPrev, mediaPlay, mediaNext, mediaGone);
 
   const tray = h("button", { class: "hit tray", onclick: () => actions.taskbar() }, svg(ICONS.chevronUp, 14, { stroke: 2 }));
 
@@ -143,19 +191,32 @@ export function buildDockBar(actions: DockActions): DockBar {
 
   const el = h("div", { class: "bar" },
     bg, start, taskView, widgets, agents, h("div", { class: "sep" }), apps, appsSep, media, tray, system, clock, desktop, drop);
-  const label = h("div", { class: "label", hidden: true });
-  const root = h("div", { class: "dock" }, label, el);
+  // Faded in and out (dock.css), never moved by a transition: it keeps up with the icons growing.
+  const label = h("div", { class: "label" });
+  const root = h("div", { class: GNOME ? "dock gnome" : "dock" }, label, el);
 
   /** What the label says over an item. */
   const labels = new Map<Element, () => string>();
-  labels.set(start, () => t("Start menu"));
-  labels.set(taskView, () => t("Task view"));
+  labels.set(start, () => GNOME ? t("Show Apps") : t("Start menu"));
+  labels.set(taskView, () => GNOME ? t("Activities") : t("Task view"));
   labels.set(widgets, () => t("Widgets"));
   labels.set(tray, () => t("Show the Windows taskbar"));
   labels.set(desktop, () => t("Show desktop"));
+  // Each session on its line: who, where, doing what.
+  // and the plan's two windows under them.
   labels.set(agents, () => {
-    const line = agentsLine(snapshot);
-    return line.kind === "quiet" ? t("No agent is running.") : `${agentsTop.textContent} · ${agentsMain.textContent}`;
+    const now = Date.now();
+    const all = crewNow(snapshot.crew, now);
+    const lines = all.length ? all.map((m) => {
+      const doing = m.phase === "asking" ? t("Asks you a question") : m.line;
+      return [m.agent, m.project, doing].filter(Boolean).join(" · ");
+    }) : [t("No agent is running.")];
+    const plan = snapshot.plan;
+    if (plan && (plan.fiveHour || plan.sevenDay)) {
+      const pct = (w: typeof plan.fiveHour) => (w ? `${Math.round(effectivePct(w, now))}%` : "-");
+      lines.push(`${t("Claude plan usage")} · ${t("5 hours")} ${pct(plan.fiveHour)} · ${t("Week")} ${pct(plan.sevenDay)}`);
+    }
+    return lines.join("\n");
   });
   labels.set(media, () => {
     const p = snapshot.playing;
@@ -166,29 +227,74 @@ export function buildDockBar(actions: DockActions): DockBar {
 
   function paintAgents() {
     const line = agentsLine(snapshot);
-    agents.classList.toggle("quiet", line.kind === "quiet");
+    const all = crewNow(snapshot.crew, Date.now());
+    // Kept, not drawn again: only a new one comes in, and a dot that changes eases to its new look.
+    const phases = all.slice(0, CREW_MAX).map((m) => m.phase);
+    while (pips.children.length < phases.length) pips.append(h("i"));
+    while (pips.children.length > phases.length) pips.lastElementChild!.remove();
+    phases.forEach((phase, i) => (pips.children[i] as HTMLElement).className = phase);
+    const used = dominantPct(snapshot.plan);
+    gauge.hidden = used == null;
+    gauge.style.setProperty("--used", `${Math.max(0, Math.min(100, used ?? 0))}%`);
+    // Near the limit it says so the dock's way: drawn over, not in colour.
+    gauge.classList.toggle("high", (used ?? 0) >= 80);
     agents.classList.toggle("asking", line.kind === "asking");
-    // Only the cloud alone grows: a line of text doesn't.
-    agents.classList.toggle("mag", line.kind === "quiet");
-    agentsText.hidden = line.kind === "quiet";
+    agents.classList.toggle("working", line.kind === "working");
+    // Ciel alone grows; with words beside him the tile doesn't.
+    agents.classList.toggle("quiet", line.kind !== "asking");
+    agents.classList.toggle("mag", line.kind !== "asking");
+    agentsText.hidden = line.kind !== "asking";
     if (line.kind === "asking") {
       agentsTop.textContent = line.agent || t("Agents");
       agentsMain.textContent = t("Asks you a question");
-    } else if (line.kind === "working") {
-      agentsTop.textContent = t("Agents");
-      agentsMain.textContent = t("{count} working", { count: line.count });
     }
-    agents.setAttribute("aria-label", labels.get(agents)!());
+    agents.setAttribute("aria-label", labels.get(agents)!().replace(/\n/g, ", "));
   }
+
+  let goneTimer = 0;
+  let singTimer = 0;
 
   function paintMedia() {
     const p = snapshot.playing;
     media.hidden = !p;
+    window.clearTimeout(singTimer);
+    window.clearTimeout(goneTimer);
     if (!p) return;
     mediaTitle.textContent = p.title;
-    mediaArtist.textContent = p.artist;
     mediaPlay.replaceChildren(svg(p.playing ? ICONS.pause : ICONS.play, 14));
     mediaPlay.setAttribute("aria-label", p.playing ? t("Pause") : t("Play"));
+    media.classList.toggle("opens", p.opens);
+    // With words the tile keeps one width: a new line never moves the dock.
+    media.classList.toggle("words", p.lyrics.length > 0);
+    runGone(p);
+    sing(p);
+  }
+
+  /** A step a second, about a pixel: a transition the length of the song would draw every frame of it. */
+  function runGone(p: DockPlaying) {
+    window.clearTimeout(goneTimer);
+    mediaGone.hidden = !(p.duration > 0);
+    if (mediaGone.hidden) return;
+    mediaGone.style.transform = `scaleX(${playedAt(p, Date.now()) / p.duration})`;
+    if (p.playing && state.shown) goneTimer = window.setTimeout(() => runGone(p), 1000);
+  }
+
+  /** The line sung now, in place of the artist, until the next one is due. */
+  function sing(p: DockPlaying) {
+    window.clearTimeout(singTimer);
+    const { text, nextIn } = dockLyric(p, Date.now());
+    const line = text || p.artist;
+    if (mediaLine.textContent !== line) {
+      mediaLine.textContent = line;
+      mediaLine.classList.toggle("sung", !!text);
+      // Each new line comes up into place, as in the island.
+      mediaLine.classList.remove("rise");
+      if (text) {
+        void mediaLine.offsetWidth;
+        mediaLine.classList.add("rise");
+      }
+    }
+    if (nextIn != null && state.shown) singTimer = window.setTimeout(() => sing(p), nextIn + 20);
   }
 
   function systemLines(): string[] {
@@ -254,6 +360,10 @@ export function buildDockBar(actions: DockActions): DockBar {
     if (!kept) {
       kept = { b: appButton(app.id), app, face: "" };
       buttons.set(app.id, kept);
+      // Its icon comes in once (dock.css), not each time the row is put in order again.
+      const b = kept.b;
+      b.classList.add("born");
+      b.addEventListener("animationend", () => b.classList.remove("born"), { once: true });
     }
     const { b } = kept;
     const windowsChanged = kept.app.windows !== app.windows;
@@ -336,8 +446,7 @@ export function buildDockBar(actions: DockActions): DockBar {
 
   // ── Growing under the pointer ──────────────────────────────────────────────
 
-  let amount = 0;
-  let target = 0;
+  const grow = new Spring(0, GROW_RESPONSE, GROW_DAMPING);
   let pointerX = 0;
   let frame = 0;
   let lastTime = 0;
@@ -360,8 +469,8 @@ export function buildDockBar(actions: DockActions): DockBar {
 
   function apply() {
     const list = items();
-    const grow = look.magnify && !dragging ? amount : 0;
-    if (grow <= 0) {
+    const amount = look.magnify && !dragging ? Math.max(0, grow.value) : 0;
+    if (amount <= 0.001) {
       for (const it of list) if (it !== dragged) it.style.transform = "";
       bg.style.left = bg.style.right = "";
       placeLabel();
@@ -370,7 +479,7 @@ export function buildDockBar(actions: DockActions): DockBar {
     const laid: MagnifyItem[] = list.map((it) => {
       const centre = it.offsetLeft + it.offsetWidth / 2;
       const s = it.classList.contains("mag") ? magnifyScale(pointerX - centre) : 1;
-      return { left: it.offsetLeft, width: it.offsetWidth, scale: 1 + (s - 1) * grow };
+      return { left: it.offsetLeft, width: it.offsetWidth, scale: 1 + (s - 1) * amount };
     });
     const { shifts, growLeft, growRight } = magnifyLayout(laid, pointerX);
     list.forEach((it, i) => {
@@ -386,18 +495,16 @@ export function buildDockBar(actions: DockActions): DockBar {
     frame = 0;
     const dt = lastTime ? Math.min(64, time - lastTime) : 16;
     lastTime = time;
-    if (amount !== target) {
-      const delta = dt / EASE_MS;
-      amount = target > amount ? Math.min(target, amount + delta) : Math.max(target, amount - delta);
-    }
+    grow.step(dt / 1000);
+    if (grow.settled) grow.set(grow.target);
     apply();
-    if (amount !== target) {
+    if (grow.value !== grow.target) {
       frame = requestAnimationFrame(step);
       return;
     }
     lastTime = 0;
     // At rest again and the pointer gone: only the bar takes clicks.
-    if (amount === 0 && !hovered && roomTakesClicks) {
+    if (grow.value === 0 && !hovered && roomTakesClicks) {
       roomTakesClicks = false;
       actions.hover(false);
     }
@@ -408,13 +515,14 @@ export function buildDockBar(actions: DockActions): DockBar {
   }
 
   function placeLabel() {
-    const text = pointedAt && !dragging ? labels.get(pointedAt)?.() ?? "" : "";
+    // On GNOME the window over Ciel says it all: no label in its way.
+    const text = pointedAt && !dragging && !(GNOME && pointedAt === agents) ? labels.get(pointedAt)?.() ?? "" : "";
     if (!text || !pointedAt) {
-      label.hidden = true;
+      label.classList.remove("on");
       return;
     }
     if (label.textContent !== text) label.textContent = text;
-    label.hidden = false;
+    label.classList.add("on");
     const r = pointedAt.getBoundingClientRect();
     const box = root.getBoundingClientRect();
     const w = label.offsetWidth;
@@ -423,13 +531,19 @@ export function buildDockBar(actions: DockActions): DockBar {
     label.style.top = `${Math.max(2, r.top - box.top - label.offsetHeight - 6).toFixed(1)}px`;
   }
 
+  // A click opens a menu of GNOME's or the overview, which keeps the pointer
+  // to itself: the dock never hears it leave, and the label would stay up.
+  el.addEventListener("click", () => {
+    pointedAt = null;
+    placeLabel();
+  });
   el.addEventListener("pointerenter", () => {
     hovered = true;
     if (!roomTakesClicks) {
       roomTakesClicks = true;
       actions.hover(true);
     }
-    target = 1;
+    grow.target = 1;
     kick();
   });
   el.addEventListener("pointermove", (e) => {
@@ -443,7 +557,7 @@ export function buildDockBar(actions: DockActions): DockBar {
     if (dragging) return;
     hovered = false;
     pointedAt = null;
-    target = 0;
+    grow.target = 0;
     endPreview();
     kick();
   });
@@ -529,7 +643,7 @@ export function buildDockBar(actions: DockActions): DockBar {
     dropAt = -1;
     if (!el.matches(":hover")) {
       hovered = false;
-      target = 0;
+      grow.target = 0;
     }
     kick();
   });
@@ -540,11 +654,17 @@ export function buildDockBar(actions: DockActions): DockBar {
     const lang = document.documentElement.lang || undefined;
     clockTime.textContent = now.toLocaleTimeString(lang, { hour: "numeric", minute: "2-digit", hour12: hour12(clockFormat) });
     clockDate.textContent = now.toLocaleDateString(lang, { weekday: "short", day: "numeric", month: "short" });
+    // The finished ones leave after their minute.
+    // and a window of the plan that has reset empties the gauge.
+    if (snapshot.plan || snapshot.crew.some((m) => m.phase === "done" || m.phase === "error")) {
+      paintAgents();
+      kick();
+    }
   }
 
   function paintLook() {
     taskView.hidden = !look.taskView;
-    widgets.hidden = !look.widgets;
+    widgets.hidden = !look.widgets || GNOME;
     root.classList.toggle("magnify", look.magnify);
     kick();
   }
@@ -566,8 +686,11 @@ export function buildDockBar(actions: DockActions): DockBar {
     root,
     el,
     setState(s) {
+      const shown = state.shown;
       state = s;
       paintApps();
+      // Off screen the song's line and its words rest.
+      if (s.shown !== shown) paintMedia();
       kick();
     },
     setSystem(s) {
@@ -580,6 +703,10 @@ export function buildDockBar(actions: DockActions): DockBar {
       paintAgents();
       paintMedia();
       kick();
+    },
+    setArt(url) {
+      mediaCover.style.backgroundImage = url ? `url("${url}")` : "";
+      mediaCover.classList.toggle("art", !!url);
     },
     setClockFormat(f) {
       clockFormat = f;

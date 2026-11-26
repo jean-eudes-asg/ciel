@@ -337,6 +337,13 @@ export const Bridge = {
   dockPreview: (id: string | null, x: number, light: boolean) => call<void>("dock_preview", { id, x, light }),
   /** An app dragged to `to` among the pins. */
   dockPinMove: (id: string, to: number) => call<boolean>("dock_pin_move", { id, to }),
+  /** GNOME: the panel over the dock, what it shows ("controls"; "" while closed). */
+  dockPanelKind: () => call<string>("dock_panel_kind"),
+  /** The panel is drawn this size (CSS pixels): it shows over the dock clicked. */
+  dockPanelFit: (width: number, height: number) => call<void>("dock_panel_fit", { width, height }),
+  dockPanelClose: () => call<void>("dock_panel_close"),
+  /** The pointer on Ciel's tile ("tile") or on the window over it ("panel"), or not; "close": away at once. */
+  dockHover: (part: "tile" | "panel" | "close", on: boolean) => call<void>("dock_hover", { part, on }),
   micToggle: () => call<boolean>("mic_toggle"),
   /** During a call the Notetaker records: a card with the answer to the last question (notes/mod.rs). */
   notesAnswer: () => call<void>("notes_answer"),
@@ -764,5 +771,7 @@ export interface GnomeExtStatus {
   available: boolean;
   installed: boolean;
   active: boolean;
+  /** The version running tells the dock the apps and windows open. */
+  dock: boolean;
   places: string[];
 }

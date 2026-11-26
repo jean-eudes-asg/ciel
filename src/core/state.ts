@@ -350,7 +350,7 @@ export const DEFAULT_SETTINGS: Settings = {
   wallpaper: { ...DEFAULT_WALLPAPER },
   brainReads: { calendar: true, notes: true, finance: false },
   tools: { ...DEFAULT_TOOL_PREFS },
-  dock: { on: false, hideTaskbar: false, magnify: true, taskView: true, widgets: false, pins: null },
+  dock: { on: false, hideTaskbar: false, magnify: true, taskView: true, widgets: false, music: true, pins: null },
   windowTheme: "black",
   islandTheme: "black",
   islandShape: "notch",

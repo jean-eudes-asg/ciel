@@ -11913,6 +11913,105 @@
    "pt-BR": "Configurações do dock",
    "ru": "Настройки дока",
    "id": "Pengaturan dock"
+  },
+  "Activities": {
+   "zh-Hans": "活动",
+   "hi": "गतिविधियाँ",
+   "es": "Actividades",
+   "ar": "الأنشطة",
+   "fr": "Activités",
+   "bn": "কার্যক্রম",
+   "pt-BR": "Atividades",
+   "ru": "Обзор",
+   "id": "Aktivitas"
+  },
+  "Drag an app along the dock to move it among your favourites, or to add it. Right-click an app for its own menu.": {
+   "zh-Hans": "沿着程序坞拖动应用，可在收藏的应用之间移动它，或将其加入收藏。右键点击应用可打开它自己的菜单。",
+   "hi": "किसी ऐप को डॉक पर खींचकर पसंदीदा ऐप्स के बीच ले जाएँ, या उसे पसंदीदा में जोड़ें। किसी ऐप पर राइट-क्लिक करके उसका अपना मेनू खोलें।",
+   "es": "Arrastra una app por el dock para moverla entre tus favoritas o para añadirla. Haz clic derecho en una app para abrir su propio menú.",
+   "ar": "اسحب تطبيقًا على شريط الإرساء لنقله بين مفضلاتك أو لإضافته إليها. انقر بزر الماوس الأيمن على تطبيق لفتح قائمته الخاصة.",
+   "fr": "Faites glisser une app le long du dock pour la déplacer parmi vos favoris, ou pour l'y ajouter. Un clic droit sur une app ouvre son propre menu.",
+   "bn": "কোনো অ্যাপ ডকের ওপর টেনে প্রিয় অ্যাপগুলোর মধ্যে সরান, বা প্রিয়তে যোগ করুন। কোনো অ্যাপে ডান-ক্লিক করলে তার নিজের মেনু খোলে।",
+   "pt-BR": "Arraste um app pelo dock para movê-lo entre seus favoritos, ou para adicioná-lo. Clique com o botão direito em um app para abrir o menu dele.",
+   "ru": "Перетащите приложение по доку, чтобы переставить его среди избранных или добавить в избранное. Щёлкните приложение правой кнопкой, чтобы открыть его меню.",
+   "id": "Seret aplikasi di sepanjang dock untuk memindahkannya di antara favorit Anda, atau untuk menambahkannya. Klik kanan aplikasi untuk membuka menunya sendiri."
+  },
+  "Music in the dock": {
+   "zh-Hans": "在程序坞中显示音乐",
+   "hi": "डॉक में संगीत",
+   "es": "Música en el dock",
+   "ar": "الموسيقى في شريط التطبيقات",
+   "fr": "La musique dans le dock",
+   "bn": "ডকে গান",
+   "pt-BR": "Música no dock",
+   "ru": "Музыка в доке",
+   "id": "Musik di dock"
+  },
+  "On Linux, the dock needs GNOME.": {
+   "zh-Hans": "在 Linux 上，程序坞需要 GNOME。",
+   "hi": "Linux पर डॉक के लिए GNOME ज़रूरी है।",
+   "es": "En Linux, el dock necesita GNOME.",
+   "ar": "على Linux، يحتاج شريط الإرساء إلى GNOME.",
+   "fr": "Sous Linux, le dock a besoin de GNOME.",
+   "bn": "Linux-এ ডকের জন্য GNOME লাগে।",
+   "pt-BR": "No Linux, o dock precisa do GNOME.",
+   "ru": "В Linux доку нужен GNOME.",
+   "id": "Di Linux, dock memerlukan GNOME."
+  },
+  "Show Apps": {
+   "zh-Hans": "显示应用",
+   "hi": "ऐप्स दिखाएँ",
+   "es": "Mostrar aplicaciones",
+   "ar": "إظهار التطبيقات",
+   "fr": "Afficher les applications",
+   "bn": "অ্যাপ দেখান",
+   "pt-BR": "Mostrar aplicativos",
+   "ru": "Показать приложения",
+   "id": "Tampilkan Aplikasi"
+  },
+  "Turn off GNOME's dock": {
+   "zh-Hans": "关闭 GNOME 的程序坞",
+   "hi": "GNOME का डॉक बंद करें",
+   "es": "Desactivar el dock de GNOME",
+   "ar": "إيقاف شريط الإرساء في GNOME",
+   "fr": "Désactiver le dock de GNOME",
+   "bn": "GNOME-এর ডক বন্ধ করুন",
+   "pt-BR": "Desativar o dock do GNOME",
+   "ru": "Отключить док GNOME",
+   "id": "Matikan dock GNOME"
+  },
+  "What is playing, with its cover, its buttons and the words being sung, is in the dock and no longer comes up in the island.": {
+   "zh-Hans": "正在播放的内容（封面、按钮和正在唱的歌词）显示在程序坞中，不再出现在灵动岛中。",
+   "hi": "जो चल रहा है, उसके कवर, बटन और गाए जा रहे बोलों के साथ, डॉक में दिखता है और अब आइलैंड में नहीं आता।",
+   "es": "Lo que suena, con su portada, sus botones y la letra que se canta, está en el dock y ya no aparece en la isla.",
+   "ar": "ما يُشغَّل، مع غلافه وأزراره والكلمات التي تُغنّى، يظهر في شريط التطبيقات ولم يعد يظهر في الجزيرة.",
+   "fr": "Ce qui joue, avec sa pochette, ses boutons et les paroles chantées, est dans le dock et n'apparaît plus dans l'île.",
+   "bn": "যা বাজছে, তার কভার, বোতাম আর গাওয়া কথাসহ, ডকে থাকে এবং আর আইল্যান্ডে আসে না।",
+   "pt-BR": "O que está tocando, com a capa, os botões e a letra sendo cantada, fica no dock e não aparece mais na ilha.",
+   "ru": "То, что играет, с обложкой, кнопками и звучащими словами, показывается в доке и больше не появляется на острове.",
+   "id": "Yang sedang diputar, dengan sampul, tombol, dan lirik yang dinyanyikan, ada di dock dan tidak lagi muncul di pulau."
+  },
+  "While Ciel's dock shows, the Ubuntu Dock (or Dash to Dock) is turned off, as in Extensions. Turn this off or quit Ciel and it comes back.": {
+   "zh-Hans": "Ciel 的程序坞显示时，Ubuntu Dock（或 Dash to Dock）会像在“扩展”中那样被关闭。关闭此选项或退出 Ciel，它就会回来。",
+   "hi": "जब Ciel का डॉक दिखता है, तब Ubuntu Dock (या Dash to Dock) बंद रहता है, जैसे एक्सटेंशन में। इसे बंद करें या Ciel से बाहर निकलें, और वह वापस आ जाता है।",
+   "es": "Mientras se muestra el dock de Ciel, el Ubuntu Dock (o Dash to Dock) se desactiva, como en Extensiones. Desactiva esto o cierra Ciel y vuelve.",
+   "ar": "أثناء ظهور شريط إرساء Ciel، يُوقَف Ubuntu Dock (أو Dash to Dock) كما في الإضافات. أوقف هذا الخيار أو أغلق Ciel فيعود.",
+   "fr": "Tant que le dock de Ciel s'affiche, l'Ubuntu Dock (ou Dash to Dock) est désactivé, comme dans Extensions. Désactivez ceci ou quittez Ciel et il revient.",
+   "bn": "Ciel-এর ডক দেখানোর সময় Ubuntu Dock (বা Dash to Dock) বন্ধ থাকে, যেমন এক্সটেনশনে। এটি বন্ধ করুন বা Ciel থেকে বেরিয়ে যান, তাহলে সেটি ফিরে আসে।",
+   "pt-BR": "Enquanto o dock do Ciel aparece, o Ubuntu Dock (ou Dash to Dock) fica desativado, como em Extensões. Desative isto ou saia do Ciel e ele volta.",
+   "ru": "Пока показан док Ciel, Ubuntu Dock (или Dash to Dock) отключён, как в «Расширениях». Выключите это или закройте Ciel, и он вернётся.",
+   "id": "Selama dock Ciel tampil, Ubuntu Dock (atau Dash to Dock) dimatikan, seperti di Ekstensi. Matikan ini atau keluar dari Ciel dan ia kembali."
+  },
+  "Your favourite apps and the ones open, Ciel with your agents, what is playing and the time. It never takes the keyboard, and steps aside for a full-screen game or video.": {
+   "zh-Hans": "你收藏的应用和已打开的应用、Ciel 和你的代理、正在播放的内容以及时间。它从不抢占键盘，遇到全屏游戏或视频时会自动让开。",
+   "hi": "आपके पसंदीदा ऐप्स और खुले हुए ऐप्स, आपके एजेंट्स के साथ Ciel, जो चल रहा है वह, और समय। यह कभी कीबोर्ड नहीं लेता, और फ़ुल-स्क्रीन गेम या वीडियो के लिए हट जाता है।",
+   "es": "Tus apps favoritas y las abiertas, Ciel con tus agentes, lo que suena y la hora. Nunca toma el teclado y se aparta ante un juego o un vídeo a pantalla completa.",
+   "ar": "تطبيقاتك المفضلة والمفتوحة، وCiel مع وكلائك، وما يُشغَّل الآن، والوقت. لا يأخذ لوحة المفاتيح أبدًا، ويتنحى جانبًا أمام لعبة أو فيديو بملء الشاشة.",
+   "fr": "Vos apps favorites et celles ouvertes, Ciel avec vos agents, ce qui joue et l'heure. Il ne prend jamais le clavier, et s'efface devant un jeu ou une vidéo en plein écran.",
+   "bn": "আপনার প্রিয় অ্যাপ আর খোলা অ্যাপগুলো, আপনার এজেন্টদের সঙ্গে Ciel, যা চলছে, আর সময়। এটি কখনো কিবোর্ড নেয় না, আর ফুল-স্ক্রিন গেম বা ভিডিওর সময় সরে যায়।",
+   "pt-BR": "Seus apps favoritos e os abertos, o Ciel com seus agentes, o que está tocando e a hora. Ele nunca pega o teclado e sai da frente de um jogo ou vídeo em tela cheia.",
+   "ru": "Избранные приложения и открытые, Ciel с вашими агентами, то, что играет, и время. Док никогда не забирает клавиатуру и уступает место игре или видео на весь экран.",
+   "id": "Aplikasi favorit Anda dan yang sedang terbuka, Ciel bersama agen Anda, yang sedang diputar, dan waktu. Dock tidak pernah mengambil keyboard, dan menyingkir saat ada game atau video layar penuh."
   }
  }
 }

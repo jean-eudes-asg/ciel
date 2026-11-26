@@ -1,6 +1,7 @@
 // Spotify's reports → the page (src-tauri/src/spotify.rs). The parts of
 // SpotifyController.swift that touch the app: the pill wears the track's
-// title, music starting shows the compact island without a sound, and the
+// title, music starting shows the compact island without a sound (unless the
+// dock plays it, island/dock.ts), and the
 // card reads the player again whenever it comes on screen (seeks made in
 // Spotify's own window are never signalled).
 
@@ -10,6 +11,7 @@ import { SPOTIFY_ID, Spotify, isAd, type SpotifyState } from "../core/spotify";
 import { YTMUSIC_ID, YtMusic } from "../core/ytmusic";
 import { State } from "../core/state";
 import { t } from "../i18n/i18n";
+import { musicInDock } from "./dock";
 
 export interface SpotifyHost {
   /** Compact island from hidden, no peek sound. */
@@ -39,7 +41,7 @@ export function applySpotify(island: SpotifyHost, next: SpotifyState) {
   Spotify.state = next;
   syncPillName();
   // Only on not playing → playing (SpotifyController.setPlaying).
-  if (!wasPlaying && State.spotifyPlaying && !State.paused && State.mode === "hidden") {
+  if (!wasPlaying && State.spotifyPlaying && !State.paused && State.mode === "hidden" && !musicInDock()) {
     island.revealSilently();
   }
   State.notify();
@@ -50,7 +52,7 @@ export function applyYtMusic(island: SpotifyHost, next: SpotifyState) {
   const wasPlaying = State.spotifyPlaying;
   YtMusic.state = next;
   syncPillName();
-  if (!wasPlaying && State.spotifyPlaying && !State.paused && State.mode === "hidden") {
+  if (!wasPlaying && State.spotifyPlaying && !State.paused && State.mode === "hidden" && !musicInDock()) {
     island.revealSilently();
   }
   State.notify();

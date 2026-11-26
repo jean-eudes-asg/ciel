@@ -219,15 +219,27 @@ mod platform {
 
     /// GNOME's dock favourites, in the dock's order.
     pub fn apps() -> Vec<super::App> {
-        let Some(list) = gsettings(&["get", "org.gnome.shell", "favorite-apps"]) else { return Vec::new() };
+        desktop_apps(&favorites())
+    }
+
+    /// The .desktop ids of GNOME's favourites (Ciel's dock pins them too).
+    fn favorites() -> Vec<String> {
+        gsettings(&["get", "org.gnome.shell", "favorite-apps"]).map(|l| crate::gnome_ext::parse_list(&l)).unwrap_or_default()
+    }
+
+    pub fn set_favorites(ids: &[String]) -> bool {
+        gsettings(&["set", "org.gnome.shell", "favorite-apps", &crate::gnome_ext::print_list(ids)]).is_some()
+    }
+
+    /// The apps of these .desktop ids, with their names and icons; those
+    /// without a .desktop file are left out.
+    pub fn desktop_apps(ids: &[String]) -> Vec<super::App> {
         let dirs = data_dirs();
         let themes = themes(&dirs);
-        list.split('\'')
-            .skip(1)
-            .step_by(2)
+        ids.iter()
             .filter_map(|id| {
                 let info = DesktopAppInfo::new(id)?;
-                Some(super::App { id: id.to_string(), name: info.display_name().to_string(), icon: icon_of(&info, &dirs, &themes) })
+                Some(super::App { id: id.clone(), name: info.display_name().to_string(), icon: icon_of(&info, &dirs, &themes) })
             })
             .collect()
     }
@@ -240,6 +252,9 @@ mod platform {
 /// The dock's apps share the taskbar's pins and how their icons are read (dock/).
 #[cfg(windows)]
 pub(crate) use platform::{dock_icon, pinned};
+/// GNOME's favourites are the dock's pins; their icons are read as here (dock/linux.rs).
+#[cfg(target_os = "linux")]
+pub(crate) use platform::{desktop_apps, set_favorites};
 
 #[cfg(windows)]
 mod platform {

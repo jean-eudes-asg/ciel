@@ -20,6 +20,8 @@ pub struct ExtStatus {
     pub installed: bool,
     /// GNOME Shell has it running: Open goes through it.
     pub active: bool,
+    /// The version running tells the dock the apps and windows open.
+    pub dock: bool,
     /// What installing writes, or removing takes back.
     pub places: Vec<String>,
 }
@@ -87,18 +89,16 @@ mod imp {
         proxy.get::<u32>(IFACE, "Version").ok()
     }
 
-    fn active() -> bool {
-        version().is_some()
-    }
-
     pub fn status() -> ExtStatus {
         let d = dir();
         let installed = std::fs::read_to_string(d.join("extension.js")).is_ok_and(|e| e == EXTENSION)
             && enabled().iter().any(|u| u == UUID);
+        let running = if gnome() { version() } else { None };
         ExtStatus {
             available: gnome(),
             installed,
-            active: gnome() && active(),
+            active: running.is_some(),
+            dock: running.is_some_and(|v| v >= super::DOCK_VERSION),
             places: vec![
                 d.join("metadata.json").display().to_string(),
                 d.join("extension.js").display().to_string(),
@@ -134,6 +134,43 @@ mod imp {
         call("Screenshot", ()).unwrap_or(false)
     }
 
+    // The dock (dock/linux.rs): the Shell's apps and windows, and what a click asks.
+
+    /// The Shell tells the dock of each change (DockChanged), or stops.
+    pub fn dock_watch(on: bool) -> bool {
+        call("DockWatch", (on,)).unwrap_or(false)
+    }
+
+    /// The apps open, their windows and the one in front, as JSON.
+    pub fn dock_apps() -> Option<String> {
+        let conn = Connection::new_session().ok()?;
+        let proxy = conn.with_proxy("org.gnome.Shell", PATH, Duration::from_secs(2));
+        let (json,): (String,) = proxy.method_call(IFACE, "DockApps", ()).ok()?;
+        Some(json)
+    }
+
+    /// "front", "minimize" or "close" one window.
+    pub fn dock_window(id: u64, action: &str) -> bool {
+        call("DockWindow", (id, action)).unwrap_or(false)
+    }
+
+    pub fn dock_launch(app: &str, new_window: bool) -> bool {
+        call("DockLaunch", (app, new_window)).unwrap_or(false)
+    }
+
+    /// "apps", "overview", "desktop".
+    pub fn dock_shell(what: &str) -> bool {
+        call("DockShell", (what,)).unwrap_or(false)
+    }
+
+    /// The app's own menu, as the dash has it, at the pointer.
+    pub fn dock_menu(app: &str) -> bool {
+        call("DockMenu", (app,)).unwrap_or(false)
+    }
+
+    /// The Shell's object and interface, for the dock to hear DockChanged.
+    pub const SHELL: (&str, &str) = (PATH, IFACE);
+
     /// Open or dismiss GNOME's own notification; false when the extension
     /// isn't running or GNOME no longer has it.
     pub fn act(shell: &crate::notify::ShellRef, open: bool) -> bool {
@@ -148,16 +185,20 @@ mod imp {
 
 #[cfg(target_os = "linux")]
 pub use imp::{act, screenshot, set_panel, version};
+#[cfg(target_os = "linux")]
+pub use imp::{dock_apps, dock_launch, dock_menu, dock_shell, dock_watch, dock_window, parse_list, print_list, SHELL};
 
 /// The first version that draws the lock screen from Ciel's picture.
 pub const LOCK_SCREEN_VERSION: u32 = 3;
+/// The first version that tells the dock the apps and windows open.
+pub const DOCK_VERSION: u32 = 5;
 
 #[tauri::command]
 pub fn gnome_extension_status() -> ExtStatus {
     #[cfg(target_os = "linux")]
     return imp::status();
     #[cfg(not(target_os = "linux"))]
-    ExtStatus { available: false, installed: false, active: false, places: Vec::new() }
+    ExtStatus { available: false, installed: false, active: false, dock: false, places: Vec::new() }
 }
 
 #[tauri::command]

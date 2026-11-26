@@ -13,6 +13,7 @@ import { timerName } from "../tools/timers";
 import { Lyrics } from "../tools/lyrics";
 import { Spotify } from "../core/spotify";
 import { YtMusic } from "../core/ytmusic";
+import { musicInDock } from "./dock";
 
 export interface LiveChip {
   el: HTMLElement;
@@ -89,7 +90,8 @@ export function buildLiveChip(open: (tool: ToolId) => void): LiveChip {
   }
 
   function sync(on: boolean) {
-    const playing = Spotify.state.playing ? Spotify.state : YtMusic.state.playing ? YtMusic.state : null;
+    // The dock sings them when it has the music.
+    const playing = musicInDock() ? null : Spotify.state.playing ? Spotify.state : YtMusic.state.playing ? YtMusic.state : null;
     // The next song's words are asked here too: the music card that asks
     // for them is only there while the island is open.
     if (playing && on) Lyrics.want(playing);

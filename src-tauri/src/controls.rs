@@ -93,22 +93,18 @@ pub struct Battery {
 // The dock's corner (dock/): the speakers, the connection and the battery,
 // each read at once, and the wheel on the sound icon.
 
-#[cfg(windows)]
 pub(crate) fn volume() -> Option<(f64, bool)> {
     platform::volume()
 }
 
-#[cfg(windows)]
 pub(crate) fn set_volume(level: f64) -> bool {
     platform::set_volume(level.clamp(0.0, 1.0))
 }
 
-#[cfg(windows)]
 pub(crate) fn network() -> Option<Network> {
     platform::network().0
 }
 
-#[cfg(windows)]
 pub(crate) fn battery() -> Option<Battery> {
     platform::battery()
 }
@@ -1201,7 +1197,13 @@ mod platform {
         // The radio says "enabled" on a computer without Wi-Fi: a device of that kind first.
         let has_wifi = run("nmcli", &["-t", "-f", "TYPE", "device"]).is_some_and(|o| o.lines().any(|l| l == "wifi"));
         let wifi = if has_wifi { run("nmcli", &["radio", "wifi"]).map(|o| o.trim() == "enabled") } else { None };
-        let bt = run("bluetoothctl", &["show"]).filter(|o| o.contains("Controller")).map(|o| o.contains("Powered: yes"));
+        // bluetoothctl waits for bluetoothd for ever: not without an adapter, and never long.
+        let has_bt = std::fs::read_dir("/sys/class/bluetooth").is_ok_and(|mut d| d.next().is_some());
+        let bt = has_bt
+            .then(|| run("timeout", &["2", "bluetoothctl", "show"]))
+            .flatten()
+            .filter(|o| o.contains("Controller"))
+            .map(|o| o.contains("Powered: yes"));
         (wifi, bt)
     }
 
@@ -1210,7 +1212,7 @@ mod platform {
     }
 
     pub fn set_bluetooth(on: bool) -> bool {
-        ok("bluetoothctl", &["power", if on { "on" } else { "off" }])
+        ok("timeout", &["5", "bluetoothctl", "power", if on { "on" } else { "off" }])
     }
 
     const NIGHT: [&str; 2] = ["org.gnome.settings-daemon.plugins.color", "night-light-enabled"];

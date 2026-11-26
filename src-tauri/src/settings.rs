@@ -163,15 +163,17 @@ pub struct Settings {
     pub setup_steps: Vec<String>,
 }
 
-/// The dock (Windows): a bar at the bottom of the screen with the apps pinned
-/// to the taskbar and the ones open, the agents, what plays and the time.
+/// The dock (Windows, and GNOME through Ciel's extension): a bar at the bottom
+/// of the screen with the apps pinned and the ones open, the agents, what
+/// plays and the time.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
 pub struct DockPrefs {
     pub on: bool,
     /// While the dock shows, the Windows taskbar of the main screen is hidden
-    /// and the dock has its place (dock/taskbar.rs). Back as it was when the
-    /// dock goes or Ciel quits.
+    /// and the dock has its place (dock/taskbar.rs); on GNOME, GNOME's own
+    /// dock is turned off (dock/linux.rs). Back as it was when the dock goes
+    /// or Ciel quits.
     pub hide_taskbar: bool,
     /// The icons grow under the pointer.
     pub magnify: bool,
@@ -179,8 +181,11 @@ pub struct DockPrefs {
     /// searches too, so there is no search button).
     pub task_view: bool,
     pub widgets: bool,
+    /// What plays is in the dock, with its words, and no longer in the island.
+    pub music: bool,
     /// The dock's own pins, shortcuts (.lnk) and programs (.exe) in their
     /// order. None until the user pins, unpins or moves one: the taskbar's.
+    /// Windows only: on GNOME the pins are GNOME's favourites.
     pub pins: Option<Vec<String>>,
 }
 
@@ -192,6 +197,7 @@ impl Default for DockPrefs {
             magnify: true,
             task_view: true,
             widgets: false,
+            music: true,
             pins: None,
         }
     }
@@ -823,7 +829,7 @@ mod tests {
     "worldClocks": [{ "name": "Cotonou", "tz": "Africa/Porto-Novo" }]
   },
   "dock": {
-    "on": true, "hideTaskbar": true, "magnify": false, "taskView": false, "widgets": true,
+    "on": true, "hideTaskbar": true, "magnify": false, "taskView": false, "widgets": true, "music": false,
     "pins": ["C:\\Users\\me\\Pinned\\Files.lnk", "C:\\Tools\\editor.exe"]
   },
   "windowTheme": "white",

@@ -6,12 +6,12 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 const {
-  agentsLine, dockSnapshot, dropIndex, hour12, magnifyLayout, magnifyScale, untilNextMinute, volumeLevel, EMPTY_SNAPSHOT, MAGNIFY,
+  agentsLine, commandName, crewNow, dockLyric, dockSnapshot, dropIndex, playedAt, hour12, magnifyLayout, magnifyScale, untilNextMinute, volumeLevel, EMPTY_SNAPSHOT, MAGNIFY,
 } = await import("../src/core/dock.ts");
 
-const row = (phase, agent = "Claude Code") => ({
+const row = (phase, agent = "Claude Code", over = {}) => ({
   key: `${agent}:${phase}`, pillId: "p", sessionId: phase, agent, color: "#fff", project: "app", cwd: "/app",
-  title: "", line: "", phase, since: 0, seen: 0,
+  title: "", line: "", phase, since: 0, seen: 0, ...over,
 });
 
 const music = (over = {}) => ({
@@ -26,14 +26,37 @@ test("the sessions are counted, idle ones left out, and the one asking named", (
   assert.deepEqual(s.agents, { asking: 1, working: 2, done: 1, error: 0 });
   assert.equal(s.asker, "Codex");
   assert.equal(s.playing, null);
+  assert.equal(s.plan, null);
+  const plan = { fiveHour: { usedPct: 42, resetsAt: 9e12 }, updatedAt: 0 };
+  assert.equal(dockSnapshot([], null, plan).plan, plan);
 });
 
+const playing = (over = {}, lyrics = []) => ({ source: "spotify", state: music(over), lyrics });
+
 test("what plays is sent, paused or not, never an ad", () => {
-  assert.deepEqual(dockSnapshot([], music()).playing, { title: "Song", artist: "Band", playing: true });
-  assert.equal(dockSnapshot([], music({ playing: false })).playing.playing, false);
-  assert.equal(dockSnapshot([], music({ track: null })).playing, null);
-  const ad = music({ track: { ...music().track, id: "spotify:ad:9" } });
-  assert.equal(dockSnapshot([], ad).playing, null);
+  assert.deepEqual(dockSnapshot([], playing()).playing, {
+    title: "Song", artist: "Band", playing: true, source: "spotify", opens: true, position: 0, positionAt: 0, duration: 200, lyrics: [],
+  });
+  assert.equal(dockSnapshot([], playing({ playing: false })).playing.playing, false);
+  assert.equal(dockSnapshot([], playing({ track: null })).playing, null);
+  assert.equal(dockSnapshot([], playing({ track: { ...music().track, id: "spotify:ad:9" } })).playing, null);
+  // Another app playing through the Spotify pill can't be brought forward from the dock.
+  assert.equal(dockSnapshot([], playing({ spotify: false, player: "Firefox" })).playing.opens, false);
+});
+
+test("the dock sings the line of now, and knows when the next comes", () => {
+  const words = [{ t: 10, text: "one" }, { t: 14, text: "two" }];
+  const p = dockSnapshot([], playing({ position: 9, positionAt: 1000 }, words)).playing;
+  const before = dockLyric(p, 1000);
+  assert.equal(before.text, "");
+  assert.equal(Math.round(before.nextIn), 850);
+  assert.equal(dockLyric(p, 3000).text, "one");
+  assert.deepEqual(dockLyric(p, 6000), { text: "two", nextIn: null });
+  // Paused, it stays where it is and waits for nothing.
+  const paused = { ...p, playing: false };
+  assert.deepEqual(dockLyric(paused, 60_000), { text: "", nextIn: null });
+  // Never past the end.
+  assert.equal(playedAt(p, 10_000_000), 200);
 });
 
 test("the agents' tile says who waits for you first, then how many work", () => {
@@ -42,6 +65,25 @@ test("the agents' tile says who waits for you first, then how many work", () => 
   assert.deepEqual(agentsLine(dockSnapshot([row("working"), row("asking", "Codex")], null)), { kind: "asking", agent: "Codex" });
   // Done or failed sessions alone leave the tile quiet.
   assert.deepEqual(agentsLine(dockSnapshot([row("done"), row("error")], null)), { kind: "quiet" });
+});
+
+test("each session not idle has a dot under Ciel; a finished or failed one goes after a minute", () => {
+  const s = dockSnapshot([row("asking", "Codex"), row("working"), row("done", "Gemini CLI", { since: 1000 }), row("idle")], null);
+  assert.deepEqual(s.crew.map((m) => m.phase), ["asking", "working", "done"]);
+  assert.equal(crewNow(s.crew, 1000 + 59_000).length, 3);
+  assert.deepEqual(crewNow(s.crew, 1000 + 60_000).map((m) => m.phase), ["asking", "working"]);
+  const failed = dockSnapshot([row("error", "Codex", { since: 0 })], null).crew;
+  assert.equal(crewNow(failed, 61_000).length, 0);
+});
+
+test("a shell line comes down to the name of what it runs", () => {
+  assert.equal(commandName("npm run build"), "npm");
+  assert.equal(commandName("cd /home/me/app && cargo test --lib 2>&1 | tail"), "cargo");
+  assert.equal(commandName("S=/tmp/x; python3 - <<E"), "python3");
+  assert.equal(commandName("for i in $(seq 1 9); do pgrep -x ciel; done"), "pgrep");
+  assert.equal(commandName("sudo timeout 60 /usr/bin/journalctl -u x"), "journalctl");
+  assert.equal(commandName("LANG=C FOO=1 git status"), "git");
+  assert.equal(commandName("S=/tmp/claude-1000/-home-jean-dev-ciel/72"), "");
 });
 
 test("the clock follows Settings → Clock, and ticks just past each minute", () => {
