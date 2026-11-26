@@ -183,6 +183,9 @@ pub struct DockPrefs {
     pub widgets: bool,
     /// What plays is in the dock, with its words, and no longer in the island.
     pub music: bool,
+    /// GNOME: each screen's dock stays out of sight until the pointer reaches
+    /// the bottom of that screen. No room is kept for it then.
+    pub auto_hide: bool,
     /// The dock's own pins, shortcuts (.lnk) and programs (.exe) in their
     /// order. None until the user pins, unpins or moves one: the taskbar's.
     /// Windows only: on GNOME the pins are GNOME's favourites.
@@ -198,6 +201,7 @@ impl Default for DockPrefs {
             task_view: true,
             widgets: false,
             music: true,
+            auto_hide: false,
             pins: None,
         }
     }
@@ -829,7 +833,7 @@ mod tests {
     "worldClocks": [{ "name": "Cotonou", "tz": "Africa/Porto-Novo" }]
   },
   "dock": {
-    "on": true, "hideTaskbar": true, "magnify": false, "taskView": false, "widgets": true, "music": false,
+    "on": true, "hideTaskbar": true, "magnify": false, "taskView": false, "widgets": true, "music": false, "autoHide": true,
     "pins": ["C:\\Users\\me\\Pinned\\Files.lnk", "C:\\Tools\\editor.exe"]
   },
   "windowTheme": "white",

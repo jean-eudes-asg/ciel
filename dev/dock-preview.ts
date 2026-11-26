@@ -1,13 +1,20 @@
 // The dock's bar in a plain browser (`npx vite`, /dev/dock-preview.html), fed
 // made-up apps, agents and music. Nothing reaches Rust. The apps' icons are
-// plain squares drawn here: no app's real icon.
+// plain squares drawn here: no app's real icon. With ?shot, the first one alone
+// at the bottom of a golden sky, 1100×688, the website's picture
+// (site/shots/dock.jpg, taken at 1.25× for its 1376×860).
 
 import "../src/dock/dock.css";
 import { buildDockBar } from "../src/dock/bar";
 import type { CrewMate, DockApp, DockPlaying, DockSnapshot, DockState, SystemIcons } from "../src/core/dock";
 import { isLanguage, setLanguage } from "../src/i18n/i18n";
+import { DEFAULT_WALLPAPER } from "../src/sky/prefs";
+import { sampleSky, sceneSpec } from "../src/sky/scenes";
+import { SkyRenderer } from "../src/sky/render";
 
-const lang = new URLSearchParams(location.search).get("lang");
+const params = new URLSearchParams(location.search);
+const SHOT = params.has("shot");
+const lang = params.get("lang");
 if (lang && isLanguage(lang)) setLanguage(lang);
 
 /** A square with a letter, standing in for an app's icon. */
@@ -78,7 +85,24 @@ const cases: { title: string; state: DockState; snap: DockSnapshot; white?: bool
   },
 ];
 
+/** A made-up cover: a warm gradient, no record's art. */
+const COVER = `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb35c"/><stop offset="1" stop-color="#c2417a"/></linearGradient></defs><rect width="64" height="64" fill="url(#g)"/><circle cx="40" cy="26" r="11" fill="#ffe2a8" opacity="0.9"/></svg>`)}`;
+
 const root = document.getElementById("cases")!;
+if (SHOT) {
+  document.body.style.cssText = "margin:0;padding:0;overflow:hidden";
+  document.querySelector("h1")!.remove();
+  const sky = document.createElement("canvas");
+  sky.width = 1376;
+  sky.height = 860;
+  sky.style.cssText = "position:fixed;left:0;top:0;width:1100px;height:688px";
+  document.body.prepend(sky);
+  const spec = sceneSpec(new Date(), "working", DEFAULT_WALLPAPER, { choice: { theme: "golden", phase: "golden" }, sky: sampleSky("golden") });
+  spec.seed = 3;
+  new SkyRenderer().render(sky.getContext("2d")!, spec, 40_000, { still: true });
+  root.style.cssText = "position:fixed;left:0;right:0;bottom:0";
+  cases.splice(1);
+}
 for (const c of cases) {
   const log = (what: string) => (...args: unknown[]) => console.log("dock:", what, ...args);
   const bar = buildDockBar({
@@ -88,13 +112,15 @@ for (const c of cases) {
   });
   bar.setState(c.state);
   bar.setSnapshot(c.snap);
+  bar.setArt(COVER);
   const slot = document.createElement("div");
   slot.className = c.white ? "slot theme-white" : "slot";
+  if (SHOT) slot.style.width = "1100px";
   slot.append(bar.root);
   const box = document.createElement("div");
   box.className = "case";
   const label = document.createElement("div");
   label.textContent = c.title;
-  box.append(label, slot);
+  box.append(...(SHOT ? [] : [label]), slot);
   root.append(box);
 }

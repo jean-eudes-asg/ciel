@@ -12012,6 +12012,28 @@
    "pt-BR": "Seus apps favoritos e os abertos, o Ciel com seus agentes, o que está tocando e a hora. Ele nunca pega o teclado e sai da frente de um jogo ou vídeo em tela cheia.",
    "ru": "Избранные приложения и открытые, Ciel с вашими агентами, то, что играет, и время. Док никогда не забирает клавиатуру и уступает место игре или видео на весь экран.",
    "id": "Aplikasi favorit Anda dan yang sedang terbuka, Ciel bersama agen Anda, yang sedang diputar, dan waktu. Dock tidak pernah mengambil keyboard, dan menyingkir saat ada game atau video layar penuh."
+  },
+  "Hide the dock": {
+   "zh-Hans": "隐藏程序坞",
+   "hi": "डॉक छिपाएँ",
+   "es": "Ocultar el dock",
+   "ar": "إخفاء شريط التطبيقات",
+   "fr": "Masquer le dock",
+   "bn": "ডক লুকান",
+   "pt-BR": "Ocultar o dock",
+   "ru": "Скрывать док",
+   "id": "Sembunyikan dock"
+  },
+  "It comes up when the pointer reaches the bottom of its screen, and goes once the pointer has left it. Windows then take the whole screen.": {
+   "zh-Hans": "指针到达所在屏幕底部时它会出现，指针离开后它会消失。窗口随后会占满整个屏幕。",
+   "hi": "पॉइंटर के उसकी स्क्रीन के नीचे पहुँचने पर यह दिखता है, और पॉइंटर के हटते ही चला जाता है। तब विंडो पूरी स्क्रीन लेती हैं।",
+   "es": "Aparece cuando el puntero llega a la parte inferior de su pantalla y se va cuando el puntero sale. Las ventanas ocupan entonces toda la pantalla.",
+   "ar": "يظهر عندما يصل المؤشر إلى أسفل شاشته، ويختفي بمجرد أن يغادره المؤشر. عندها تشغل النوافذ الشاشة كلها.",
+   "fr": "Il apparaît quand le pointeur atteint le bas de son écran, et repart dès que le pointeur l'a quitté. Les fenêtres prennent alors tout l'écran.",
+   "bn": "পয়েন্টার তার স্ক্রিনের নিচে পৌঁছালে এটি আসে, আর পয়েন্টার সরে গেলে চলে যায়। তখন উইন্ডো পুরো স্ক্রিন জুড়ে থাকে।",
+   "pt-BR": "Ele aparece quando o ponteiro chega à parte de baixo da tela dele e some assim que o ponteiro sai. As janelas passam a ocupar a tela inteira.",
+   "ru": "Он появляется, когда указатель доходит до нижнего края его экрана, и уходит, как только указатель его покинет. Окна тогда занимают весь экран.",
+   "id": "Dock muncul saat penunjuk mencapai bagian bawah layarnya, dan pergi begitu penunjuk meninggalkannya. Jendela lalu memakai seluruh layar."
   }
  }
 }

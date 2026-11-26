@@ -168,6 +168,11 @@ mod imp {
         call("DockMenu", (app,)).unwrap_or(false)
     }
 
+    /// Auto-hide: the screens with a bar (JSON corners), "[]" to stop.
+    pub fn dock_area(areas: &str) -> bool {
+        call("DockArea", (areas,)).unwrap_or(false)
+    }
+
     /// The Shell's object and interface, for the dock to hear DockChanged.
     pub const SHELL: (&str, &str) = (PATH, IFACE);
 
@@ -186,12 +191,14 @@ mod imp {
 #[cfg(target_os = "linux")]
 pub use imp::{act, screenshot, set_panel, version};
 #[cfg(target_os = "linux")]
-pub use imp::{dock_apps, dock_launch, dock_menu, dock_shell, dock_watch, dock_window, parse_list, print_list, SHELL};
+pub use imp::{dock_apps, dock_area, dock_launch, dock_menu, dock_shell, dock_watch, dock_window, parse_list, print_list, SHELL};
 
 /// The first version that draws the lock screen from Ciel's picture.
 pub const LOCK_SCREEN_VERSION: u32 = 3;
 /// The first version that tells the dock the apps and windows open.
 pub const DOCK_VERSION: u32 = 5;
+/// The first version that says when the pointer reaches the bottom of a screen (the dock's auto-hide).
+pub const AUTO_HIDE_VERSION: u32 = 6;
 
 #[tauri::command]
 pub fn gnome_extension_status() -> ExtStatus {

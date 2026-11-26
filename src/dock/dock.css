@@ -66,6 +66,11 @@ button {
   justify-content: center;
 }
 
+/* GNOME's window goes down to the screen's edge (dock/linux.rs GAP). */
+.dock.gnome {
+  padding-bottom: 8px;
+}
+
 .bar {
   position: relative;
   flex: none;
@@ -77,6 +82,19 @@ button {
   padding: 0 6px;
   white-space: nowrap;
   color: var(--ink);
+  transition: transform 360ms var(--spring), opacity 220ms ease-out;
+}
+
+/* Auto-hide (GNOME): the bar sinks past the screen's edge on the island's
+   closing curve; it rises back on the spring (.bar). */
+.dock.away .bar {
+  transform: translateY(calc(100% + 8px));
+  opacity: 0;
+  transition: transform 340ms cubic-bezier(0.45, 0, 0.2, 1), opacity 260ms ease-in 80ms;
+}
+
+.dock.away .label {
+  opacity: 0;
 }
 
 /* The bar's own colour, which widens as the icons grow (bar.ts). */

@@ -14,6 +14,10 @@
 // page dock-panel.html): Tools → Controls, and the month with the
 // notifications. It takes the keyboard, and goes when another window does.
 //
+// With auto-hide on (Settings), no room is kept and every bar stays out of
+// sight: the pointer reaching the bottom of a screen brings that screen's up
+// until the pointer has left it. The extension says when ("reveal x y").
+//
 // While it is on, two threads wait on D-Bus: the session bus for the Shell's
 // DockChanged, the system bus for NetworkManager and UPower. Off, nothing
 // runs and its window is gone.
@@ -51,6 +55,25 @@ static SHOWN: AtomicBool = AtomicBool::new(false);
 static FULLSCREEN: Mutex<Vec<(i32, i32)>> = Mutex::new(Vec::new());
 /// The Shell's window in front.
 static FOCUS: AtomicU64 = AtomicU64::new(0);
+
+/// Auto-hide is on and the extension running can say when the pointer reaches the edge.
+static AUTO_HIDE: AtomicBool = AtomicBool::new(false);
+/// An app's menu from the dock is open: the bar under it stays.
+static MENU: AtomicBool = AtomicBool::new(false);
+/// The dock the pointer at the edge brought up, until it leaves it.
+static REVEALED: Mutex<Vec<String>> = Mutex::new(Vec::new());
+/// The docks slid away now.
+static AWAY: Mutex<Vec<String>> = Mutex::new(Vec::new());
+/// The dock whose bar the pointer is on.
+static HOVERING: Mutex<Option<String>> = Mutex::new(None);
+/// The screens with a bar as the extension was last told ("" to tell it again).
+static AREAS: Mutex<String> = Mutex::new(String::new());
+/// To a dock's page: its bar slides away (true) or back.
+const AWAY_EVENT: &str = "dock-away";
+/// Brought up by the edge: this long for the pointer to come up onto it.
+const REVEAL_MS: u64 = 1500;
+/// The pointer has left the bar, or a panel over it closed: this long before it goes.
+const LEAVE_MS: u64 = 700;
 static APPS_SOON: AtomicBool = AtomicBool::new(false);
 static SYSTEM_SOON: AtomicBool = AtomicBool::new(false);
 static ENTRIES: Mutex<Vec<Entry>> = Mutex::new(Vec::new());
@@ -139,9 +162,21 @@ fn apply(app: &AppHandle, prefs: &crate::settings::DockPrefs) {
         return;
     }
     HIDE_SYSTEM_DOCK.store(prefs.hide_taskbar, Ordering::SeqCst);
-    let ready = prefs.on && gnome_ext::version().is_some_and(|v| v >= gnome_ext::DOCK_VERSION);
+    let version = gnome_ext::version();
+    let ready = prefs.on && version.is_some_and(|v| v >= gnome_ext::DOCK_VERSION);
     if prefs.on && !ready {
         crate::log::line("dock: waits for Ciel's GNOME extension, version 5 or later");
+    }
+    // An older extension can't say when the pointer reaches the edge: the bars stay.
+    let auto_hide = ready && prefs.auto_hide && version.is_some_and(|v| v >= gnome_ext::AUTO_HIDE_VERSION);
+    if ready && prefs.auto_hide && !auto_hide {
+        crate::log::line("dock: auto-hide waits for Ciel's GNOME extension, version 6 or later");
+    }
+    AUTO_HIDE.store(auto_hide, Ordering::SeqCst);
+    // The extension may have started again: it is told the places anew.
+    AREAS.lock().unwrap().clear();
+    if !auto_hide {
+        REVEALED.lock().unwrap().clear();
     }
     let on = prefs.on && ready;
     ON.store(on, Ordering::SeqCst);
@@ -171,6 +206,8 @@ fn apply(app: &AppHandle, prefs: &crate::settings::DockPrefs) {
         restore_system_dock();
         SHOWN.store(false, Ordering::SeqCst);
         *PUBLISHED.lock().unwrap() = None;
+        AWAY.lock().unwrap().clear();
+        *HOVERING.lock().unwrap() = None;
     }
 }
 
@@ -283,6 +320,12 @@ fn listen_shell(generation: u64) {
             "system" => soon(&SYSTEM_SOON, SYSTEM_MS, read_system),
             "ready" => resync(),
             "monitors" => place(),
+            edge if edge.starts_with("reveal ") => reveal(edge),
+            "menu-open" => MENU.store(true, Ordering::SeqCst),
+            "menu-closed" => {
+                MENU.store(false, Ordering::SeqCst);
+                settle_soon(LEAVE_MS);
+            }
             _ => soon(&APPS_SOON, APPS_MS, refresh),
         }
         true
@@ -372,6 +415,7 @@ fn place_now(app: &AppHandle) {
     let screens = if on { app.available_monitors().unwrap_or_default() } else { Vec::new() };
     let fullscreen = FULLSCREEN.lock().unwrap().clone();
     let mut shown = false;
+    let mut areas = Vec::new();
     for (i, screen) in screens.iter().enumerate() {
         let label = dock_label(i);
         let Some(win) = app.get_webview_window(&label).or_else(|| create(app, &label)) else { continue };
@@ -381,9 +425,12 @@ fn place_now(app: &AppHandle) {
             close_panel(app, false);
         } else {
             place_on(&win, screen);
+            areas.push(corner);
+            set_away(app, &win, away_now(&label));
             shown = true;
         }
     }
+    tell_areas(if AUTO_HIDE.load(Ordering::SeqCst) { areas } else { Vec::new() });
     for win in docks(app) {
         if !(0..screens.len()).any(|i| dock_label(i) == win.label()) {
             let _ = win.destroy();
@@ -400,15 +447,128 @@ fn place_on(win: &WebviewWindow, screen: &Monitor) {
     let width = f64::from_bits(WIDTH.load(Ordering::SeqCst));
     let bar_w = px(if width > 0.0 { width } else { 600.0 }).clamp(1, sw - 2 * px(GAP));
     let bar_h = px(BAR_H);
-    let (side, head) = (px(SIDE), px(HEAD));
+    let (side, head, gap) = (px(SIDE), px(HEAD), px(GAP));
     let x = sx + (sw - bar_w) / 2;
-    let y = sy + sh - px(GAP) - bar_h;
-    let _ = win.set_size(PhysicalSize::new((bar_w + 2 * side) as u32, (bar_h + head) as u32));
+    let y = sy + sh - gap - bar_h;
+    // Down to the screen's edge (the page keeps the gap under the bar): an
+    // auto-hidden bar sinks past the edge, not into a line above it.
+    let _ = win.set_size(PhysicalSize::new((bar_w + 2 * side) as u32, (bar_h + head + gap) as u32));
     let _ = win.set_position(PhysicalPosition::new(x - side, y - head));
     if !win.is_visible().unwrap_or(false) {
         let _ = win.show();
     }
-    platform::set_dock_strut(win, sx, sw, sy + sh, px(BAR_H + 2.0 * GAP));
+    // With auto-hide, windows take the whole screen.
+    let room = if AUTO_HIDE.load(Ordering::SeqCst) { 0 } else { px(BAR_H + 2.0 * GAP) };
+    platform::set_dock_strut(win, sx, sw, sy + sh, room);
+}
+
+// ── Auto-hide ─────────────────────────────────────────────────────────────────
+
+/// Whether a screen's bar is out of sight: auto-hide, and nothing holds it up.
+fn stays_away(auto_hide: bool, revealed: bool, pointer_on: bool, held: bool) -> bool {
+    auto_hide && !revealed && !pointer_on && !held
+}
+
+fn away_now(label: &str) -> bool {
+    stays_away(
+        AUTO_HIDE.load(Ordering::SeqCst),
+        REVEALED.lock().unwrap().iter().any(|l| l == label),
+        HOVERING.lock().unwrap().as_deref() == Some(label),
+        // The panel a click opened, the window over Ciel's tile, an app's menu.
+        !PANEL_KIND.lock().unwrap().is_empty() || *HOVER_ON.lock().unwrap() || MENU.load(Ordering::SeqCst),
+    )
+}
+
+/// Tells the page, and takes no click while away. Main thread.
+fn set_away(app: &AppHandle, win: &WebviewWindow, away: bool) {
+    let label = win.label().to_string();
+    let changed = {
+        let mut list = AWAY.lock().unwrap();
+        let was = list.contains(&label);
+        if away && !was {
+            list.push(label.clone());
+        } else if !away {
+            list.retain(|l| *l != label);
+        }
+        was != away
+    };
+    if !changed {
+        return;
+    }
+    let _ = app.emit_to(&label, AWAY_EVENT, away);
+    let pointer_on = HOVERING.lock().unwrap().as_deref() == Some(label.as_str());
+    clickable(win, away, pointer_on);
+}
+
+/// Each bar where it should be, away or back, without moving the windows.
+fn settle() {
+    let Some(app) = APP.get() else { return };
+    let handle = app.clone();
+    let _ = app.run_on_main_thread(move || {
+        let fullscreen = FULLSCREEN.lock().unwrap().clone();
+        for (i, screen) in handle.available_monitors().unwrap_or_default().iter().enumerate() {
+            let label = dock_label(i);
+            if fullscreen.contains(&(screen.position().x, screen.position().y)) {
+                continue;
+            }
+            if let Some(win) = handle.get_webview_window(&label) {
+                set_away(&handle, &win, away_now(&label));
+            }
+        }
+    });
+}
+
+fn settle_soon(ms: u64) {
+    if !AUTO_HIDE.load(Ordering::SeqCst) {
+        return;
+    }
+    std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_millis(ms));
+        settle();
+    });
+}
+
+/// "reveal x y": the pointer reached the bottom of the screen at that corner.
+fn reveal(signal: &str) {
+    let mut numbers = signal.split(' ').skip(1).filter_map(|n| n.parse::<i32>().ok());
+    let (Some(x), Some(y), Some(app)) = (numbers.next(), numbers.next(), APP.get()) else { return };
+    let Some(i) = app.available_monitors().unwrap_or_default().iter().position(|m| (m.position().x, m.position().y) == (x, y)) else { return };
+    let label = dock_label(i);
+    // That screen's alone: one brought up on the way there (the pointer
+    // sliding along the bottom across screens) goes at once.
+    *REVEALED.lock().unwrap() = vec![label.clone()];
+    settle();
+    let_go_later(label, REVEAL_MS);
+}
+
+/// Once the pointer isn't on that bar, the edge no longer holds it up.
+fn let_go_later(label: String, ms: u64) {
+    std::thread::spawn(move || {
+        std::thread::sleep(Duration::from_millis(ms));
+        if HOVERING.lock().unwrap().as_deref() == Some(label.as_str()) {
+            return;
+        }
+        REVEALED.lock().unwrap().retain(|l| *l != label);
+        settle();
+    });
+}
+
+/// The screens with a bar, by their corner, for the extension, when they change.
+fn tell_areas(areas: Vec<(i32, i32)>) {
+    let json = serde_json::to_string(&areas).unwrap_or_default();
+    {
+        let mut told = AREAS.lock().unwrap();
+        if *told == json {
+            return;
+        }
+        *told = json.clone();
+    }
+    std::thread::spawn(move || {
+        if !gnome_ext::dock_area(&json) {
+            // Asked again at the next placing.
+            AREAS.lock().unwrap().clear();
+        }
+    });
 }
 
 fn show(visible: bool) {
@@ -420,9 +580,34 @@ fn show(visible: bool) {
 /// What takes clicks in a dock window: all of it while the pointer is on
 /// the bar (the icons grown into the room above), else the bar alone.
 pub fn region(win: &WebviewWindow, hover: bool) {
+    let label = win.label().to_string();
+    {
+        let mut on = HOVERING.lock().unwrap();
+        if hover {
+            *on = Some(label.clone());
+        } else if on.as_deref() == Some(label.as_str()) {
+            *on = None;
+        }
+    }
+    let away = AWAY.lock().unwrap().contains(&label);
+    if away {
+        // A page that loads after it was sent away asks for this first: it hears it again.
+        let _ = win.emit_to(label.as_str(), AWAY_EVENT, true);
+    } else if !hover && AUTO_HIDE.load(Ordering::SeqCst) {
+        let_go_later(label, LEAVE_MS);
+    }
+    clickable(win, away, hover);
+}
+
+/// Away, nothing of it takes a click.
+fn clickable(win: &WebviewWindow, away: bool, hover: bool) {
+    if away {
+        platform::set_dock_input(win, Vec::new());
+        return;
+    }
     let (Ok(size), Ok(scale)) = (win.inner_size(), win.scale_factor()) else { return };
     let (w, h) = (size.width as f64 / scale, size.height as f64 / scale);
-    let rects = if hover { vec![(0.0, 0.0, w, h)] } else { vec![(SIDE, HEAD, (w - 2.0 * SIDE).max(0.0), (h - HEAD).max(0.0))] };
+    let rects = if hover { vec![(0.0, 0.0, w, h)] } else { vec![(SIDE, HEAD, (w - 2.0 * SIDE).max(0.0), (h - HEAD - GAP).max(0.0))] };
     platform::set_dock_input(win, rects);
 }
 
@@ -789,6 +974,7 @@ fn hover_now(app: &AppHandle, part: &str, on: bool) {
 fn hide_hover(app: &AppHandle) {
     *HOVER_ON.lock().unwrap() = false;
     fade_out(app, HOVER, || !*HOVER_ON.lock().unwrap());
+    settle_soon(LEAVE_MS);
 }
 
 /// The page fades its card, then the window is hidden, unless it was asked
@@ -852,6 +1038,7 @@ pub fn close_panel(app: &AppHandle, gone: bool) {
     } else {
         fade_out(app, PANEL, || PANEL_KIND.lock().unwrap().is_empty());
     }
+    settle_soon(LEAVE_MS);
 }
 
 // ── GNOME's own dock ──────────────────────────────────────────────────────────
@@ -917,6 +1104,16 @@ fn restore_system_dock() {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn an_auto_hidden_bar_stays_out_of_sight_unless_something_holds_it_up() {
+        assert!(stays_away(true, false, false, false));
+        assert!(!stays_away(false, false, false, false));
+        // Brought up by the edge, the pointer on it, a panel or a menu over it.
+        assert!(!stays_away(true, true, false, false));
+        assert!(!stays_away(true, false, true, false));
+        assert!(!stays_away(true, false, false, true));
+    }
 
     #[test]
     fn the_shells_apps_make_the_row_after_gnomes_favourites() {

@@ -20,6 +20,8 @@ export interface DockPrefs {
   widgets: boolean;
   /** What plays is in the dock, with its words, and no longer in the island. */
   music: boolean;
+  /** GNOME: each screen's dock stays out of sight until the pointer reaches the bottom of that screen. */
+  autoHide: boolean;
   /** Windows: the dock's own pins (paths, in order); null while they are the taskbar's. GNOME's are its favourites. */
   pins: string[] | null;
 }
@@ -135,6 +137,8 @@ export const DOCK_EVENTS = {
   state: "dock-state",
   /** Rust → dock: the sound, the network and the battery alone (SYSTEM_EVENT). */
   system: "dock-system",
+  /** Rust → one dock (GNOME): its bar goes out of sight (true, auto-hide), or comes up. */
+  away: "dock-away",
   /** Island → dock: its agents and what plays. */
   island: "dock-island",
   /** Island → dock: the cover of what plays (a data: URL), or null. */

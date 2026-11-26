@@ -9,6 +9,7 @@
 // icons move only while the pointer is on them.
 
 import "./dock.css";
+import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { Bridge, emitToWindow, onEvent } from "../core/bridge";
 import { DOCK_EVENTS, untilNextMinute, type DockSnapshot, type DockState, type SystemIcons } from "../core/dock";
 import { DEFAULT_SETTINGS, type Settings } from "../core/state";
@@ -95,6 +96,8 @@ void onEvent<DockState>(DOCK_EVENTS.state, take);
 void onEvent<SystemIcons>(DOCK_EVENTS.system, (s) => bar.setSystem(s));
 void onEvent<DockSnapshot>(DOCK_EVENTS.island, (s) => bar.setSnapshot(s));
 void onEvent<string | null>(DOCK_EVENTS.art, (url) => bar.setArt(url));
+// This screen's own: listen() alone hears what is sent to every dock.
+void getCurrentWebview().listen<boolean>(DOCK_EVENTS.away, (e) => bar.setAway(e.payload));
 void onEvent<Settings>("settings-changed", apply);
 
 void Bridge.boot()

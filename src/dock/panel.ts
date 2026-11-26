@@ -241,8 +241,9 @@ window.addEventListener("keydown", (e) => {
 window.addEventListener("contextmenu", (e) => e.preventDefault());
 
 Tools.start();
-void onEvent<string>(PANEL_EVENT, show);
-void onEvent<null>(PANEL_OUT, () => root.classList.add("leave"));
+// This window's own: listen() alone also hears what is sent to the other one.
+void getCurrentWebview().listen<string>(PANEL_EVENT, (e) => show(e.payload));
+void getCurrentWebview().listen<null>(PANEL_OUT, () => root.classList.add("leave"));
 void onEvent<Settings>("settings-changed", apply);
 void onEvent<DockSnapshot>(DOCK_EVENTS.island, (s) => {
   island = s;

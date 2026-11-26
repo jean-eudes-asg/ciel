@@ -59,6 +59,8 @@ export interface DockBar {
   /** The sound, the network and the battery, changed. */
   setSystem(s: SystemIcons): void;
   setSnapshot(s: DockSnapshot): void;
+  /** Slid away under a window (GNOME's auto-hide), or back. */
+  setAway(away: boolean): void;
   /** The cover of what plays (a data: URL), or null. */
   setArt(url: string | null): void;
   setClockFormat(f: Settings["clockFormat"]): void;
@@ -253,6 +255,9 @@ export function buildDockBar(actions: DockActions): DockBar {
 
   let goneTimer = 0;
   let singTimer = 0;
+  /** Slid away: what moves in the bar rests, as when the dock is off screen. */
+  let away = false;
+  const seen = () => state.shown && !away;
 
   function paintMedia() {
     const p = snapshot.playing;
@@ -276,7 +281,7 @@ export function buildDockBar(actions: DockActions): DockBar {
     mediaGone.hidden = !(p.duration > 0);
     if (mediaGone.hidden) return;
     mediaGone.style.transform = `scaleX(${playedAt(p, Date.now()) / p.duration})`;
-    if (p.playing && state.shown) goneTimer = window.setTimeout(() => runGone(p), 1000);
+    if (p.playing && seen()) goneTimer = window.setTimeout(() => runGone(p), 1000);
   }
 
   /** The line sung now, in place of the artist, until the next one is due. */
@@ -294,7 +299,7 @@ export function buildDockBar(actions: DockActions): DockBar {
         mediaLine.classList.add("rise");
       }
     }
-    if (nextIn != null && state.shown) singTimer = window.setTimeout(() => sing(p), nextIn + 20);
+    if (nextIn != null && seen()) singTimer = window.setTimeout(() => sing(p), nextIn + 20);
   }
 
   function systemLines(): string[] {
@@ -703,6 +708,12 @@ export function buildDockBar(actions: DockActions): DockBar {
       paintAgents();
       paintMedia();
       kick();
+    },
+    setAway(a) {
+      if (a === away) return;
+      away = a;
+      root.classList.toggle("away", a);
+      paintMedia();
     },
     setArt(url) {
       mediaCover.style.backgroundImage = url ? `url("${url}")` : "";

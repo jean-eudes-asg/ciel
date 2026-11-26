@@ -1133,7 +1133,7 @@ pub fn set_dock_input(win: &WebviewWindow, rects: Vec<(f64, f64, f64, f64)>) {
 
 /// Keeps `height` physical pixels at the bottom of the screen at `x`…`x + width`
 /// for the dock: maximized windows stop above it (_NET_WM_STRUT_PARTIAL, which
-/// counts from the bottom of the whole X screen). Main thread.
+/// counts from the bottom of the whole X screen); none for a height of 0. Main thread.
 pub fn set_dock_strut(win: &WebviewWindow, x: i32, width: i32, bottom: i32, height: i32) {
     use x11rb::connection::Connection;
     use x11rb::protocol::xproto::{AtomEnum, ConnectionExt as _, PropMode};
@@ -1148,8 +1148,9 @@ pub fn set_dock_strut(win: &WebviewWindow, x: i32, width: i32, bottom: i32, heig
     let Some(root_h) = conn.setup().roots.get(screen).map(|s| s.height_in_pixels as i32) else { return };
     let from_bottom = (root_h - bottom + height).max(0) as u32;
     let (start, end) = (x.max(0) as u32, (x + width - 1).max(0) as u32);
-    // left, right, top, bottom, then the start and end of each along its edge.
-    let strut = [0, 0, 0, from_bottom, 0, 0, 0, 0, 0, 0, start, end];
+    // left, right, top, bottom, then the start and end of each along its edge;
+    // no room at all for a height of 0 (the dock hides itself).
+    let strut = if height > 0 { [0, 0, 0, from_bottom, 0, 0, 0, 0, 0, 0, start, end] } else { [0; 12] };
     let Ok(atom) = conn.intern_atom(false, b"_NET_WM_STRUT_PARTIAL").map(|c| c.reply()) else { return };
     let Ok(atom) = atom else { return };
     let _ = conn.change_property32(PropMode::REPLACE, xid, atom.atom, AtomEnum::CARDINAL, &strut);

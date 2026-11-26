@@ -127,6 +127,13 @@ function dockSection(): HTMLElement {
       h("label", { text: t("Widgets") }),
       toggle(dock().widgets, (v) => set({ widgets: v })),
     )]),
+    ...(gnome ? [h("div", { class: "row" },
+      h("label", { text: t("Hide the dock") }),
+      toggle(dock().autoHide, (v) => set({ autoHide: v })),
+    ), h("div", {
+      class: "hint",
+      text: t("It comes up when the pointer reaches the bottom of its screen, and goes once the pointer has left it. Windows then take the whole screen."),
+    })] : []),
     h("div", { class: "row" },
       h("label", { text: t("Music in the dock") }),
       toggle(dock().music, (v) => set({ music: v })),

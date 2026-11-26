@@ -44,7 +44,7 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   next launch should Ciel ever stop without doing it. Windows' own files
   are never touched.
 - **The dock on GNOME** (same place; GNOME on X11, Wayland not tried yet), off by default,
-  through Ciel's extension for GNOME Shell (version 5: install it again from
+  through Ciel's extension for GNOME Shell (version 6: install it again from
   Integrations → Notifications, then restart GNOME Shell or log in again).
   One on every screen, each stepping aside for a full-screen app there.
   Your favourite apps and the ones open, as the Shell sees them; a click
@@ -58,8 +58,11 @@ All notable changes to Ciel. Versions follow [Semantic Versioning](https://semve
   a window opens over him, without taking the keyboard: the request that
   waits, whole, with Deny and Allow (a question opens the island), your
   agents at work and for how long, and your Claude and Codex plans' usage
-  with when each resets. No window previews yet. **Turn off GNOME's dock**: while
-  Ciel's dock shows, the Ubuntu Dock (or Dash to Dock) is turned off, as in
+  with when each resets. No window previews yet. **Hide the dock**, off
+  by default: each screen's dock stays out of sight, comes up when the
+  pointer reaches the bottom of that screen and goes once it has left, and
+  windows take the whole screen (the extension's version 6). **Turn off GNOME's dock**: while Ciel's dock
+  shows, the Ubuntu Dock (or Dash to Dock) is turned off, as in
   Extensions, and back on when it goes, when Ciel quits, or at the next
   launch should Ciel ever stop without doing it.
 - **Your work** (Ciel window → Chat → Your work): name the folders you work

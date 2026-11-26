@@ -26,7 +26,10 @@
 // what a click on the dock asks: an app started or brought forward, a window
 // minimized or closed, the app grid, the overview, an app's own menu. It
 // listens to the Shell only between DockWatch(true) and DockWatch(false):
-// nothing runs while the dock is off.
+// nothing runs while the dock is off. With the dock's auto-hide on, Ciel
+// gives the screens with a bar (DockArea): the pointer reaching the bottom
+// of one brings that screen's bar up ("reveal x y"), and Ciel is told while
+// an app's menu from the dock is open, so the bar under it stays.
 //
 // Nothing else is exposed: these calls, on the session bus.
 
@@ -42,6 +45,7 @@ import * as BoxPointer from 'resource:///org/gnome/shell/ui/boxpointer.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
 import {AppMenu} from 'resource:///org/gnome/shell/ui/appMenu.js';
+import * as Layout from 'resource:///org/gnome/shell/ui/layout.js';
 import St from 'gi://St';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
@@ -60,6 +64,7 @@ const IFACE = `<node>
     <method name="DockLaunch"><arg type="s" name="app" direction="in"/><arg type="b" name="newWindow" direction="in"/><arg type="b" direction="out"/></method>
     <method name="DockShell"><arg type="s" name="what" direction="in"/><arg type="b" direction="out"/></method>
     <method name="DockMenu"><arg type="s" name="app" direction="in"/><arg type="b" direction="out"/></method>
+    <method name="DockArea"><arg type="s" name="areas" direction="in"/><arg type="b" direction="out"/></method>
     <signal name="DockChanged"><arg type="s" name="what"/></signal>
     <property name="Version" type="u" access="read"/>
   </interface>
@@ -150,6 +155,10 @@ function lookupApp(id) {
 
 const windowById = id => global.display.list_all_windows().find(w => w.get_id() === id) ?? null;
 
+/** The pointer at the bottom edge is enough: a pixel of push (GNOME's hot corner asks 100). */
+const PRESSURE = 1;
+const PRESSURE_MS = 1000;
+
 /** Windows a dock shows: not Ciel's island and the like, which skip the taskbar. */
 const shownWindows = app => app.get_windows().filter(w => !w.skip_taskbar);
 
@@ -162,6 +171,10 @@ class Dock {
         this._menu = null;
         /** The windows "show desktop" minimized, for the next click to bring back. */
         this._minimized = [];
+        /** Auto-hide: the screens with a bar, by their corner [x, y]. */
+        this._areas = [];
+        this._pressure = null;
+        this._barriers = [];
     }
 
     ready() {
@@ -174,6 +187,7 @@ class Dock {
         this._watchSink(false);
         if (!on) {
             this._closeMenu();
+            this.area('[]');
             return;
         }
         const apps = () => this._emit('apps');
@@ -229,6 +243,58 @@ class Dock {
                 .filter(m => global.display.get_monitor_in_fullscreen(m.index))
                 .map(m => [m.x, m.y]),
         });
+    }
+
+    /**
+     * Auto-hide, from Ciel: the screens with a bar, or none to stop. A failure
+     * here only leaves the bars up: the rest of the extension goes on.
+     */
+    area(json) {
+        try {
+            this._areas = JSON.parse(json);
+            this._setBarriers();
+        } catch (e) {
+            console.warn(`Ciel: auto-hide is off: ${e}`);
+            this._areas = [];
+        }
+        return true;
+    }
+
+    /** The pointer at the bottom of a screen with a bar: "reveal x y", that screen's corner. */
+    _setBarriers() {
+        this._barriers.forEach(b => b.destroy());
+        this._barriers = [];
+        this._pressure?.destroy();
+        this._pressure = null;
+        if (!this._areas.length)
+            return;
+        this._pressure = new Layout.PressureBarrier(PRESSURE, PRESSURE_MS, Shell.ActionMode.NORMAL);
+        this._pressure.connect('trigger', () => {
+            const [px] = global.get_pointer();
+            const area = this._areas.find(([mx, my]) => {
+                const m = Main.layoutManager.monitors.find(s => s.x === mx && s.y === my);
+                return m && px >= m.x && px < m.x + m.width;
+            });
+            if (area)
+                this._emit(`reveal ${area[0]} ${area[1]}`);
+        });
+        for (const [mx, my] of this._areas) {
+            const m = Main.layoutManager.monitors.find(s => s.x === mx && s.y === my);
+            if (!m)
+                continue;
+            const y = m.y + m.height;
+            // Not the screen's corners: GNOME's hot corner and the next screen keep them.
+            const at = {x1: m.x + 1, x2: m.x + m.width - 1, y1: y, y2: y, directions: Meta.BarrierDirection.NEGATIVE_Y};
+            let barrier;
+            try {
+                barrier = new Meta.Barrier({backend: global.backend, ...at});
+            } catch {
+                // GNOME 45.
+                barrier = new Meta.Barrier({display: global.display, ...at});
+            }
+            this._pressure.addBarrier(barrier);
+            this._barriers.push(barrier);
+        }
     }
 
     window(id, action) {
@@ -312,6 +378,8 @@ class Dock {
         const manager = new PopupMenu.PopupMenuManager(anchor);
         manager.addMenu(menu);
         this._menu = {menu, anchor};
+        // An auto-hidden bar stays under its menu.
+        this._emit('menu-open');
         menu.connect('open-state-changed', (_menu, open) => {
             // Once the item chosen has done its work.
             if (!open)
@@ -328,6 +396,7 @@ class Dock {
         this._menu = null;
         menu.destroy();
         anchor.destroy();
+        this._emit('menu-closed');
         return GLib.SOURCE_REMOVE;
     }
 }
@@ -380,7 +449,8 @@ export default class CielExtension extends Extension {
             DockLaunch: (app, newWindow) => this._dock.launch(app, newWindow),
             DockShell: what => this._dock.shell(what),
             DockMenu: app => this._dock.menu(app),
-            Version: 5,
+            DockArea: areas => this._dock.area(areas),
+            Version: 6,
         });
         this._dock = new Dock(what =>
             this._dbus?.emit_signal('DockChanged', new GLib.Variant('(s)', [what])));
