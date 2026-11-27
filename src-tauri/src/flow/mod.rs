@@ -22,6 +22,9 @@ pub mod os;
 #[cfg(target_os = "linux")]
 #[path = "os_linux.rs"]
 pub mod os;
+#[cfg(target_os = "macos")]
+#[path = "os_macos.rs"]
+pub mod os;
 #[cfg(target_os = "linux")]
 pub mod wayland;
 
@@ -109,6 +112,12 @@ fn is_terminal(id: &str) -> bool {
     #[cfg(windows)]
     {
         // Windows Terminal, conhost and the rest paste with Ctrl+V.
+        let _ = id;
+        false
+    }
+    // macOS terminals paste with Cmd+V like everything else.
+    #[cfg(target_os = "macos")]
+    {
         let _ = id;
         false
     }

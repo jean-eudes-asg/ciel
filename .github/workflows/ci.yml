@@ -95,3 +95,30 @@ jobs:
 
       - name: Rust tests
         run: cargo test --workspace --locked
+
+  # macOS builds and tests, with no app to ship yet: the platform layer there
+  # is a placeholder (src-tauri/src/platform/macos.rs). This keeps the
+  # Windows and Linux code compiling on a Mac while the port grows.
+  macos:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Cache cargo
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ciel-cargo-macos-${{ hashFiles('Cargo.lock') }}
+          restore-keys: ciel-cargo-macos-
+
+      - name: Build the relay
+        run: cargo build --release -p ciel-hook
+
+      - name: Rust tests
+        run: cargo test --workspace --locked

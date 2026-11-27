@@ -31,6 +31,10 @@ use win as os;
 mod linux;
 #[cfg(target_os = "linux")]
 use linux as os;
+#[cfg(target_os = "macos")]
+mod macos;
+#[cfg(target_os = "macos")]
+use macos as os;
 
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;

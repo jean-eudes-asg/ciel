@@ -731,6 +731,22 @@ mod platform {
 
 // ── Linux ─────────────────────────────────────────────────────────────────────
 
+/// macOS: no clipboard watch yet, so the history stays empty.
+#[cfg(target_os = "macos")]
+mod platform {
+    /// False: nothing will tell us of a copy.
+    pub fn start(_on_change: fn()) -> bool {
+        false
+    }
+    pub fn stop() {}
+    pub fn private_content() -> bool {
+        false
+    }
+    pub fn owner_app() -> String {
+        String::new()
+    }
+}
+
 #[cfg(target_os = "linux")]
 mod platform {
     use std::io::{BufRead, BufReader};

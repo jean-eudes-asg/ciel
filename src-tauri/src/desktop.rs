@@ -352,7 +352,6 @@ fn create_window(app: &AppHandle, _mode: DesktopMode) -> Option<WebviewWindow> {
         // island::apply_geometry). Windows would grow resize borders instead.
         .resizable(cfg!(target_os = "linux"))
         .decorations(false)
-        .transparent(true)
         .shadow(false)
         .always_on_top(true)
         .skip_taskbar(true)
@@ -364,6 +363,12 @@ fn create_window(app: &AppHandle, _mode: DesktopMode) -> Option<WebviewWindow> {
         .disable_drag_drop_handler()
         .focusable(false)
         .visible(PARK);
+    // A transparent window on macOS needs Tauri's macos-private-api feature,
+    // which comes with the macOS window work; Off mode never builds it there.
+    #[cfg(not(target_os = "macos"))]
+    {
+        builder = builder.transparent(true);
+    }
     if PARK {
         builder = builder.position(PARKED.0, PARKED.1);
     }

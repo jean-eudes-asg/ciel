@@ -103,7 +103,6 @@ pub fn setup(app: &AppHandle) {
             .inner_size(BOTTOM.0, BOTTOM.1)
             .resizable(cfg!(target_os = "linux"))
             .decorations(false)
-            .transparent(true)
             .shadow(false)
             .always_on_top(true)
             .skip_taskbar(true)
@@ -115,6 +114,13 @@ pub fn setup(app: &AppHandle) {
             .disable_drag_drop_handler()
             .focusable(false)
             .visible(park);
+        // A transparent window on macOS needs Tauri's macos-private-api
+        // feature, which comes with the macOS window work; Off mode never
+        // builds the pill there.
+        #[cfg(not(target_os = "macos"))]
+        {
+            builder = builder.transparent(true);
+        }
         if park {
             builder = builder.position(PARKED.0 as f64, PARKED.1 as f64);
         }

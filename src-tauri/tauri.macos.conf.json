@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "bundle": {
+    "targets": ["app"],
+    "resources": {
+      "../target/release/ciel-hook.exe": null,
+      "../target/release/ciel-hook": "ciel-hook"
+    }
+  }
+}

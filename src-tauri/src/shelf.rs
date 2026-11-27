@@ -178,6 +178,22 @@ mod platform {
     }
 }
 
+/// macOS: Finder shows the file; dragging out of the shelf comes later.
+#[cfg(target_os = "macos")]
+mod platform {
+    use std::path::{Path, PathBuf};
+
+    use tauri::AppHandle;
+
+    pub fn reveal(file: &Path) {
+        let _ = std::process::Command::new("/usr/bin/open").arg("-R").arg(file).spawn();
+    }
+
+    pub fn drag(_: &AppHandle, _: Vec<PathBuf>) -> bool {
+        false
+    }
+}
+
 #[cfg(target_os = "linux")]
 mod platform {
     use std::path::{Path, PathBuf};

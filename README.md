@@ -355,6 +355,8 @@ You need [Node 22.18+](https://nodejs.org) and [Rust](https://rustup.rs).
     librsvg2-dev libxdo-dev libasound2-dev libpulse-dev libdbus-1-dev \
     libgtk-layer-shell-dev
   ```
+- **macOS:** the Xcode Command Line Tools. The relay and the tests build, and
+  `cargo test --workspace` runs; the app itself is not ready on macOS yet.
 
 ```sh
 npm install

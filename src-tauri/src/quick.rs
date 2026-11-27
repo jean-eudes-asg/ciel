@@ -63,6 +63,20 @@ pub async fn launcher_open(id: String) -> bool {
         .unwrap_or(false)
 }
 
+/// macOS: no launcher yet.
+#[cfg(target_os = "macos")]
+mod platform {
+    pub fn act(_what: &str) -> bool {
+        false
+    }
+    pub fn apps() -> Vec<super::App> {
+        Vec::new()
+    }
+    pub fn open(_id: &str) -> bool {
+        false
+    }
+}
+
 #[cfg(target_os = "linux")]
 mod platform {
     use std::path::{Path, PathBuf};
