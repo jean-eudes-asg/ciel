@@ -2,6 +2,15 @@
 
 All notable changes to Ciel. Versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Fixed
+- The dock on GNOME: GNOME's own dock no longer stays on screen beside it
+  after Ciel stopped without quitting (a crash of the desktop) or after a
+  restart of the Shell. Ciel turned the Ubuntu Dock on and off again at once
+  as it started, or turned it off while the Shell was still bringing it up,
+  and it failed half way.
+
 ## [0.5.0] - 2026-11-26
 
 ### Added

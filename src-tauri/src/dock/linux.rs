@@ -131,8 +131,10 @@ fn page_url(app: &AppHandle, page: &str) -> WebviewUrl {
 
 pub fn setup(app: &AppHandle) {
     let _ = APP.set(app.clone());
-    // Ciel stopped last time with GNOME's dock off: it comes back first.
-    restore_system_dock();
+    // GNOME's dock left off by a Ciel that stopped without quitting stays as
+    // it is: the first sync (apply) turns it back on unless the dock still
+    // stands in for it. Turned on and off again at once while the Shell
+    // starts, the Ubuntu Dock fails half way and stays on screen.
     let previous = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
         restore_system_dock();
@@ -1067,17 +1069,20 @@ fn apply_system_dock() {
     }
 }
 
-/// GNOME's docks that run are turned off, as Extensions does it (they stay
-/// installed); which ones is written down first, to turn them back on.
+/// GNOME's docks that are on are turned off, as Extensions does it (they
+/// stay installed); which ones is written down first, to turn them back on.
 fn hide_system_dock() {
     if system_dock_file().exists() {
         return;
     }
     let running: Vec<String> = SYSTEM_DOCKS
         .iter()
-        .filter(|uuid| gnome_extensions(&["info", uuid]).is_some_and(|info| info.contains("State: ACTIVE")))
+        .filter(|uuid| gnome_extensions(&["info", uuid]).is_some_and(|info| info.contains("Enabled: Yes")))
         .map(|uuid| uuid.to_string())
         .collect();
+    for uuid in &running {
+        settled(uuid);
+    }
     if running.is_empty() {
         return;
     }
@@ -1089,6 +1094,22 @@ fn hide_system_dock() {
         gnome_extensions(&["disable", uuid]);
     }
     crate::log::line(format!("dock: turned off {}", running.join(", ")));
+}
+
+/// Waits for a dock the Shell is still starting (at login, after a Shell
+/// restart): turned off half way up, the Ubuntu Dock fails and stays on
+/// screen. One that never comes up (already failed) is turned off all the
+/// same, so the next Shell start leaves it off.
+fn settled(uuid: &str) {
+    // ponytail: fixed waits, a signal from Ciel's extension if 1 s falls short.
+    for _ in 0..20 {
+        if gnome_extensions(&["info", uuid]).is_some_and(|info| info.contains("State: ACTIVE")) {
+            // What it sets up right after turning on.
+            std::thread::sleep(Duration::from_secs(1));
+            return;
+        }
+        std::thread::sleep(Duration::from_millis(500));
+    }
 }
 
 fn restore_system_dock() {
